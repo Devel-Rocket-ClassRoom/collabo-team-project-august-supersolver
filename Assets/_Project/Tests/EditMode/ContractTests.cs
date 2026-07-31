@@ -7,6 +7,9 @@ namespace PPS.Core.Tests
     /// <summary>
     /// 팀 4인이 공유하는 계약 타입의 최소 보장. 여기가 깨지면 잉크 표시·리플레이·
     /// 레벨 데이터가 동시에 틀어진다.
+    ///
+    /// 월드를 만들지 않는 검사만 남긴다 — 격리 물리 씬은 플레이 모드에서만 생성되므로
+    /// 시뮬을 돌려야 하는 계약 검사는 PlayMode 쪽 <c>ContractSimTests</c> 로 갔다.
     /// </summary>
     public class ContractTests
     {
@@ -73,21 +76,6 @@ namespace PPS.Core.Tests
             Assert.AreEqual(original.KillY, restored.KillY);
             Assert.AreEqual(original.Terrain.Count, restored.Terrain.Count);
             Assert.AreEqual(original.Terrain[1].B, restored.Terrain[1].B);
-        }
-
-        [Test]
-        public void 복원한_레벨데이터로_돌린_결과가_원본과_같다()
-        {
-            // "레벨 추가는 데이터만으로" 가 성립하려면 직렬화 왕복이 시뮬 결과를 바꾸면 안 된다.
-            var original = TestLevels.RampToGoal();
-            var restored = LevelData.FromJson(original.ToJson());
-
-            var a = new List<ulong>();
-            var b = new List<ulong>();
-            SimRunner.RunTraced(original, null, 3, a, 300);
-            SimRunner.RunTraced(restored, null, 3, b, 300);
-
-            CollectionAssert.AreEqual(a, b);
         }
 
         [Test]

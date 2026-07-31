@@ -144,14 +144,11 @@ namespace PPS.Core
 
             if (!_scene.IsValid()) return;
 
-#if UNITY_EDITOR
-            // 에디터 모드(솔버 배치 실행·EditMode 테스트)에서는 런타임 씬 언로드가 동작하지 않는다.
-            if (!Application.isPlaying)
-            {
-                UnityEditor.SceneManagement.EditorSceneManager.CloseScene(_scene, removeScene: true);
-                return;
-            }
-#endif
+            // 에디터 모드 분기는 두지 않는다. 월드 생성에 쓰는 CreateScene 이 런타임 전용이라
+            // 플레이 모드 밖에서는 애초에 월드가 만들어지지 않고, 따라서 여기도 도달하지 않는다.
+            // 해제는 비동기라 실제 언로드는 프레임 끝에 일어난다 — 한 프레임 안에서 월드를
+            // 여러 번 만들고 버리면 그 씬들이 잠시 함께 떠 있지만, 씬마다 물리가 격리되어 있어
+            // 서로 간섭하지 않는다.
             SceneManager.UnloadSceneAsync(_scene);
         }
     }

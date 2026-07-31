@@ -109,15 +109,22 @@ SolverRunner    솔버용. 프레임 예산 또는 무제한 전진
 ## 코드 컨벤션
 
 - 파일 배치는 `Assets/_Project/` 아래. 코어는 `Assets/_Project/Scripts/Core/`, 솔버는 `.../Solver/`
-- **asmdef는 코어에만 둔다** (`PPS.Core`, + 테스트 프레임워크가 요구하는 `PPS.Core.Tests`). 게임·UI·장치 코드는 `Assembly-CSharp`에 그대로 둔다 — asmdef 어셈블리는 `Assembly-CSharp`를 참조할 수 없어서, 게임 쪽을 asmdef로 쪼개면 팀원 전원이 asmdef를 만들도록 강요된다
+- **asmdef는 코어와 테스트에만 둔다** (`PPS.Core`, `PPS.Core.Tests`, `PPS.Core.PlayTests`, `PPS.Core.TestFixtures`). 게임·UI·장치 코드는 `Assembly-CSharp`에 그대로 둔다 — asmdef 어셈블리는 `Assembly-CSharp`를 참조할 수 없어서, 게임 쪽을 asmdef로 쪼개면 팀원 전원이 asmdef를 만들도록 강요된다
 - `PPS.Core`는 `autoReferenced: true`이므로 다른 코드는 `using PPS.Core;` 만 하면 된다. 코어가 UI·렌더링을 참조하지 않는다는 보장은 코어 asmdef 하나로 이미 성립한다
 - 공개 API에는 XML 문서 주석보다 **왜 이렇게 했는지**를 짧게 남긴다 (결정론 제약은 코드만 봐선 안 보인다)
 - 튜닝 가능한 수치(예산 회차, 난이도 기준값, 노이즈 σ)는 하드코딩하지 말고 **설정값/const로 한곳에** 모은다. 설계서의 수치는 전부 벤치마크 전 **예시 초기값**이다
-- 테스트는 Unity Test Framework EditMode. 결정론 테스트는 회귀 감시용으로 항상 유지
+- 테스트는 Unity Test Framework. **EditMode / PlayMode 두 갈래**이고 기준은 하나다 — 월드를 만드는가:
+  - `Assets/_Project/Tests/EditMode/` (`PPS.Core.Tests`) — 월드가 필요 없는 검사. 계약 타입, 코어 소스 정적 가드. 컴파일 직후 0.2초 게이트
+  - `Assets/_Project/Tests/PlayMode/` (`PPS.Core.PlayTests`) — 시뮬을 돌리는 검사. 결정론·판정·프레임 독립성
+  - `Assets/_Project/Tests/Fixtures/` (`PPS.Core.TestFixtures`) — 양쪽이 함께 쓰는 테스트 레벨. 테스트 메서드는 두지 않는다
+- `WorldBuilder.Build()`는 `SceneManager.CreateScene(..., LocalPhysicsMode.Physics2D)`를 쓰는데 이 API가 **런타임 전용**이다. 그래서 월드를 만드는 테스트는 EditMode에 둘 수 없다. 새 테스트가 `WorldBuilder`·`SimRunner`를 부른다면 PlayMode 쪽이다
+- 결정론 테스트는 회귀 감시용으로 항상 유지
 
 ## 작업 방식
 
-- 코어(SimWorld/WorldBuilder/Judge/계약 타입)를 수정하면 **결정론 테스트를 반드시 다시 돌린다**
+- 코어(SimWorld/WorldBuilder/Judge/계약 타입)를 수정하면 **결정론 테스트를 반드시 다시 돌린다**. 결정론 테스트는 PlayMode 탭에 있다 — EditMode만 초록불인 것은 아무것도 검증하지 않은 것과 같다
+- 배치 실행은 플랫폼당 한 번씩, 총 두 번이다 (`-testPlatform EditMode`, `-testPlatform PlayMode`). 종료 코드 0 = 통과
+- Project Settings → Editor → Enter Play Mode Options의 **Reload Domain은 켜둔 채로 둔다**. 도메인 리로드가 static 상태를 지워 테스트 간 격리를 만든다
 - 설계서와 어긋나는 구현이 필요해 보이면 임의로 바꾸지 말고 먼저 알린다
 - 브랜치 전략과 코드 리뷰 이력이 평가 항목이다. 커밋은 사용자가 요청할 때만 수행한다
 - 문서는 한국어로 작성한다

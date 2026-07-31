@@ -1,5 +1,5 @@
 {
-    "name": "PPS.Core.Tests",
+    "name": "PPS.Core.PlayTests",
     "rootNamespace": "PPS.Core.Tests",
     "references": [
         "UnityEngine.TestRunner",
@@ -7,9 +7,7 @@
         "PPS.Core",
         "PPS.Core.TestFixtures"
     ],
-    "includePlatforms": [
-        "Editor"
-    ],
+    "includePlatforms": [],
     "excludePlatforms": [],
     "allowUnsafeCode": false,
     "overrideReferences": true,

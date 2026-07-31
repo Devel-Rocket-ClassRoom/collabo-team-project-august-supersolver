@@ -1,0 +1,394 @@
+<?xml version="1.0" encoding="utf-8"?>
+<test-run id="2" testcasecount="26" result="Failed(Child)" total="26" passed="9" failed="17" inconclusive="0" skipped="0" asserts="0" engine-version="3.5.0.0" clr-version="4.0.30319.42000" start-time="2026-07-31 13:57:05Z" end-time="2026-07-31 13:57:05Z" duration="0.2534246">
+  <test-suite type="TestSuite" id="1043" name="PhysicsPuzzleSolver" fullname="PhysicsPuzzleSolver" runstate="Runnable" testcasecount="26" result="Failed" site="Child" start-time="2026-07-31 13:57:05Z" end-time="2026-07-31 13:57:05Z" duration="0.253425" total="26" passed="9" failed="17" inconclusive="0" skipped="0" asserts="0">
+    <properties>
+      <property name="platform" value="EditMode" />
+    </properties>
+    <failure>
+      <message><![CDATA[One or more child tests had errors]]></message>
+    </failure>
+    <test-suite type="Assembly" id="1032" name="PPS.Core.Tests.dll" fullname="D:/GitRepos/TmpPhysicsPuzzleSolver/Library/ScriptAssemblies/PPS.Core.Tests.dll" runstate="Runnable" testcasecount="26" result="Failed" site="Child" start-time="2026-07-31 13:57:05Z" end-time="2026-07-31 13:57:05Z" duration="0.240114" total="26" passed="9" failed="17" inconclusive="0" skipped="0" asserts="0">
+      <properties>
+        <property name="_PID" value="2836" />
+        <property name="_APPDOMAIN" value="Unity Child Domain" />
+        <property name="platform" value="EditMode" />
+        <property name="EditorOnly" value="True" />
+      </properties>
+      <failure>
+        <message><![CDATA[One or more child tests had errors]]></message>
+      </failure>
+      <test-suite type="TestSuite" id="1033" name="PPS" fullname="PPS" runstate="Runnable" testcasecount="26" result="Failed" site="Child" start-time="2026-07-31 13:57:05Z" end-time="2026-07-31 13:57:05Z" duration="0.238615" total="26" passed="9" failed="17" inconclusive="0" skipped="0" asserts="0">
+        <properties />
+        <failure>
+          <message><![CDATA[One or more child tests had errors]]></message>
+        </failure>
+        <test-suite type="TestSuite" id="1034" name="Core" fullname="PPS.Core" runstate="Runnable" testcasecount="26" result="Failed" site="Child" start-time="2026-07-31 13:57:05Z" end-time="2026-07-31 13:57:05Z" duration="0.237332" total="26" passed="9" failed="17" inconclusive="0" skipped="0" asserts="0">
+          <properties />
+          <failure>
+            <message><![CDATA[One or more child tests had errors]]></message>
+          </failure>
+          <test-suite type="TestSuite" id="1035" name="Tests" fullname="PPS.Core.Tests" runstate="Runnable" testcasecount="26" result="Failed" site="Child" start-time="2026-07-31 13:57:05Z" end-time="2026-07-31 13:57:05Z" duration="0.236399" total="26" passed="9" failed="17" inconclusive="0" skipped="0" asserts="0">
+            <properties />
+            <failure>
+              <message><![CDATA[One or more child tests had errors]]></message>
+            </failure>
+            <test-suite type="TestFixture" id="1001" name="ContractTests" fullname="PPS.Core.Tests.ContractTests" classname="PPS.Core.Tests.ContractTests" runstate="Runnable" testcasecount="7" result="Failed" site="Child" start-time="2026-07-31 13:57:05Z" end-time="2026-07-31 13:57:05Z" duration="0.048224" total="7" passed="6" failed="1" inconclusive="0" skipped="0" asserts="0">
+              <properties />
+              <failure>
+                <message><![CDATA[One or more child tests had errors]]></message>
+              </failure>
+              <test-case id="1008" name="고정_시간_간격은_60분의_1이다" fullname="PPS.Core.Tests.ContractTests.고정_시간_간격은_60분의_1이다" methodname="고정_시간_간격은_60분의_1이다" classname="PPS.Core.Tests.ContractTests" runstate="Runnable" seed="501922883" result="Passed" start-time="2026-07-31 13:57:05Z" end-time="2026-07-31 13:57:05Z" duration="0.014280" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+              <test-case id="1006" name="레벨데이터는_JSON_왕복에서_보존된다" fullname="PPS.Core.Tests.ContractTests.레벨데이터는_JSON_왕복에서_보존된다" methodname="레벨데이터는_JSON_왕복에서_보존된다" classname="PPS.Core.Tests.ContractTests" runstate="Runnable" seed="1307928261" result="Passed" start-time="2026-07-31 13:57:05Z" end-time="2026-07-31 13:57:05Z" duration="0.002935" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+              <test-case id="1007" name="복원한_레벨데이터로_돌린_결과가_원본과_같다" fullname="PPS.Core.Tests.ContractTests.복원한_레벨데이터로_돌린_결과가_원본과_같다" methodname="복원한_레벨데이터로_돌린_결과가_원본과_같다" classname="PPS.Core.Tests.ContractTests" runstate="Runnable" seed="301696070" result="Failed" label="Error" start-time="2026-07-31 13:57:05Z" end-time="2026-07-31 13:57:05Z" duration="0.005699" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+                <failure>
+                  <message><![CDATA[System.InvalidOperationException : This can only be used during play mode, please use EditorSceneManager.NewScene() instead.]]></message>
+                  <stack-trace><![CDATA[  at (wrapper managed-to-native) UnityEngine.SceneManagement.SceneManager.CreateScene_Injected(UnityEngine.Bindings.ManagedSpanWrapper&,UnityEngine.SceneManagement.CreateSceneParameters&,UnityEngine.SceneManagement.Scene&)
+  at UnityEngine.SceneManagement.SceneManager.CreateScene (System.String sceneName, UnityEngine.SceneManagement.CreateSceneParameters parameters) [0x00039] in <500f267b66d74c678b3466bfed6b3d28>:0 
+  at PPS.Core.WorldBuilder.Build (PPS.Core.LevelData level, PPS.Core.Solution solution, System.Int32 seed) [0x0001a] in D:\GitRepos\TmpPhysicsPuzzleSolver\Assets\_Project\Scripts\Core\Sim\WorldBuilder.cs:28 
+  at PPS.Core.SimRunner.RunTraced (PPS.Core.LevelData level, PPS.Core.Solution solution, System.Int32 seed, System.Collections.Generic.List`1[T] trace, System.Int32 maxSteps) [0x00006] in D:\GitRepos\TmpPhysicsPuzzleSolver\Assets\_Project\Scripts\Core\Sim\SimRunner.cs:49 
+  at PPS.Core.Tests.ContractTests.복원한_레벨데이터로_돌린_결과가_원본과_같다 () [0x0001e] in D:\GitRepos\TmpPhysicsPuzzleSolver\Assets\_Project\Tests\EditMode\ContractTests.cs:87 
+  at (wrapper managed-to-native) System.Reflection.RuntimeMethodInfo.InternalInvoke(System.Reflection.RuntimeMethodInfo,object,object[],System.Exception&)
+  at System.Reflection.RuntimeMethodInfo.Invoke (System.Object obj, System.Reflection.BindingFlags invokeAttr, System.Reflection.Binder binder, System.Object[] parameters, System.Globalization.CultureInfo culture) [0x0006a] in <41d29b352f6a475ab1bf7c6628b82790>:0 ]]></stack-trace>
+                </failure>
+              </test-case>
+              <test-case id="1005" name="솔루션_복사본은_원본과_포인트_리스트를_공유하지_않는다" fullname="PPS.Core.Tests.ContractTests.솔루션_복사본은_원본과_포인트_리스트를_공유하지_않는다" methodname="솔루션_복사본은_원본과_포인트_리스트를_공유하지_않는다" classname="PPS.Core.Tests.ContractTests" runstate="Runnable" seed="302598351" result="Passed" start-time="2026-07-31 13:57:05Z" end-time="2026-07-31 13:57:05Z" duration="0.003050" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+              <test-case id="1002" name="스트로크_길이는_폴리라인_길이의_합이다" fullname="PPS.Core.Tests.ContractTests.스트로크_길이는_폴리라인_길이의_합이다" methodname="스트로크_길이는_폴리라인_길이의_합이다" classname="PPS.Core.Tests.ContractTests" runstate="Runnable" seed="78545794" result="Passed" start-time="2026-07-31 13:57:05Z" end-time="2026-07-31 13:57:05Z" duration="0.001196" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+              <test-case id="1004" name="총_잉크는_스트로크_길이의_합이고_회전축은_잉크를_쓰지_않는다" fullname="PPS.Core.Tests.ContractTests.총_잉크는_스트로크_길이의_합이고_회전축은_잉크를_쓰지_않는다" methodname="총_잉크는_스트로크_길이의_합이고_회전축은_잉크를_쓰지_않는다" classname="PPS.Core.Tests.ContractTests" runstate="Runnable" seed="136649637" result="Passed" start-time="2026-07-31 13:57:05Z" end-time="2026-07-31 13:57:05Z" duration="0.000862" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+              <test-case id="1003" name="포인트가_모자란_스트로크는_무효다" fullname="PPS.Core.Tests.ContractTests.포인트가_모자란_스트로크는_무효다" methodname="포인트가_모자란_스트로크는_무효다" classname="PPS.Core.Tests.ContractTests" runstate="Runnable" seed="1208105840" result="Passed" start-time="2026-07-31 13:57:05Z" end-time="2026-07-31 13:57:05Z" duration="0.000660" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+            </test-suite>
+            <test-suite type="TestFixture" id="1009" name="CoreSourceGuardTests" fullname="PPS.Core.Tests.CoreSourceGuardTests" classname="PPS.Core.Tests.CoreSourceGuardTests" runstate="Runnable" testcasecount="2" result="Passed" start-time="2026-07-31 13:57:05Z" end-time="2026-07-31 13:57:05Z" duration="0.064523" total="2" passed="2" failed="0" inconclusive="0" skipped="0" asserts="0">
+              <properties />
+              <test-case id="1011" name="코어_asmdef가_UI나_렌더링을_참조하지_않는다" fullname="PPS.Core.Tests.CoreSourceGuardTests.코어_asmdef가_UI나_렌더링을_참조하지_않는다" methodname="코어_asmdef가_UI나_렌더링을_참조하지_않는다" classname="PPS.Core.Tests.CoreSourceGuardTests" runstate="Runnable" seed="166334145" result="Passed" start-time="2026-07-31 13:57:05Z" end-time="2026-07-31 13:57:05Z" duration="0.001189" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+              <test-case id="1010" name="코어_소스에_결정론_금지_API가_없다" fullname="PPS.Core.Tests.CoreSourceGuardTests.코어_소스에_결정론_금지_API가_없다" methodname="코어_소스에_결정론_금지_API가_없다" classname="PPS.Core.Tests.CoreSourceGuardTests" runstate="Runnable" seed="1706837503" result="Passed" start-time="2026-07-31 13:57:05Z" end-time="2026-07-31 13:57:05Z" duration="0.008684" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+            </test-suite>
+            <test-suite type="TestFixture" id="1012" name="DeterminismTests" fullname="PPS.Core.Tests.DeterminismTests" classname="PPS.Core.Tests.DeterminismTests" runstate="Runnable" testcasecount="6" result="Failed" site="Child" start-time="2026-07-31 13:57:05Z" end-time="2026-07-31 13:57:05Z" duration="0.042711" total="6" passed="1" failed="5" inconclusive="0" skipped="0" asserts="0">
+              <properties />
+              <failure>
+                <message><![CDATA[One or more child tests had errors]]></message>
+              </failure>
+              <test-case id="1014" name="같은_입력_두_번_실행하면_스텝별_해시가_전부_같다" fullname="PPS.Core.Tests.DeterminismTests.같은_입력_두_번_실행하면_스텝별_해시가_전부_같다" methodname="같은_입력_두_번_실행하면_스텝별_해시가_전부_같다" classname="PPS.Core.Tests.DeterminismTests" runstate="Runnable" seed="361905520" result="Failed" label="Error" start-time="2026-07-31 13:57:05Z" end-time="2026-07-31 13:57:05Z" duration="0.000551" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+                <failure>
+                  <message><![CDATA[System.InvalidOperationException : This can only be used during play mode, please use EditorSceneManager.NewScene() instead.]]></message>
+                  <stack-trace><![CDATA[  at (wrapper managed-to-native) UnityEngine.SceneManagement.SceneManager.CreateScene_Injected(UnityEngine.Bindings.ManagedSpanWrapper&,UnityEngine.SceneManagement.CreateSceneParameters&,UnityEngine.SceneManagement.Scene&)
+  at UnityEngine.SceneManagement.SceneManager.CreateScene (System.String sceneName, UnityEngine.SceneManagement.CreateSceneParameters parameters) [0x00039] in <500f267b66d74c678b3466bfed6b3d28>:0 
+  at PPS.Core.WorldBuilder.Build (PPS.Core.LevelData level, PPS.Core.Solution solution, System.Int32 seed) [0x0001a] in D:\GitRepos\TmpPhysicsPuzzleSolver\Assets\_Project\Scripts\Core\Sim\WorldBuilder.cs:28 
+  at PPS.Core.SimRunner.RunTraced (PPS.Core.LevelData level, PPS.Core.Solution solution, System.Int32 seed, System.Collections.Generic.List`1[T] trace, System.Int32 maxSteps) [0x00006] in D:\GitRepos\TmpPhysicsPuzzleSolver\Assets\_Project\Scripts\Core\Sim\SimRunner.cs:49 
+  at PPS.Core.Tests.DeterminismTests.같은_입력_두_번_실행하면_스텝별_해시가_전부_같다 () [0x00011] in D:\GitRepos\TmpPhysicsPuzzleSolver\Assets\_Project\Tests\EditMode\DeterminismTests.cs:32 
+  at (wrapper managed-to-native) System.Reflection.RuntimeMethodInfo.InternalInvoke(System.Reflection.RuntimeMethodInfo,object,object[],System.Exception&)
+  at System.Reflection.RuntimeMethodInfo.Invoke (System.Object obj, System.Reflection.BindingFlags invokeAttr, System.Reflection.Binder binder, System.Object[] parameters, System.Globalization.CultureInfo culture) [0x0006a] in <41d29b352f6a475ab1bf7c6628b82790>:0 ]]></stack-trace>
+                </failure>
+              </test-case>
+              <test-case id="1015" name="다른_월드를_사이에_끼워도_재구축_결과가_같다" fullname="PPS.Core.Tests.DeterminismTests.다른_월드를_사이에_끼워도_재구축_결과가_같다" methodname="다른_월드를_사이에_끼워도_재구축_결과가_같다" classname="PPS.Core.Tests.DeterminismTests" runstate="Runnable" seed="406596612" result="Failed" label="Error" start-time="2026-07-31 13:57:05Z" end-time="2026-07-31 13:57:05Z" duration="0.000272" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+                <failure>
+                  <message><![CDATA[System.InvalidOperationException : This can only be used during play mode, please use EditorSceneManager.NewScene() instead.]]></message>
+                  <stack-trace><![CDATA[  at (wrapper managed-to-native) UnityEngine.SceneManagement.SceneManager.CreateScene_Injected(UnityEngine.Bindings.ManagedSpanWrapper&,UnityEngine.SceneManagement.CreateSceneParameters&,UnityEngine.SceneManagement.Scene&)
+  at UnityEngine.SceneManagement.SceneManager.CreateScene (System.String sceneName, UnityEngine.SceneManagement.CreateSceneParameters parameters) [0x00039] in <500f267b66d74c678b3466bfed6b3d28>:0 
+  at PPS.Core.WorldBuilder.Build (PPS.Core.LevelData level, PPS.Core.Solution solution, System.Int32 seed) [0x0001a] in D:\GitRepos\TmpPhysicsPuzzleSolver\Assets\_Project\Scripts\Core\Sim\WorldBuilder.cs:28 
+  at PPS.Core.SimRunner.RunTraced (PPS.Core.LevelData level, PPS.Core.Solution solution, System.Int32 seed, System.Collections.Generic.List`1[T] trace, System.Int32 maxSteps) [0x00006] in D:\GitRepos\TmpPhysicsPuzzleSolver\Assets\_Project\Scripts\Core\Sim\SimRunner.cs:49 
+  at PPS.Core.Tests.DeterminismTests.다른_월드를_사이에_끼워도_재구축_결과가_같다 () [0x0000b] in D:\GitRepos\TmpPhysicsPuzzleSolver\Assets\_Project\Tests\EditMode\DeterminismTests.cs:49 
+  at (wrapper managed-to-native) System.Reflection.RuntimeMethodInfo.InternalInvoke(System.Reflection.RuntimeMethodInfo,object,object[],System.Exception&)
+  at System.Reflection.RuntimeMethodInfo.Invoke (System.Object obj, System.Reflection.BindingFlags invokeAttr, System.Reflection.Binder binder, System.Object[] parameters, System.Globalization.CultureInfo culture) [0x0006a] in <41d29b352f6a475ab1bf7c6628b82790>:0 ]]></stack-trace>
+                </failure>
+              </test-case>
+              <test-case id="1013" name="물리설정이_결정론을_깨뜨리지_않는다" fullname="PPS.Core.Tests.DeterminismTests.물리설정이_결정론을_깨뜨리지_않는다" methodname="물리설정이_결정론을_깨뜨리지_않는다" classname="PPS.Core.Tests.DeterminismTests" runstate="Runnable" seed="604018192" result="Passed" start-time="2026-07-31 13:57:05Z" end-time="2026-07-31 13:57:05Z" duration="0.004766" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+                <output><![CDATA[Physics2D fingerprint: gravity=(0.0000, -9.8100) velIter=8 posIter=3 contactOffset=0.0100 timeToSleep=0.5000 linSleepTol=0.0100 angSleepTol=2.0000 baumgarte=0.2000 maxTransSpeed=100.0000 maxRotSpeed=360.0000 subStepping=False maxSubStep=4 minSubStepFPS=30.0000 multithread=False
+]]></output>
+              </test-case>
+              <test-case id="1017" name="스트로크가_실제로_물리에_투입된다" fullname="PPS.Core.Tests.DeterminismTests.스트로크가_실제로_물리에_투입된다" methodname="스트로크가_실제로_물리에_투입된다" classname="PPS.Core.Tests.DeterminismTests" runstate="Runnable" seed="211055820" result="Failed" label="Error" start-time="2026-07-31 13:57:05Z" end-time="2026-07-31 13:57:05Z" duration="0.000591" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+                <failure>
+                  <message><![CDATA[System.InvalidOperationException : This can only be used during play mode, please use EditorSceneManager.NewScene() instead.]]></message>
+                  <stack-trace><![CDATA[  at (wrapper managed-to-native) UnityEngine.SceneManagement.SceneManager.CreateScene_Injected(UnityEngine.Bindings.ManagedSpanWrapper&,UnityEngine.SceneManagement.CreateSceneParameters&,UnityEngine.SceneManagement.Scene&)
+  at UnityEngine.SceneManagement.SceneManager.CreateScene (System.String sceneName, UnityEngine.SceneManagement.CreateSceneParameters parameters) [0x00039] in <500f267b66d74c678b3466bfed6b3d28>:0 
+  at PPS.Core.WorldBuilder.Build (PPS.Core.LevelData level, PPS.Core.Solution solution, System.Int32 seed) [0x0001a] in D:\GitRepos\TmpPhysicsPuzzleSolver\Assets\_Project\Scripts\Core\Sim\WorldBuilder.cs:28 
+  at PPS.Core.SimRunner.Run (PPS.Core.LevelData level, PPS.Core.Solution solution, System.Int32 seed, System.Int32 maxSteps) [0x00000] in D:\GitRepos\TmpPhysicsPuzzleSolver\Assets\_Project\Scripts\Core\Sim\SimRunner.cs:23 
+  at PPS.Core.Tests.DeterminismTests.스트로크가_실제로_물리에_투입된다 () [0x00005] in D:\GitRepos\TmpPhysicsPuzzleSolver\Assets\_Project\Tests\EditMode\DeterminismTests.cs:84 
+  at (wrapper managed-to-native) System.Reflection.RuntimeMethodInfo.InternalInvoke(System.Reflection.RuntimeMethodInfo,object,object[],System.Exception&)
+  at System.Reflection.RuntimeMethodInfo.Invoke (System.Object obj, System.Reflection.BindingFlags invokeAttr, System.Reflection.Binder binder, System.Object[] parameters, System.Globalization.CultureInfo culture) [0x0006a] in <41d29b352f6a475ab1bf7c6628b82790>:0 ]]></stack-trace>
+                </failure>
+              </test-case>
+              <test-case id="1018" name="자유물체는_질량과_관성이_정상이라_떨어진다" fullname="PPS.Core.Tests.DeterminismTests.자유물체는_질량과_관성이_정상이라_떨어진다" methodname="자유물체는_질량과_관성이_정상이라_떨어진다" classname="PPS.Core.Tests.DeterminismTests" runstate="Runnable" seed="730211133" result="Failed" label="Error" start-time="2026-07-31 13:57:05Z" end-time="2026-07-31 13:57:05Z" duration="0.000926" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+                <failure>
+                  <message><![CDATA[System.InvalidOperationException : This can only be used during play mode, please use EditorSceneManager.NewScene() instead.]]></message>
+                  <stack-trace><![CDATA[  at (wrapper managed-to-native) UnityEngine.SceneManagement.SceneManager.CreateScene_Injected(UnityEngine.Bindings.ManagedSpanWrapper&,UnityEngine.SceneManagement.CreateSceneParameters&,UnityEngine.SceneManagement.Scene&)
+  at UnityEngine.SceneManagement.SceneManager.CreateScene (System.String sceneName, UnityEngine.SceneManagement.CreateSceneParameters parameters) [0x00039] in <500f267b66d74c678b3466bfed6b3d28>:0 
+  at PPS.Core.WorldBuilder.Build (PPS.Core.LevelData level, PPS.Core.Solution solution, System.Int32 seed) [0x0001a] in D:\GitRepos\TmpPhysicsPuzzleSolver\Assets\_Project\Scripts\Core\Sim\WorldBuilder.cs:28 
+  at PPS.Core.Tests.DeterminismTests.자유물체는_질량과_관성이_정상이라_떨어진다 () [0x00005] in D:\GitRepos\TmpPhysicsPuzzleSolver\Assets\_Project\Tests\EditMode\DeterminismTests.cs:98 
+  at (wrapper managed-to-native) System.Reflection.RuntimeMethodInfo.InternalInvoke(System.Reflection.RuntimeMethodInfo,object,object[],System.Exception&)
+  at System.Reflection.RuntimeMethodInfo.Invoke (System.Object obj, System.Reflection.BindingFlags invokeAttr, System.Reflection.Binder binder, System.Object[] parameters, System.Globalization.CultureInfo culture) [0x0006a] in <41d29b352f6a475ab1bf7c6628b82790>:0 ]]></stack-trace>
+                </failure>
+              </test-case>
+              <test-case id="1016" name="해시는_아주_작은_차이도_잡아낸다" fullname="PPS.Core.Tests.DeterminismTests.해시는_아주_작은_차이도_잡아낸다" methodname="해시는_아주_작은_차이도_잡아낸다" classname="PPS.Core.Tests.DeterminismTests" runstate="Runnable" seed="530220347" result="Failed" label="Error" start-time="2026-07-31 13:57:05Z" end-time="2026-07-31 13:57:05Z" duration="0.000395" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+                <failure>
+                  <message><![CDATA[System.InvalidOperationException : This can only be used during play mode, please use EditorSceneManager.NewScene() instead.]]></message>
+                  <stack-trace><![CDATA[  at (wrapper managed-to-native) UnityEngine.SceneManagement.SceneManager.CreateScene_Injected(UnityEngine.Bindings.ManagedSpanWrapper&,UnityEngine.SceneManagement.CreateSceneParameters&,UnityEngine.SceneManagement.Scene&)
+  at UnityEngine.SceneManagement.SceneManager.CreateScene (System.String sceneName, UnityEngine.SceneManagement.CreateSceneParameters parameters) [0x00039] in <500f267b66d74c678b3466bfed6b3d28>:0 
+  at PPS.Core.WorldBuilder.Build (PPS.Core.LevelData level, PPS.Core.Solution solution, System.Int32 seed) [0x0001a] in D:\GitRepos\TmpPhysicsPuzzleSolver\Assets\_Project\Scripts\Core\Sim\WorldBuilder.cs:28 
+  at PPS.Core.SimRunner.RunTraced (PPS.Core.LevelData level, PPS.Core.Solution solution, System.Int32 seed, System.Collections.Generic.List`1[T] trace, System.Int32 maxSteps) [0x00006] in D:\GitRepos\TmpPhysicsPuzzleSolver\Assets\_Project\Scripts\Core\Sim\SimRunner.cs:49 
+  at PPS.Core.Tests.DeterminismTests.해시는_아주_작은_차이도_잡아낸다 () [0x0000b] in D:\GitRepos\TmpPhysicsPuzzleSolver\Assets\_Project\Tests\EditMode\DeterminismTests.cs:67 
+  at (wrapper managed-to-native) System.Reflection.RuntimeMethodInfo.InternalInvoke(System.Reflection.RuntimeMethodInfo,object,object[],System.Exception&)
+  at System.Reflection.RuntimeMethodInfo.Invoke (System.Object obj, System.Reflection.BindingFlags invokeAttr, System.Reflection.Binder binder, System.Object[] parameters, System.Globalization.CultureInfo culture) [0x0006a] in <41d29b352f6a475ab1bf7c6628b82790>:0 ]]></stack-trace>
+                </failure>
+              </test-case>
+            </test-suite>
+            <test-suite type="TestFixture" id="1019" name="FrameIndependenceTests" fullname="PPS.Core.Tests.FrameIndependenceTests" classname="PPS.Core.Tests.FrameIndependenceTests" runstate="Runnable" testcasecount="4" result="Failed" site="Child" start-time="2026-07-31 13:57:05Z" end-time="2026-07-31 13:57:05Z" duration="0.040489" total="4" passed="0" failed="4" inconclusive="0" skipped="0" asserts="0">
+              <properties />
+              <failure>
+                <message><![CDATA[One or more child tests had errors]]></message>
+              </failure>
+              <test-case id="1021" name="누적기로_돌린_결과가_직접_Step_한_결과와_같다" fullname="PPS.Core.Tests.FrameIndependenceTests.누적기로_돌린_결과가_직접_Step_한_결과와_같다" methodname="누적기로_돌린_결과가_직접_Step_한_결과와_같다" classname="PPS.Core.Tests.FrameIndependenceTests" runstate="Runnable" seed="2098438529" result="Failed" label="Error" start-time="2026-07-31 13:57:05Z" end-time="2026-07-31 13:57:05Z" duration="0.000970" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+                <failure>
+                  <message><![CDATA[System.InvalidOperationException : This can only be used during play mode, please use EditorSceneManager.NewScene() instead.]]></message>
+                  <stack-trace><![CDATA[  at (wrapper managed-to-native) UnityEngine.SceneManagement.SceneManager.CreateScene_Injected(UnityEngine.Bindings.ManagedSpanWrapper&,UnityEngine.SceneManagement.CreateSceneParameters&,UnityEngine.SceneManagement.Scene&)
+  at UnityEngine.SceneManagement.SceneManager.CreateScene (System.String sceneName, UnityEngine.SceneManagement.CreateSceneParameters parameters) [0x00039] in <500f267b66d74c678b3466bfed6b3d28>:0 
+  at PPS.Core.WorldBuilder.Build (PPS.Core.LevelData level, PPS.Core.Solution solution, System.Int32 seed) [0x0001a] in D:\GitRepos\TmpPhysicsPuzzleSolver\Assets\_Project\Scripts\Core\Sim\WorldBuilder.cs:28 
+  at PPS.Core.Tests.FrameIndependenceTests.DriveTo (System.Int32 expectedStep, System.Single frameDelta, System.Int32 frameCount, System.Int32& reachedStep) [0x00000] in D:\GitRepos\TmpPhysicsPuzzleSolver\Assets\_Project\Tests\EditMode\FrameIndependenceTests.cs:83 
+  at PPS.Core.Tests.FrameIndependenceTests.누적기로_돌린_결과가_직접_Step_한_결과와_같다 () [0x00000] in D:\GitRepos\TmpPhysicsPuzzleSolver\Assets\_Project\Tests\EditMode\FrameIndependenceTests.cs:31 
+  at (wrapper managed-to-native) System.Reflection.RuntimeMethodInfo.InternalInvoke(System.Reflection.RuntimeMethodInfo,object,object[],System.Exception&)
+  at System.Reflection.RuntimeMethodInfo.Invoke (System.Object obj, System.Reflection.BindingFlags invokeAttr, System.Reflection.Binder binder, System.Object[] parameters, System.Globalization.CultureInfo culture) [0x0006a] in <41d29b352f6a475ab1bf7c6628b82790>:0 ]]></stack-trace>
+                </failure>
+              </test-case>
+              <test-case id="1023" name="배속은_스텝_수만_늘리고_스텝_내용은_그대로다" fullname="PPS.Core.Tests.FrameIndependenceTests.배속은_스텝_수만_늘리고_스텝_내용은_그대로다" methodname="배속은_스텝_수만_늘리고_스텝_내용은_그대로다" classname="PPS.Core.Tests.FrameIndependenceTests" runstate="Runnable" seed="132763786" result="Failed" label="Error" start-time="2026-07-31 13:57:05Z" end-time="2026-07-31 13:57:05Z" duration="0.000347" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+                <failure>
+                  <message><![CDATA[System.InvalidOperationException : This can only be used during play mode, please use EditorSceneManager.NewScene() instead.]]></message>
+                  <stack-trace><![CDATA[  at (wrapper managed-to-native) UnityEngine.SceneManagement.SceneManager.CreateScene_Injected(UnityEngine.Bindings.ManagedSpanWrapper&,UnityEngine.SceneManagement.CreateSceneParameters&,UnityEngine.SceneManagement.Scene&)
+  at UnityEngine.SceneManagement.SceneManager.CreateScene (System.String sceneName, UnityEngine.SceneManagement.CreateSceneParameters parameters) [0x00039] in <500f267b66d74c678b3466bfed6b3d28>:0 
+  at PPS.Core.WorldBuilder.Build (PPS.Core.LevelData level, PPS.Core.Solution solution, System.Int32 seed) [0x0001a] in D:\GitRepos\TmpPhysicsPuzzleSolver\Assets\_Project\Scripts\Core\Sim\WorldBuilder.cs:28 
+  at PPS.Core.Tests.FrameIndependenceTests.DriveTo (System.Int32 expectedStep, System.Single frameDelta, System.Int32 frameCount, System.Int32& reachedStep) [0x00000] in D:\GitRepos\TmpPhysicsPuzzleSolver\Assets\_Project\Tests\EditMode\FrameIndependenceTests.cs:83 
+  at PPS.Core.Tests.FrameIndependenceTests.배속은_스텝_수만_늘리고_스텝_내용은_그대로다 () [0x00000] in D:\GitRepos\TmpPhysicsPuzzleSolver\Assets\_Project\Tests\EditMode\FrameIndependenceTests.cs:60 
+  at (wrapper managed-to-native) System.Reflection.RuntimeMethodInfo.InternalInvoke(System.Reflection.RuntimeMethodInfo,object,object[],System.Exception&)
+  at System.Reflection.RuntimeMethodInfo.Invoke (System.Object obj, System.Reflection.BindingFlags invokeAttr, System.Reflection.Binder binder, System.Object[] parameters, System.Globalization.CultureInfo culture) [0x0006a] in <41d29b352f6a475ab1bf7c6628b82790>:0 ]]></stack-trace>
+                </failure>
+              </test-case>
+              <test-case id="1022" name="일시정지_중에는_전진하지_않는다" fullname="PPS.Core.Tests.FrameIndependenceTests.일시정지_중에는_전진하지_않는다" methodname="일시정지_중에는_전진하지_않는다" classname="PPS.Core.Tests.FrameIndependenceTests" runstate="Runnable" seed="785747776" result="Failed" label="Error" start-time="2026-07-31 13:57:05Z" end-time="2026-07-31 13:57:05Z" duration="0.000253" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+                <failure>
+                  <message><![CDATA[System.InvalidOperationException : This can only be used during play mode, please use EditorSceneManager.NewScene() instead.]]></message>
+                  <stack-trace><![CDATA[  at (wrapper managed-to-native) UnityEngine.SceneManagement.SceneManager.CreateScene_Injected(UnityEngine.Bindings.ManagedSpanWrapper&,UnityEngine.SceneManagement.CreateSceneParameters&,UnityEngine.SceneManagement.Scene&)
+  at UnityEngine.SceneManagement.SceneManager.CreateScene (System.String sceneName, UnityEngine.SceneManagement.CreateSceneParameters parameters) [0x00039] in <500f267b66d74c678b3466bfed6b3d28>:0 
+  at PPS.Core.WorldBuilder.Build (PPS.Core.LevelData level, PPS.Core.Solution solution, System.Int32 seed) [0x0001a] in D:\GitRepos\TmpPhysicsPuzzleSolver\Assets\_Project\Scripts\Core\Sim\WorldBuilder.cs:28 
+  at PPS.Core.Tests.FrameIndependenceTests.일시정지_중에는_전진하지_않는다 () [0x00000] in D:\GitRepos\TmpPhysicsPuzzleSolver\Assets\_Project\Tests\EditMode\FrameIndependenceTests.cs:47 
+  at (wrapper managed-to-native) System.Reflection.RuntimeMethodInfo.InternalInvoke(System.Reflection.RuntimeMethodInfo,object,object[],System.Exception&)
+  at System.Reflection.RuntimeMethodInfo.Invoke (System.Object obj, System.Reflection.BindingFlags invokeAttr, System.Reflection.Binder binder, System.Object[] parameters, System.Globalization.CultureInfo culture) [0x0006a] in <41d29b352f6a475ab1bf7c6628b82790>:0 ]]></stack-trace>
+                </failure>
+              </test-case>
+              <test-case id="1020" name="프레임레이트가_달라도_같은_스텝에서_같은_상태다" fullname="PPS.Core.Tests.FrameIndependenceTests.프레임레이트가_달라도_같은_스텝에서_같은_상태다" methodname="프레임레이트가_달라도_같은_스텝에서_같은_상태다" classname="PPS.Core.Tests.FrameIndependenceTests" runstate="Runnable" seed="1037907100" result="Failed" label="Error" start-time="2026-07-31 13:57:05Z" end-time="2026-07-31 13:57:05Z" duration="0.000342" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+                <failure>
+                  <message><![CDATA[System.InvalidOperationException : This can only be used during play mode, please use EditorSceneManager.NewScene() instead.]]></message>
+                  <stack-trace><![CDATA[  at (wrapper managed-to-native) UnityEngine.SceneManagement.SceneManager.CreateScene_Injected(UnityEngine.Bindings.ManagedSpanWrapper&,UnityEngine.SceneManagement.CreateSceneParameters&,UnityEngine.SceneManagement.Scene&)
+  at UnityEngine.SceneManagement.SceneManager.CreateScene (System.String sceneName, UnityEngine.SceneManagement.CreateSceneParameters parameters) [0x00039] in <500f267b66d74c678b3466bfed6b3d28>:0 
+  at PPS.Core.WorldBuilder.Build (PPS.Core.LevelData level, PPS.Core.Solution solution, System.Int32 seed) [0x0001a] in D:\GitRepos\TmpPhysicsPuzzleSolver\Assets\_Project\Scripts\Core\Sim\WorldBuilder.cs:28 
+  at PPS.Core.Tests.FrameIndependenceTests.DriveTo (System.Int32 expectedStep, System.Single frameDelta, System.Int32 frameCount, System.Int32& reachedStep) [0x00000] in D:\GitRepos\TmpPhysicsPuzzleSolver\Assets\_Project\Tests\EditMode\FrameIndependenceTests.cs:83 
+  at PPS.Core.Tests.FrameIndependenceTests.프레임레이트가_달라도_같은_스텝에서_같은_상태다 () [0x00000] in D:\GitRepos\TmpPhysicsPuzzleSolver\Assets\_Project\Tests\EditMode\FrameIndependenceTests.cs:16 
+  at (wrapper managed-to-native) System.Reflection.RuntimeMethodInfo.InternalInvoke(System.Reflection.RuntimeMethodInfo,object,object[],System.Exception&)
+  at System.Reflection.RuntimeMethodInfo.Invoke (System.Object obj, System.Reflection.BindingFlags invokeAttr, System.Reflection.Binder binder, System.Object[] parameters, System.Globalization.CultureInfo culture) [0x0006a] in <41d29b352f6a475ab1bf7c6628b82790>:0 ]]></stack-trace>
+                </failure>
+              </test-case>
+            </test-suite>
+            <test-suite type="TestFixture" id="1024" name="JudgeTests" fullname="PPS.Core.Tests.JudgeTests" classname="PPS.Core.Tests.JudgeTests" runstate="Runnable" testcasecount="7" result="Failed" site="Child" start-time="2026-07-31 13:57:05Z" end-time="2026-07-31 13:57:05Z" duration="0.038068" total="7" passed="0" failed="7" inconclusive="0" skipped="0" asserts="0">
+              <properties />
+              <failure>
+                <message><![CDATA[One or more child tests had errors]]></message>
+              </failure>
+              <test-case id="1029" name="MinGoalDist는_모든_Outcome에서_채워진다" fullname="PPS.Core.Tests.JudgeTests.MinGoalDist는_모든_Outcome에서_채워진다" methodname="MinGoalDist는_모든_Outcome에서_채워진다" classname="PPS.Core.Tests.JudgeTests" runstate="Runnable" seed="1208465362" result="Failed" label="Error" start-time="2026-07-31 13:57:05Z" end-time="2026-07-31 13:57:05Z" duration="0.000915" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+                <failure>
+                  <message><![CDATA[System.InvalidOperationException : This can only be used during play mode, please use EditorSceneManager.NewScene() instead.]]></message>
+                  <stack-trace><![CDATA[  at (wrapper managed-to-native) UnityEngine.SceneManagement.SceneManager.CreateScene_Injected(UnityEngine.Bindings.ManagedSpanWrapper&,UnityEngine.SceneManagement.CreateSceneParameters&,UnityEngine.SceneManagement.Scene&)
+  at UnityEngine.SceneManagement.SceneManager.CreateScene (System.String sceneName, UnityEngine.SceneManagement.CreateSceneParameters parameters) [0x00039] in <500f267b66d74c678b3466bfed6b3d28>:0 
+  at PPS.Core.WorldBuilder.Build (PPS.Core.LevelData level, PPS.Core.Solution solution, System.Int32 seed) [0x0001a] in D:\GitRepos\TmpPhysicsPuzzleSolver\Assets\_Project\Scripts\Core\Sim\WorldBuilder.cs:28 
+  at PPS.Core.SimRunner.Run (PPS.Core.LevelData level, PPS.Core.Solution solution, System.Int32 seed, System.Int32 maxSteps) [0x00000] in D:\GitRepos\TmpPhysicsPuzzleSolver\Assets\_Project\Scripts\Core\Sim\SimRunner.cs:23 
+  at PPS.Core.Tests.JudgeTests.MinGoalDist는_모든_Outcome에서_채워진다 () [0x00000] in D:\GitRepos\TmpPhysicsPuzzleSolver\Assets\_Project\Tests\EditMode\JudgeTests.cs:52 
+  at (wrapper managed-to-native) System.Reflection.RuntimeMethodInfo.InternalInvoke(System.Reflection.RuntimeMethodInfo,object,object[],System.Exception&)
+  at System.Reflection.RuntimeMethodInfo.Invoke (System.Object obj, System.Reflection.BindingFlags invokeAttr, System.Reflection.Binder binder, System.Object[] parameters, System.Globalization.CultureInfo culture) [0x0006a] in <41d29b352f6a475ab1bf7c6628b82790>:0 ]]></stack-trace>
+                </failure>
+              </test-case>
+              <test-case id="1026" name="낙사하면_Fail" fullname="PPS.Core.Tests.JudgeTests.낙사하면_Fail" methodname="낙사하면_Fail" classname="PPS.Core.Tests.JudgeTests" runstate="Runnable" seed="1826828755" result="Failed" label="Error" start-time="2026-07-31 13:57:05Z" end-time="2026-07-31 13:57:05Z" duration="0.000370" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+                <failure>
+                  <message><![CDATA[System.InvalidOperationException : This can only be used during play mode, please use EditorSceneManager.NewScene() instead.]]></message>
+                  <stack-trace><![CDATA[  at (wrapper managed-to-native) UnityEngine.SceneManagement.SceneManager.CreateScene_Injected(UnityEngine.Bindings.ManagedSpanWrapper&,UnityEngine.SceneManagement.CreateSceneParameters&,UnityEngine.SceneManagement.Scene&)
+  at UnityEngine.SceneManagement.SceneManager.CreateScene (System.String sceneName, UnityEngine.SceneManagement.CreateSceneParameters parameters) [0x00039] in <500f267b66d74c678b3466bfed6b3d28>:0 
+  at PPS.Core.WorldBuilder.Build (PPS.Core.LevelData level, PPS.Core.Solution solution, System.Int32 seed) [0x0001a] in D:\GitRepos\TmpPhysicsPuzzleSolver\Assets\_Project\Scripts\Core\Sim\WorldBuilder.cs:28 
+  at PPS.Core.SimRunner.Run (PPS.Core.LevelData level, PPS.Core.Solution solution, System.Int32 seed, System.Int32 maxSteps) [0x00000] in D:\GitRepos\TmpPhysicsPuzzleSolver\Assets\_Project\Scripts\Core\Sim\SimRunner.cs:23 
+  at PPS.Core.Tests.JudgeTests.낙사하면_Fail () [0x00000] in D:\GitRepos\TmpPhysicsPuzzleSolver\Assets\_Project\Tests\EditMode\JudgeTests.cs:25 
+  at (wrapper managed-to-native) System.Reflection.RuntimeMethodInfo.InternalInvoke(System.Reflection.RuntimeMethodInfo,object,object[],System.Exception&)
+  at System.Reflection.RuntimeMethodInfo.Invoke (System.Object obj, System.Reflection.BindingFlags invokeAttr, System.Reflection.Binder binder, System.Object[] parameters, System.Globalization.CultureInfo culture) [0x0006a] in <41d29b352f6a475ab1bf7c6628b82790>:0 ]]></stack-trace>
+                </failure>
+              </test-case>
+              <test-case id="1025" name="목표에_닿으면_Clear" fullname="PPS.Core.Tests.JudgeTests.목표에_닿으면_Clear" methodname="목표에_닿으면_Clear" classname="PPS.Core.Tests.JudgeTests" runstate="Runnable" seed="1341332498" result="Failed" label="Error" start-time="2026-07-31 13:57:05Z" end-time="2026-07-31 13:57:05Z" duration="0.000232" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+                <failure>
+                  <message><![CDATA[System.InvalidOperationException : This can only be used during play mode, please use EditorSceneManager.NewScene() instead.]]></message>
+                  <stack-trace><![CDATA[  at (wrapper managed-to-native) UnityEngine.SceneManagement.SceneManager.CreateScene_Injected(UnityEngine.Bindings.ManagedSpanWrapper&,UnityEngine.SceneManagement.CreateSceneParameters&,UnityEngine.SceneManagement.Scene&)
+  at UnityEngine.SceneManagement.SceneManager.CreateScene (System.String sceneName, UnityEngine.SceneManagement.CreateSceneParameters parameters) [0x00039] in <500f267b66d74c678b3466bfed6b3d28>:0 
+  at PPS.Core.WorldBuilder.Build (PPS.Core.LevelData level, PPS.Core.Solution solution, System.Int32 seed) [0x0001a] in D:\GitRepos\TmpPhysicsPuzzleSolver\Assets\_Project\Scripts\Core\Sim\WorldBuilder.cs:28 
+  at PPS.Core.SimRunner.Run (PPS.Core.LevelData level, PPS.Core.Solution solution, System.Int32 seed, System.Int32 maxSteps) [0x00000] in D:\GitRepos\TmpPhysicsPuzzleSolver\Assets\_Project\Scripts\Core\Sim\SimRunner.cs:23 
+  at PPS.Core.Tests.JudgeTests.목표에_닿으면_Clear () [0x00000] in D:\GitRepos\TmpPhysicsPuzzleSolver\Assets\_Project\Tests\EditMode\JudgeTests.cs:15 
+  at (wrapper managed-to-native) System.Reflection.RuntimeMethodInfo.InternalInvoke(System.Reflection.RuntimeMethodInfo,object,object[],System.Exception&)
+  at System.Reflection.RuntimeMethodInfo.Invoke (System.Object obj, System.Reflection.BindingFlags invokeAttr, System.Reflection.Binder binder, System.Object[] parameters, System.Globalization.CultureInfo culture) [0x0006a] in <41d29b352f6a475ab1bf7c6628b82790>:0 ]]></stack-trace>
+                </failure>
+              </test-case>
+              <test-case id="1028" name="상한에_걸리면_Timeout" fullname="PPS.Core.Tests.JudgeTests.상한에_걸리면_Timeout" methodname="상한에_걸리면_Timeout" classname="PPS.Core.Tests.JudgeTests" runstate="Runnable" seed="1458948667" result="Failed" label="Error" start-time="2026-07-31 13:57:05Z" end-time="2026-07-31 13:57:05Z" duration="0.000226" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+                <failure>
+                  <message><![CDATA[System.InvalidOperationException : This can only be used during play mode, please use EditorSceneManager.NewScene() instead.]]></message>
+                  <stack-trace><![CDATA[  at (wrapper managed-to-native) UnityEngine.SceneManagement.SceneManager.CreateScene_Injected(UnityEngine.Bindings.ManagedSpanWrapper&,UnityEngine.SceneManagement.CreateSceneParameters&,UnityEngine.SceneManagement.Scene&)
+  at UnityEngine.SceneManagement.SceneManager.CreateScene (System.String sceneName, UnityEngine.SceneManagement.CreateSceneParameters parameters) [0x00039] in <500f267b66d74c678b3466bfed6b3d28>:0 
+  at PPS.Core.WorldBuilder.Build (PPS.Core.LevelData level, PPS.Core.Solution solution, System.Int32 seed) [0x0001a] in D:\GitRepos\TmpPhysicsPuzzleSolver\Assets\_Project\Scripts\Core\Sim\WorldBuilder.cs:28 
+  at PPS.Core.SimRunner.Run (PPS.Core.LevelData level, PPS.Core.Solution solution, System.Int32 seed, System.Int32 maxSteps) [0x00000] in D:\GitRepos\TmpPhysicsPuzzleSolver\Assets\_Project\Scripts\Core\Sim\SimRunner.cs:23 
+  at PPS.Core.Tests.JudgeTests.상한에_걸리면_Timeout () [0x00000] in D:\GitRepos\TmpPhysicsPuzzleSolver\Assets\_Project\Tests\EditMode\JudgeTests.cs:43 
+  at (wrapper managed-to-native) System.Reflection.RuntimeMethodInfo.InternalInvoke(System.Reflection.RuntimeMethodInfo,object,object[],System.Exception&)
+  at System.Reflection.RuntimeMethodInfo.Invoke (System.Object obj, System.Reflection.BindingFlags invokeAttr, System.Reflection.Binder binder, System.Object[] parameters, System.Globalization.CultureInfo culture) [0x0006a] in <41d29b352f6a475ab1bf7c6628b82790>:0 ]]></stack-trace>
+                </failure>
+              </test-case>
+              <test-case id="1030" name="잉크_사용량이_결과에_실린다" fullname="PPS.Core.Tests.JudgeTests.잉크_사용량이_결과에_실린다" methodname="잉크_사용량이_결과에_실린다" classname="PPS.Core.Tests.JudgeTests" runstate="Runnable" seed="1009689372" result="Failed" label="Error" start-time="2026-07-31 13:57:05Z" end-time="2026-07-31 13:57:05Z" duration="0.000274" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+                <failure>
+                  <message><![CDATA[System.InvalidOperationException : This can only be used during play mode, please use EditorSceneManager.NewScene() instead.]]></message>
+                  <stack-trace><![CDATA[  at (wrapper managed-to-native) UnityEngine.SceneManagement.SceneManager.CreateScene_Injected(UnityEngine.Bindings.ManagedSpanWrapper&,UnityEngine.SceneManagement.CreateSceneParameters&,UnityEngine.SceneManagement.Scene&)
+  at UnityEngine.SceneManagement.SceneManager.CreateScene (System.String sceneName, UnityEngine.SceneManagement.CreateSceneParameters parameters) [0x00039] in <500f267b66d74c678b3466bfed6b3d28>:0 
+  at PPS.Core.WorldBuilder.Build (PPS.Core.LevelData level, PPS.Core.Solution solution, System.Int32 seed) [0x0001a] in D:\GitRepos\TmpPhysicsPuzzleSolver\Assets\_Project\Scripts\Core\Sim\WorldBuilder.cs:28 
+  at PPS.Core.SimRunner.Run (PPS.Core.LevelData level, PPS.Core.Solution solution, System.Int32 seed, System.Int32 maxSteps) [0x00000] in D:\GitRepos\TmpPhysicsPuzzleSolver\Assets\_Project\Scripts\Core\Sim\SimRunner.cs:23 
+  at PPS.Core.Tests.JudgeTests.잉크_사용량이_결과에_실린다 () [0x00006] in D:\GitRepos\TmpPhysicsPuzzleSolver\Assets\_Project\Tests\EditMode\JudgeTests.cs:72 
+  at (wrapper managed-to-native) System.Reflection.RuntimeMethodInfo.InternalInvoke(System.Reflection.RuntimeMethodInfo,object,object[],System.Exception&)
+  at System.Reflection.RuntimeMethodInfo.Invoke (System.Object obj, System.Reflection.BindingFlags invokeAttr, System.Reflection.Binder binder, System.Object[] parameters, System.Globalization.CultureInfo culture) [0x0006a] in <41d29b352f6a475ab1bf7c6628b82790>:0 ]]></stack-trace>
+                </failure>
+              </test-case>
+              <test-case id="1027" name="전부_잠들면_Stalled" fullname="PPS.Core.Tests.JudgeTests.전부_잠들면_Stalled" methodname="전부_잠들면_Stalled" classname="PPS.Core.Tests.JudgeTests" runstate="Runnable" seed="37885438" result="Failed" label="Error" start-time="2026-07-31 13:57:05Z" end-time="2026-07-31 13:57:05Z" duration="0.000234" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+                <failure>
+                  <message><![CDATA[System.InvalidOperationException : This can only be used during play mode, please use EditorSceneManager.NewScene() instead.]]></message>
+                  <stack-trace><![CDATA[  at (wrapper managed-to-native) UnityEngine.SceneManagement.SceneManager.CreateScene_Injected(UnityEngine.Bindings.ManagedSpanWrapper&,UnityEngine.SceneManagement.CreateSceneParameters&,UnityEngine.SceneManagement.Scene&)
+  at UnityEngine.SceneManagement.SceneManager.CreateScene (System.String sceneName, UnityEngine.SceneManagement.CreateSceneParameters parameters) [0x00039] in <500f267b66d74c678b3466bfed6b3d28>:0 
+  at PPS.Core.WorldBuilder.Build (PPS.Core.LevelData level, PPS.Core.Solution solution, System.Int32 seed) [0x0001a] in D:\GitRepos\TmpPhysicsPuzzleSolver\Assets\_Project\Scripts\Core\Sim\WorldBuilder.cs:28 
+  at PPS.Core.SimRunner.Run (PPS.Core.LevelData level, PPS.Core.Solution solution, System.Int32 seed, System.Int32 maxSteps) [0x00000] in D:\GitRepos\TmpPhysicsPuzzleSolver\Assets\_Project\Scripts\Core\Sim\SimRunner.cs:23 
+  at PPS.Core.Tests.JudgeTests.전부_잠들면_Stalled () [0x00000] in D:\GitRepos\TmpPhysicsPuzzleSolver\Assets\_Project\Tests\EditMode\JudgeTests.cs:33 
+  at (wrapper managed-to-native) System.Reflection.RuntimeMethodInfo.InternalInvoke(System.Reflection.RuntimeMethodInfo,object,object[],System.Exception&)
+  at System.Reflection.RuntimeMethodInfo.Invoke (System.Object obj, System.Reflection.BindingFlags invokeAttr, System.Reflection.Binder binder, System.Object[] parameters, System.Globalization.CultureInfo culture) [0x0006a] in <41d29b352f6a475ab1bf7c6628b82790>:0 ]]></stack-trace>
+                </failure>
+              </test-case>
+              <test-case id="1031" name="판정은_한_번_확정되면_뒤집히지_않는다" fullname="PPS.Core.Tests.JudgeTests.판정은_한_번_확정되면_뒤집히지_않는다" methodname="판정은_한_번_확정되면_뒤집히지_않는다" classname="PPS.Core.Tests.JudgeTests" runstate="Runnable" seed="86163077" result="Failed" label="Error" start-time="2026-07-31 13:57:05Z" end-time="2026-07-31 13:57:05Z" duration="0.000818" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+                <failure>
+                  <message><![CDATA[System.InvalidOperationException : This can only be used during play mode, please use EditorSceneManager.NewScene() instead.]]></message>
+                  <stack-trace><![CDATA[  at (wrapper managed-to-native) UnityEngine.SceneManagement.SceneManager.CreateScene_Injected(UnityEngine.Bindings.ManagedSpanWrapper&,UnityEngine.SceneManagement.CreateSceneParameters&,UnityEngine.SceneManagement.Scene&)
+  at UnityEngine.SceneManagement.SceneManager.CreateScene (System.String sceneName, UnityEngine.SceneManagement.CreateSceneParameters parameters) [0x00039] in <500f267b66d74c678b3466bfed6b3d28>:0 
+  at PPS.Core.WorldBuilder.Build (PPS.Core.LevelData level, PPS.Core.Solution solution, System.Int32 seed) [0x0001a] in D:\GitRepos\TmpPhysicsPuzzleSolver\Assets\_Project\Scripts\Core\Sim\WorldBuilder.cs:28 
+  at PPS.Core.Tests.JudgeTests.판정은_한_번_확정되면_뒤집히지_않는다 () [0x00000] in D:\GitRepos\TmpPhysicsPuzzleSolver\Assets\_Project\Tests\EditMode\JudgeTests.cs:80 
+  at (wrapper managed-to-native) System.Reflection.RuntimeMethodInfo.InternalInvoke(System.Reflection.RuntimeMethodInfo,object,object[],System.Exception&)
+  at System.Reflection.RuntimeMethodInfo.Invoke (System.Object obj, System.Reflection.BindingFlags invokeAttr, System.Reflection.Binder binder, System.Object[] parameters, System.Globalization.CultureInfo culture) [0x0006a] in <41d29b352f6a475ab1bf7c6628b82790>:0 ]]></stack-trace>
+                </failure>
+                <output><![CDATA[Saving results to: C:/Users/User/AppData/LocalLow/DefaultCompany/PhysicsPuzzleSolver\TestResults.xml
+]]></output>
+              </test-case>
+            </test-suite>
+          </test-suite>
+        </test-suite>
+      </test-suite>
+    </test-suite>
+  </test-suite>
+</test-run>
