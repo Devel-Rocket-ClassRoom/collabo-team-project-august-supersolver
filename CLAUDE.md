@@ -13,6 +13,7 @@
 - [Docs/솔버_설계서.md](Docs/솔버_설계서.md) — 결정론 코어·솔버·프리미티브·리플레이 설계. **코어 코드의 단일 근거**
 - [Docs/미션 가이드_링크즈_물리 퍼즐 솔버.pdf](Docs/미션%20가이드_링크즈_물리%20퍼즐%20솔버.pdf) — 발주 요구사항 원문
 - [Docs/Milestones/](Docs/Milestones/) — 마일스톤 정의와 완료 조건
+- [Docs/팀_인터페이스_계약.md](Docs/팀_인터페이스_계약.md) — 코드로 확정된 공유 타입과 담당자별 사용법
 
 ## 기술 스택
 
@@ -108,7 +109,8 @@ SolverRunner    솔버용. 프레임 예산 또는 무제한 전진
 ## 코드 컨벤션
 
 - 파일 배치는 `Assets/_Project/` 아래. 코어는 `Assets/_Project/Scripts/Core/`, 솔버는 `.../Solver/`
-- asmdef로 어셈블리를 나누고, 코어 asmdef는 UI·렌더링 어셈블리를 **참조하지 않는다**
+- **asmdef는 코어에만 둔다** (`PPS.Core`, + 테스트 프레임워크가 요구하는 `PPS.Core.Tests`). 게임·UI·장치 코드는 `Assembly-CSharp`에 그대로 둔다 — asmdef 어셈블리는 `Assembly-CSharp`를 참조할 수 없어서, 게임 쪽을 asmdef로 쪼개면 팀원 전원이 asmdef를 만들도록 강요된다
+- `PPS.Core`는 `autoReferenced: true`이므로 다른 코드는 `using PPS.Core;` 만 하면 된다. 코어가 UI·렌더링을 참조하지 않는다는 보장은 코어 asmdef 하나로 이미 성립한다
 - 공개 API에는 XML 문서 주석보다 **왜 이렇게 했는지**를 짧게 남긴다 (결정론 제약은 코드만 봐선 안 보인다)
 - 튜닝 가능한 수치(예산 회차, 난이도 기준값, 노이즈 σ)는 하드코딩하지 말고 **설정값/const로 한곳에** 모은다. 설계서의 수치는 전부 벤치마크 전 **예시 초기값**이다
 - 테스트는 Unity Test Framework EditMode. 결정론 테스트는 회귀 감시용으로 항상 유지
