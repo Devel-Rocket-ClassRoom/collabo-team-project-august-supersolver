@@ -20,7 +20,17 @@ namespace PPS.Core
     {
         static int _sceneCounter;
 
-        public static SimWorld Build(LevelData level, Solution solution, int seed)
+        /// <param name="injectedLogics">
+        /// 장치 로직. 장치가 레벨 데이터에서 나오게 되는 것은 팀원 B·C 의 작업이고,
+        /// 그 스키마를 지금 코어가 선점하면 나중에 양쪽이 다시 뜯는다.
+        /// 그래서 데이터 형식 대신 **주입 지점만** 둔다 — 로직 루프와 rng 경로를
+        /// 동결 전에 실행해 보려면 이 정도면 충분하다. 순서는 넘긴 순서 그대로다.
+        /// </param>
+        public static SimWorld Build(
+            LevelData level,
+            Solution solution,
+            int seed,
+            IReadOnlyList<IStepLogic> injectedLogics = null)
         {
             if (level == null) throw new System.ArgumentNullException(nameof(level));
             solution = solution ?? Solution.Empty;
@@ -45,8 +55,13 @@ namespace PPS.Core
                     bodies.Add(ColliderFactory.CreateSegment(scene, level.Terrain[i], $"Terrain_{i}"));
             }
 
-            // 3. 장치 — 레벨 데이터 순서. M01 범위에는 아직 없다.
-            //    팀원 B 의 IStepLogic 구현이 합류하는 자리이며, 여기서도 순서는 레벨 데이터 순서다.
+            // 3. 장치 — 넘겨받은 순서 그대로. 팀원 B 의 IStepLogic 구현이 합류하는 자리다.
+            //    장치는 바디를 만들지 않으므로 바디 인덱스(= 해시 순서)에는 영향이 없다.
+            if (injectedLogics != null)
+            {
+                for (int i = 0; i < injectedLogics.Count; i++)
+                    logics.Add(injectedLogics[i]);
+            }
 
             // 4. 스트로크 — 솔루션 리스트 순서.
             //    유저가 그린 것이든 솔버가 전개한 것이든 여기서부터는 구분되지 않는다.

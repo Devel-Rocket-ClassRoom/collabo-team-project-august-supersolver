@@ -107,6 +107,65 @@ namespace PPS.Core.Tests
             }
         }
 
+        [Test]
+        public void 장치가_있어도_같은_입력은_같은_결과다()
+        {
+            // 장치가 도는 순간 rng 와 로직 루프가 결과에 개입하기 시작한다.
+            // 장치 없는 레벨의 결정론은 이 경로를 전혀 지나가지 않는다.
+            AssertTracesMatch(TraceWithBomb(42), TraceWithBomb(42));
+        }
+
+        [Test]
+        public void 시드가_다르면_장치_동작이_갈린다()
+        {
+            // 시드가 실제로 시뮬에 반영되는지 본다. 이 검사가 없으면 "시드를 무시하는 코어"도
+            // 위의 반복 실행 테스트를 완벽하게 통과한다 — 항상 같은 결과를 내기 때문이다.
+            //
+            // 장치가 없는 레벨에서는 이 테스트가 성립하지 않는다. 코어에서 rng 가 흘러가는 곳은
+            // IStepLogic.Tick 하나뿐이라, 장치가 없으면 시드는 결과에 닿지 못한다.
+            int[] seeds = { 1, 2, 3, 4 };
+            var baseline = TraceWithBomb(seeds[0]);
+
+            for (int i = 1; i < seeds.Length; i++)
+            {
+                if (!TracesEqual(baseline, TraceWithBomb(seeds[i]))) return;   // 하나라도 갈리면 시드는 살아 있다
+            }
+
+            Assert.Fail($"시드 {string.Join(", ", seeds)} 가 전부 같은 궤적을 냈다 — " +
+                        "시드가 시뮬 결과에 반영되지 않는다 (폭탄이 rng 를 쓰지 않거나 등록되지 않았다).");
+        }
+
+        /// <summary>
+        /// 발동 스텝에 rng 흔들림이 있는 폭탄을 얹고 돌린 스텝별 해시.
+        /// 흔들림이 있으므로 시드가 다르면 궤적이 갈라져야 한다.
+        /// </summary>
+        static List<ulong> TraceWithBomb(int seed)
+        {
+            var trace = new List<ulong>();
+            var bomb = new TestBomb(delaySteps: 20, jitterSteps: 120);
+
+            using (var world = WorldBuilder.Build(TestLevels.FlatRest(), null, seed, new IStepLogic[] { bomb }))
+            {
+                bomb.Target = world.Ball;
+
+                for (int i = 0; i < Steps && !world.IsTerminal; i++)
+                {
+                    world.Step();
+                    trace.Add(WorldHasher.Hash(world));
+                }
+            }
+
+            return trace;
+        }
+
+        static bool TracesEqual(List<ulong> a, List<ulong> b)
+        {
+            if (a.Count != b.Count) return false;
+            for (int i = 0; i < a.Count; i++)
+                if (a[i] != b[i]) return false;
+            return true;
+        }
+
         static void AssertTracesMatch(List<ulong> a, List<ulong> b)
         {
             int common = Mathf.Min(a.Count, b.Count);
