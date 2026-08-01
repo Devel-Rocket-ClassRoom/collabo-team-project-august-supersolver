@@ -32,6 +32,14 @@ namespace PPS.Core
         /// 레벨 지형. **리스트 순서가 곧 월드 등록 순서**이므로 순서를 바꾸면 결과가 달라진다.
         public List<StaticSegment> Terrain = new List<StaticSegment>();
 
+        /// <summary>
+        /// 레벨에 배치된 장치. **리스트 순서가 곧 로직 등록 순서**이며,
+        /// 그 순서가 곧 난수 소비 순서다 (스텝마다 이 순서로 <see cref="IStepLogic.Tick"/> 이 불린다).
+        ///
+        /// 스키마(<see cref="DeviceData"/>)는 장치 담당이 자유롭게 바꿔도 되는 placeholder 다.
+        /// </summary>
+        public List<DeviceData> Devices = new List<DeviceData>();
+
         /// 이 높이 아래로 떨어지면 낙사(Fail). 장애물 장치가 들어오기 전까지의 최소 실패 조건.
         public float KillY = -20f;
 

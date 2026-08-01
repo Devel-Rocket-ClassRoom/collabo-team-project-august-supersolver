@@ -44,11 +44,16 @@ namespace PPS.Tools
         static readonly Color BombIdleColor = new Color32(0x6B, 0x3F, 0xA0, 0xFF);  // 진한 보라
         static readonly Color BombFiredColor = new Color32(0xC4, 0x00, 0x6B, 0xFF); // 진한 마젠타
 
-        // 폭탄. 흔들림이 있어 시드를 바꾸면 발동 스텝이 달라진다 — 시드가 결과에 닿는 유일한 경로다.
-        const int BombDelaySteps = 30;
-        const int BombJitterSteps = 60;
-        const float BombPower = 5f;
-        static readonly Vector2 BombPosition = new Vector2(-2.5f, 1.6f);
+        /// 뷰어 기본 레벨에 얹는 폭탄. 흔들림이 있어 시드를 바꾸면 발동 스텝이 달라진다.
+        static readonly DeviceData SampleBomb = new DeviceData
+        {
+            Type = Core.DeviceType.Bomb,
+            Position = new Vector2(-2.5f, 1.6f),
+            Radius = 3f,
+            Power = 5f,
+            DelaySteps = 30,
+            JitterSteps = 60,
+        };
 
         [SerializeField] int _seed;
         [SerializeField] bool _autoFitCamera = true;
@@ -63,7 +68,6 @@ namespace PPS.Tools
 
         SimWorld _world;
         Solution _solution;
-        DebugBomb _bomb;
         int _targetStep;
         string _stepInput = "0";
 
@@ -110,23 +114,9 @@ namespace PPS.Tools
             var entry = _catalog[_levelIndex];
             _solution = entry.MakeSolution() ?? new Solution();
 
-            IStepLogic[] logics = null;
-            if (entry.WithBomb)
-            {
-                // 로직도 매 재구축마다 새로 만든다. 발동 여부가 남아 있는 인스턴스를 재사용하면
-                // 두 번째 재생부터 폭탄이 터지지 않아 같은 스텝이 다른 상태를 낸다.
-                // 오브젝트 풀링을 금지하는 이유와 정확히 같다.
-                _bomb = new DebugBomb(BombDelaySteps, BombJitterSteps, BombPower);
-                logics = new IStepLogic[] { _bomb };
-            }
-            else
-            {
-                _bomb = null;
-            }
-
-            _world = WorldBuilder.Build(entry.MakeLevel(), _solution, _seed, logics);
-
-            if (_bomb != null) _bomb.Target = _world.Ball;
+            // 레벨을 매번 새로 만든다. 장치는 발동 여부를 들고 있는 상태 객체이고,
+            // WorldBuilder 가 레벨 데이터로부터 매번 새로 찍어내야 재생이 처음부터 같아진다.
+            _world = WorldBuilder.Build(entry.MakeLevel(), _solution, _seed);
         }
 
         void ApplySeed(int seed)
@@ -184,16 +174,17 @@ namespace PPS.Tools
             // 같은 스텝으로 되돌아왔을 때 이 값이 같으면 재구축이 상태를 정확히 재현한 것이다.
             GUILayout.Label($"Hash 0x{WorldHasher.Hash(_world):X16}");
 
-            if (_bomb == null)
+            int devices = _world.Level.Devices == null ? 0 : _world.Level.Devices.Count;
+
+            if (devices == 0)
             {
                 // 장치가 없으면 rng 가 아무에게도 전달되지 않는다. 시드를 바꿔도 결과가 그대로다.
                 GUILayout.Label("장치 없음 — 이 레벨에서는 시드가 결과에 영향을 주지 않는다");
             }
             else
             {
-                GUILayout.Label(_bomb.FireStep < 0
-                    ? "폭탄 — 아직 첫 Tick 전이라 발동 스텝 미정"
-                    : $"폭탄 — 발동 스텝 {_bomb.FireStep} ({(_bomb.Fired ? "터짐" : "대기 중")})");
+                GUILayout.Label($"장치 {devices}개 — " +
+                                (_world.AnyPendingWork() ? "대기 중" : "전부 발동 완료"));
             }
 
             // 시드를 바꾸면 폭탄 발동 스텝이 달라진다. 바꾸는 즉시 재구축하고 처음으로 돌린다.
@@ -328,13 +319,21 @@ namespace PPS.Tools
             for (int i = 0; i < _solution.Pivots.Count; i++)
                 Circle(_solution.Pivots[i].Anchor, 0.12f);
 
-            // 폭탄 표시. 대기 중이면 보라, 터지면 마젠타로 바뀐다.
-            if (_bomb != null)
+            // 장치 표시. 대기 중이면 보라, 전부 터지면 마젠타. 바깥 원은 영향 반경이다.
+            var devices = level.Devices;
+            if (devices != null && devices.Count > 0)
             {
-                GL.Color(_bomb.Fired ? BombFiredColor : BombIdleColor);
-                Circle(BombPosition, 0.35f);
-                Line(BombPosition + new Vector2(-0.5f, 0f), BombPosition + new Vector2(0.5f, 0f));
-                Line(BombPosition + new Vector2(0f, -0.5f), BombPosition + new Vector2(0f, 0.5f));
+                GL.Color(_world.AnyPendingWork() ? BombIdleColor : BombFiredColor);
+
+                for (int i = 0; i < devices.Count; i++)
+                {
+                    Vector2 at = devices[i].Position;
+
+                    Circle(at, 0.3f);
+                    Circle(at, devices[i].Radius);
+                    Line(at + new Vector2(-0.45f, 0f), at + new Vector2(0.45f, 0f));
+                    Line(at + new Vector2(0f, -0.45f), at + new Vector2(0f, 0.45f));
+                }
             }
         }
 
@@ -448,14 +447,11 @@ namespace PPS.Tools
             public readonly string Name;
             public readonly Func<LevelData> MakeLevel;
             public readonly Func<Solution> MakeSolution;
-            public readonly bool WithBomb;
-
-            public Entry(string name, Func<LevelData> makeLevel, Func<Solution> makeSolution, bool withBomb = false)
+            public Entry(string name, Func<LevelData> makeLevel, Func<Solution> makeSolution)
             {
                 Name = name;
                 MakeLevel = makeLevel;
                 MakeSolution = makeSolution;
-                WithBomb = withBomb;
             }
         }
 
@@ -470,7 +466,7 @@ namespace PPS.Tools
         {
             var entries = new List<Entry>
             {
-                new Entry("뷰어 기본 (폭탄)", SampleLevel, SampleSolution, withBomb: true),
+                new Entry("뷰어 기본 (폭탄)", SampleLevel, SampleSolution),
                 new Entry("자유 물체 전시장", ShowcaseLevel, ShowcaseSolution),
             };
 
@@ -478,6 +474,7 @@ namespace PPS.Tools
             entries.AddRange(new[]
             {
                 new Entry("L001 (JSON 파일)", SampleLevelFile.Load, () => null),
+                new Entry("L002 전 피처 (JSON)", FeatureLevelFile.LoadLevel, FeatureLevelFile.LoadSolution),
                 new Entry("Ramp → Clear", TestLevels.RampToGoal, () => null),
                 new Entry("Gap 다리 없음 → Fail", TestLevels.Gap, () => null),
                 new Entry("Gap + 다리 → Stalled", TestLevels.Gap, TestLevels.BridgeSolution),
@@ -635,6 +632,7 @@ namespace PPS.Tools
                     new StaticSegment(new Vector2(-5f, 3f), new Vector2(0f, 1f)),
                     new StaticSegment(new Vector2(2f, -1f), new Vector2(6f, -1f)),
                 },
+                Devices = new List<DeviceData> { SampleBomb },
             };
         }
 
@@ -669,65 +667,5 @@ namespace PPS.Tools
             return solution;
         }
 
-        // ── 폭탄 ──────────────────────────────────────────────────────────
-
-        /// <summary>
-        /// 뷰어 전용 가짜 폭탄. 일정 스텝 뒤 공을 한 번 밀어 올리고 끝난다.
-        ///
-        /// 테스트 쪽 <c>TestBomb</c> 과 같은 물건이지만 그쪽은 PPS.Core.TestFixtures 어셈블리에
-        /// UNITY_INCLUDE_TESTS 제약과 함께 격리되어 있어 여기서 참조할 수 없다. 임시 도구를 위해
-        /// 어셈블리 구성을 바꾸느니 스무 줄을 다시 쓰는 편이 싸다.
-        ///
-        /// 위치 개념이 없다는 점에 주의 — 반경 판정 없이 무조건 공을 민다. 화면의 폭탄 표시는
-        /// 순전히 눈으로 보기 위한 것이고 물리에 관여하지 않는다. 발동 시점에 공이 어디에 있든
-        /// 확실히 눈에 보이는 변화가 나오는 편이 확인용 도구로서 낫다.
-        /// </summary>
-        sealed class DebugBomb : IStepLogic
-        {
-            readonly int _delaySteps;
-            readonly int _jitterSteps;
-            readonly float _power;
-
-            int _fireStep = -1;
-            bool _fired;
-
-            /// 밀어 올릴 대상. 월드 구축 직후 공을 넣는다.
-            public Rigidbody2D Target;
-
-            /// 뽑힌 발동 스텝. 첫 Tick 전에는 -1.
-            public int FireStep => _fireStep;
-
-            public bool Fired => _fired;
-
-            public DebugBomb(int delaySteps, int jitterSteps, float power)
-            {
-                _delaySteps = delaySteps;
-                _jitterSteps = jitterSteps;
-                _power = power;
-            }
-
-            public bool HasPendingWork => !_fired;
-
-            public void Tick(int step, System.Random rng)
-            {
-                if (_fired) return;
-
-                // 발동 스텝은 생성 시점이 아니라 첫 Tick 에서 뽑는다. rng 는 계약상 Tick 에서만
-                // 주어지고, 그래야 난수 소비 순서가 "스텝 순서 × 장치 등록 순서"로 고정된다.
-                if (_fireStep < 0)
-                    _fireStep = _delaySteps + (_jitterSteps > 0 ? rng.Next(_jitterSteps) : 0);
-
-                if (step < _fireStep) return;
-
-                if (Target != null)
-                {
-                    // 잠든 바디는 힘을 줘도 스스로 깨지 않는다 (Physics2D 는 3D 와 다르다).
-                    Target.WakeUp();
-                    Target.linearVelocity += Vector2.up * _power;
-                }
-
-                _fired = true;
-            }
-        }
     }
 }

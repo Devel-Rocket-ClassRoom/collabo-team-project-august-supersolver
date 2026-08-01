@@ -159,19 +159,7 @@ namespace PPS.Core.Tests
         static List<ulong> TraceWithBomb(int seed)
         {
             var trace = new List<ulong>();
-            var bomb = new TestBomb(delaySteps: 20, jitterSteps: 120);
-
-            using (var world = WorldBuilder.Build(TestLevels.FlatRest(), null, seed, new IStepLogic[] { bomb }))
-            {
-                bomb.Target = world.Ball;
-
-                for (int i = 0; i < Steps && !world.IsTerminal; i++)
-                {
-                    world.Step();
-                    trace.Add(WorldHasher.Hash(world));
-                }
-            }
-
+            SimRunner.RunTraced(TestLevels.FlatWithJitteryBomb(), null, seed, trace, Steps);
             return trace;
         }
 

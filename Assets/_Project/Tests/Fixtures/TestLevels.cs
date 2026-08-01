@@ -109,6 +109,49 @@ namespace PPS.Core.Tests
             };
         }
 
+        /// <see cref="FlatWithLateBomb"/> 의 발동 스텝. 테스트가 이 값을 기준으로 전/후를 나눈다.
+        public const int LateBombFireStep = 400;
+
+        /// <summary>
+        /// 평지 위 폭탄 하나. 발동이 늦고 흔들림이 없어 정확히 <see cref="LateBombFireStep"/> 에 터진다.
+        /// 공이 먼저 잠드는 구간이 생겨 **대기 중인 장치가 Stalled 판정을 미루는지** 확인할 수 있다.
+        /// </summary>
+        public static LevelData FlatWithLateBomb()
+        {
+            var level = FlatRest();
+            level.Id = "T_LateBomb";
+            level.Devices.Add(new DeviceData
+            {
+                Type = DeviceType.Bomb,
+                Position = new Vector2(0f, 0f),
+                Radius = 3f,
+                Power = 5f,
+                DelaySteps = LateBombFireStep,
+                JitterSteps = 0,
+            });
+            return level;
+        }
+
+        /// <summary>
+        /// 발동 스텝에 rng 흔들림이 있는 폭탄. **시드가 결과에 반영되는지** 확인하는 데 쓴다.
+        /// 장치가 없는 레벨에서는 시드가 결과에 닿지 못해 그 검사 자체가 성립하지 않는다.
+        /// </summary>
+        public static LevelData FlatWithJitteryBomb()
+        {
+            var level = FlatRest();
+            level.Id = "T_JitterBomb";
+            level.Devices.Add(new DeviceData
+            {
+                Type = DeviceType.Bomb,
+                Position = new Vector2(0f, 0f),
+                Radius = 3f,
+                Power = 4f,
+                DelaySteps = 20,
+                JitterSteps = 120,
+            });
+            return level;
+        }
+
         /// <summary>
         /// 회전축 검증용 레벨. 평지에 공 하나가 놓여 곧 잠들고, 공중의 막대들이 회전축에 매달려 흔들린다.
         ///
