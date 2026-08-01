@@ -258,6 +258,7 @@ namespace PPS.Tools
 
         void DrawBody(Rigidbody2D body)
         {
+            // 정적 스트로크와 지형 — 두께 0 의 선.
             var edge = body.GetComponent<EdgeCollider2D>();
             if (edge != null)
             {
@@ -266,6 +267,44 @@ namespace PPS.Tools
                 {
                     Line(body.transform.TransformPoint(points[i]),
                          body.transform.TransformPoint(points[i + 1]));
+                }
+                return;
+            }
+
+            // 자유 물체 — 선분마다 부풀린 사각형이 경로 하나씩 들어 있다.
+            //
+            // 콜라이더 외곽이 아니라 **원래 그은 선**을 복원해 그린다. 두께는 edge ↔ edge 충돌을
+            // 우회하려고 붙인 것이지 유저가 그린 것이 아니고, 렌더링은 물리와 같은 스트로크를
+            // 쓴다는 원칙(설계서 결정 7)에도 중심선 쪽이 맞다.
+            //
+            // 사각형은 { 시작-법선, 시작+법선, 끝+법선, 끝-법선 } 순서라
+            // 마주보는 두 변의 중점을 이으면 선분이 그대로 나온다. 양 끝은 반 두께만큼
+            // 늘여 두었으므로 그만큼 되돌리면 원래 점이 된다.
+            var polygon = body.GetComponent<PolygonCollider2D>();
+            if (polygon != null)
+            {
+                var transform = body.transform;
+
+                for (int p = 0; p < polygon.pathCount; p++)
+                {
+                    var path = polygon.GetPath(p);
+                    if (path.Length != 4) continue;
+
+                    Vector2 start = (path[0] + path[1]) * 0.5f;
+                    Vector2 end = (path[2] + path[3]) * 0.5f;
+
+                    Vector2 delta = end - start;
+                    float length = delta.magnitude;
+
+                    // 늘여 둔 만큼 되돌린다. 선분이 두께보다 짧으면 되돌리다 뒤집히므로 그냥 둔다.
+                    if (length > 2f * ColliderFactory.FreeBodyHalfWidth)
+                    {
+                        Vector2 cap = delta / length * ColliderFactory.FreeBodyHalfWidth;
+                        start += cap;
+                        end -= cap;
+                    }
+
+                    Line(transform.TransformPoint(start), transform.TransformPoint(end));
                 }
                 return;
             }
@@ -432,6 +471,7 @@ namespace PPS.Tools
             var entries = new List<Entry>
             {
                 new Entry("뷰어 기본 (폭탄)", SampleLevel, SampleSolution, withBomb: true),
+                new Entry("자유 물체 전시장", ShowcaseLevel, ShowcaseSolution),
             };
 
 #if UNITY_EDITOR
@@ -451,7 +491,132 @@ namespace PPS.Tools
             return entries.ToArray();
         }
 
-        // 아래 둘은 뷰어 전용 임의 데이터다. 테스트와 무관하며 폭탄이 붙는 유일한 레벨이다.
+        // ── 자유 물체 전시장 ───────────────────────────────────────────────
+
+        /// <summary>
+        /// 서로 다른 형태의 자유 물체를 한 판에 떨어뜨린다. 담장 안이라 굴러 나가지 않는다.
+        ///
+        /// <c>ColliderFactory</c> 의 질량 특성 계산을 눈으로 검증하는 용도다. 무게중심이나 관성이
+        /// 틀리면 숫자가 아니라 **움직임**으로 드러난다 — 고리가 안 구르거나, ㄱ자가 엉뚱한 점을
+        /// 중심으로 돌거나, 그릇이 뒤집힌 채 안정되거나 한다. 테스트는 값을 재고 여기서는 거동을 본다.
+        /// </summary>
+        static LevelData ShowcaseLevel()
+        {
+            return new LevelData
+            {
+                Id = "DBG_Showcase",
+                InkLimit = 100f,
+                BallStart = new Vector2(-12f, 10f),
+                BallRadius = 0.3f,
+                GoalPosition = new Vector2(11.5f, 1.6f),
+                GoalRadius = 0.6f,
+                KillY = -6f,
+                Terrain = new List<StaticSegment>
+                {
+                    // 비스듬한 비탈. 평지에 세워 두면 전부 그 자리에 가만히 앉아 있어
+                    // 질량 특성이 맞는지 틀린지가 드러나지 않는다. 굴리고 넘어뜨려야 보인다.
+                    new StaticSegment(new Vector2(-13f, 8f), new Vector2(3f, 1f)),
+                    new StaticSegment(new Vector2(3f, 1f), new Vector2(13f, 1f)),
+                    new StaticSegment(new Vector2(-13f, 8f), new Vector2(-13f, 13f)),  // 왼쪽 담장
+                    new StaticSegment(new Vector2(13f, 1f), new Vector2(13f, 9f)),     // 오른쪽 담장
+                },
+            };
+        }
+
+        /// <summary>
+        /// 비탈 위에 형태가 다른 자유 물체를 늘어놓는다. 공이 굴러 내려오며 연쇄로 건드린다.
+        ///
+        /// 배치 원칙 둘:
+        /// - **비탈 위에** 둔다. 평지면 전부 가만히 앉아 있어 질량 특성이 맞는지 알 수 없다
+        /// - **기울여** 둔다. 반듯하게 놓으면 대칭이라 무게중심이 틀려도 티가 안 난다
+        /// </summary>
+        static Solution ShowcaseSolution()
+        {
+            var solution = new Solution();
+
+            // 비탈 y = 8 - 0.4375·(x + 13).
+            //
+            // **모든 물체는 비탈 위에 여유를 두고 띄운다.** 정적 edge 에 다각형이 겹친 채로
+            // 시작하면 Box2D 가 밀어내는 방향이 불안정해서 튕기거나 끼거나 아래로 빠진다.
+            // 살짝 떨어뜨려 스스로 자리를 잡게 하는 편이 안전하다.
+
+            // 0) 바퀴 — 관성이 m·r² 라야 비탈을 굴러 내려간다.
+            //    변이 적으면 꼭짓점마다 부딪히며 에너지를 잃어 잘 안 구른다. 28각형이면 충분히 매끄럽다.
+            solution.Strokes.Add(Closed(new Vector2(-11f, 8f), 0.55f, sides: 28));
+
+            // 1) 상자 — 닫힌 사각형을 기울여 둔다. 모서리로 서 있다가 넘어간다.
+            solution.Strokes.Add(Closed(new Vector2(-9f, 7.3f), 0.7f, sides: 4, rotation: 65f));
+
+            // 2) 삼각형 — 닫힌 형태 중 무게중심이 가장 치우친 것. 한쪽으로 굴러야 정상이다.
+            solution.Strokes.Add(Closed(new Vector2(-7f, 6.4f), 0.7f, sides: 3, rotation: 90f));
+
+            // 3) 기울어진 막대 — 비스듬히 떨어져 미끄러지며 넘어간다.
+            solution.Strokes.Add(Bar(new Vector2(-5f, 5.6f), length: 1.8f, degrees: 55f));
+
+            // 4) ㄱ자 — 두 팔의 길이 비중으로 무게중심이 잡히는지. 긴 팔 쪽으로 기운다.
+            solution.Strokes.Add(new Stroke(ToolType.FreeBody, new List<Vector2>
+            {
+                new Vector2(-3.8f, 4.6f),
+                new Vector2(-2.2f, 4.6f),
+                new Vector2(-2.2f, 5.8f),
+            }));
+
+            // 5) 지그재그 — 점이 많은 폴리라인. 산술 평균이었다면 무게중심이 어긋난다.
+            solution.Strokes.Add(new Stroke(ToolType.FreeBody, new List<Vector2>
+            {
+                new Vector2(-1.4f, 3.5f),
+                new Vector2(-0.7f, 4.2f),
+                new Vector2(0f, 3.5f),
+                new Vector2(0.7f, 4.2f),
+                new Vector2(1.4f, 3.5f),
+            }));
+
+            // 6) 그릇 — 열린 곡선. 오목한 쪽이 위로 오게 안정되어야 정상이다.
+            //    평지에 두어 비탈에서 내려온 것들을 받는다.
+            solution.Strokes.Add(new Stroke(ToolType.FreeBody,
+                Arc(new Vector2(4.5f, 2.5f), 1.1f, segments: 12, startDegrees: 200f, sweepDegrees: 140f)));
+
+            // 7·8) 시소 — 정적 받침 + 회전축에 매달린 판자.
+            //       회전축과 충돌이 함께 걸리는 유일한 자리다.
+            solution.Strokes.Add(new Stroke(ToolType.FixedLine, new List<Vector2>
+            {
+                new Vector2(8.5f, 1f),
+                new Vector2(8.5f, 1.7f),
+            }));
+            solution.Strokes.Add(Bar(new Vector2(8.5f, 1.8f), length: 3.2f, degrees: 8f));
+            solution.Pivots.Add(new PivotJoint(8, PivotJoint.WorldIndex, new Vector2(8.5f, 1.8f)));
+
+            return solution;
+        }
+
+        /// <summary>닫힌 정다각형. 변을 늘리면 고리(바퀴)가 된다.</summary>
+        static Stroke Closed(Vector2 center, float radius, int sides, float rotation = 0f)
+            => new Stroke(ToolType.FreeBody, Arc(center, radius, sides, rotation, 360f));
+
+        /// <summary>중심과 각도로 기울인 막대.</summary>
+        static Stroke Bar(Vector2 center, float length, float degrees)
+        {
+            float radians = degrees * Mathf.Deg2Rad;
+            Vector2 half = new Vector2(Mathf.Cos(radians), Mathf.Sin(radians)) * (length * 0.5f);
+
+            return new Stroke(ToolType.FreeBody, new List<Vector2> { center - half, center + half });
+        }
+
+        /// <summary>호를 폴리라인으로 전개한다. 360도를 주면 닫힌 고리가 된다.</summary>
+        static List<Vector2> Arc(Vector2 center, float radius, int segments,
+                                 float startDegrees, float sweepDegrees)
+        {
+            var points = new List<Vector2>(segments + 1);
+            for (int i = 0; i <= segments; i++)
+            {
+                float angle = (startDegrees + sweepDegrees * i / segments) * Mathf.Deg2Rad;
+                points.Add(center + new Vector2(Mathf.Cos(angle), Mathf.Sin(angle)) * radius);
+            }
+            return points;
+        }
+
+        // ── 뷰어 기본 레벨 ─────────────────────────────────────────────────
+        // 뷰어 전용 임의 데이터다. 테스트와 무관하며 폭탄이 붙는 유일한 레벨이다.
 
         static LevelData SampleLevel()
         {
