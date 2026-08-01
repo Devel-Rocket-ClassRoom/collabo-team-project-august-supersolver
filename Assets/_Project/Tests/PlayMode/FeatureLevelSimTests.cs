@@ -24,8 +24,8 @@ namespace PPS.Core.Tests
 
             using (var world = WorldBuilder.Build(level, solution, 0))
             {
-                // 공 1 + 지형 세그먼트 + 스트로크. 장치는 바디를 만들지 않는다.
-                int expected = 1 + level.Terrain.Count + solution.Strokes.Count;
+                // 공 1 + 지형 + 장치 + 스트로크. 순서도 이 순서다 (WorldBuilder 의 고정 계약).
+                int expected = 1 + level.Terrain.Count + level.Devices.Count + solution.Strokes.Count;
                 Assert.AreEqual(expected, world.Bodies.Count,
                     "바디 수가 파일 구성과 다르다 — 어딘가에서 스트로크나 지형을 흘렸다.");
             }

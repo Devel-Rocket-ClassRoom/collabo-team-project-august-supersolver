@@ -31,6 +31,10 @@ namespace PPS.Core
     /// 바꿀 때 지켜야 할 것은 둘뿐이다.
     /// - JsonUtility 가 다룰 수 있는 형태일 것 (public 필드 + <see cref="SerializableAttribute"/>)
     /// - 리스트 순서가 곧 로직 등록 순서이자 **난수 소비 순서**라는 것
+    ///
+    /// **장치는 콜라이더를 가져도 된다.** 장애물·문처럼 물리적 실체가 있는 장치는 바디가 필요하며,
+    /// <see cref="DeviceFactory"/> 가 씬과 바디 목록을 함께 받는 이유가 그것이다.
+    /// 폭탄·바람 구역처럼 영역 효과만 있는 장치가 안 만들 뿐이다.
     /// </summary>
     [Serializable]
     public struct DeviceData

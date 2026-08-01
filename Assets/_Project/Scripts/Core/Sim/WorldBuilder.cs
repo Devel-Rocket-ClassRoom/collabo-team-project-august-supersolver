@@ -45,14 +45,21 @@ namespace PPS.Core
                     bodies.Add(ColliderFactory.CreateSegment(scene, level.Terrain[i], $"Terrain_{i}"));
             }
 
-            // 3. 장치 — 레벨 데이터 순서. 장치는 바디를 만들지 않으므로
-            //    바디 인덱스(= 해시 순서)에는 영향이 없다.
-            //    bodies 를 살아 있는 참조로 넘긴다 — 장치는 스트로크보다 먼저 등록되지만
-            //    Tick 이 도는 시점에는 스트로크까지 전부 들어와 있어야 한다.
+            // 3. 장치 — 레벨 데이터 순서.
+            //    **장치는 바디를 만들 수 있다.** 장애물이나 문처럼 물리적 실체가 있는 장치는
+            //    콜라이더가 필요하다. 만들었다면 DeviceFactory 가 bodies 에 넣으며,
+            //    그 자리가 위 고정 순서의 "장치" 구간이다. 지형 뒤·스트로크 앞이 되는 것이 중요하다 —
+            //    레벨이 만드는 것과 유저가 그리는 것 사이의 경계가 여기다.
+            //
+            //    장치 바디는 시뮬 도중 사라질 수 있다(폭탄이 터지면 소모된다). 그때도 목록에서
+            //    빼지 않고 null 로 남긴다 — 빼면 뒤 인덱스가 밀려 해시 구조가 통째로 바뀐다.
+            //
+            //    bodies 를 살아 있는 참조로 넘기는 이유는 따로 있다. 장치는 스트로크보다 먼저
+            //    등록되지만 Tick 이 도는 시점에는 스트로크까지 전부 보여야 한다.
             if (level.Devices != null)
             {
                 for (int i = 0; i < level.Devices.Count; i++)
-                    logics.Add(DeviceFactory.Create(level.Devices[i], bodies));
+                    logics.Add(DeviceFactory.Create(level.Devices[i], i, scene, bodies));
             }
 
             // 4. 스트로크 — 솔루션 리스트 순서.

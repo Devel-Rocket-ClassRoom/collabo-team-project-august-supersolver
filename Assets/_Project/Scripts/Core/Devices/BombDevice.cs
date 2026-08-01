@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 namespace PPS.Core
 {
@@ -16,20 +17,57 @@ namespace PPS.Core
     /// </summary>
     public sealed class BombDevice : IStepLogic
     {
+        /// <summary>
+        /// 폭탄 몸체의 반지름. <see cref="DeviceData.Radius"/> 는 **폭발 반경**이지 몸 크기가 아니다.
+        /// 둘을 한 필드로 합치면 "작은 폭탄이 넓게 터진다"를 표현할 수 없어진다.
+        /// 몸 크기를 레벨마다 조절하고 싶어지면 그때 필드로 올리면 된다.
+        /// </summary>
+        public const float BodyRadius = 0.28f;
+
         readonly DeviceData _data;
         readonly IReadOnlyList<Rigidbody2D> _bodies;
+
+        /// 폭탄 자신의 몸체. 터지면 파괴하고 null 로 만든다.
+        Rigidbody2D _body;
 
         /// 아직 뽑지 않았으면 -1. 첫 Tick 에서 확정된다.
         int _fireStep = -1;
         bool _fired;
 
+        /// <summary>
+        /// 폭탄의 몸체를 만든다. **정적 바디다** — <see cref="DeviceData.Position"/> 이
+        /// "여기 있다"는 뜻이어야 레벨 디자인이 성립한다. 동적이면 그 값이 스폰 지점일 뿐이 된다.
+        /// 굴러다니는 폭탄이 필요하면 장치 담당이 바꾸면 된다.
+        ///
+        /// 컴포넌트 순서는 <see cref="ColliderFactory"/> 와 같다 — transform 을 먼저 놓고
+        /// Rigidbody2D 를 나중에 붙여야 바디가 올바른 위치에서 등록된다.
+        /// </summary>
+        public static Rigidbody2D CreateBody(Scene scene, in DeviceData data, string name)
+        {
+            var go = new GameObject(name);
+            SceneManager.MoveGameObjectToScene(go, scene);
+            go.transform.position = data.Position;
+
+            var body = go.AddComponent<Rigidbody2D>();
+            body.bodyType = RigidbodyType2D.Static;
+
+            var circle = go.AddComponent<CircleCollider2D>();
+            circle.radius = BodyRadius;
+
+            return body;
+        }
+
+        /// <param name="body">
+        /// <see cref="CreateBody"/> 가 만든 몸체. 월드의 바디 목록에 **이미 등록된 뒤에** 넘어온다.
+        /// </param>
         /// <param name="bodies">
         /// 월드의 바디 목록을 **살아 있는 참조로** 받는다. 장치는 스트로크보다 먼저 등록되므로
         /// 생성 시점의 스냅샷을 받으면 유저가 그린 물체를 영원히 보지 못한다.
         /// </param>
-        public BombDevice(in DeviceData data, IReadOnlyList<Rigidbody2D> bodies)
+        public BombDevice(in DeviceData data, Rigidbody2D body, IReadOnlyList<Rigidbody2D> bodies)
         {
             _data = data;
+            _body = body;
             _bodies = bodies;
         }
 
@@ -55,6 +93,8 @@ namespace PPS.Core
 
         void Explode()
         {
+            DestroyBody();
+
             float radius = Mathf.Max(_data.Radius, 1e-4f);
             float sqrRadius = radius * radius;
 
@@ -84,6 +124,27 @@ namespace PPS.Core
                 // 그 값을 조정하면 폭탄의 세기가 함께 흔들린다.
                 body.linearVelocity += direction * (_data.Power * falloff);
             }
+        }
+
+        /// <summary>
+        /// 폭탄이 소모되어 월드에서 사라진다. 위에 얹혀 있던 것은 받침을 잃는다.
+        ///
+        /// **`Destroy` 가 아니라 `DestroyImmediate` 여야 한다.** `Destroy` 는 프레임 끝까지
+        /// 지연되는데, 한 프레임에 도는 스텝 수는 바깥 사정이다 — 게임에서는 누적기가 0~8 번,
+        /// 솔버에서는 1800 번을 한 프레임에 몰아 돌린다. 지연 파괴를 쓰면 **바디가 실제로 사라지는
+        /// 스텝이 프레임 경계에 따라 달라져** 프레임 독립성이 그 자리에서 깨진다.
+        /// 여기는 물리 콜백 밖이고 <c>Simulate()</c> 사이의 지점이라 즉시 파괴가 안전하다.
+        ///
+        /// **바디 목록에서 빼지 않는다.** 빼면 뒤 인덱스가 밀려 해시 구조가 통째로 바뀐다.
+        /// <see cref="WorldHasher"/> 는 null 자리를 그대로 해시에 섞도록 되어 있다 —
+        /// "여기 뭔가 있었다"는 사실 자체가 디싱크 신호이기 때문이다.
+        /// </summary>
+        void DestroyBody()
+        {
+            if (_body == null) return;
+
+            UnityEngine.Object.DestroyImmediate(_body.gameObject);
+            _body = null;
         }
     }
 }

@@ -123,7 +123,9 @@ namespace PPS.Core.Tests
             level.Devices.Add(new DeviceData
             {
                 Type = DeviceType.Bomb,
-                Position = new Vector2(0f, 0f),
+                // 공(0, 2)의 낙하 경로를 피해 지면에 앉힌다. 폭탄이 몸체를 가지므로
+                // 공 바로 밑에 두면 공이 그 위에 아슬아슬하게 얹혀 테스트가 불안정해진다.
+                Position = new Vector2(1.2f, BombDevice.BodyRadius),
                 Radius = 3f,
                 Power = 5f,
                 DelaySteps = LateBombFireStep,
@@ -143,7 +145,9 @@ namespace PPS.Core.Tests
             level.Devices.Add(new DeviceData
             {
                 Type = DeviceType.Bomb,
-                Position = new Vector2(0f, 0f),
+                // 공(0, 2)의 낙하 경로를 피해 지면에 앉힌다. 폭탄이 몸체를 가지므로
+                // 공 바로 밑에 두면 공이 그 위에 아슬아슬하게 얹혀 테스트가 불안정해진다.
+                Position = new Vector2(1.2f, BombDevice.BodyRadius),
                 Radius = 3f,
                 Power = 4f,
                 DelaySteps = 20,

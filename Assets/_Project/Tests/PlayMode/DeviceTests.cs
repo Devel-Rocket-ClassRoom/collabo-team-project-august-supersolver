@@ -27,15 +27,74 @@ namespace PPS.Core.Tests
         }
 
         [Test]
-        public void 장치는_바디를_늘리지_않는다()
+        public void 폭탄이_바디를_가진다()
         {
-            // 장치는 콜라이더를 만들지 않는다. 바디 목록이 늘어나면 해시 순서가 밀려
-            // 기존 레벨의 결정론 기준선이 통째로 어긋난다.
+            // 장치가 만든 바디는 WorldBuilder 의 고정 순서에서 **지형 뒤·스트로크 앞**에 들어간다.
+            // 레벨이 만드는 것과 유저가 그리는 것의 경계가 그 자리다.
             using (var withBomb = WorldBuilder.Build(TestLevels.FlatWithLateBomb(), null, 0))
             using (var without = WorldBuilder.Build(TestLevels.FlatRest(), null, 0))
             {
-                Assert.AreEqual(without.Bodies.Count, withBomb.Bodies.Count);
+                Assert.AreEqual(without.Bodies.Count + 1, withBomb.Bodies.Count,
+                    "폭탄 몸체가 바디 목록에 등록되지 않았다.");
+
+                var body = FindDevice(withBomb, 0);
+                Assert.AreEqual(RigidbodyType2D.Static, body.bodyType);
+                Assert.IsNotNull(body.GetComponent<CircleCollider2D>(), "콜라이더가 없다.");
             }
+        }
+
+        [Test]
+        public void 폭탄이_터지면_바디가_사라진다()
+        {
+            using (var world = WorldBuilder.Build(TestLevels.FlatWithLateBomb(), null, 0))
+            {
+                int slot = IndexOfDevice(world, 0);
+                int countBefore = world.Bodies.Count;
+
+                for (int i = 0; i < TestLevels.LateBombFireStep - 10; i++) world.Step();
+                Assert.IsNotNull(world.Bodies[slot], "아직 안 터졌는데 몸체가 사라졌다.");
+
+                for (int i = 0; i < 30; i++) world.Step();
+
+                Assert.IsTrue(world.Bodies[slot] == null, "터졌는데 몸체가 남아 있다.");
+
+                // **자리는 유지된다.** 목록에서 빼면 뒤 인덱스가 밀려 해시 구조가 통째로 바뀐다.
+                // WorldHasher 는 null 자리를 그대로 해시에 섞는다 — "여기 뭔가 있었다"가 신호다.
+                Assert.AreEqual(countBefore, world.Bodies.Count,
+                    "파괴된 바디를 목록에서 빼버렸다 — 뒤 인덱스가 전부 밀린다.");
+            }
+        }
+
+        [Test]
+        public void 파괴_시점이_프레임_분할에_영향받지_않는다()
+        {
+            // **Destroy 를 쓰면 여기서 걸린다.** 지연 파괴는 프레임 끝에 일어나는데
+            // 한 프레임에 도는 스텝 수는 바깥 사정이라(게임 0~8, 솔버 1800),
+            // 바디가 사라지는 스텝이 프레임 경계에 따라 달라진다.
+            const int Target = TestLevels.LateBombFireStep + 20;
+
+            ulong direct;
+            using (var world = WorldBuilder.Build(TestLevels.FlatWithLateBomb(), null, 0))
+            {
+                for (int i = 0; i < Target; i++) world.Step();
+                direct = WorldHasher.Hash(world);
+            }
+
+            ulong driven;
+            using (var world = WorldBuilder.Build(TestLevels.FlatWithLateBomb(), null, 0))
+            {
+                var accumulator = new SimAccumulator();
+
+                // 30fps 상당 — 한 프레임에 2스텝씩 묶어 돈다.
+                for (int i = 0; i < Target && world.CurrentStep < Target; i++)
+                    accumulator.Advance(world, 1f / 30f);
+
+                Assert.AreEqual(Target, world.CurrentStep, "목표 스텝에 도달하지 못했다.");
+                driven = WorldHasher.Hash(world);
+            }
+
+            Assert.AreEqual(direct, driven,
+                "프레임 분할에 따라 결과가 달라졌다 — 파괴가 지연되고 있을 가능성이 크다.");
         }
 
         [Test]
@@ -66,7 +125,7 @@ namespace PPS.Core.Tests
                 for (int i = 0; i < 60; i++) world.Step();
 
                 Assert.IsFalse(world.AnyPendingWork(), "발동했는데 대기 상태가 유지된다.");
-                Assert.AreNotEqual(before.y, world.Ball.position.y,
+                Assert.Greater(Vector2.Distance(before, world.Ball.position), 0.1f,
                     "폭탄이 터졌는데 공이 움직이지 않았다 — 잠든 바디를 깨우지 못했을 가능성이 크다.");
             }
         }
@@ -100,9 +159,27 @@ namespace PPS.Core.Tests
         }
 
         static Rigidbody2D FindStroke(SimWorld world, int strokeIndex)
-        {
-            string name = $"Stroke_{strokeIndex}";
+            => FindByName(world, $"Stroke_{strokeIndex}");
 
+        static Rigidbody2D FindDevice(SimWorld world, int deviceIndex)
+            => FindByName(world, $"Device_{deviceIndex}");
+
+        static int IndexOfDevice(SimWorld world, int deviceIndex)
+        {
+            string name = $"Device_{deviceIndex}";
+
+            for (int i = 0; i < world.Bodies.Count; i++)
+            {
+                var body = world.Bodies[i];
+                if (body != null && body.name == name) return i;
+            }
+
+            Assert.Fail($"{name} 바디를 찾지 못했다.");
+            return -1;
+        }
+
+        static Rigidbody2D FindByName(SimWorld world, string name)
+        {
             for (int i = 0; i < world.Bodies.Count; i++)
             {
                 var body = world.Bodies[i];
