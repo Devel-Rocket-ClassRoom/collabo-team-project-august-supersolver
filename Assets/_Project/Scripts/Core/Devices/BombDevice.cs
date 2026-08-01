@@ -25,9 +25,21 @@ namespace PPS.Core
         public const float BodyRadius = 0.28f;
 
         readonly DeviceData _data;
+
+        /// <summary>
+        /// 월드의 바디 목록. **소유하지 않고 살아 있는 참조로 들고만 있는다.**
+        ///
+        /// 스냅샷이 아니라 참조여야 하는 이유: 장치는 스트로크보다 먼저 등록되므로,
+        /// 생성 시점에 복사해 두면 유저가 그린 물체를 영원히 보지 못한다.
+        /// <see cref="Tick"/> 이 도는 시점에는 이 목록에 스트로크까지 전부 들어와 있다.
+        ///
+        /// **순회할 때 항상 null 검사를 할 것.** 시뮬 도중 파괴된 바디는 목록에서 빠지지 않고
+        /// 그 자리에 null 로 남는다 (인덱스가 밀리면 해시 구조가 통째로 바뀌기 때문).
+        /// 순서도 건드리면 안 된다 — 힘이 가해지는 순서가 곧 부동소수점 합산 순서다.
+        /// </summary>
         readonly IReadOnlyList<Rigidbody2D> _bodies;
 
-        /// 폭탄 자신의 몸체. 터지면 파괴하고 null 로 만든다.
+        /// 폭탄 자신의 몸체. <see cref="_bodies"/> 안에도 같은 참조가 들어 있다. 터지면 파괴하고 null 로 만든다.
         Rigidbody2D _body;
 
         /// 아직 뽑지 않았으면 -1. 첫 Tick 에서 확정된다.
@@ -93,8 +105,6 @@ namespace PPS.Core
 
         void Explode()
         {
-            DestroyBody();
-
             float radius = Mathf.Max(_data.Radius, 1e-4f);
             float sqrRadius = radius * radius;
 
@@ -103,7 +113,17 @@ namespace PPS.Core
             for (int i = 0; i < _bodies.Count; i++)
             {
                 var body = _bodies[i];
-                if (body == null || body.bodyType != RigidbodyType2D.Dynamic) continue;
+                if (body == null) continue;
+
+                // 자기 몸체는 효과 대상이 아니다.
+                //
+                // 지금은 정적이라 아래 검사에서도 걸러지지만, 몸체를 동적으로 바꾸는 순간
+                // 자기 자신이 후보로 들어온다. 그때 거리가 정확히 0 이라 Vector2.up 폴백에
+                // falloff 1.0 이 걸려 최대 세기로 자기를 밀어 올리고, 그 속도는 같은 Tick 안의
+                // 파괴로 그냥 버려진다 — 물리에는 무해하지만 읽는 사람을 멈춰 세운다.
+                if (ReferenceEquals(body, _body)) continue;
+
+                if (body.bodyType != RigidbodyType2D.Dynamic) continue;
 
                 Vector2 delta = body.position - _data.Position;
                 float sqrDistance = delta.sqrMagnitude;
@@ -124,6 +144,11 @@ namespace PPS.Core
                 // 그 값을 조정하면 폭탄의 세기가 함께 흔들린다.
                 body.linearVelocity += direction * (_data.Power * falloff);
             }
+
+            // 효과를 다 준 뒤에 소모된다. 순서가 물리 결과를 바꾸지는 않는다 —
+            // Simulate() 는 Tick() 이 전부 끝난 뒤에 돌기 때문이다.
+            // 다만 위 루프가 **파괴 이전의 온전한 목록**을 훑게 되어 읽기가 분명해진다.
+            DestroyBody();
         }
 
         /// <summary>
