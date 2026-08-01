@@ -108,6 +108,23 @@ namespace PPS.Core.Tests
         }
 
         [Test]
+        public void 회전축이_있어도_같은_입력은_같은_결과다()
+        {
+            // 조인트는 결정론이 가장 깨지기 쉬운 지점이다. Box2D 는 조인트가 만드는 아일랜드 구성에
+            // 따라 제약 해결 순서가 달라지고, 그 순서가 곧 부동소수점 합산 순서다.
+            // 이 케이스 없이 통과한 결정론은 유저가 회전축을 그리는 순간 무너질 수 있다.
+            var level = TestLevels.PivotSwing();
+
+            var traceA = new List<ulong>();
+            var traceB = new List<ulong>();
+
+            SimRunner.RunTraced(level, TestLevels.PivotSolution(), 7, traceA, Steps);
+            SimRunner.RunTraced(level, TestLevels.PivotSolution(), 7, traceB, Steps);
+
+            AssertTracesMatch(traceA, traceB);
+        }
+
+        [Test]
         public void 장치가_있어도_같은_입력은_같은_결과다()
         {
             // 장치가 도는 순간 rng 와 로직 루프가 결과에 개입하기 시작한다.

@@ -1,6 +1,13 @@
+using System;
 using System.Collections.Generic;
 using PPS.Core;
 using UnityEngine;
+
+#if UNITY_EDITOR
+// 테스트 레벨은 PPS.Core.TestFixtures 어셈블리에 있고 UNITY_INCLUDE_TESTS 제약이 걸려 있어
+// 빌드에는 들어가지 않는다. 에디터에서만 참조한다.
+using PPS.Core.Tests;
+#endif
 
 namespace PPS.Tools
 {
@@ -12,7 +19,11 @@ namespace PPS.Tools
     /// 되돌릴 수 없으므로 되감기로는 같은 상태를 재현할 수 없다.
     /// 재구축이 같은 결과를 낸다는 것은 결정론 테스트가 증명한 사실이라 이대로 성립한다.
     ///
-    /// 레벨에 폭탄을 하나 얹어 두었다. 장치가 있어야 rng 가 소비되고, 그래야 시드가
+    /// 에디터에서는 **테스트가 쓰는 레벨을 그대로 골라 볼 수 있다.** 테스트가 빨간불일 때
+    /// 그 레벨에서 실제로 무슨 일이 벌어지는지 눈으로 확인하는 것이 이 도구의 주 용도다.
+    /// 테스트 레벨에는 폭탄을 얹지 않는다 — 테스트가 도는 것과 다른 시뮬을 보여주면 의미가 없다.
+    ///
+    /// 뷰어 기본 레벨에만 폭탄이 붙어 있다. 장치가 있어야 rng 가 소비되고, 그래야 시드가
     /// 결과에 닿는 것을 눈으로 볼 수 있다 — 시드 버튼으로 발동 스텝이 바뀌는 것을 확인할 수 있다.
     ///
     /// 씬의 아무 GameObject 에 붙이고 플레이하면 된다. 별도 세팅은 없다.
@@ -42,8 +53,11 @@ namespace PPS.Tools
         [SerializeField] int _seed;
         [SerializeField] bool _autoFitCamera = true;
 
-        /// 선 두께(월드 단위). 직교 크기 7 기준으로 화면 높이가 14 이므로 0.09 면 1080p 에서 대략 7px.
-        [SerializeField] float _lineWidth = 0.09f;
+        /// <summary>
+        /// 선 두께를 화면 배율(직교 크기) 대비 비율로 잡는다. 월드 단위 고정값으로 두면
+        /// LongRoll 처럼 넓은 레벨에서 실처럼 얇아지고, 좁은 레벨에서는 뭉개진다.
+        /// </summary>
+        [SerializeField] float _lineWidthRatio = 0.013f;
 
         [SerializeField] Color _background = new Color32(0xFF, 0xE6, 0xB3, 0xFF);
 
@@ -53,13 +67,22 @@ namespace PPS.Tools
         int _targetStep;
         string _stepInput = "0";
 
+        Entry[] _catalog;
+        string[] _catalogNames;
+        int _levelIndex;
+
+        /// 실제로 그릴 때 쓰는 두께(월드 단위). <see cref="FitCamera"/> 가 배율에서 계산한다.
+        float _lineWidth = 0.09f;
+
         Material _lineMaterial;
 
         void Start()
         {
-            _solution = SampleSolution();
+            _catalog = BuildCatalog();
+            _catalogNames = Array.ConvertAll(_catalog, e => e.Name);
+
             Rebuild();
-            if (_autoFitCamera) FitCamera();
+            FitCamera();
         }
 
         void Update()
@@ -84,13 +107,26 @@ namespace PPS.Tools
         {
             _world?.Dispose();
 
-            // 로직도 매 재구축마다 새로 만든다. 발동 여부가 남아 있는 인스턴스를 재사용하면
-            // 두 번째 재생부터 폭탄이 터지지 않아 같은 스텝이 다른 상태를 낸다.
-            // 오브젝트 풀링을 금지하는 이유와 정확히 같다.
-            _bomb = new DebugBomb(BombDelaySteps, BombJitterSteps, BombPower);
+            var entry = _catalog[_levelIndex];
+            _solution = entry.MakeSolution() ?? new Solution();
 
-            _world = WorldBuilder.Build(SampleLevel(), _solution, _seed, new IStepLogic[] { _bomb });
-            _bomb.Target = _world.Ball;
+            IStepLogic[] logics = null;
+            if (entry.WithBomb)
+            {
+                // 로직도 매 재구축마다 새로 만든다. 발동 여부가 남아 있는 인스턴스를 재사용하면
+                // 두 번째 재생부터 폭탄이 터지지 않아 같은 스텝이 다른 상태를 낸다.
+                // 오브젝트 풀링을 금지하는 이유와 정확히 같다.
+                _bomb = new DebugBomb(BombDelaySteps, BombJitterSteps, BombPower);
+                logics = new IStepLogic[] { _bomb };
+            }
+            else
+            {
+                _bomb = null;
+            }
+
+            _world = WorldBuilder.Build(entry.MakeLevel(), _solution, _seed, logics);
+
+            if (_bomb != null) _bomb.Target = _world.Ball;
         }
 
         void ApplySeed(int seed)
@@ -101,13 +137,27 @@ namespace PPS.Tools
             Rebuild();
         }
 
+        void ApplyLevel(int index)
+        {
+            _levelIndex = index;
+            _targetStep = 0;
+            _stepInput = "0";
+            Rebuild();
+            FitCamera();
+        }
+
         // ── 표시 ──────────────────────────────────────────────────────────
 
         void OnGUI()
         {
             if (_world == null) return;
 
-            GUILayout.BeginArea(new Rect(10f, 10f, 430f, 200f), GUI.skin.box);
+            GUILayout.BeginArea(new Rect(10f, 10f, 460f, 350f), GUI.skin.box);
+
+            int picked = GUILayout.SelectionGrid(_levelIndex, _catalogNames, 2);
+            if (picked != _levelIndex) ApplyLevel(picked);
+
+            GUILayout.Space(6f);
 
             GUILayout.Label($"Step {_world.CurrentStep} / {MaxSteps}" +
                             (_world.IsTerminal ? "   (종료됨 — 더 진행하지 않는다)" : ""));
@@ -130,9 +180,17 @@ namespace PPS.Tools
             // 같은 스텝으로 되돌아왔을 때 이 값이 같으면 재구축이 상태를 정확히 재현한 것이다.
             GUILayout.Label($"Hash 0x{WorldHasher.Hash(_world):X16}");
 
-            GUILayout.Label(_bomb.FireStep < 0
-                ? "폭탄 — 아직 첫 Tick 전이라 발동 스텝 미정"
-                : $"폭탄 — 발동 스텝 {_bomb.FireStep} ({(_bomb.Fired ? "터짐" : "대기 중")})");
+            if (_bomb == null)
+            {
+                // 장치가 없으면 rng 가 아무에게도 전달되지 않는다. 시드를 바꿔도 결과가 그대로다.
+                GUILayout.Label("장치 없음 — 이 레벨에서는 시드가 결과에 영향을 주지 않는다");
+            }
+            else
+            {
+                GUILayout.Label(_bomb.FireStep < 0
+                    ? "폭탄 — 아직 첫 Tick 전이라 발동 스텝 미정"
+                    : $"폭탄 — 발동 스텝 {_bomb.FireStep} ({(_bomb.Fired ? "터짐" : "대기 중")})");
+            }
 
             // 시드를 바꾸면 폭탄 발동 스텝이 달라진다. 바꾸는 즉시 재구축하고 처음으로 돌린다.
             GUILayout.BeginHorizontal();
@@ -211,10 +269,13 @@ namespace PPS.Tools
                 Circle(_solution.Pivots[i].Anchor, 0.12f);
 
             // 폭탄 표시. 대기 중이면 보라, 터지면 마젠타로 바뀐다.
-            GL.Color(_bomb.Fired ? BombFiredColor : BombIdleColor);
-            Circle(BombPosition, 0.35f);
-            Line(BombPosition + new Vector2(-0.5f, 0f), BombPosition + new Vector2(0.5f, 0f));
-            Line(BombPosition + new Vector2(0f, -0.5f), BombPosition + new Vector2(0f, 0.5f));
+            if (_bomb != null)
+            {
+                GL.Color(_bomb.Fired ? BombFiredColor : BombIdleColor);
+                Circle(BombPosition, 0.35f);
+                Line(BombPosition + new Vector2(-0.5f, 0f), BombPosition + new Vector2(0.5f, 0f));
+                Line(BombPosition + new Vector2(0f, -0.5f), BombPosition + new Vector2(0f, 0.5f));
+            }
         }
 
         /// <summary>선분 하나를 두께 <see cref="_lineWidth"/> 의 사각형으로 그린다.</summary>
@@ -258,23 +319,118 @@ namespace PPS.Tools
             _lineMaterial.SetFloat("_ZTest", (float)UnityEngine.Rendering.CompareFunction.Always);
         }
 
+        /// <summary>
+        /// 지형·공·스트로크가 다 들어오도록 카메라를 맞춘다. 레벨마다 크기가 크게 달라서
+        /// (LongRoll 은 가로 40, 뷰어 기본은 12) 고정 배율로는 어느 한쪽이 화면 밖으로 나간다.
+        ///
+        /// 목표 위치는 계산에 넣지 않는다. 테스트 레벨은 "닿을 수 없는 목표"를 (50, 50) 같은
+        /// 먼 곳에 두는 관례라, 그것까지 담으려 하면 화면이 쓸모없이 축소된다.
+        /// </summary>
         void FitCamera()
         {
             var cam = Camera.main;
             if (cam == null) return;
 
+            if (_autoFitCamera) Frame(cam);
+
+            // 두께는 카메라를 맞추든 말든 현재 배율을 따라간다.
+            _lineWidth = Mathf.Max(cam.orthographicSize, 0.1f) * _lineWidthRatio;
+        }
+
+        void Frame(Camera cam)
+        {
+            var level = _world.Level;
+
+            Vector2 min = level.BallStart;
+            Vector2 max = level.BallStart;
+
+            if (level.Terrain != null)
+            {
+                for (int i = 0; i < level.Terrain.Count; i++)
+                {
+                    Encapsulate(ref min, ref max, level.Terrain[i].A);
+                    Encapsulate(ref min, ref max, level.Terrain[i].B);
+                }
+            }
+
+            for (int i = 0; i < _solution.Strokes.Count; i++)
+            {
+                var points = _solution.Strokes[i].Points;
+                if (points == null) continue;
+                for (int p = 0; p < points.Count; p++) Encapsulate(ref min, ref max, points[p]);
+            }
+
+            Vector2 center = (min + max) * 0.5f;
+            Vector2 extent = (max - min) * 0.5f;
+
+            float halfHeight = Mathf.Max(extent.y, extent.x / Mathf.Max(cam.aspect, 0.1f));
+
             cam.orthographic = true;
-            cam.orthographicSize = 7f;
-            cam.transform.position = new Vector3(0f, 1f, -10f);
+            cam.orthographicSize = Mathf.Max(halfHeight * 1.25f, 2f);   // 1.25 = 여백
+            cam.transform.position = new Vector3(center.x, center.y, -10f);
 
             // 선 색이 이 배경을 기준으로 잡혀 있으므로 배경도 함께 고정한다.
             cam.clearFlags = CameraClearFlags.SolidColor;
             cam.backgroundColor = _background;
         }
 
+        static void Encapsulate(ref Vector2 min, ref Vector2 max, Vector2 point)
+        {
+            min = Vector2.Min(min, point);
+            max = Vector2.Max(max, point);
+        }
+
         // ── 시뮬 대상 ─────────────────────────────────────────────────────
-        // 눈으로 볼 것이 필요할 뿐이므로 임의 데이터다. 테스트 레벨은 PPS.Core.TestFixtures
-        // 어셈블리에 있어 여기서 참조할 수 없다 (테스트 전용으로 격리되어 있다).
+
+        /// <summary>고를 수 있는 시뮬 하나. 레벨과 솔루션을 **매번 새로 만들도록** 팩토리로 들고 있다.</summary>
+        readonly struct Entry
+        {
+            public readonly string Name;
+            public readonly Func<LevelData> MakeLevel;
+            public readonly Func<Solution> MakeSolution;
+            public readonly bool WithBomb;
+
+            public Entry(string name, Func<LevelData> makeLevel, Func<Solution> makeSolution, bool withBomb = false)
+            {
+                Name = name;
+                MakeLevel = makeLevel;
+                MakeSolution = makeSolution;
+                WithBomb = withBomb;
+            }
+        }
+
+        /// <summary>
+        /// 에디터에서는 테스트가 쓰는 레벨을 그대로 목록에 넣는다. 테스트가 빨간불일 때
+        /// 그 레벨에서 실제로 무슨 일이 벌어지는지 보는 것이 이 도구의 주 용도다.
+        ///
+        /// **테스트 레벨에는 폭탄을 얹지 않는다.** 테스트가 돌리는 것과 다른 시뮬을 보여주면
+        /// 눈으로 본 것이 실패 원인을 짚는 근거가 되지 못한다.
+        /// </summary>
+        static Entry[] BuildCatalog()
+        {
+            var entries = new List<Entry>
+            {
+                new Entry("뷰어 기본 (폭탄)", SampleLevel, SampleSolution, withBomb: true),
+            };
+
+#if UNITY_EDITOR
+            entries.AddRange(new[]
+            {
+                new Entry("Ramp → Clear", TestLevels.RampToGoal, () => null),
+                new Entry("Gap 다리 없음 → Fail", TestLevels.Gap, () => null),
+                new Entry("Gap + 다리 → Stalled", TestLevels.Gap, TestLevels.BridgeSolution),
+                new Entry("FlatRest → Stalled", TestLevels.FlatRest, () => null),
+                new Entry("FreeFall → Fail", TestLevels.FreeFall, () => null),
+                new Entry("LongRoll (계속 굴러감)", TestLevels.LongRoll, () => null),
+                new Entry("PivotSwing (회전축)", TestLevels.PivotSwing, TestLevels.PivotSolution),
+                new Entry("자유 물체 낙하", TestLevels.FlatRest, TestLevels.FreeBodySolution),
+            });
+#endif
+
+            return entries.ToArray();
+        }
+
+        // 아래 둘은 뷰어 전용 임의 데이터다. 테스트와 무관하며 폭탄이 붙는 유일한 레벨이다.
 
         static LevelData SampleLevel()
         {
