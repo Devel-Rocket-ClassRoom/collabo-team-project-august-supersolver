@@ -477,6 +477,7 @@ namespace PPS.Tools
 #if UNITY_EDITOR
             entries.AddRange(new[]
             {
+                new Entry("L001 (JSON 파일)", SampleLevelFile.Load, () => null),
                 new Entry("Ramp → Clear", TestLevels.RampToGoal, () => null),
                 new Entry("Gap 다리 없음 → Fail", TestLevels.Gap, () => null),
                 new Entry("Gap + 다리 → Stalled", TestLevels.Gap, TestLevels.BridgeSolution),
