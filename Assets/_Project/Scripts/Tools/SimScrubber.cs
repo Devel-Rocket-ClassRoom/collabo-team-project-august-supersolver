@@ -160,7 +160,7 @@ namespace PPS.Tools
             GUILayout.Space(6f);
 
             GUILayout.Label($"Step {_world.CurrentStep} / {MaxSteps}" +
-                            (_world.IsTerminal ? "   (종료됨 — 더 진행하지 않는다)" : ""));
+                            (_world.IsTerminal ? "   (판정 확정 — 더 진행하지 않는다)" : ""));
 
             _targetStep = Mathf.RoundToInt(GUILayout.HorizontalSlider(_targetStep, 0f, MaxSteps));
 
@@ -173,9 +173,13 @@ namespace PPS.Tools
                 _targetStep = 0;
             GUILayout.EndHorizontal();
 
-            var result = _world.ToResult(_solution.TotalInk());
-            GUILayout.Label($"{result.Outcome}   MinGoalDist {result.MinGoalDist:F3}   " +
+            // ToResult() 를 쓰지 않는다. 그쪽은 "아직 판정 안 남"과 "상한까지 갔는데 판정 안 남"을
+            // 둘 다 Timeout 으로 접어버리는데, 그건 끝까지 돌린 뒤에 부르는 것을 전제한 계약이다.
+            // 뷰어는 시뮬 도중에 물어보므로 Judge 를 직접 읽는다.
+            GUILayout.Label($"{StatusText()}   MinGoalDist {_world.Judge.MinGoalDist:F3}   " +
                             $"Ball ({_world.Ball.position.x:F2}, {_world.Ball.position.y:F2})");
+
+            GUILayout.Label($"잉크 {_solution.TotalInk():F2} / {_world.Level.InkLimit:F0}");
 
             // 같은 스텝으로 되돌아왔을 때 이 값이 같으면 재구축이 상태를 정확히 재현한 것이다.
             GUILayout.Label($"Hash 0x{WorldHasher.Hash(_world):X16}");
@@ -200,6 +204,23 @@ namespace PPS.Tools
             GUILayout.EndHorizontal();
 
             GUILayout.EndArea();
+        }
+
+        /// <summary>
+        /// 현재 판정. <c>SimOutcome</c> 에는 "진행 중"이 없다 — 시뮬을 끝까지 돌린 뒤의 결과만
+        /// 표현하는 계약이라 그렇고, 그 자체는 옳다. 다만 뷰어는 도중 상태를 보여줘야 하므로
+        /// 여기서만 진행 중을 따로 구분한다.
+        /// </summary>
+        string StatusText()
+        {
+            var judge = _world.Judge;
+
+            if (judge.Cleared) return $"Clear (스텝 {judge.DecidedStep})";
+            if (judge.Failed) return $"Fail (스텝 {judge.DecidedStep})";
+            if (judge.Stalled) return $"Stalled (스텝 {judge.DecidedStep})";
+
+            // 상한까지 갔는데 아무 판정도 안 났으면 그때가 진짜 Timeout 이다.
+            return _world.CurrentStep >= MaxSteps ? "Timeout" : "진행 중";
         }
 
         void OnRenderObject()

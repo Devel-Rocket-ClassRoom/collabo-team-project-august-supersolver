@@ -118,7 +118,13 @@ namespace PPS.Core
             return true;
         }
 
-        /// <summary>현재까지의 판정을 <see cref="SimResult"/> 로 확정한다.</summary>
+        /// <summary>
+        /// 현재까지의 판정을 <see cref="SimResult"/> 로 확정한다.
+        ///
+        /// **시뮬을 끝까지 돌린 뒤에 부르는 것을 전제한다.** 아무 판정도 나지 않은 상태는
+        /// <see cref="SimOutcome.Timeout"/> 으로 접히므로, 시뮬 도중에 부르면 "아직 진행 중"이
+        /// "상한에 걸렸다"로 보고된다. 도중 상태가 필요하면 <see cref="Judge"/> 를 직접 읽을 것.
+        /// </summary>
         public SimResult ToResult(float inkUsed)
         {
             SimOutcome outcome;
