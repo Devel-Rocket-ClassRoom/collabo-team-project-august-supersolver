@@ -77,6 +77,28 @@ namespace PPS.Core.Tests
                 "배속이 물리 결과를 바꿨다 — dt 를 건드렸을 가능성이 크다.");
         }
 
+        [Test]
+        public void 편집_중_흘려보낸_시간은_시뮬_시작_후_한꺼번에_쏟아지지_않는다()
+        {
+            // 편집 중(월드 없음)에도 드라이버는 매 프레임 누적기를 부른다.
+            // 그동안 시간이 쌓이면 시작 버튼을 누르는 순간 그만큼이 한 번에 터져나온다 —
+            // 10초 그리다 시작하면 첫 프레임에 600스텝이 진행되는 식이다.
+            //
+            // Advance 가 월드 검사를 **누적보다 먼저** 하는 것이 그것을 막는다.
+            // 두 줄의 순서가 뒤바뀌면 여기서 걸린다.
+            var accumulator = new SimAccumulator();
+
+            for (int i = 0; i < 300; i++) accumulator.Advance(null, 1f / 60f);   // 5초간 편집
+
+            using (var world = WorldBuilder.Build(TestLevels.LongRoll(), null, 0))
+            {
+                int stepped = accumulator.Advance(world, 1f / 60f);
+
+                Assert.AreEqual(1, stepped,
+                    $"시뮬 시작 첫 프레임에 {stepped} 스텝이 진행됐다 — 편집 중에 시간이 쌓였다.");
+            }
+        }
+
         /// <summary>지정한 프레임 수만큼 누적기로 전진시키고, 도달한 스텝의 해시를 돌려준다.</summary>
         static ulong DriveTo(int expectedStep, float frameDelta, int frameCount, out int reachedStep)
         {

@@ -36,9 +36,12 @@ namespace PPS.Core.Tests
         public void 코어_소스에_결정론_금지_API가_없다()
         {
             var offenses = new List<string>();
+            int scanned = 0;
 
             foreach (string path in CoreSourceFiles())
             {
+                scanned++;
+
                 string code = StripCommentsAndStrings(File.ReadAllText(path));
                 string fileName = Path.GetFileName(path);
 
@@ -48,6 +51,10 @@ namespace PPS.Core.Tests
                         offenses.Add($"{fileName}: '{token}' — {why}");
                 }
             }
+
+            // 스캔 대상이 비면 위반 목록도 비어서 조용히 초록불이 된다.
+            // 이 테스트는 남의 실수를 잡는 것이 목적이므로 **자기가 일했다는 증거**를 남긴다.
+            Assert.Greater(scanned, 0, "코어 소스를 한 파일도 읽지 못했다 — 검사가 헛돌았다.");
 
             Assert.IsEmpty(offenses, "\n" + string.Join("\n", offenses));
         }

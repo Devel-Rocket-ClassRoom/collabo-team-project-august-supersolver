@@ -77,6 +77,25 @@ namespace PPS.Core.Tests
         }
 
         [Test]
+        public void 해시는_공_이외의_바디도_담는다()
+        {
+            // 위의 "아주 작은 차이도 잡아낸다"는 **공** 을 옮겨서 본다. 그것만으로는
+            // 공만 해시하고 스트로크·장치 바디를 통째로 빠뜨린 구현도 전부 통과한다 —
+            // 나머지 결정론 테스트는 전부 "같은가"만 보기 때문이다.
+            //
+            // 그래서 공이 닿지 않는 자유 물체만 미세하게 옮겨 해시에 나타나는지 본다.
+            var baseline = TraceOfDistantBody(0f);
+            var nudged = TraceOfDistantBody(0.0001f);
+
+            // 길이가 다르면 CollectionAssert 가 내용과 무관하게 통과해 검사가 헐거워진다.
+            // 그래서 조기 종료를 타지 않고 정확히 같은 스텝 수를 돌린다.
+            Assert.AreEqual(baseline.Count, nudged.Count, "비교 구간이 달라졌다 — 이 테스트의 전제가 깨졌다.");
+
+            CollectionAssert.AreNotEqual(baseline, nudged,
+                "공에서 떨어진 자유 물체를 옮겼는데 해시 궤적이 완전히 같다 — 해시가 공만 담고 있다.");
+        }
+
+        [Test]
         public void 스트로크가_실제로_물리에_투입된다()
         {
             var level = TestLevels.Gap();
@@ -91,20 +110,42 @@ namespace PPS.Core.Tests
         }
 
         [Test]
-        public void 자유물체는_질량과_관성이_정상이라_떨어진다()
+        public void 자유물체가_NaN_없이_중력을_받는다()
         {
-            var level = TestLevels.FlatRest();
-
-            using (var world = WorldBuilder.Build(level, TestLevels.FreeBodySolution(), 0))
+            // 질량·관성 **값**의 정확성은 StrokeMassTests 가 본다. 여기서 보는 것은
+            // 그 값들이 물리 엔진에 먹혀서 물체가 실제로 살아 움직이는가까지다.
+            // 관성이 0 이면 각속도 계산이 0 으로 나뉘어 NaN 이 나고, NaN 은 해시를 타고 번진다.
+            using (var world = WorldBuilder.Build(TestLevels.FlatRest(), TestLevels.FreeBodySolution(), 0))
             {
-                var freeBody = world.Bodies[world.Bodies.Count - 1];
+                var freeBody = FindStroke(world, 0);
                 float startY = freeBody.position.y;
 
                 for (int i = 0; i < 30; i++) world.Step();
 
                 Assert.IsFalse(float.IsNaN(freeBody.position.x), "자유 물체 위치가 NaN 이다 (질량/관성 0 의심).");
+                Assert.IsFalse(float.IsNaN(freeBody.rotation), "자유 물체 회전이 NaN 이다 (관성 0 의심).");
                 Assert.Less(freeBody.position.y, startY, "자유 물체가 중력을 받지 않는다.");
             }
+        }
+
+        [Test]
+        public void 자유_물체가_있어도_같은_입력은_같은_결과다()
+        {
+            // 유저가 가장 흔히 그리는 것이고, 코어에서 가장 최근에 바뀐 코드
+            // (선분별 다중 경로 PolygonCollider2D, 철사 모델 질량 특성)가 전부 여기를 지난다.
+            //
+            // **접촉이 있어야 의미가 있다.** 공중에 뜬 자유 물체는 접촉 해결 순서를 타지 않아
+            // 결정론이 깨질 여지가 거의 없다. FreeBodySolution 은 공 바로 위에서 떨어져
+            // 공과 부딪히고 지형에 얹힌다 — 회전축 케이스가 일부러 피한 상황이 여기 들어 있다.
+            var level = TestLevels.FlatRest();
+
+            var traceA = new List<ulong>();
+            var traceB = new List<ulong>();
+
+            SimRunner.RunTraced(level, TestLevels.FreeBodySolution(), 3, traceA, Steps);
+            SimRunner.RunTraced(level, TestLevels.FreeBodySolution(), 3, traceB, Steps);
+
+            AssertTracesMatch(traceA, traceB);
         }
 
         [Test]
@@ -161,6 +202,52 @@ namespace PPS.Core.Tests
             var trace = new List<ulong>();
             SimRunner.RunTraced(TestLevels.FlatWithJitteryBomb(), null, seed, trace, Steps);
             return trace;
+        }
+
+        /// <summary>
+        /// 공에서 멀리 떨어진 자유 물체 하나를 <paramref name="offsetX"/> 만큼 옮겨 돌린 스텝별 해시.
+        ///
+        /// 조기 종료를 타지 않도록 <c>SimRunner</c> 대신 직접 <c>Step()</c> 을 돌린다 —
+        /// 판정이 갈려 궤적 길이가 달라지면 내용 비교가 무의미해진다.
+        /// </summary>
+        static List<ulong> TraceOfDistantBody(float offsetX)
+        {
+            // FlatRest 의 공은 (0, 2). 막대는 x 3~4 에 두어 서로 닿지 않는다.
+            var solution = new Solution();
+            solution.Strokes.Add(new Stroke(ToolType.FreeBody, new List<Vector2>
+            {
+                new Vector2(3f + offsetX, 3f),
+                new Vector2(4f + offsetX, 3f),
+            }));
+
+            var trace = new List<ulong>();
+
+            using (var world = WorldBuilder.Build(TestLevels.FlatRest(), solution, 0))
+            {
+                for (int i = 0; i < 200; i++)
+                {
+                    world.Step();
+                    trace.Add(WorldHasher.Hash(world));
+                }
+            }
+
+            return trace;
+        }
+
+        /// <summary>솔루션의 n 번째 스트로크가 만든 바디. **인덱스 계산 대신 이름으로 찾는다** —
+        /// 레벨에 지형이나 장치가 하나 늘면 인덱스 기반 조회는 엉뚱한 바디를 검사하면서 통과한다.</summary>
+        static Rigidbody2D FindStroke(SimWorld world, int strokeIndex)
+        {
+            string name = $"Stroke_{strokeIndex}";
+
+            for (int i = 0; i < world.Bodies.Count; i++)
+            {
+                var body = world.Bodies[i];
+                if (body != null && body.name == name) return body;
+            }
+
+            Assert.Fail($"{name} 바디를 찾지 못했다.");
+            return null;
         }
 
         static bool TracesEqual(List<ulong> a, List<ulong> b)

@@ -1,0 +1,389 @@
+<?xml version="1.0" encoding="utf-8"?>
+<test-run id="2" testcasecount="55" result="Passed" total="55" passed="55" failed="0" inconclusive="0" skipped="0" asserts="0" engine-version="3.5.0.0" clr-version="4.0.30319.42000" start-time="2026-08-02 10:31:59Z" end-time="2026-08-02 10:32:00Z" duration="0.5611917">
+  <test-suite type="TestSuite" id="1073" name="PhysicsPuzzleSolver" fullname="PhysicsPuzzleSolver" runstate="Runnable" testcasecount="55" result="Passed" start-time="2026-08-02 10:31:59Z" end-time="2026-08-02 10:32:00Z" duration="0.561192" total="55" passed="55" failed="0" inconclusive="0" skipped="0" asserts="0">
+    <properties>
+      <property name="platform" value="PlayMode" />
+    </properties>
+    <test-suite type="Assembly" id="1066" name="PPS.Core.PlayTests.dll" fullname="D:/GitRepos/TmpPhysicsPuzzleSolver/Library/ScriptAssemblies/PPS.Core.PlayTests.dll" runstate="Runnable" testcasecount="55" result="Passed" start-time="2026-08-02 10:31:59Z" end-time="2026-08-02 10:32:00Z" duration="0.543318" total="55" passed="55" failed="0" inconclusive="0" skipped="0" asserts="0">
+      <properties>
+        <property name="_PID" value="26104" />
+        <property name="_APPDOMAIN" value="Unity Child Domain" />
+        <property name="platform" value="PlayMode" />
+        <property name="EditorOnly" value="False" />
+      </properties>
+      <test-suite type="TestSuite" id="1067" name="PPS" fullname="PPS" runstate="Runnable" testcasecount="55" result="Passed" start-time="2026-08-02 10:31:59Z" end-time="2026-08-02 10:32:00Z" duration="0.534395" total="55" passed="55" failed="0" inconclusive="0" skipped="0" asserts="0">
+        <properties />
+        <test-suite type="TestSuite" id="1068" name="Core" fullname="PPS.Core" runstate="Runnable" testcasecount="55" result="Passed" start-time="2026-08-02 10:31:59Z" end-time="2026-08-02 10:32:00Z" duration="0.526621" total="55" passed="55" failed="0" inconclusive="0" skipped="0" asserts="0">
+          <properties />
+          <test-suite type="TestSuite" id="1069" name="Tests" fullname="PPS.Core.Tests" runstate="Runnable" testcasecount="55" result="Passed" start-time="2026-08-02 10:31:59Z" end-time="2026-08-02 10:32:00Z" duration="0.517881" total="55" passed="55" failed="0" inconclusive="0" skipped="0" asserts="0">
+            <properties />
+            <test-suite type="TestFixture" id="1001" name="ContractSimTests" fullname="PPS.Core.Tests.ContractSimTests" classname="PPS.Core.Tests.ContractSimTests" runstate="Runnable" testcasecount="1" result="Passed" start-time="2026-08-02 10:31:59Z" end-time="2026-08-02 10:31:59Z" duration="0.048296" total="1" passed="1" failed="0" inconclusive="0" skipped="0" asserts="0">
+              <properties />
+              <test-case id="1002" name="복원한_레벨데이터로_돌린_결과가_원본과_같다" fullname="PPS.Core.Tests.ContractSimTests.복원한_레벨데이터로_돌린_결과가_원본과_같다" methodname="복원한_레벨데이터로_돌린_결과가_원본과_같다" classname="PPS.Core.Tests.ContractSimTests" runstate="Runnable" seed="817979976" result="Passed" start-time="2026-08-02 10:31:59Z" end-time="2026-08-02 10:31:59Z" duration="0.025044" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+            </test-suite>
+            <test-suite type="TestFixture" id="1003" name="DeterminismTests" fullname="PPS.Core.Tests.DeterminismTests" classname="PPS.Core.Tests.DeterminismTests" runstate="Runnable" testcasecount="11" result="Passed" start-time="2026-08-02 10:31:59Z" end-time="2026-08-02 10:32:00Z" duration="0.062099" total="11" passed="11" failed="0" inconclusive="0" skipped="0" asserts="0">
+              <properties />
+              <test-case id="1005" name="같은_입력_두_번_실행하면_스텝별_해시가_전부_같다" fullname="PPS.Core.Tests.DeterminismTests.같은_입력_두_번_실행하면_스텝별_해시가_전부_같다" methodname="같은_입력_두_번_실행하면_스텝별_해시가_전부_같다" classname="PPS.Core.Tests.DeterminismTests" runstate="Runnable" seed="1288276721" result="Passed" start-time="2026-08-02 10:31:59Z" end-time="2026-08-02 10:31:59Z" duration="0.007323" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+              <test-case id="1006" name="다른_월드를_사이에_끼워도_재구축_결과가_같다" fullname="PPS.Core.Tests.DeterminismTests.다른_월드를_사이에_끼워도_재구축_결과가_같다" methodname="다른_월드를_사이에_끼워도_재구축_결과가_같다" classname="PPS.Core.Tests.DeterminismTests" runstate="Runnable" seed="1053880470" result="Passed" start-time="2026-08-02 10:31:59Z" end-time="2026-08-02 10:31:59Z" duration="0.002559" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+              <test-case id="1004" name="물리설정이_결정론을_깨뜨리지_않는다" fullname="PPS.Core.Tests.DeterminismTests.물리설정이_결정론을_깨뜨리지_않는다" methodname="물리설정이_결정론을_깨뜨리지_않는다" classname="PPS.Core.Tests.DeterminismTests" runstate="Runnable" seed="886120465" result="Passed" start-time="2026-08-02 10:31:59Z" end-time="2026-08-02 10:31:59Z" duration="0.004759" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+                <output><![CDATA[Physics2D fingerprint: gravity=(0.0000, -9.8100) velIter=8 posIter=3 contactOffset=0.0100 timeToSleep=0.5000 linSleepTol=0.0100 angSleepTol=2.0000 baumgarte=0.2000 maxTransSpeed=100.0000 maxRotSpeed=360.0000 subStepping=False maxSubStep=4 minSubStepFPS=30.0000 multithread=False
+]]></output>
+              </test-case>
+              <test-case id="1009" name="스트로크가_실제로_물리에_투입된다" fullname="PPS.Core.Tests.DeterminismTests.스트로크가_실제로_물리에_투입된다" methodname="스트로크가_실제로_물리에_투입된다" classname="PPS.Core.Tests.DeterminismTests" runstate="Runnable" seed="1692202677" result="Passed" start-time="2026-08-02 10:31:59Z" end-time="2026-08-02 10:31:59Z" duration="0.001055" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+              <test-case id="1014" name="시드가_다르면_장치_동작이_갈린다" fullname="PPS.Core.Tests.DeterminismTests.시드가_다르면_장치_동작이_갈린다" methodname="시드가_다르면_장치_동작이_갈린다" classname="PPS.Core.Tests.DeterminismTests" runstate="Runnable" seed="1948638474" result="Passed" start-time="2026-08-02 10:31:59Z" end-time="2026-08-02 10:31:59Z" duration="0.005097" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+              <test-case id="1011" name="자유_물체가_있어도_같은_입력은_같은_결과다" fullname="PPS.Core.Tests.DeterminismTests.자유_물체가_있어도_같은_입력은_같은_결과다" methodname="자유_물체가_있어도_같은_입력은_같은_결과다" classname="PPS.Core.Tests.DeterminismTests" runstate="Runnable" seed="1979882770" result="Passed" start-time="2026-08-02 10:31:59Z" end-time="2026-08-02 10:32:00Z" duration="0.004306" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+              <test-case id="1010" name="자유물체가_NaN_없이_중력을_받는다" fullname="PPS.Core.Tests.DeterminismTests.자유물체가_NaN_없이_중력을_받는다" methodname="자유물체가_NaN_없이_중력을_받는다" classname="PPS.Core.Tests.DeterminismTests" runstate="Runnable" seed="1574737663" result="Passed" start-time="2026-08-02 10:32:00Z" end-time="2026-08-02 10:32:00Z" duration="0.001599" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+              <test-case id="1013" name="장치가_있어도_같은_입력은_같은_결과다" fullname="PPS.Core.Tests.DeterminismTests.장치가_있어도_같은_입력은_같은_결과다" methodname="장치가_있어도_같은_입력은_같은_결과다" classname="PPS.Core.Tests.DeterminismTests" runstate="Runnable" seed="1590212310" result="Passed" start-time="2026-08-02 10:32:00Z" end-time="2026-08-02 10:32:00Z" duration="0.003490" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+              <test-case id="1008" name="해시는_공_이외의_바디도_담는다" fullname="PPS.Core.Tests.DeterminismTests.해시는_공_이외의_바디도_담는다" methodname="해시는_공_이외의_바디도_담는다" classname="PPS.Core.Tests.DeterminismTests" runstate="Runnable" seed="631217190" result="Passed" start-time="2026-08-02 10:32:00Z" end-time="2026-08-02 10:32:00Z" duration="0.004931" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+              <test-case id="1007" name="해시는_아주_작은_차이도_잡아낸다" fullname="PPS.Core.Tests.DeterminismTests.해시는_아주_작은_차이도_잡아낸다" methodname="해시는_아주_작은_차이도_잡아낸다" classname="PPS.Core.Tests.DeterminismTests" runstate="Runnable" seed="1555828492" result="Passed" start-time="2026-08-02 10:32:00Z" end-time="2026-08-02 10:32:00Z" duration="0.002046" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+              <test-case id="1012" name="회전축이_있어도_같은_입력은_같은_결과다" fullname="PPS.Core.Tests.DeterminismTests.회전축이_있어도_같은_입력은_같은_결과다" methodname="회전축이_있어도_같은_입력은_같은_결과다" classname="PPS.Core.Tests.DeterminismTests" runstate="Runnable" seed="41746232" result="Passed" start-time="2026-08-02 10:32:00Z" end-time="2026-08-02 10:32:00Z" duration="0.012068" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+            </test-suite>
+            <test-suite type="TestFixture" id="1015" name="DeviceTests" fullname="PPS.Core.Tests.DeviceTests" classname="PPS.Core.Tests.DeviceTests" runstate="Runnable" testcasecount="7" result="Passed" start-time="2026-08-02 10:32:00Z" end-time="2026-08-02 10:32:00Z" duration="0.061464" total="7" passed="7" failed="0" inconclusive="0" skipped="0" asserts="0">
+              <properties />
+              <test-case id="1020" name="대기_중인_장치가_있으면_전부_잠들어도_Stalled가_아니다" fullname="PPS.Core.Tests.DeviceTests.대기_중인_장치가_있으면_전부_잠들어도_Stalled가_아니다" methodname="대기_중인_장치가_있으면_전부_잠들어도_Stalled가_아니다" classname="PPS.Core.Tests.DeviceTests" runstate="Runnable" seed="271329852" result="Passed" start-time="2026-08-02 10:32:00Z" end-time="2026-08-02 10:32:00Z" duration="0.001700" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+              <test-case id="1016" name="레벨_데이터의_장치가_로직으로_등록된다" fullname="PPS.Core.Tests.DeviceTests.레벨_데이터의_장치가_로직으로_등록된다" methodname="레벨_데이터의_장치가_로직으로_등록된다" classname="PPS.Core.Tests.DeviceTests" runstate="Runnable" seed="1458499761" result="Passed" start-time="2026-08-02 10:32:00Z" end-time="2026-08-02 10:32:00Z" duration="0.000331" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+              <test-case id="1022" name="반경_밖의_물체는_건드리지_않는다" fullname="PPS.Core.Tests.DeviceTests.반경_밖의_물체는_건드리지_않는다" methodname="반경_밖의_물체는_건드리지_않는다" classname="PPS.Core.Tests.DeviceTests" runstate="Runnable" seed="27778625" result="Passed" start-time="2026-08-02 10:32:00Z" end-time="2026-08-02 10:32:00Z" duration="0.001780" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+              <test-case id="1021" name="장치가_발동하면_대기가_끝나고_공이_움직인다" fullname="PPS.Core.Tests.DeviceTests.장치가_발동하면_대기가_끝나고_공이_움직인다" methodname="장치가_발동하면_대기가_끝나고_공이_움직인다" classname="PPS.Core.Tests.DeviceTests" runstate="Runnable" seed="1703378085" result="Passed" start-time="2026-08-02 10:32:00Z" end-time="2026-08-02 10:32:00Z" duration="0.001340" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+              <test-case id="1019" name="파괴_시점이_프레임_분할에_영향받지_않는다" fullname="PPS.Core.Tests.DeviceTests.파괴_시점이_프레임_분할에_영향받지_않는다" methodname="파괴_시점이_프레임_분할에_영향받지_않는다" classname="PPS.Core.Tests.DeviceTests" runstate="Runnable" seed="1009528641" result="Passed" start-time="2026-08-02 10:32:00Z" end-time="2026-08-02 10:32:00Z" duration="0.002377" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+              <test-case id="1017" name="폭탄이_바디를_가진다" fullname="PPS.Core.Tests.DeviceTests.폭탄이_바디를_가진다" methodname="폭탄이_바디를_가진다" classname="PPS.Core.Tests.DeviceTests" runstate="Runnable" seed="938385546" result="Passed" start-time="2026-08-02 10:32:00Z" end-time="2026-08-02 10:32:00Z" duration="0.001150" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+              <test-case id="1018" name="폭탄이_터지면_바디가_사라진다" fullname="PPS.Core.Tests.DeviceTests.폭탄이_터지면_바디가_사라진다" methodname="폭탄이_터지면_바디가_사라진다" classname="PPS.Core.Tests.DeviceTests" runstate="Runnable" seed="1331464980" result="Passed" start-time="2026-08-02 10:32:00Z" end-time="2026-08-02 10:32:00Z" duration="0.001400" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+            </test-suite>
+            <test-suite type="TestFixture" id="1023" name="FeatureLevelSimTests" fullname="PPS.Core.Tests.FeatureLevelSimTests" classname="PPS.Core.Tests.FeatureLevelSimTests" runstate="Runnable" testcasecount="5" result="Passed" start-time="2026-08-02 10:32:00Z" end-time="2026-08-02 10:32:00Z" duration="0.036394" total="5" passed="5" failed="0" inconclusive="0" skipped="0" asserts="0">
+              <properties />
+              <test-case id="1025" name="고정선은_정적_자유물체는_동적으로_선다" fullname="PPS.Core.Tests.FeatureLevelSimTests.고정선은_정적_자유물체는_동적으로_선다" methodname="고정선은_정적_자유물체는_동적으로_선다" classname="PPS.Core.Tests.FeatureLevelSimTests" runstate="Runnable" seed="2036483039" result="Passed" start-time="2026-08-02 10:32:00Z" end-time="2026-08-02 10:32:00Z" duration="0.003050" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+              <test-case id="1028" name="전_피처_레벨도_결정론적이다" fullname="PPS.Core.Tests.FeatureLevelSimTests.전_피처_레벨도_결정론적이다" methodname="전_피처_레벨도_결정론적이다" classname="PPS.Core.Tests.FeatureLevelSimTests" runstate="Runnable" seed="1136341665" result="Passed" start-time="2026-08-02 10:32:00Z" end-time="2026-08-02 10:32:00Z" duration="0.012649" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+              <test-case id="1024" name="파일_구성이_그대로_월드가_된다" fullname="PPS.Core.Tests.FeatureLevelSimTests.파일_구성이_그대로_월드가_된다" methodname="파일_구성이_그대로_월드가_된다" classname="PPS.Core.Tests.FeatureLevelSimTests" runstate="Runnable" seed="1961661701" result="Passed" start-time="2026-08-02 10:32:00Z" end-time="2026-08-02 10:32:00Z" duration="0.002672" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+              <test-case id="1027" name="파일의_장치가_로직으로_등록된다" fullname="PPS.Core.Tests.FeatureLevelSimTests.파일의_장치가_로직으로_등록된다" methodname="파일의_장치가_로직으로_등록된다" classname="PPS.Core.Tests.FeatureLevelSimTests" runstate="Runnable" seed="941663362" result="Passed" start-time="2026-08-02 10:32:00Z" end-time="2026-08-02 10:32:00Z" duration="0.001956" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+              <test-case id="1026" name="회전축이_실제_조인트로_만들어진다" fullname="PPS.Core.Tests.FeatureLevelSimTests.회전축이_실제_조인트로_만들어진다" methodname="회전축이_실제_조인트로_만들어진다" classname="PPS.Core.Tests.FeatureLevelSimTests" runstate="Runnable" seed="1318643799" result="Passed" start-time="2026-08-02 10:32:00Z" end-time="2026-08-02 10:32:00Z" duration="0.001930" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+            </test-suite>
+            <test-suite type="TestFixture" id="1029" name="FrameIndependenceTests" fullname="PPS.Core.Tests.FrameIndependenceTests" classname="PPS.Core.Tests.FrameIndependenceTests" runstate="Runnable" testcasecount="5" result="Passed" start-time="2026-08-02 10:32:00Z" end-time="2026-08-02 10:32:00Z" duration="0.037397" total="5" passed="5" failed="0" inconclusive="0" skipped="0" asserts="0">
+              <properties />
+              <test-case id="1031" name="누적기로_돌린_결과가_직접_Step_한_결과와_같다" fullname="PPS.Core.Tests.FrameIndependenceTests.누적기로_돌린_결과가_직접_Step_한_결과와_같다" methodname="누적기로_돌린_결과가_직접_Step_한_결과와_같다" classname="PPS.Core.Tests.FrameIndependenceTests" runstate="Runnable" seed="998659729" result="Passed" start-time="2026-08-02 10:32:00Z" end-time="2026-08-02 10:32:00Z" duration="0.002819" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+              <test-case id="1033" name="배속은_스텝_수만_늘리고_스텝_내용은_그대로다" fullname="PPS.Core.Tests.FrameIndependenceTests.배속은_스텝_수만_늘리고_스텝_내용은_그대로다" methodname="배속은_스텝_수만_늘리고_스텝_내용은_그대로다" classname="PPS.Core.Tests.FrameIndependenceTests" runstate="Runnable" seed="109478449" result="Passed" start-time="2026-08-02 10:32:00Z" end-time="2026-08-02 10:32:00Z" duration="0.001285" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+              <test-case id="1032" name="일시정지_중에는_전진하지_않는다" fullname="PPS.Core.Tests.FrameIndependenceTests.일시정지_중에는_전진하지_않는다" methodname="일시정지_중에는_전진하지_않는다" classname="PPS.Core.Tests.FrameIndependenceTests" runstate="Runnable" seed="523556371" result="Passed" start-time="2026-08-02 10:32:00Z" end-time="2026-08-02 10:32:00Z" duration="0.000360" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+              <test-case id="1034" name="편집_중_흘려보낸_시간은_시뮬_시작_후_한꺼번에_쏟아지지_않는다" fullname="PPS.Core.Tests.FrameIndependenceTests.편집_중_흘려보낸_시간은_시뮬_시작_후_한꺼번에_쏟아지지_않는다" methodname="편집_중_흘려보낸_시간은_시뮬_시작_후_한꺼번에_쏟아지지_않는다" classname="PPS.Core.Tests.FrameIndependenceTests" runstate="Runnable" seed="894276930" result="Passed" start-time="2026-08-02 10:32:00Z" end-time="2026-08-02 10:32:00Z" duration="0.000337" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+              <test-case id="1030" name="프레임레이트가_달라도_같은_스텝에서_같은_상태다" fullname="PPS.Core.Tests.FrameIndependenceTests.프레임레이트가_달라도_같은_스텝에서_같은_상태다" methodname="프레임레이트가_달라도_같은_스텝에서_같은_상태다" classname="PPS.Core.Tests.FrameIndependenceTests" runstate="Runnable" seed="9638660" result="Passed" start-time="2026-08-02 10:32:00Z" end-time="2026-08-02 10:32:00Z" duration="0.003877" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+            </test-suite>
+            <test-suite type="TestFixture" id="1035" name="FreeBodyCollisionTests" fullname="PPS.Core.Tests.FreeBodyCollisionTests" classname="PPS.Core.Tests.FreeBodyCollisionTests" runstate="Runnable" testcasecount="4" result="Passed" start-time="2026-08-02 10:32:00Z" end-time="2026-08-02 10:32:00Z" duration="0.040031" total="4" passed="4" failed="0" inconclusive="0" skipped="0" asserts="0">
+              <properties />
+              <test-case id="1039" name="공이_닫힌_자유_물체_위에_얹힌다" fullname="PPS.Core.Tests.FreeBodyCollisionTests.공이_닫힌_자유_물체_위에_얹힌다" methodname="공이_닫힌_자유_물체_위에_얹힌다" classname="PPS.Core.Tests.FreeBodyCollisionTests" runstate="Runnable" seed="1239027491" result="Passed" start-time="2026-08-02 10:32:00Z" end-time="2026-08-02 10:32:00Z" duration="0.001506" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+              <test-case id="1037" name="자유_물체가_고정선_위에_멈춘다" fullname="PPS.Core.Tests.FreeBodyCollisionTests.자유_물체가_고정선_위에_멈춘다" methodname="자유_물체가_고정선_위에_멈춘다" classname="PPS.Core.Tests.FreeBodyCollisionTests" runstate="Runnable" seed="2134744086" result="Passed" start-time="2026-08-02 10:32:00Z" end-time="2026-08-02 10:32:00Z" duration="0.001494" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+              <test-case id="1036" name="자유_물체가_지형을_통과하지_않는다" fullname="PPS.Core.Tests.FreeBodyCollisionTests.자유_물체가_지형을_통과하지_않는다" methodname="자유_물체가_지형을_통과하지_않는다" classname="PPS.Core.Tests.FreeBodyCollisionTests" runstate="Runnable" seed="151601345" result="Passed" start-time="2026-08-02 10:32:00Z" end-time="2026-08-02 10:32:00Z" duration="0.001066" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+              <test-case id="1038" name="자유_물체끼리_충돌한다" fullname="PPS.Core.Tests.FreeBodyCollisionTests.자유_물체끼리_충돌한다" methodname="자유_물체끼리_충돌한다" classname="PPS.Core.Tests.FreeBodyCollisionTests" runstate="Runnable" seed="1299908061" result="Passed" start-time="2026-08-02 10:32:00Z" end-time="2026-08-02 10:32:00Z" duration="0.001117" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+            </test-suite>
+            <test-suite type="TestFixture" id="1040" name="JudgeTests" fullname="PPS.Core.Tests.JudgeTests" classname="PPS.Core.Tests.JudgeTests" runstate="Runnable" testcasecount="7" result="Passed" start-time="2026-08-02 10:32:00Z" end-time="2026-08-02 10:32:00Z" duration="0.068054" total="7" passed="7" failed="0" inconclusive="0" skipped="0" asserts="0">
+              <properties />
+              <test-case id="1045" name="MinGoalDist는_모든_Outcome에서_채워진다" fullname="PPS.Core.Tests.JudgeTests.MinGoalDist는_모든_Outcome에서_채워진다" methodname="MinGoalDist는_모든_Outcome에서_채워진다" classname="PPS.Core.Tests.JudgeTests" runstate="Runnable" seed="1729719772" result="Passed" start-time="2026-08-02 10:32:00Z" end-time="2026-08-02 10:32:00Z" duration="0.002090" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+              <test-case id="1042" name="낙사하면_Fail" fullname="PPS.Core.Tests.JudgeTests.낙사하면_Fail" methodname="낙사하면_Fail" classname="PPS.Core.Tests.JudgeTests" runstate="Runnable" seed="1565195746" result="Passed" start-time="2026-08-02 10:32:00Z" end-time="2026-08-02 10:32:00Z" duration="0.000349" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+              <test-case id="1041" name="목표에_닿으면_Clear" fullname="PPS.Core.Tests.JudgeTests.목표에_닿으면_Clear" methodname="목표에_닿으면_Clear" classname="PPS.Core.Tests.JudgeTests" runstate="Runnable" seed="1404987558" result="Passed" start-time="2026-08-02 10:32:00Z" end-time="2026-08-02 10:32:00Z" duration="0.000888" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+              <test-case id="1044" name="상한에_걸리면_Timeout" fullname="PPS.Core.Tests.JudgeTests.상한에_걸리면_Timeout" methodname="상한에_걸리면_Timeout" classname="PPS.Core.Tests.JudgeTests" runstate="Runnable" seed="272590510" result="Passed" start-time="2026-08-02 10:32:00Z" end-time="2026-08-02 10:32:00Z" duration="0.000496" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+              <test-case id="1046" name="잉크_사용량이_결과에_실린다" fullname="PPS.Core.Tests.JudgeTests.잉크_사용량이_결과에_실린다" methodname="잉크_사용량이_결과에_실린다" classname="PPS.Core.Tests.JudgeTests" runstate="Runnable" seed="545594829" result="Passed" start-time="2026-08-02 10:32:00Z" end-time="2026-08-02 10:32:00Z" duration="0.001560" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+              <test-case id="1043" name="전부_잠들면_Stalled" fullname="PPS.Core.Tests.JudgeTests.전부_잠들면_Stalled" methodname="전부_잠들면_Stalled" classname="PPS.Core.Tests.JudgeTests" runstate="Runnable" seed="268591971" result="Passed" start-time="2026-08-02 10:32:00Z" end-time="2026-08-02 10:32:00Z" duration="0.000624" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+              <test-case id="1047" name="판정은_한_번_확정되면_뒤집히지_않는다" fullname="PPS.Core.Tests.JudgeTests.판정은_한_번_확정되면_뒤집히지_않는다" methodname="판정은_한_번_확정되면_뒤집히지_않는다" classname="PPS.Core.Tests.JudgeTests" runstate="Runnable" seed="120251315" result="Passed" start-time="2026-08-02 10:32:00Z" end-time="2026-08-02 10:32:00Z" duration="0.000638" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+            </test-suite>
+            <test-suite type="TestFixture" id="1048" name="LevelJsonSimTests" fullname="PPS.Core.Tests.LevelJsonSimTests" classname="PPS.Core.Tests.LevelJsonSimTests" runstate="Runnable" testcasecount="4" result="Passed" start-time="2026-08-02 10:32:00Z" end-time="2026-08-02 10:32:00Z" duration="0.026750" total="4" passed="4" failed="0" inconclusive="0" skipped="0" asserts="0">
+              <properties />
+              <test-case id="1050" name="JSON의_값이_물리에_그대로_반영된다" fullname="PPS.Core.Tests.LevelJsonSimTests.JSON의_값이_물리에_그대로_반영된다" methodname="JSON의_값이_물리에_그대로_반영된다" classname="PPS.Core.Tests.LevelJsonSimTests" runstate="Runnable" seed="675823185" result="Passed" start-time="2026-08-02 10:32:00Z" end-time="2026-08-02 10:32:00Z" duration="0.001757" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+              <test-case id="1049" name="파일에서_읽은_레벨로_월드가_구축된다" fullname="PPS.Core.Tests.LevelJsonSimTests.파일에서_읽은_레벨로_월드가_구축된다" methodname="파일에서_읽은_레벨로_월드가_구축된다" classname="PPS.Core.Tests.LevelJsonSimTests" runstate="Runnable" seed="1298259485" result="Passed" start-time="2026-08-02 10:32:00Z" end-time="2026-08-02 10:32:00Z" duration="0.000890" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+              <test-case id="1051" name="파일에서_읽은_레벨이_Clear_된다" fullname="PPS.Core.Tests.LevelJsonSimTests.파일에서_읽은_레벨이_Clear_된다" methodname="파일에서_읽은_레벨이_Clear_된다" classname="PPS.Core.Tests.LevelJsonSimTests" runstate="Runnable" seed="170418328" result="Passed" start-time="2026-08-02 10:32:00Z" end-time="2026-08-02 10:32:00Z" duration="0.001092" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+              <test-case id="1052" name="파일을_거쳐도_시뮬_결과가_같다" fullname="PPS.Core.Tests.LevelJsonSimTests.파일을_거쳐도_시뮬_결과가_같다" methodname="파일을_거쳐도_시뮬_결과가_같다" classname="PPS.Core.Tests.LevelJsonSimTests" runstate="Runnable" seed="31795048" result="Passed" start-time="2026-08-02 10:32:00Z" end-time="2026-08-02 10:32:00Z" duration="0.001875" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+            </test-suite>
+            <test-suite type="TestFixture" id="1053" name="PivotTests" fullname="PPS.Core.Tests.PivotTests" classname="PPS.Core.Tests.PivotTests" runstate="Runnable" testcasecount="5" result="Passed" start-time="2026-08-02 10:32:00Z" end-time="2026-08-02 10:32:00Z" duration="0.050385" total="5" passed="5" failed="0" inconclusive="0" skipped="0" asserts="0">
+              <properties />
+              <test-case id="1055" name="월드_고정_회전축이_바디를_붙잡는다" fullname="PPS.Core.Tests.PivotTests.월드_고정_회전축이_바디를_붙잡는다" methodname="월드_고정_회전축이_바디를_붙잡는다" classname="PPS.Core.Tests.PivotTests" runstate="Runnable" seed="430042161" result="Passed" start-time="2026-08-02 10:32:00Z" end-time="2026-08-02 10:32:00Z" duration="0.001335" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+              <test-case id="1054" name="정적_스트로크에_매단_회전축이_바디를_붙잡는다" fullname="PPS.Core.Tests.PivotTests.정적_스트로크에_매단_회전축이_바디를_붙잡는다" methodname="정적_스트로크에_매단_회전축이_바디를_붙잡는다" classname="PPS.Core.Tests.PivotTests" runstate="Runnable" seed="773277060" result="Passed" start-time="2026-08-02 10:32:00Z" end-time="2026-08-02 10:32:00Z" duration="0.000843" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+              <test-case id="1058" name="회전축은_바디를_늘리지_않는다" fullname="PPS.Core.Tests.PivotTests.회전축은_바디를_늘리지_않는다" methodname="회전축은_바디를_늘리지_않는다" classname="PPS.Core.Tests.PivotTests" runstate="Runnable" seed="69497820" result="Passed" start-time="2026-08-02 10:32:00Z" end-time="2026-08-02 10:32:00Z" duration="0.002370" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+              <test-case id="1057" name="회전축은_해시_궤적을_바꾼다" fullname="PPS.Core.Tests.PivotTests.회전축은_해시_궤적을_바꾼다" methodname="회전축은_해시_궤적을_바꾼다" classname="PPS.Core.Tests.PivotTests" runstate="Runnable" seed="735609967" result="Passed" start-time="2026-08-02 10:32:00Z" end-time="2026-08-02 10:32:00Z" duration="0.001907" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+              <test-case id="1056" name="회전축이_없으면_막대는_그대로_떨어진다" fullname="PPS.Core.Tests.PivotTests.회전축이_없으면_막대는_그대로_떨어진다" methodname="회전축이_없으면_막대는_그대로_떨어진다" classname="PPS.Core.Tests.PivotTests" runstate="Runnable" seed="1115887799" result="Passed" start-time="2026-08-02 10:32:00Z" end-time="2026-08-02 10:32:00Z" duration="0.001085" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+            </test-suite>
+            <test-suite type="TestFixture" id="1059" name="StrokeMassTests" fullname="PPS.Core.Tests.StrokeMassTests" classname="PPS.Core.Tests.StrokeMassTests" runstate="Runnable" testcasecount="6" result="Passed" start-time="2026-08-02 10:32:00Z" end-time="2026-08-02 10:32:00Z" duration="0.076055" total="6" passed="6" failed="0" inconclusive="0" skipped="0" asserts="0">
+              <properties />
+              <test-case id="1064" name="같은_직선을_불규칙하게_쪼개도_질량_특성이_같다" fullname="PPS.Core.Tests.StrokeMassTests.같은_직선을_불규칙하게_쪼개도_질량_특성이_같다" methodname="같은_직선을_불규칙하게_쪼개도_질량_특성이_같다" classname="PPS.Core.Tests.StrokeMassTests" runstate="Runnable" seed="628920515" result="Passed" start-time="2026-08-02 10:32:00Z" end-time="2026-08-02 10:32:00Z" duration="0.002250" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+              <test-case id="1062" name="꺾인_폴리라인의_질량_특성은_해석값과_맞는다" fullname="PPS.Core.Tests.StrokeMassTests.꺾인_폴리라인의_질량_특성은_해석값과_맞는다" methodname="꺾인_폴리라인의_질량_특성은_해석값과_맞는다" classname="PPS.Core.Tests.StrokeMassTests" runstate="Runnable" seed="1441682631" result="Passed" start-time="2026-08-02 10:32:00Z" end-time="2026-08-02 10:32:00Z" duration="0.000743" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+              <test-case id="1065" name="다각형은_변이_많아질수록_고리에_수렴한다" fullname="PPS.Core.Tests.StrokeMassTests.다각형은_변이_많아질수록_고리에_수렴한다" methodname="다각형은_변이_많아질수록_고리에_수렴한다" classname="PPS.Core.Tests.StrokeMassTests" runstate="Runnable" seed="1182637856" result="Passed" start-time="2026-08-02 10:32:00Z" end-time="2026-08-02 10:32:00Z" duration="0.024638" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+              <test-case id="1061" name="무게중심은_포인트_평균이_아니라_길이_비중이다" fullname="PPS.Core.Tests.StrokeMassTests.무게중심은_포인트_평균이_아니라_길이_비중이다" methodname="무게중심은_포인트_평균이_아니라_길이_비중이다" classname="PPS.Core.Tests.StrokeMassTests" runstate="Runnable" seed="55933338" result="Passed" start-time="2026-08-02 10:32:00Z" end-time="2026-08-02 10:32:00Z" duration="0.000870" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+              <test-case id="1063" name="원형_폴리라인의_관성은_막대_공식보다_훨씬_작다" fullname="PPS.Core.Tests.StrokeMassTests.원형_폴리라인의_관성은_막대_공식보다_훨씬_작다" methodname="원형_폴리라인의_관성은_막대_공식보다_훨씬_작다" classname="PPS.Core.Tests.StrokeMassTests" runstate="Runnable" seed="897405101" result="Passed" start-time="2026-08-02 10:32:00Z" end-time="2026-08-02 10:32:00Z" duration="0.003562" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+              <test-case id="1060" name="직선_자유물체는_막대_공식_그대로다" fullname="PPS.Core.Tests.StrokeMassTests.직선_자유물체는_막대_공식_그대로다" methodname="직선_자유물체는_막대_공식_그대로다" classname="PPS.Core.Tests.StrokeMassTests" runstate="Runnable" seed="1033412419" result="Passed" start-time="2026-08-02 10:32:00Z" end-time="2026-08-02 10:32:00Z" duration="0.000662" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+                <output><![CDATA[Saving results to: C:/Users/User/AppData/LocalLow/DefaultCompany/PhysicsPuzzleSolver\TestResults.xml
+]]></output>
+              </test-case>
+            </test-suite>
+          </test-suite>
+        </test-suite>
+      </test-suite>
+    </test-suite>
+  </test-suite>
+</test-run>
