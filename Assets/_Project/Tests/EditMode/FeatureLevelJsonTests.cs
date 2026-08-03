@@ -3,8 +3,8 @@ using NUnit.Framework;
 namespace PPS.Core.Tests
 {
     /// <summary>
-    /// 전 피처 레벨·솔루션 JSON 이 파일에서 그대로 읽히는가. 월드를 만들지 않으므로 EditMode 다.
-    /// 실제로 물리에 반영되는지는 PlayMode 쪽 <c>FeatureLevelSimTests</c> 가 본다.
+    /// 전 피처 JSON 이 그대로 읽히는가.
+    /// 물리 반영은 FeatureLevelSimTests 가 본다.
     /// </summary>
     public class FeatureLevelJsonTests
     {
@@ -20,7 +20,6 @@ namespace PPS.Core.Tests
         {
             var level = FeatureLevelFile.LoadLevel();
 
-            Assert.AreEqual(FeatureLevelFile.ExpectedId, level.Id);
             Assert.AreEqual(FeatureLevelFile.ExpectedInkLimit, level.InkLimit, 1e-4f);
             Assert.AreEqual(FeatureLevelFile.ExpectedBallRadius, level.BallRadius, 1e-4f);
             Assert.AreEqual(FeatureLevelFile.ExpectedKillY, level.KillY, 1e-4f);

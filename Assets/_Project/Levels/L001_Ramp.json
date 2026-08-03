@@ -1,5 +1,4 @@
 {
-    "Id": "L001_Ramp",
     "InkLimit": 14.5,
     "BallStart": { "x": -4.5, "y": 3.3 },
     "BallRadius": 0.28,

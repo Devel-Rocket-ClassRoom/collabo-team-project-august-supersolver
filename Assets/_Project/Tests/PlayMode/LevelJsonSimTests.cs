@@ -5,11 +5,9 @@ using UnityEngine;
 namespace PPS.Core.Tests
 {
     /// <summary>
-    /// **"레벨 추가는 데이터만으로"의 증명.** 저장소에 커밋된 JSON 파일 하나가
-    /// 코드 수정 없이 월드가 되고, 시뮬이 돌고, 판정까지 나오는지 확인한다.
-    ///
-    /// 파일 내용의 파싱 검증은 EditMode 쪽 <c>LevelJsonTests</c> 에 있다.
-    /// 여기는 그 뒤 — 데이터가 실제로 물리에 도달하는지를 본다.
+    /// "레벨 추가는 데이터만으로"의 증명.
+    /// JSON 하나가 코드 수정 없이 월드가 되고
+    /// 판정까지 나오는지 본다.
     /// </summary>
     public class LevelJsonSimTests
     {
@@ -26,7 +24,7 @@ namespace PPS.Core.Tests
         [Test]
         public void JSON의_값이_물리에_그대로_반영된다()
         {
-            // 파싱만 맞고 월드 구축에서 흘리면 소용이 없다. 파일의 숫자가 바디에 닿았는지 본다.
+            // 파일의 숫자가 바디에 닿았는지 본다.
             var level = SampleLevelFile.Load();
 
             using (var world = WorldBuilder.Build(level, null, 0))
@@ -44,7 +42,7 @@ namespace PPS.Core.Tests
         [Test]
         public void 파일에서_읽은_레벨이_Clear_된다()
         {
-            // 데이터만으로 "풀리는 레벨"이 성립하는지. 여기까지 와야 솔버에 넘길 수 있다.
+            // 여기까지 와야 솔버에 넘길 수 있다.
             var result = SimRunner.Run(SampleLevelFile.Load(), null, 0);
 
             Assert.AreEqual(SimOutcome.Clear, result.Outcome,
@@ -58,7 +56,7 @@ namespace PPS.Core.Tests
             // 파일 → 객체 → JSON → 객체 왕복이 물리를 바꾸지 않아야
             // 에디터가 저장한 레벨과 솔버가 검증한 레벨이 같은 것임을 보장할 수 있다.
             var fromFile = SampleLevelFile.Load();
-            var roundTripped = LevelData.FromJson(fromFile.ToJson());
+            var roundTripped = JsonUtility.FromJson<LevelData>(JsonUtility.ToJson(fromFile));
 
             var a = new List<ulong>();
             var b = new List<ulong>();

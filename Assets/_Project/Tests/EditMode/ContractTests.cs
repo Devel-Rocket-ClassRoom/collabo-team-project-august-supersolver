@@ -5,11 +5,9 @@ using UnityEngine;
 namespace PPS.Core.Tests
 {
     /// <summary>
-    /// 팀 4인이 공유하는 계약 타입의 최소 보장. 여기가 깨지면 잉크 표시·리플레이·
-    /// 레벨 데이터가 동시에 틀어진다.
-    ///
-    /// 월드를 만들지 않는 검사만 남긴다 — 격리 물리 씬은 플레이 모드에서만 생성되므로
-    /// 시뮬을 돌려야 하는 계약 검사는 PlayMode 쪽 <c>ContractSimTests</c> 로 갔다.
+    /// 공유 계약 타입의 최소 보장.
+    /// 월드를 만들지 않는 검사만 남긴다 —
+    /// 나머지는 ContractSimTests 로 갔다.
     /// </summary>
     public class ContractTests
     {
@@ -66,10 +64,11 @@ namespace PPS.Core.Tests
         [Test]
         public void 레벨데이터는_JSON_왕복에서_보존된다()
         {
+            // 진입점은 잃었지만 스테이지에 실려
+            // 직렬화되므로 보존은 그대로 필요하다.
             var original = TestLevels.Gap();
-            var restored = LevelData.FromJson(original.ToJson());
+            var restored = JsonUtility.FromJson<LevelData>(JsonUtility.ToJson(original));
 
-            Assert.AreEqual(original.Id, restored.Id);
             Assert.AreEqual(original.InkLimit, restored.InkLimit);
             Assert.AreEqual(original.BallStart, restored.BallStart);
             Assert.AreEqual(original.GoalPosition, restored.GoalPosition);
@@ -82,7 +81,7 @@ namespace PPS.Core.Tests
         public void 고정_시간_간격은_60분의_1이다()
         {
             Assert.AreEqual(1f / 60f, SimWorld.FixedDt);
-            Assert.AreEqual(1800, SimWorld.DefaultMaxSteps, "시뮬 시간 상한 30초 (설계서 결정 8)");
+            Assert.AreEqual(1800, SimWorld.DefaultMaxSteps, "시뮬 시간 상한 30초");
         }
     }
 }
