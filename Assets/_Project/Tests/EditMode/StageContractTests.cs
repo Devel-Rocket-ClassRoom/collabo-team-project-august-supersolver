@@ -50,8 +50,7 @@ namespace PPS.Core.Tests
 
             Assert.AreEqual(DeviceType.FragBomb, copy.Type);
             Assert.AreEqual(original.DelaySteps, copy.DelaySteps);
-            Assert.AreEqual(original.FragmentLifeSteps, copy.FragmentLifeSteps,
-                "파편 수명이 왕복에서 사라지면 조기 종료가 레벨마다 달라진다.");
+            Assert.AreEqual(original.Power, copy.Power, 1e-4f);
         }
 
         [Test]

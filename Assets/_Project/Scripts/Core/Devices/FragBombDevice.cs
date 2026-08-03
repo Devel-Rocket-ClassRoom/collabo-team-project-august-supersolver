@@ -19,8 +19,9 @@ namespace PPS.Core
         /// 레벨마다 바꿀 이유가 생기면 데이터로 올린다.
         public const int FragmentCount = 5;
 
-        /// FragmentLifeSteps 가 0 일 때 쓰는 기본값. 3초.
-        public const int DefaultLifeSteps = 180;
+        /// 파편 수명. 없으면 Stalled 가 안 나
+        /// 실패 시도마다 상한까지 태운다.
+        public const int LifeSteps = 60;
 
         /// 완전 균등이면 기계적으로 보인다.
         const float SpreadJitter = 0.35f;
@@ -102,8 +103,7 @@ namespace PPS.Core
 
         void Explode(int step, System.Random rng)
         {
-            int life = _data.FragmentLifeSteps > 0 ? _data.FragmentLifeSteps : DefaultLifeSteps;
-            _expireStep = step + life;
+            _expireStep = step + LifeSteps;
 
             float speed = Mathf.Max(_data.Power, 0f);
 

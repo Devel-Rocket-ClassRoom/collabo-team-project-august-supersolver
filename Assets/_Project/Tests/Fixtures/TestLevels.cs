@@ -184,7 +184,6 @@ namespace PPS.Core.Tests
                         Power = 6f,           // 파편 초기 속도
                         DelaySteps = FragBombFireStep,
                         JitterSteps = 0,      // 판정 시점을 읽기 쉽게 고정
-                        FragmentLifeSteps = 240,
                     },
                 },
             };
@@ -204,11 +203,10 @@ namespace PPS.Core.Tests
                 // 파편 고리가 지면 아래로 안 가게 띄운다.
                 Position = new Vector2(4.2f, 0.6f),
                 Radius = 0f,
-                // 1.5m/s × 1초 = 1.5m. 공까지는 4.2m.
+                // 1.5m/s × 수명 1초 = 1.5m. 공까지는 4.2m.
                 Power = 1.5f,
                 DelaySteps = FragBombFireStep,
                 JitterSteps = 0,
-                FragmentLifeSteps = 60,
             });
             return level;
         }

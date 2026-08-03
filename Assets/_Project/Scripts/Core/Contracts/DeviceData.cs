@@ -41,9 +41,5 @@ namespace PPS.Core
         /// rng 로 뽑는 추가 지연의 상한.
         /// 0 이면 시드와 무관하게 발동한다.
         public int JitterSteps;
-
-        /// 파편 수명(스텝). FragBomb 전용.
-        /// 없으면 Stalled 가 나지 않는다.
-        public int FragmentLifeSteps;
     }
 }
