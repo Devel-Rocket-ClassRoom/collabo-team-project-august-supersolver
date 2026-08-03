@@ -7,14 +7,9 @@ using UnityEngine;
 namespace PPS.Core.Tests
 {
     /// <summary>
-    /// 코어 소스에 결정론을 깨뜨리는 API 가 섞여 들어왔는지 정적으로 검사한다.
-    ///
-    /// asmdef 는 "코어가 UI 를 참조하지 않는다"까지만 강제할 수 있다.
-    /// Time.deltaTime 한 줄이나 UnityEngine.Random 한 줄은 컴파일러가 잡아주지 않으며,
-    /// 실행 테스트로도 잘 드러나지 않는다 — 에디터에서 한 번 돌릴 때는 멀쩡히 통과하고
-    /// 나중에 다른 환경에서 조용히 갈라지기 때문이다. 그래서 소스를 직접 읽는다.
-    ///
-    /// 새 팀원이 코어에 손을 댈 때 이 테스트가 리뷰보다 먼저 반응하는 것이 목적이다.
+    /// 금지 API 가 섞였는지 소스를 직접 읽는다.
+    /// 컴파일러도 실행 테스트도 못 잡고,
+    /// 나중에 다른 환경에서 조용히 갈라진다.
     /// </summary>
     public class CoreSourceGuardTests
     {
@@ -52,8 +47,8 @@ namespace PPS.Core.Tests
                 }
             }
 
-            // 스캔 대상이 비면 위반 목록도 비어서 조용히 초록불이 된다.
-            // 이 테스트는 남의 실수를 잡는 것이 목적이므로 **자기가 일했다는 증거**를 남긴다.
+            // 스캔이 비면 조용히 초록불이 된다.
+            // 일했다는 증거를 남긴다.
             Assert.Greater(scanned, 0, "코어 소스를 한 파일도 읽지 못했다 — 검사가 헛돌았다.");
 
             Assert.IsEmpty(offenses, "\n" + string.Join("\n", offenses));
@@ -86,8 +81,9 @@ namespace PPS.Core.Tests
         }
 
         /// <summary>
-        /// 주석과 문자열 리터럴을 지운다. 금지 API 를 설명하는 주석까지 위반으로 잡으면
-        /// 팀원이 그 주석을 지우게 되고, 정작 알아야 할 이유가 코드에서 사라진다.
+        /// 주석과 문자열을 지운다.
+        /// 금지 API 를 설명하는 주석까지 잡으면
+        /// 팀원이 그 설명을 지우게 된다.
         /// </summary>
         static string StripCommentsAndStrings(string source)
         {

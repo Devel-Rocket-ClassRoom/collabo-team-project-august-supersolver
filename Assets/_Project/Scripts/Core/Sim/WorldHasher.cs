@@ -4,18 +4,16 @@ using UnityEngine;
 namespace PPS.Core
 {
     /// <summary>
-    /// 월드 상태의 지문. 결정론 테스트·디싱크 디버깅·실기기 표본 검증이 공유한다.
-    ///
-    /// **비트 단위로 비교한다.** 부동소수점을 반올림해서 비교하면 미세한 갈라짐이
-    /// 오차로 흡수돼 버리고, 그 갈라짐은 수백 스텝 뒤에 눈에 보이는 차이로 자란다.
-    /// 결정론은 "거의 같다"가 아니라 "같다"여야 한다.
+    /// 월드 상태의 지문.
+    /// 비트 단위로 비교한다 — 반올림하면
+    /// 미세한 갈라짐이 오차로 흡수된다.
     /// </summary>
     public static class WorldHasher
     {
         const ulong FnvOffsetBasis = 14695981039346656037UL;
         const ulong FnvPrime = 1099511628211UL;
 
-        /// <summary>바디를 등록 순서대로 훑어 position/rotation/velocity 를 섞는다.</summary>
+        /// <summary>바디를 등록 순서대로 훑는다.</summary>
         public static ulong Hash(SimWorld world)
         {
             ulong h = FnvOffsetBasis;
@@ -28,7 +26,7 @@ namespace PPS.Core
                 var b = bodies[i];
                 if (b == null)
                 {
-                    // 파괴된 바디도 자리를 차지한다 — 개수가 어긋나는 것 자체가 디싱크 신호다.
+                    // 파괴된 바디도 자리를 차지한다.
                     MixInt(ref h, int.MinValue);
                     continue;
                 }
@@ -67,8 +65,8 @@ namespace PPS.Core
         }
 
         /// <summary>
-        /// float 의 비트 패턴을 할당 없이 읽기 위한 공용체.
-        /// BitConverter.GetBytes 는 스텝마다 배열을 할당해 솔버 처리량을 갉아먹는다.
+        /// 할당 없이 float 비트를 읽는 공용체.
+        /// BitConverter 는 스텝마다 배열을 만든다.
         /// </summary>
         [StructLayout(LayoutKind.Explicit)]
         struct FloatBits

@@ -6,15 +6,12 @@ using UnityEngine;
 namespace PPS.Core
 {
     /// <summary>
-    /// 전역 물리 설정 검사. 결정론은 코드만으로 지켜지지 않는다 —
-    /// Physics2D 설정은 프로젝트 전역 가변 상태이고, 인스펙터에서 누가 한 번 누르면
-    /// 코드는 그대로인데 결과가 달라진다. 그 사고를 테스트로 잡기 위한 장치다.
+    /// 전역 물리 설정 검사.
+    /// 인스펙터에서 누가 한 번 누르면
+    /// 코드는 그대로인데 결과가 달라진다.
     /// </summary>
     public static class DeterminismGuard
     {
-        /// <summary>
-        /// 결정론을 직접 깨뜨리는 설정을 찾는다.
-        /// </summary>
         /// <returns>위반이 없으면 빈 리스트.</returns>
         public static List<string> FindViolations()
         {
@@ -39,11 +36,9 @@ namespace PPS.Core
         }
 
         /// <summary>
-        /// 시뮬 결과에 영향을 주는 전역 설정들의 지문.
-        ///
-        /// 값 자체를 고정하지는 않는다 — 물리 튜닝은 정당한 작업이기 때문이다.
-        /// 다만 리플레이가 재생되지 않을 때 "코드 버그"와 "설정이 바뀐 것"을
-        /// 구분할 수 있어야 하며, 그 판단 재료로 리포트·리플레이에 함께 기록한다.
+        /// 전역 설정의 지문.
+        /// 리플레이가 안 맞을 때 코드 버그와
+        /// 설정 변경을 구분하는 재료다.
         /// </summary>
         public static string SettingsFingerprint()
         {

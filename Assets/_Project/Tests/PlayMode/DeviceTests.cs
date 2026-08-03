@@ -5,14 +5,9 @@ using UnityEngine;
 namespace PPS.Core.Tests
 {
     /// <summary>
-    /// 장치가 **레벨 데이터에서 나와** 실제로 도는지 확인한다.
-    ///
-    /// 이 테스트가 없으면 <see cref="SimWorld.Step"/> 의 로직 루프는 0 회 반복하고
-    /// <see cref="Judge"/> 의 <c>HasPendingWork</c> 분기는 실행되지 않는다.
-    /// 동결하려는 코어 안에 한 번도 실행된 적 없는 분기를 남기지 않는 것이 목적이다.
-    ///
-    /// 최종 <c>SimOutcome</c> 을 단정하지 않는 것은 의도적이다 — 발동 이후 공이 언제 멈추는가는
-    /// 마찰·감쇠 설정에 달린 물리 품질 문제이고, 장치 경로의 정당성과는 무관하다.
+    /// 장치가 레벨 데이터에서 나와 도는지 본다.
+    /// 최종 Outcome 은 단정하지 않는다 —
+    /// 그건 마찰·감쇠에 달린 물리 품질 문제다.
     /// </summary>
     public class DeviceTests
     {
@@ -29,8 +24,8 @@ namespace PPS.Core.Tests
         [Test]
         public void 폭탄이_바디를_가진다()
         {
-            // 장치가 만든 바디는 WorldBuilder 의 고정 순서에서 **지형 뒤·스트로크 앞**에 들어간다.
-            // 레벨이 만드는 것과 유저가 그리는 것의 경계가 그 자리다.
+            // 장치 바디는 지형 뒤·스트로크 앞에 들어간다.
+            // 레벨과 유저 그림의 경계가 그 자리다.
             using (var withBomb = WorldBuilder.Build(TestLevels.FlatWithLateBomb(), null, 0))
             using (var without = WorldBuilder.Build(TestLevels.FlatRest(), null, 0))
             {
@@ -58,8 +53,7 @@ namespace PPS.Core.Tests
 
                 Assert.IsTrue(world.Bodies[slot] == null, "터졌는데 몸체가 남아 있다.");
 
-                // **자리는 유지된다.** 목록에서 빼면 뒤 인덱스가 밀려 해시 구조가 통째로 바뀐다.
-                // WorldHasher 는 null 자리를 그대로 해시에 섞는다 — "여기 뭔가 있었다"가 신호다.
+                // 자리는 유지된다. 빼면 뒤 인덱스가 밀린다.
                 Assert.AreEqual(countBefore, world.Bodies.Count,
                     "파괴된 바디를 목록에서 빼버렸다 — 뒤 인덱스가 전부 밀린다.");
             }
@@ -68,9 +62,9 @@ namespace PPS.Core.Tests
         [Test]
         public void 파괴_시점이_프레임_분할에_영향받지_않는다()
         {
-            // **Destroy 를 쓰면 여기서 걸린다.** 지연 파괴는 프레임 끝에 일어나는데
-            // 한 프레임에 도는 스텝 수는 바깥 사정이라(게임 0~8, 솔버 1800),
-            // 바디가 사라지는 스텝이 프레임 경계에 따라 달라진다.
+            // Destroy 를 쓰면 여기서 걸린다.
+            // 한 프레임에 도는 스텝 수가 바깥 사정이라
+            // 사라지는 스텝이 프레임 경계를 탄다.
             const int Target = TestLevels.LateBombFireStep + 20;
 
             ulong direct;
@@ -85,7 +79,7 @@ namespace PPS.Core.Tests
             {
                 var accumulator = new SimAccumulator();
 
-                // 30fps 상당 — 한 프레임에 2스텝씩 묶어 돈다.
+                // 30fps 상당. 한 프레임에 2스텝씩.
                 for (int i = 0; i < Target && world.CurrentStep < Target; i++)
                     accumulator.Advance(world, 1f / 30f);
 
@@ -100,7 +94,8 @@ namespace PPS.Core.Tests
         [Test]
         public void 대기_중인_장치가_있으면_전부_잠들어도_Stalled가_아니다()
         {
-            // 이 보장이 없으면 "곧 터질 폭탄"이 있는 레벨을 솔버가 조기에 실패로 판정한다.
+            // 없으면 곧 터질 폭탄이 있는 레벨을
+            // 솔버가 조기에 실패로 판정한다.
             using (var world = WorldBuilder.Build(TestLevels.FlatWithLateBomb(), null, 0))
             {
                 for (int i = 0; i < TestLevels.LateBombFireStep - 50; i++) world.Step();
@@ -121,7 +116,7 @@ namespace PPS.Core.Tests
 
                 Vector2 before = world.Ball.position;
 
-                // 발동 스텝을 지난다. 흔들림이 0 이라 정확히 LateBombFireStep 에서 터진다.
+                // 흔들림이 0 이라 정확히 그 스텝에 터진다.
                 for (int i = 0; i < 60; i++) world.Step();
 
                 Assert.IsFalse(world.AnyPendingWork(), "발동했는데 대기 상태가 유지된다.");
@@ -133,7 +128,7 @@ namespace PPS.Core.Tests
         [Test]
         public void 반경_밖의_물체는_건드리지_않는다()
         {
-            // 반경 판정이 없으면 폭탄이 화면 전체를 흔든다. 레벨 디자인이 성립하지 않는다.
+            // 반경 판정이 없으면 화면 전체가 흔들린다.
             var level = TestLevels.FlatWithLateBomb();   // 폭탄 (0,0), 반경 3
 
             var solution = new Solution();

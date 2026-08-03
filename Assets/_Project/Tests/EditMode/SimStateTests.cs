@@ -3,13 +3,9 @@ using NUnit.Framework;
 namespace PPS.Core.Tests
 {
     /// <summary>
-    /// 상태 머신은 2상태뿐이다 — **편집 중(월드 없음) ↔ 시뮬 중(월드 있음)**.
-    ///
-    /// 편집 중에 물리가 진행되는 경로가 없다는 것을 지키는 실제 장치는
-    /// <see cref="SimAccumulator.Advance"/> 의 첫 줄 하나뿐이다. 드라이버는 매 프레임
-    /// 누적기를 부르고, 편집 중에는 월드가 null 로 들어간다.
-    ///
-    /// 월드를 만들지 않으므로 EditMode 다.
+    /// 상태는 둘뿐이다 — 편집 중 ↔ 시뮬 중.
+    /// 편집 중에 물리가 안 도는 것을 지키는 건
+    /// Advance 의 첫 줄 하나뿐이다.
     /// </summary>
     public class SimStateTests
     {

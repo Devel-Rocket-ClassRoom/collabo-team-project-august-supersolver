@@ -3,9 +3,9 @@ using NUnit.Framework;
 namespace PPS.Core.Tests
 {
     /// <summary>
-    /// 네 가지 Outcome 이 실제로 구분되어 나오는지, 그리고 MinGoalDist 가
-    /// 실패한 시도에서도 채워지는지 확인한다. 후자가 없으면 CEM 은 탐색 초반에
-    /// 아무 신호 없이 무작위로 헤매게 된다.
+    /// 네 Outcome 이 구분되는지,
+    /// MinGoalDist 가 실패에서도 채워지는지.
+    /// 후자가 없으면 CEM 이 신호 없이 헤맨다.
     /// </summary>
     public class JudgeTests
     {

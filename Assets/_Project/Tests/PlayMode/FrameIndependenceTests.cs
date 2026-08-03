@@ -3,7 +3,7 @@ using NUnit.Framework;
 namespace PPS.Core.Tests
 {
     /// <summary>
-    /// "프레임 속도가 결과에 영향을 주면 안 됨" (미션 가이드) 을 구조로 충족하는지 확인한다.
+    /// "프레임 속도가 결과에 영향을 주면 안 됨"을 구조로 충족하는지 확인한다.
     /// 누적기가 경과 시간을 인자로 받게 만든 이유가 이 테스트다.
     /// </summary>
     public class FrameIndependenceTests
@@ -80,12 +80,9 @@ namespace PPS.Core.Tests
         [Test]
         public void 편집_중_흘려보낸_시간은_시뮬_시작_후_한꺼번에_쏟아지지_않는다()
         {
-            // 편집 중(월드 없음)에도 드라이버는 매 프레임 누적기를 부른다.
-            // 그동안 시간이 쌓이면 시작 버튼을 누르는 순간 그만큼이 한 번에 터져나온다 —
-            // 10초 그리다 시작하면 첫 프레임에 600스텝이 진행되는 식이다.
-            //
-            // Advance 가 월드 검사를 **누적보다 먼저** 하는 것이 그것을 막는다.
-            // 두 줄의 순서가 뒤바뀌면 여기서 걸린다.
+            // 편집 중에도 누적기는 매 프레임 불린다.
+            // 시간이 쌓이면 시작 순간 한꺼번에 터진다.
+            // Advance 의 월드 검사가 누적보다 앞이라 막힌다.
             var accumulator = new SimAccumulator();
 
             for (int i = 0; i < 300; i++) accumulator.Advance(null, 1f / 60f);   // 5초간 편집
@@ -99,7 +96,7 @@ namespace PPS.Core.Tests
             }
         }
 
-        /// <summary>지정한 프레임 수만큼 누적기로 전진시키고, 도달한 스텝의 해시를 돌려준다.</summary>
+        /// <summary>N 프레임 전진 후의 해시.</summary>
         static ulong DriveTo(int expectedStep, float frameDelta, int frameCount, out int reachedStep)
         {
             using (var world = WorldBuilder.Build(TestLevels.LongRoll(), null, 0))

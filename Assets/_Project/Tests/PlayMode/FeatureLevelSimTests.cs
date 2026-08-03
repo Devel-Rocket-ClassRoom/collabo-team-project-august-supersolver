@@ -5,14 +5,9 @@ using UnityEngine;
 namespace PPS.Core.Tests
 {
     /// <summary>
-    /// 파일에 적힌 **모든 피처가 실제 물리 월드에 도달하는가.**
-    ///
-    /// 파싱이 맞아도 <c>WorldBuilder</c> 가 흘리면 소용이 없다. 여기서는 바디와 조인트를
-    /// 직접 세어 파일의 구성이 그대로 섰는지 확인한다.
-    ///
-    /// 최종 <c>SimOutcome</c> 은 단정하지 않는다. 이 레벨의 목적은 "풀리는 것"이 아니라
-    /// "표현할 수 있는 것을 다 담는 것"이고, 클리어 여부는 좌표를 조금만 건드려도 흔들린다.
-    /// 데이터만으로 풀리는 레벨이 성립한다는 증명은 <c>LevelJsonSimTests</c>(L001) 가 맡는다.
+    /// 파일의 모든 피처가 물리 월드에 닿는가.
+    /// 파싱이 맞아도 WorldBuilder 가 흘릴 수 있다.
+    /// Outcome 은 단정하지 않는다 — 목적이 다르다.
     /// </summary>
     public class FeatureLevelSimTests
     {
@@ -24,7 +19,8 @@ namespace PPS.Core.Tests
 
             using (var world = WorldBuilder.Build(level, solution, 0))
             {
-                // 공 1 + 지형 + 장치 + 스트로크. 순서도 이 순서다 (WorldBuilder 의 고정 계약).
+                // 공 1 + 지형 + 장치 + 스트로크.
+            // 순서도 이 순서다.
                 int expected = 1 + level.Terrain.Count + level.Devices.Count + solution.Strokes.Count;
                 Assert.AreEqual(expected, world.Bodies.Count,
                     "바디 수가 파일 구성과 다르다 — 어딘가에서 스트로크나 지형을 흘렸다.");
