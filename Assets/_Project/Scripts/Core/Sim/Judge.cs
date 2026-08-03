@@ -3,12 +3,9 @@ using UnityEngine;
 namespace PPS.Core
 {
     /// <summary>
-    /// 클리어/실패/정지 판정과 <see cref="MinGoalDist"/> 계측.
-    ///
-    /// 판정은 물리 콜백(OnTriggerEnter2D 등)이 아니라 **매 스텝 직접 계산**으로 한다.
-    /// 콜백은 호출 순서와 시점을 물리 엔진이 정하므로 결정론 검증의 사각지대가 되고,
-    /// 무엇보다 헤드리스 솔버에서 콜백 수신을 위해 MonoBehaviour 를 붙여야 해서
-    /// "코어는 프레임을 모른다"가 깨진다.
+    /// 클리어/실패/정지 판정.
+    /// 물리 콜백이 아니라 매 스텝 직접 계산한다.
+    /// 콜백은 순서를 엔진이 정해 재현이 흔들린다.
     /// </summary>
     public sealed class Judge
     {
@@ -19,13 +16,10 @@ namespace PPS.Core
         /// 판정이 확정된 스텝. 아직이면 -1.
         public int DecidedStep { get; private set; } = -1;
 
-        /// <summary>M01 범위에서는 항상 0. 별 장치가 들어오는 시점에 수집 개수로 채운다.</summary>
+        /// 별 장치가 들어올 때까지 항상 0.
         public int Stars { get; private set; }
 
-        /// <summary>
-        /// 시뮬 전체에서 공과 목표 사이의 최소 거리. 초기 상태부터 계측한다.
-        /// 실패한 시도에서도 CEM 이 쓸 수 있는 유일한 학습 신호이므로 항상 채워져야 한다.
-        /// </summary>
+        /// 초기 상태부터 계측한다.
         public float MinGoalDist { get; private set; } = float.PositiveInfinity;
 
         internal void Initialize(SimWorld world)
@@ -33,7 +27,10 @@ namespace PPS.Core
             UpdateGoalDistance(world);
         }
 
-        /// <summary>물리 전진 직후에 호출된다. 한 번 확정된 판정은 뒤집지 않는다.</summary>
+        /// <summary>
+        /// 물리 전진 직후에 호출된다.
+        /// 한 번 확정된 판정은 뒤집지 않는다.
+        /// </summary>
         public void Evaluate(int step, SimWorld world)
         {
             if (Cleared || Failed || Stalled) return;
@@ -55,12 +52,40 @@ namespace PPS.Core
                 return;
             }
 
-            // 더 이상 아무 일도 일어나지 않는 상태. 대기 중인 장치가 있으면 아직 아니다.
+            // 클리어 검사 뒤에 둔다.
+            // 같은 스텝에 겹치면 클리어를 준다.
+            if (TouchedHazard(world))
+            {
+                Failed = true;
+                DecidedStep = step;
+                return;
+            }
+
+            // 대기 중인 장치가 있으면 아직 아니다.
             if (world.AllBodiesSleeping() && !world.AnyPendingWork())
             {
                 Stalled = true;
                 DecidedStep = step;
             }
+        }
+
+        /// <summary>
+        /// IsTouching 은 콜백이 아니라 질의라
+        /// 부르는 시점을 우리가 정한다.
+        /// </summary>
+        static bool TouchedHazard(SimWorld world)
+        {
+            var ball = world.BallCollider;
+            if (ball == null) return false;
+
+            var hazards = world.Hazards;
+            for (int i = 0; i < hazards.Count; i++)
+            {
+                var hazard = hazards[i];
+                if (hazard == null) continue;   // 파괴된 파편
+                if (ball.IsTouching(hazard)) return true;
+            }
+            return false;
         }
 
         float UpdateGoalDistance(SimWorld world)

@@ -4,14 +4,9 @@ using UnityEngine;
 namespace PPS.Game
 {
     /// <summary>
-    /// 게임 플레이용 얇은 드라이버. 하는 일은 하나뿐 —
-    /// **엔진의 경과 시간을 <see cref="SimAccumulator"/> 에 넘겨주는 것.**
-    ///
-    /// 판정도 물리도 여기에 없다. 이 클래스가 하는 계산이 늘어나는 순간
-    /// 게임과 솔버의 코드 경로가 갈라지고 검증의 정당성이 사라진다.
-    ///
-    /// FixedUpdate 를 쓰지 않는 이유: 호출 시점과 횟수를 Unity 가 관리해 통제할 수 없다.
-    /// 수동 누적기는 배속·일시정지·솔버 재사용이 전부 같은 코드에서 나온다.
+    /// 게임 플레이용 얇은 드라이버.
+    /// 경과 시간을 누적기에 넘기는 일만 한다.
+    /// 여기 계산이 늘면 솔버와 경로가 갈라진다.
     /// </summary>
     public sealed class GameSimDriver : MonoBehaviour
     {
@@ -23,7 +18,7 @@ namespace PPS.Game
 
         public bool HasWorld => _world != null;
 
-        /// <summary>편집 중(월드 없음) ↔ 시뮬 중(월드 있음) 2상태 중 어디인가.</summary>
+        /// 편집 중(월드 없음) ↔ 시뮬 중(월드 있음).
         public bool IsSimulating => _world != null && !_world.IsTerminal;
 
         public bool Paused
@@ -38,16 +33,22 @@ namespace PPS.Game
             set => _accumulator.SpeedMultiplier = value;
         }
 
-        /// <summary>그리기를 마치고 시작 버튼을 눌렀을 때. 이 시점에 비로소 월드가 생긴다.</summary>
-        public void StartSimulation(LevelData level, Solution solution, int seed)
+        /// <summary>
+        /// 시작 버튼을 눌렀을 때 월드가 생긴다.
+        /// 시드는 받지 않는다 — 게임이 다른 시드로
+        /// 돌리면 솔버가 푼 판과 다른 판이 된다.
+        /// </summary>
+        public void StartSimulation(StageData stage, Solution solution)
         {
+            if (stage == null) throw new System.ArgumentNullException(nameof(stage));
+
             Stop();
             _accumulator.Reset();
             _accumulator.Paused = false;
-            _world = WorldBuilder.Build(level, solution, seed);
+            _world = WorldBuilder.Build(stage, solution);
         }
 
-        /// <summary>초기화·재시도. 상태를 되감는 것이 아니라 월드를 통째로 버린다.</summary>
+        /// <summary>재시도는 되감기가 아니라 전파괴다.</summary>
         public void Stop()
         {
             if (_world == null) return;

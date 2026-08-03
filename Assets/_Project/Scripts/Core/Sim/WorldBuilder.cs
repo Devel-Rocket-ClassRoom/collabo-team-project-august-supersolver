@@ -5,21 +5,28 @@ using UnityEngine.SceneManagement;
 namespace PPS.Core
 {
     /// <summary>
-    /// <see cref="LevelData"/> + <see cref="Solution"/> → 격리 물리 씬에 월드를 구축한다.
-    ///
-    /// **등록 순서가 이 클래스의 존재 이유다.** Box2D 는 바디 등록 순서에 따라
-    /// 아일랜드 구성과 제약 해결 순서가 달라지고, 그 결과 부동소수점 합산 순서가 바뀐다.
-    /// 같은 입력이면 항상 같은 순서로 만들어야 같은 결과가 나온다.
-    ///
-    /// 고정된 순서: 공 → 지형(레벨 데이터 순서) → 장치(레벨 데이터 순서) → 스트로크(리스트 순서) → 회전축(리스트 순서)
-    ///
-    /// 오브젝트 풀링을 쓰지 않는 것도 같은 이유다. 풀 반납 순서가 다음 시도의
-    /// 생성 순서를 오염시켜 "같은 입력, 다른 결과"를 만든다. 시도마다 새로 만든다.
+    /// 격리 물리 씬에 월드를 구축한다.
+    /// 등록 순서가 이 클래스의 존재 이유다 —
+    /// Box2D 는 바디 순서에 결과가 달라진다.
     /// </summary>
     public static class WorldBuilder
     {
         static int _sceneCounter;
 
+        /// <summary>
+        /// 스테이지 진입점.
+        /// 시드는 스테이지가 들고 있다.
+        /// </summary>
+        public static SimWorld Build(StageData stage, Solution solution)
+        {
+            if (stage == null) throw new System.ArgumentNullException(nameof(stage));
+            return Build(stage.Level, solution, stage.Seed);
+        }
+
+        /// <summary>
+        /// 시드를 직접 주는 저수준 진입점.
+        /// 시드를 축으로 훑는 곳만 쓴다.
+        /// </summary>
         public static SimWorld Build(LevelData level, Solution solution, int seed)
         {
             if (level == null) throw new System.ArgumentNullException(nameof(level));
@@ -34,7 +41,10 @@ namespace PPS.Core
             var bodies = new List<Rigidbody2D>();
             var logics = new List<IStepLogic>();
 
-            // 1. 공 — 항상 인덱스 0. 해시 덤프를 읽을 때 기준점이 고정되어 있으면 디버깅이 쉽다.
+            // 장치가 도중에 파편을 덧붙이므로 살아 있는 참조로 넘긴다.
+            var hazards = new List<Collider2D>();
+
+            // 1. 공 — 항상 인덱스 0. 해시를 읽을 기준점.
             var ball = ColliderFactory.CreateBall(scene, level, "Ball");
             bodies.Add(ball);
 
@@ -46,25 +56,16 @@ namespace PPS.Core
             }
 
             // 3. 장치 — 레벨 데이터 순서.
-            //    **장치는 바디를 만들 수 있다.** 장애물이나 문처럼 물리적 실체가 있는 장치는
-            //    콜라이더가 필요하다. 만들었다면 DeviceFactory 가 bodies 에 넣으며,
-            //    그 자리가 위 고정 순서의 "장치" 구간이다. 지형 뒤·스트로크 앞이 되는 것이 중요하다 —
-            //    레벨이 만드는 것과 유저가 그리는 것 사이의 경계가 여기다.
-            //
-            //    장치 바디는 시뮬 도중 사라질 수 있다(폭탄이 터지면 소모된다). 그때도 목록에서
-            //    빼지 않고 null 로 남긴다 — 빼면 뒤 인덱스가 밀려 해시 구조가 통째로 바뀐다.
-            //
-            //    bodies 를 살아 있는 참조로 넘기는 이유는 따로 있다. 장치는 스트로크보다 먼저
-            //    등록되지만 Tick 이 도는 시점에는 스트로크까지 전부 보여야 한다.
+            //    지형 뒤·스트로크 앞이라는 것이 중요하다.
+            //    레벨이 만드는 것과 유저가 그리는 것의 경계다.
             if (level.Devices != null)
             {
                 for (int i = 0; i < level.Devices.Count; i++)
-                    logics.Add(DeviceFactory.Create(level.Devices[i], i, scene, bodies));
+                    logics.Add(DeviceFactory.Create(level.Devices[i], i, scene, bodies, hazards));
             }
 
             // 4. 스트로크 — 솔루션 리스트 순서.
-            //    유저가 그린 것이든 솔버가 전개한 것이든 여기서부터는 구분되지 않는다.
-            int strokeBodyOffset = bodies.Count;
+            //    유저가 그렸든 솔버가 전개했든 구분하지 않는다.
             var strokeBodies = new List<Rigidbody2D>();
             for (int i = 0; i < solution.Strokes.Count; i++)
             {
@@ -73,12 +74,15 @@ namespace PPS.Core
                 if (body != null) bodies.Add(body);
             }
 
-            // 5. 회전축 — 리스트 순서. 스트로크가 전부 만들어진 뒤에 연결한다.
+            // 5. 회전축 — 스트로크가 전부 선 뒤에 연결한다.
             for (int i = 0; i < solution.Pivots.Count; i++)
                 CreatePivot(solution.Pivots[i], strokeBodies);
 
             var judge = new Judge();
-            var world = new SimWorld(scene, physics, level, seed, ball, bodies, logics, judge);
+            var world = new SimWorld(
+                scene, physics, level, seed,
+                ball, ball.GetComponent<Collider2D>(),
+                bodies, hazards, logics, judge);
             return world;
         }
 
@@ -87,7 +91,7 @@ namespace PPS.Core
             Rigidbody2D a = Resolve(pivot.StrokeA, strokeBodies);
             Rigidbody2D b = Resolve(pivot.StrokeB, strokeBodies);
 
-            // 조인트를 붙일 쪽은 동적 바디여야 한다. 둘 다 없거나 둘 다 정적이면 회전축이 의미가 없다.
+            // 조인트를 붙일 쪽은 동적 바디여야 한다.
             Rigidbody2D host = PickHost(a, b);
             if (host == null) return;
 
