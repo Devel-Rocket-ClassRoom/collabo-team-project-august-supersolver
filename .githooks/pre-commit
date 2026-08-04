@@ -1,0 +1,17 @@
+#!/bin/sh
+# Codex 미러 문서가 SSOT와 어긋난 채 커밋되는 것을 막는다.
+# 작업 트리가 아니라 인덱스를 보므로 부분 스테이징도 걸린다.
+
+if command -v python3 >/dev/null 2>&1; then
+    PY=python3
+elif command -v python >/dev/null 2>&1; then
+    PY=python
+elif command -v py >/dev/null 2>&1; then
+    PY="py -3"
+else
+    # 막기보다 알리고 넘긴다. 최종 방어선은 CI 쪽 --check 이다.
+    echo "pre-commit: python 없음 — 미러 문서 검증 건너뜀" >&2
+    exit 0
+fi
+
+exec $PY BuildTools/CI/gen_codex_docs.py --check --staged
