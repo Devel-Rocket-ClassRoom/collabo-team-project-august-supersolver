@@ -1,0 +1,14 @@
+{
+    "InkLimit": 14.5,
+    "BallStart": { "x": -4.5, "y": 3.3 },
+    "BallRadius": 0.28,
+    "GoalPosition": { "x": 4.5, "y": -0.5 },
+    "GoalRadius": 0.55,
+    "Terrain": [
+        {
+            "A": { "x": -5.0, "y": 3.0 },
+            "B": { "x": 5.0, "y": -1.0 }
+        }
+    ],
+    "KillY": -12.0
+}

@@ -1,0 +1,41 @@
+# Unity
+[Ll]ibrary/
+[Tt]emp/
+[Oo]bj/
+[Bb]uild/
+[Bb]uilds/
+[Ll]ogs/
+[Uu]ser[Ss]ettings/
+[Mm]emoryCaptures/
+/[Aa]ssets/SceneDependencyCache/
+/[Aa]ssets/SceneDependencyCache.meta
+
+# Build outputs
+*.apk
+*.aab
+*.unitypackage
+*.app
+
+# IDE
+.vs/
+.idea/
+*.csproj
+*.sln
+*.slnx
+*.user
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Python (BuildTools/CI 스크립트 실행 부산물)
+__pycache__/
+*.pyc
+
+# Secrets — Photon App Id, tokens 등은 절대 커밋 금지
+# 공유되는 PhotonAppSettings.asset 은 AppId 빈 값으로 커밋하고,
+# 실제 AppId 는 각자 PhotonAppSettings.local.asset 에만 둔다(아래 패턴으로 무시됨).
+# Game.Networking 의 PhotonAppSettingsLocalOverride.cs 가 .local 을 우선 로드하고 없으면 빈 본 파일로 폴백.
+**/secrets.*
+*.env
+PhotonAppSettings.local.*

@@ -1,0 +1,23 @@
+#!/bin/sh
+# 푸시 직전 게이트 — 미러 문서 **전체**를 검증한다.
+#
+# 여기서는 --staged 를 쓰지 않는다. 푸시 시점에는 스테이징 영역이라는 개념이 없고
+# (인덱스는 이미 커밋에 흡수됐다), 원격에 올라가는 것은 브랜치 전체이기 때문이다.
+# pre-commit 이 파일 단위로 막고, 여기서 전체가 맞는지 한 번 더 본다.
+set -e
+
+PY=""
+for c in python3 python py; do
+	if command -v "$c" >/dev/null 2>&1; then
+		PY="$c"
+		break
+	fi
+done
+
+if [ -z "$PY" ]; then
+	echo "pre-push: python 을 찾지 못했습니다. Codex 미러 문서를 검증할 수 없습니다." >&2
+	echo "          python 을 설치하거나, 이번만 넘기려면 git push --no-verify" >&2
+	exit 1
+fi
+
+exec "$PY" BuildTools/CI/gen_codex_docs.py --check
