@@ -56,6 +56,6 @@ namespace PPS.Solver
         public float PivotT => Pivot == PivotSpot.Middle ? 0.5f : 0f;
 
         /// 각도가 겹치기 시작하는 지점.
-        public float AnglePeriod => Shape.AnglePeriod();
+        public float AnglePeriod => PrimitiveShapeExtensions.AnglePeriod(Shape);
     }
 }

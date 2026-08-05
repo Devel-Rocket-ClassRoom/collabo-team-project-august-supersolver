@@ -17,14 +17,14 @@ namespace PPS.Solver
         /// 첫 점과 끝 점의 일치가 닫힘의 유일한 표현이고,
         /// ColliderFactory 는 이걸로 폴리곤/엣지를 가른다.
         /// </summary>
-        public static List<Vector2> LocalPoints(this PrimitiveShape shape, float size)
+        public static List<Vector2> LocalPoints(PrimitiveShape shape, float size)
         {
-            var unit = shape.Rule().UnitPoints;
+            var unit = PrimitiveShapeExtensions.Rule(shape).UnitPoints;
 
             var points = new List<Vector2>(unit.Length);
             for (int i = 0; i < unit.Length; i++)
                 points.Add(unit[i] * size);
-
+            
             // 끝 점을 다시 계산하면 부동소수 오차로
             // 닫힘 판정이 깨진다. 반드시 값 복사다.
             if (IsClosed(unit))
