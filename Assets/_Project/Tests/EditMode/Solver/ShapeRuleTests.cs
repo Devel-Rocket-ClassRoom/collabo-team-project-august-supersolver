@@ -45,8 +45,12 @@ namespace PPS.Solver.Tests
             var last = rule.UnitPoints[rule.PointCount - 1];
 
             Assert.AreEqual(2f * Mathf.PI, rule.AnglePeriod, Eps, "주기 360°");
-            Assert.AreEqual(new Vector2(-1f, 0f), rule.StartAnchor, "0 은 한쪽 팔 끝");
-            Assert.AreEqual(new Vector2(0f, -1f), rule.MiddleAnchor, "0.5 는 바닥 중앙");
+
+            // 호를 삼각함수로 만들어 성분에 1e-7 오차가 남는다.
+            Assert.AreEqual(-1f, rule.StartAnchor.x, Eps, "0 은 한쪽 팔 끝");
+            Assert.AreEqual(0f, rule.StartAnchor.y, Eps, "0 은 한쪽 팔 끝");
+            Assert.AreEqual(0f, rule.MiddleAnchor.x, Eps, "0.5 는 바닥 중앙");
+            Assert.AreEqual(-1f, rule.MiddleAnchor.y, Eps, "0.5 는 바닥 중앙");
             Assert.AreEqual(Vector2.Distance(rule.StartAnchor, last), rule.DimensionPerRadius, Eps,
                 "치수는 팔 끝 간 거리");
             Assert.IsTrue(rule.PointCount >= 8 && rule.PointCount <= 12, "8~12 점");
