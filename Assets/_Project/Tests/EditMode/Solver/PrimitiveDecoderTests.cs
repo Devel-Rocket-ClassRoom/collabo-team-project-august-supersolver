@@ -78,7 +78,7 @@ namespace PPS.Solver.Tests
                 new Primitive(PrimitiveShape.Triangle, ToolType.FixedLine, new Vector2(20f, 0f), 0f, 1f),
             };
 
-            var strokes = PrimitiveDecoder.Decode(primitives);
+            var strokes = PrimitiveDecoder.Decode(primitives).Strokes;
 
             Assert.AreEqual(3, strokes.Count);
             for (int i = 0; i < strokes.Count; i++)

@@ -104,12 +104,8 @@ namespace PPS.Solver.Tests
             return list;
         }
 
-        static Solution ToSolution(List<Primitive> primitives)
-        {
-            var solution = new Solution();
-            solution.Strokes.AddRange(PrimitiveDecoder.Decode(primitives));
-            return solution;
-        }
+        static Solution ToSolution(List<Primitive> primitives) =>
+            PrimitiveDecoder.Decode(primitives);
 
         /// 평평한 바닥 하나. 공은 옆으로 치워 둔다.
         static LevelData Ground()
