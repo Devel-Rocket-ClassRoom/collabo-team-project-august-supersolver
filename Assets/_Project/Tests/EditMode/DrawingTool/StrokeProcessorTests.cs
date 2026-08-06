@@ -52,6 +52,20 @@ namespace PPS.DrawingTool.Tests
         }
 
         [Test]
+        public void 왔던_길로_되돌아온_획도_바깥_구간이_남는다()
+        {
+            // 무한 직선까지의 거리로 재면 되돌아온 끝점이
+            // 그 직선 위에 놓여 바깥 구간이 통째로 지워진다.
+            var stroke = Process(
+                new Vector2(0f, 0f),
+                new Vector2(2f, 0f),
+                new Vector2(1f, 0f));
+
+            Assert.AreEqual(3, stroke.Points.Count);
+            Assert.AreEqual(2f, stroke.Points[1].x, 0.0001f);
+        }
+
+        [Test]
         public void 최소_길이_미만이면_무효를_반환한다()
         {
             var stroke = Process(

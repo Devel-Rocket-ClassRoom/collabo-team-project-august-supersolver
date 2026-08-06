@@ -53,7 +53,7 @@ namespace PPS.DrawingTool
 
             for (int i = first + 1; i < last; i++)
             {
-                float d = LineDistance(points[first], points[last], points[i]);
+                float d = SegmentDistance(points[first], points[last], points[i]);
 
                 // 동점이면 앞쪽이 이긴다. 비교를 느슨하게
                 // 두면 같은 입력에서 다른 점이 뽑힐 수 있다.
@@ -71,19 +71,25 @@ namespace PPS.DrawingTool
             MarkFarthest(points, farthest, last, epsilon, keep);
         }
 
-        /// <summary>a·b 를 지나는 직선과 p 사이의 거리.</summary>
-        static float LineDistance(Vector2 a, Vector2 b, Vector2 p)
+        /// <summary>선분 a-b 와 p 사이의 거리.</summary>
+        static float SegmentDistance(Vector2 a, Vector2 b, Vector2 p)
         {
             Vector2 ab = b - a;
             float lengthSq = ab.x * ab.x + ab.y * ab.y;
 
-            // 닫힌 획은 양 끝이 같은 자리라 직선이
+            // 닫힌 획은 양 끝이 같은 자리라 선분이
             // 정의되지 않는다. 점 거리로 잰다.
             if (lengthSq <= 0f) return Vector2.Distance(a, p);
 
             Vector2 ap = p - a;
-            float cross = ab.x * ap.y - ab.y * ap.x;
-            return Mathf.Abs(cross) / Mathf.Sqrt(lengthSq);
+            float t = (ap.x * ab.x + ap.y * ab.y) / lengthSq;
+
+            // 무한 직선으로 재면 왔던 길로 되돌아온 획에서
+            // 바깥 구간이 통째로 지워진다.
+            if (t <= 0f) return Vector2.Distance(a, p);
+            if (t >= 1f) return Vector2.Distance(b, p);
+
+            return Vector2.Distance(a + ab * t, p);
         }
     }
 }
