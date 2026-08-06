@@ -41,7 +41,7 @@ namespace PPS.Solver
             float cos = Mathf.Cos(primitive.Angle);
             float sin = Mathf.Sin(primitive.Angle);
 
-            bool closed = points.Count >= 3 && points[0] == points[points.Count - 1];
+            bool closed = PrimitiveShapeExtensions.Rule(primitive.Shape).IsClosed;
 
             for (int i = 0; i < points.Count; i++)
                 points[i] = ToWorld(points[i], cos, sin, primitive.Center);
