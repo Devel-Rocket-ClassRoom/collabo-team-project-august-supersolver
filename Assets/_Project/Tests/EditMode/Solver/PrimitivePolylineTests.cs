@@ -53,6 +53,41 @@ namespace PPS.Solver.Tests
         }
 
         [Test]
+        public void 그릇은_외접원_반지름이_Size다()
+        {
+            // 양 팔 끝과 바닥을 감싸는 원.
+            var points = PrimitivePolyline.LocalPoints(PrimitiveShape.Bowl, 2.5f);
+
+            for (int i = 0; i < points.Count; i++)
+                Assert.AreEqual(2.5f, points[i].magnitude, Eps, $"{i}번 점");
+        }
+
+        [Test]
+        public void 그릇은_닫지_않는다()
+        {
+            // 열린 폴리라인이라 첫 점을 복사하지 않는다.
+            var points = PrimitivePolyline.LocalPoints(PrimitiveShape.Bowl, 1.3f);
+
+            Assert.AreNotEqual(points[0], points[points.Count - 1]);
+        }
+
+        [Test]
+        public void 그릇은_왼쪽_팔에서_오른쪽_팔로_가는_아래_반원이다()
+        {
+            // 점 수를 바꿔도 이 성질은 그대로여야 한다.
+            var points = PrimitivePolyline.LocalPoints(PrimitiveShape.Bowl, 2f);
+
+            Assert.AreEqual(-2f, points[0].x, Eps, "왼쪽 팔 끝");
+            Assert.AreEqual(2f, points[points.Count - 1].x, Eps, "오른쪽 팔 끝");
+
+            for (int i = 1; i < points.Count; i++)
+            {
+                Assert.LessOrEqual(points[i].y, Eps, $"{i}번: 아래 반원");
+                Assert.Greater(points[i].x, points[i - 1].x, $"{i}번: 왼→오");
+            }
+        }
+
+        [Test]
         public void 직선은_닫히지_않는다()
         {
             var points = PrimitivePolyline.LocalPoints(PrimitiveShape.Line, 1f);
