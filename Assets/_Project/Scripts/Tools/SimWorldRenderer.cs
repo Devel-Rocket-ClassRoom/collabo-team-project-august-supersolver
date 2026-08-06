@@ -66,6 +66,8 @@ namespace PPS.Tools
             Entry entry = _catalog[_levelIndex];
             // 선택한 Entry의 생성 함수를 실행하여 StageData를 만든다.
             _stage = entry.MakeStage();
+            //등록된 풀이가 있으면 사용하고, 없으면 빈 Solution을 생성한다.
+            _solution = entry.MakeSolution() ?? new Solution();
         }
 
         static Entry Stage(string  name, Func<LevelData> makeLevel, Func<Solution> makeSolution, int seed = 0)
