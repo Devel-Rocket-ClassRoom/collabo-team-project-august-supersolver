@@ -44,8 +44,7 @@ namespace PPS.Solver
         public readonly float InkPerRadius;
 
         /// 후보 각도를 몇 개로 쪼갤지.
-        /// 탐색 비용과 직결돼 튜닝 대상이므로 가변이다.
-        public int AngleDivisions;
+        public readonly int AngleDivisions;
 
         public ShapeRule(float anglePeriod, Vector2[] unitPoints, Vector2 middleAnchor,
             float dimensionPerRadius, int angleDivisions)
