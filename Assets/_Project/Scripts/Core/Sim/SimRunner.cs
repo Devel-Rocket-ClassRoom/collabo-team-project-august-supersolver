@@ -52,6 +52,36 @@ namespace PPS.Core
         }
 
         /// <summary>
+        /// 공의 궤적을 샘플링하며 돌린다.
+        /// 해시 추적과 별개다 — 해시는 결정론 검사라
+        /// 위상 정보가 없다.
+        /// </summary>
+        /// <param name="buffer">시작할 때 비운다. 재사용해도 된다.</param>
+        public static SimResult RunSampled(
+            LevelData level,
+            Solution solution,
+            int seed,
+            TrajectoryBuffer buffer,
+            int maxSteps = SimWorld.DefaultMaxSteps)
+        {
+            buffer.Clear();
+
+            using (var world = WorldBuilder.Build(level, solution, seed))
+            {
+                while (world.CurrentStep < maxSteps && !world.IsTerminal)
+                {
+                    world.Step();
+
+                    if (buffer.IsSampleStep(world.CurrentStep))
+                        buffer.Add(new BallSample(
+                            world.CurrentStep, world.Ball.position, world.Ball.linearVelocity));
+                }
+
+                return world.ToResult((solution ?? Solution.Empty).TotalInk());
+            }
+        }
+
+        /// <summary>
         /// 스텝별 해시를 기록한다.
         /// 갈라진 첫 스텝을 알아야 디버깅이 된다.
         /// </summary>
