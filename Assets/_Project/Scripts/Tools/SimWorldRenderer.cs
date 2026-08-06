@@ -46,6 +46,8 @@ namespace PPS.Tools
                 return;
             }
             _levelIndex = Mathf.Clamp(_levelIndex, 0, _catalog.Length - 1);
+
+            Rebuild();
         }
 
         // Update is called once per frame
@@ -57,6 +59,13 @@ namespace PPS.Tools
         {
             _world?.Dispose();
             _world = null;
+        }
+        void Rebuild()
+        {
+            // 보정된 레벨 번호를 사용하여 카탈로그에서 Entry 하나를 선택한다.
+            Entry entry = _catalog[_levelIndex];
+            // 선택한 Entry의 생성 함수를 실행하여 StageData를 만든다.
+            _stage = entry.MakeStage();
         }
 
         static Entry Stage(string  name, Func<LevelData> makeLevel, Func<Solution> makeSolution, int seed = 0)
