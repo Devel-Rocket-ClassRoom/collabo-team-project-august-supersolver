@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 
 namespace PPS.Solver
@@ -25,6 +26,10 @@ namespace PPS.Solver
     /// </summary>
     public sealed class ShapeRule
     {
+        /// 이 줄이 어느 Shape 의 규칙인지.
+        /// 표의 자리와 대조해 어긋남을 잡는다.
+        public readonly PrimitiveShape Shape;
+
         /// 각도가 겹치기 시작하는 주기(라디안).
         public readonly float AnglePeriod;
 
@@ -46,15 +51,23 @@ namespace PPS.Solver
         /// 후보 각도를 몇 개로 쪼갤지.
         public readonly int AngleDivisions;
 
-        public ShapeRule(float anglePeriod, Vector2[] unitPoints, Vector2 middleAnchor,
-            float dimensionPerRadius, int angleDivisions)
+        /// 첫 점과 끝 점이 같은 닫힌 모양인지.
+        /// Stroke.Points 에 닫힘 플래그가 없어
+        /// 두 점의 일치가 닫힘의 유일한 표현이다.
+        public readonly bool IsClosed;
+
+        public ShapeRule(PrimitiveShape shape, float anglePeriod, Vector2[] unitPoints,
+            Vector2 middleAnchor, float dimensionPerRadius, int angleDivisions)
         {
+            Shape = shape;
             AnglePeriod = anglePeriod;
             UnitPoints = unitPoints;
             MiddleAnchor = middleAnchor;
             DimensionPerRadius = dimensionPerRadius;
             AngleDivisions = angleDivisions;
             InkPerRadius = PolylineLength(unitPoints);
+            IsClosed = unitPoints.Length >= 3 &&
+                       unitPoints[0] == unitPoints[unitPoints.Length - 1];
         }
 
         /// PivotSpot.Start 가 걸리는 대표 꼭짓점.
@@ -84,24 +97,42 @@ namespace PPS.Solver
         {
             // 직선 — 뒤집어도 같은 선이라 주기가 180°.
             // 0 은 끝점, 0.5 는 무게중심, 길이 = 2R.
-            new ShapeRule(Mathf.PI,
+            new ShapeRule(PrimitiveShape.Line, Mathf.PI,
                 new[] { new Vector2(-1f, 0f), new Vector2(1f, 0f) },
                 Vector2.zero, 2f, 8),
 
             // 그릇 — 아래 반원. 0 은 한쪽 팔 끝,
             // 0.5 는 바닥 중앙, 치수는 팔 끝 간 거리.
             // 무게중심은 U자 빈 공간에 놓여 어색하다.
-            new ShapeRule(2f * Mathf.PI,
+            new ShapeRule(PrimitiveShape.Bowl, 2f * Mathf.PI,
                 BowlArc(),
                 new Vector2(0f, -1f), 2f, 16),
 
             // 정삼각형 — 세 변이 같아 120° 마다 겹친다.
             // 0 은 한 꼭짓점, 0.5 는 무게중심,
             // 외접원 R 인 정삼각형의 한 변은 √3·R.
-            new ShapeRule(2f * Mathf.PI / 3f,
+            new ShapeRule(PrimitiveShape.Triangle, 2f * Mathf.PI / 3f,
                 TriangleLoop(),
                 Vector2.zero, Mathf.Sqrt(3f), 6),
         };
+
+        /// <summary>
+        /// enum 에만 값을 넣고 표를 잊으면 규칙이
+        /// 한 칸씩 밀려 엉뚱한 모양이 조용히 나온다.
+        /// 첫 접근에서 바로 멈춘다.
+        /// </summary>
+        static PrimitiveShapeExtensions()
+        {
+            int shapeCount = Enum.GetValues(typeof(PrimitiveShape)).Length;
+            if (Table.Length != shapeCount)
+                throw new InvalidOperationException(
+                    $"Shape {shapeCount} 개 중 표에 {Table.Length} 줄만 있다.");
+
+            for (int i = 0; i < Table.Length; i++)
+                if (Table[i].Shape != (PrimitiveShape)i)
+                    throw new InvalidOperationException(
+                        $"표 {i} 번 줄이 {Table[i].Shape} 라 enum 순서와 어긋난다.");
+        }
 
         public static ShapeRule Rule(PrimitiveShape shape) => Table[(int)shape];
 

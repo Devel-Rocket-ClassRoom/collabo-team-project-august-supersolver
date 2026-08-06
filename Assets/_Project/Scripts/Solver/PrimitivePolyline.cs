@@ -19,21 +19,19 @@ namespace PPS.Solver
         /// </summary>
         public static List<Vector2> LocalPoints(PrimitiveShape shape, float size)
         {
-            var unit = PrimitiveShapeExtensions.Rule(shape).UnitPoints;
+            var rule = PrimitiveShapeExtensions.Rule(shape);
+            var unit = rule.UnitPoints;
 
             var points = new List<Vector2>(unit.Length);
             for (int i = 0; i < unit.Length; i++)
                 points.Add(unit[i] * size);
-            
+
             // 끝 점을 다시 계산하면 부동소수 오차로
             // 닫힘 판정이 깨진다. 반드시 값 복사다.
-            if (IsClosed(unit))
+            if (rule.IsClosed)
                 points[unit.Length - 1] = points[0];
 
             return points;
         }
-
-        static bool IsClosed(Vector2[] points) =>
-            points.Length >= 3 && points[0] == points[points.Length - 1];
     }
 }
