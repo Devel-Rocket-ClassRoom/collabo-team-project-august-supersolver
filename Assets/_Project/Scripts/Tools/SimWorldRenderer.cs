@@ -11,6 +11,19 @@ namespace PPS.Tools
 {
     public class SimWorldRenderer : MonoBehaviour
     {
+        readonly struct Entry
+        {
+            public readonly string Name;
+            public readonly Func<StageData> MakeStage;
+            public readonly Func<Solution> MakeSolution;
+
+            public Entry(string name, Func<StageData> makeStage, Func<Solution> makeSolution)
+            {
+                Name = name;
+                MakeStage = makeStage;
+                MakeSolution = makeSolution;
+            }
+        }
         const int MaxSteps = SimWorld.DefaultMaxSteps;
         
         [SerializeField] bool _autoFitCamera = true;
@@ -51,19 +64,7 @@ namespace PPS.Tools
         }
 
 
-        readonly struct Entry
-        {
-            public readonly string Name;
-            public readonly Func<StageData> MakeStage;
-            public readonly Func<Solution> MakeSolution;
-
-            public Entry(string name, Func<StageData> makeStage, Func<Solution> makeSolution)
-            {
-                Name = name;
-                MakeStage = makeStage;
-                MakeSolution = makeSolution;
-            }
-        }
+       
     }
 }
 
