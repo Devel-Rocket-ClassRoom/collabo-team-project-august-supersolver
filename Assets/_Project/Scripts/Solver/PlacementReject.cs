@@ -21,5 +21,9 @@ namespace PPS.Solver
 
         /// 이미 쓴 잉크와 합치면 총량을 넘긴다.
         InkExceeded = 4,
+
+        /// 벡터 길이가 Dimensions 의 배수가 아니다.
+        /// 프리미티브로 펴기 전에 걸린다.
+        BadVector = 5,
     }
 }
