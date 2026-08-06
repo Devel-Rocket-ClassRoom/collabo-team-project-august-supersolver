@@ -104,13 +104,13 @@ namespace PPS.Solver
                 Vector2.zero, Mathf.Sqrt(3f), 6),
         };
 
-        public static ShapeRule Rule(this PrimitiveShape shape) => Table[(int)shape];
+        public static ShapeRule Rule(PrimitiveShape shape) => Table[(int)shape];
 
         /// <summary>
         /// 각도가 한 바퀴 도는 주기(라디안).
         /// 이 값을 넘는 각은 같은 모양이 된다
         /// </summary>
-        public static float AnglePeriod(this PrimitiveShape shape) => shape.Rule().AnglePeriod;
+        public static float AnglePeriod(PrimitiveShape shape) => Rule(shape).AnglePeriod;
 
         /// 표가 enum 을 다 덮는지. 테스트가 본다.
         public static int RuleCount => Table.Length;

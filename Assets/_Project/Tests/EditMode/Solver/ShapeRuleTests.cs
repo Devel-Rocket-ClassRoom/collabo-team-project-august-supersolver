@@ -16,7 +16,7 @@ namespace PPS.Solver.Tests
         [Test]
         public void 직선_다섯_규칙()
         {
-            var rule = PrimitiveShape.Line.Rule();
+            var rule = PrimitiveShapeExtensions.Rule(PrimitiveShape.Line);
 
             Assert.AreEqual(Mathf.PI, rule.AnglePeriod, Eps, "주기 180°");
             Assert.AreEqual(new Vector2(-1f, 0f), rule.StartAnchor, "0 은 끝점");
@@ -28,7 +28,7 @@ namespace PPS.Solver.Tests
         [Test]
         public void 삼각형_다섯_규칙()
         {
-            var rule = PrimitiveShape.Triangle.Rule();
+            var rule = PrimitiveShapeExtensions.Rule(PrimitiveShape.Triangle);
 
             Assert.AreEqual(2f * Mathf.PI / 3f, rule.AnglePeriod, Eps, "주기 120°");
             Assert.AreEqual(1f, rule.StartAnchor.magnitude, Eps, "0 은 외접원 위 꼭짓점");
@@ -41,7 +41,7 @@ namespace PPS.Solver.Tests
         [Test]
         public void 그릇_다섯_규칙()
         {
-            var rule = PrimitiveShape.Bowl.Rule();
+            var rule = PrimitiveShapeExtensions.Rule(PrimitiveShape.Bowl);
             var last = rule.UnitPoints[rule.PointCount - 1];
 
             Assert.AreEqual(2f * Mathf.PI, rule.AnglePeriod, Eps, "주기 360°");
@@ -61,7 +61,7 @@ namespace PPS.Solver.Tests
         {
             foreach (PrimitiveShape shape in Enum.GetValues(typeof(PrimitiveShape)))
             {
-                var rule = shape.Rule();
+                var rule = PrimitiveShapeExtensions.Rule(shape);
 
                 float sum = 0f;
                 for (int i = 1; i < rule.PointCount; i++)
@@ -74,9 +74,9 @@ namespace PPS.Solver.Tests
         [Test]
         public void 같은_R이어도_모양마다_잉크가_다르다()
         {
-            float line = PrimitiveShape.Line.Rule().InkPerRadius;
-            float triangle = PrimitiveShape.Triangle.Rule().InkPerRadius;
-            float bowl = PrimitiveShape.Bowl.Rule().InkPerRadius;
+            float line = PrimitiveShapeExtensions.Rule(PrimitiveShape.Line).InkPerRadius;
+            float triangle = PrimitiveShapeExtensions.Rule(PrimitiveShape.Triangle).InkPerRadius;
+            float bowl = PrimitiveShapeExtensions.Rule(PrimitiveShape.Bowl).InkPerRadius;
 
             Assert.AreEqual(2f, line, Eps);
             Assert.AreEqual(3f * Mathf.Sqrt(3f), triangle, Eps, "정삼각형 둘레");
@@ -87,14 +87,14 @@ namespace PPS.Solver.Tests
         [Test]
         public void 각도_분할_수는_주기에_비례하고_조정된다()
         {
-            Assert.AreEqual(8, PrimitiveShape.Line.Rule().AngleDivisions);
-            Assert.AreEqual(6, PrimitiveShape.Triangle.Rule().AngleDivisions);
-            Assert.AreEqual(16, PrimitiveShape.Bowl.Rule().AngleDivisions);
+            Assert.AreEqual(8, PrimitiveShapeExtensions.Rule(PrimitiveShape.Line).AngleDivisions);
+            Assert.AreEqual(6, PrimitiveShapeExtensions.Rule(PrimitiveShape.Triangle).AngleDivisions);
+            Assert.AreEqual(16, PrimitiveShapeExtensions.Rule(PrimitiveShape.Bowl).AngleDivisions);
 
-            var rule = PrimitiveShape.Line.Rule();
+            var rule = PrimitiveShapeExtensions.Rule(PrimitiveShape.Line);
             int original = rule.AngleDivisions;
             rule.AngleDivisions = 12;
-            Assert.AreEqual(12, PrimitiveShape.Line.Rule().AngleDivisions, "필드로 조정 가능");
+            Assert.AreEqual(12, PrimitiveShapeExtensions.Rule(PrimitiveShape.Line).AngleDivisions, "필드로 조정 가능");
             rule.AngleDivisions = original;
         }
 
@@ -108,7 +108,7 @@ namespace PPS.Solver.Tests
 
             foreach (PrimitiveShape shape in shapes)
             {
-                var rule = shape.Rule();
+                var rule = PrimitiveShapeExtensions.Rule(shape);
                 Assert.IsNotNull(rule, shape.ToString());
                 Assert.GreaterOrEqual(rule.PointCount, 2, shape.ToString());
                 Assert.Greater(rule.AngleDivisions, 0, shape.ToString());

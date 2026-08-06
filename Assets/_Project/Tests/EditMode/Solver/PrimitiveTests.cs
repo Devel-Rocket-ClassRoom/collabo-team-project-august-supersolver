@@ -96,11 +96,11 @@ namespace PPS.Solver.Tests
         [Test]
         public void 각도_주기는_모양이_해석한다()
         {
-            Assert.AreEqual(Mathf.PI, PrimitiveShape.Line.AnglePeriod(), 0.0001f,
+            Assert.AreEqual(Mathf.PI, PrimitiveShapeExtensions.AnglePeriod(PrimitiveShape.Line), 0.0001f,
                 "직선은 뒤집어도 같은 선이다.");
-            Assert.AreEqual(2f * Mathf.PI / 3f, PrimitiveShape.Triangle.AnglePeriod(), 0.0001f,
+            Assert.AreEqual(2f * Mathf.PI / 3f, PrimitiveShapeExtensions.AnglePeriod(PrimitiveShape.Triangle), 0.0001f,
                 "정삼각형은 120° 마다 겹친다.");
-            Assert.AreEqual(2f * Mathf.PI, PrimitiveShape.Bowl.AnglePeriod(), 0.0001f);
+            Assert.AreEqual(2f * Mathf.PI, PrimitiveShapeExtensions.AnglePeriod(PrimitiveShape.Bowl), 0.0001f);
         }
     }
 }
