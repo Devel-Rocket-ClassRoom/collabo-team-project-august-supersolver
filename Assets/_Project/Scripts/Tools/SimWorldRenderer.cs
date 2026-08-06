@@ -62,6 +62,17 @@ namespace PPS.Tools
             },
             makeSolution);
         }
+        static Entry[] BuildCatalog()
+        {
+#if UNITY_INCLUDE_TESTS
+            return new Entry[]
+            {
+        Stage("Ramp -> Clear",TestLevels.RampToGoal,() => null)
+            };
+#else
+    return Array.Empty<Entry>();
+#endif
+        }
     }
 }
 
