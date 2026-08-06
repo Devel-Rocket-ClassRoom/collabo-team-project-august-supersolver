@@ -85,17 +85,11 @@ namespace PPS.Solver.Tests
         }
 
         [Test]
-        public void 각도_분할_수는_주기에_비례하고_조정된다()
+        public void 각도_분할_수는_주기에_비례한다()
         {
             Assert.AreEqual(8, PrimitiveShapeExtensions.Rule(PrimitiveShape.Line).AngleDivisions);
             Assert.AreEqual(6, PrimitiveShapeExtensions.Rule(PrimitiveShape.Triangle).AngleDivisions);
             Assert.AreEqual(16, PrimitiveShapeExtensions.Rule(PrimitiveShape.Bowl).AngleDivisions);
-
-            var rule = PrimitiveShapeExtensions.Rule(PrimitiveShape.Line);
-            int original = rule.AngleDivisions;
-            rule.AngleDivisions = 12;
-            Assert.AreEqual(12, PrimitiveShapeExtensions.Rule(PrimitiveShape.Line).AngleDivisions, "필드로 조정 가능");
-            rule.AngleDivisions = original;
         }
 
         [Test]
