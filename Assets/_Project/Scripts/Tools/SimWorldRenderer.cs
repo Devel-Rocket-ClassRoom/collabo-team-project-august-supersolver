@@ -11,6 +11,19 @@ namespace PPS.Tools
 {
     public class SimWorldRenderer : MonoBehaviour
     {
+        readonly struct Entry
+        {
+            public readonly string Name;
+            public readonly Func<StageData> MakeStage;
+            public readonly Func<Solution> MakeSolution;
+
+            public Entry(string name, Func<StageData> makeStage, Func<Solution> makeSolution)
+            {
+                Name = name;
+                MakeStage = makeStage;
+                MakeSolution = makeSolution;
+            }
+        }
         const int MaxSteps = SimWorld.DefaultMaxSteps;
         
         [SerializeField] bool _autoFitCamera = true;
@@ -25,7 +38,16 @@ namespace PPS.Tools
         // Start is called once before the first execution of Update after the MonoBehaviour is created
         void Start()
         {
-            
+            _catalog = BuildCatalog();
+
+            if(_catalog.Length == 0)
+            {
+                enabled = false;
+                return;
+            }
+            _levelIndex = Mathf.Clamp(_levelIndex, 0, _catalog.Length - 1);
+
+            Rebuild();
         }
 
         // Update is called once per frame
@@ -38,6 +60,13 @@ namespace PPS.Tools
             _world?.Dispose();
             _world = null;
         }
+        void Rebuild()
+        {
+            // 보정된 레벨 번호를 사용하여 카탈로그에서 Entry 하나를 선택한다.
+            Entry entry = _catalog[_levelIndex];
+            // 선택한 Entry의 생성 함수를 실행하여 StageData를 만든다.
+            _stage = entry.MakeStage();
+        }
 
         static Entry Stage(string  name, Func<LevelData> makeLevel, Func<Solution> makeSolution, int seed = 0)
         {
@@ -49,20 +78,16 @@ namespace PPS.Tools
             },
             makeSolution);
         }
-
-
-        readonly struct Entry
+        static Entry[] BuildCatalog()
         {
-            public readonly string Name;
-            public readonly Func<StageData> MakeStage;
-            public readonly Func<Solution> MakeSolution;
-
-            public Entry(string name, Func<StageData> makeStage, Func<Solution> makeSolution)
+#if UNITY_INCLUDE_TESTS
+            return new Entry[]
             {
-                Name = name;
-                MakeStage = makeStage;
-                MakeSolution = makeSolution;
-            }
+        Stage("Ramp -> Clear",TestLevels.RampToGoal,() => null)
+            };
+#else
+    return Array.Empty<Entry>();
+#endif
         }
     }
 }
