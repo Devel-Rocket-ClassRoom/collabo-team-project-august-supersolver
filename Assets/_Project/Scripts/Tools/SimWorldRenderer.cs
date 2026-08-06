@@ -38,7 +38,14 @@ namespace PPS.Tools
         // Start is called once before the first execution of Update after the MonoBehaviour is created
         void Start()
         {
-            
+            _catalog = BuildCatalog();
+
+            if(_catalog.Length == 0)
+            {
+                enabled = false;
+                return;
+            }
+            _levelIndex = Mathf.Clamp(_levelIndex, 0, _catalog.Length - 1);
         }
 
         // Update is called once per frame
