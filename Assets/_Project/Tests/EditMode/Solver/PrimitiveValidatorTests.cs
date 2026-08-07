@@ -99,8 +99,8 @@ namespace PPS.Solver.Tests
         [Test]
         public void 영역은_지형_공_목표를_담고_마진만큼_넓다()
         {
-            var area = PrimitiveValidator.PlayArea(Level());
-            float margin = PrimitiveValidator.AreaMargin;
+            var area = LevelDataArea.Calculate(Level());
+            float margin = LevelDataArea.AreaMargin;
 
             Assert.AreEqual(-5f - margin, area.xMin, Eps, "지형 왼쪽 끝");
             Assert.AreEqual(5.5f + margin, area.xMax, Eps, "목표 오른쪽 끝");
@@ -112,7 +112,7 @@ namespace PPS.Solver.Tests
         public void 영역_밖으로_삐져나가면_기각된다()
         {
             var level = Level();
-            var area = PrimitiveValidator.PlayArea(level);
+            var area = LevelDataArea.Calculate(level);
 
             // 오른쪽 끝에 딱 붙인 선은 통과한다.
             var inside = Line(1f, new Vector2(area.xMax - 1f, 0f));
@@ -154,7 +154,7 @@ namespace PPS.Solver.Tests
         [Test]
         public void 모든_사유가_구분된다()
         {
-            Assert.AreEqual(5, Enum.GetValues(typeof(PlacementReject)).Length);
+            Assert.AreEqual(6, Enum.GetValues(typeof(PlacementReject)).Length);
         }
     }
 }

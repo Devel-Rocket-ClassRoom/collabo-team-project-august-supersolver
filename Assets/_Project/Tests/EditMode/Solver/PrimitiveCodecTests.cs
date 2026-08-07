@@ -152,7 +152,7 @@ namespace PPS.Solver.Tests
         {
             var level = Level();
             var codec = new PrimitiveCodec(level);
-            var area = PrimitiveValidator.PlayArea(level);
+            var area = LevelDataArea.Calculate(level);
             var random = new System.Random(1234);
 
             var vector = new float[PrimitiveCodec.Length(64)];
