@@ -62,10 +62,16 @@ namespace PPS.Tools
         }
         void Rebuild()
         {
+            // 이전에 생성된 물리 월드가 있으면 종료한다.
+            _world?.Dispose();
             // 보정된 레벨 번호를 사용하여 카탈로그에서 Entry 하나를 선택한다.
             Entry entry = _catalog[_levelIndex];
             // 선택한 Entry의 생성 함수를 실행하여 StageData를 만든다.
             _stage = entry.MakeStage();
+            //등록된 풀이가 있으면 사용하고, 없으면 빈 Solution을 생성한다.
+            _solution = entry.MakeSolution() ?? new Solution();
+            // 새 StageData와 Solution으로 실제 물리 월드를 생성한다.
+            _world = WorldBuilder.Build(_stage, _solution);
         }
 
         static Entry Stage(string  name, Func<LevelData> makeLevel, Func<Solution> makeSolution, int seed = 0)
