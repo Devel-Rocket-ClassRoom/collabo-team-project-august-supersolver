@@ -10,10 +10,6 @@ namespace PPS.Solver
     /// </summary>
     public static class PrimitiveValidator
     {
-        /// 레벨 내용물 밖으로 영역을 넓히는 폭.
-        /// 지형 위·옆으로도 선을 그을 수 있어야 한다.
-        public const float AreaMargin = 2f;
-
         /// <summary>
         /// 기각 사유. None 이면 놓을 수 있다.
         /// </summary>
@@ -29,7 +25,7 @@ namespace PPS.Solver
             if (ink > level.InkLimit)
                 return PlacementReject.TooLarge;
 
-            if (!Inside(PlayArea(level), primitive))
+            if (!Inside(LevelDataArea.Calculate(level), primitive))
                 return PlacementReject.OutOfArea;
 
             if (usedInk + ink > level.InkLimit)
@@ -48,29 +44,6 @@ namespace PPS.Solver
         public static float MaxSize(PrimitiveShape shape, LevelData level) =>
             level.InkLimit / PrimitiveShapeExtensions.Rule(shape).InkPerRadius;
 
-        /// <summary>
-        /// 선을 그을 수 있는 영역.
-        /// 지형·공·목표를 다 담는 상자에 마진을 준다.
-        /// </summary>
-        public static Rect PlayArea(LevelData level)
-        {
-            Vector2 min = level.BallStart - Vector2.one * level.BallRadius;
-            Vector2 max = level.BallStart + Vector2.one * level.BallRadius;
-
-            Include(level.GoalPosition - Vector2.one * level.GoalRadius, ref min, ref max);
-            Include(level.GoalPosition + Vector2.one * level.GoalRadius, ref min, ref max);
-
-            for (int i = 0; i < level.Terrain.Count; i++)
-            {
-                Include(level.Terrain[i].A, ref min, ref max);
-                Include(level.Terrain[i].B, ref min, ref max);
-            }
-
-            return Rect.MinMaxRect(
-                min.x - AreaMargin, min.y - AreaMargin,
-                max.x + AreaMargin, max.y + AreaMargin);
-        }
-
         /// 외접원 상자로 본다. 각도를 안 보므로
         /// 실제보다 조금 크게 잡히지만 삼각함수가 없다.
         static bool Inside(Rect area, in Primitive primitive) =>
@@ -78,11 +51,5 @@ namespace PPS.Solver
             primitive.Center.x + primitive.Size <= area.xMax &&
             primitive.Center.y - primitive.Size >= area.yMin &&
             primitive.Center.y + primitive.Size <= area.yMax;
-
-        static void Include(Vector2 point, ref Vector2 min, ref Vector2 max)
-        {
-            min = Vector2.Min(min, point);
-            max = Vector2.Max(max, point);
-        }
     }
 }
