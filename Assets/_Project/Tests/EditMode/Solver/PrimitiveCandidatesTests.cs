@@ -97,29 +97,71 @@ namespace PPS.Solver.Tests
             }
         }
 
+        /// Shape 별 Size 칸을 작은 것부터.
+        static Dictionary<PrimitiveShape, float[]> SizesByShape(LevelData level, int steps) =>
+            new PrimitiveCandidates(level, steps).At(Vector2.zero)
+                .GroupBy(p => p.Shape)
+                .ToDictionary(g => g.Key, g => g.Select(p => p.Size).Distinct().OrderBy(s => s).ToArray());
+
         [Test]
-        public void Size는_칸_가운데라_하한_상한에_닿지_않는다()
+        public void Size는_공_반지름에서_시작해_상한에서_끝난다()
         {
             var level = Level();
 
-            foreach (var candidate in new PrimitiveCandidates(level, 3).At(Vector2.zero))
+            foreach (var pair in SizesByShape(level, 5))
             {
-                float max = PrimitiveValidator.MaxSize(candidate.Shape, level);
+                Assert.AreEqual(5, pair.Value.Length, pair.Key.ToString());
+                Assert.AreEqual(level.BallRadius, pair.Value[0], Eps, pair.Key.ToString());
 
-                Assert.Greater(candidate.Size, level.BallRadius, candidate.Shape.ToString());
-                Assert.Less(candidate.Size, max, candidate.Shape.ToString());
+                // 상한은 근사가 아니라 그 값이어야 한다.
+                Assert.AreEqual(PrimitiveValidator.MaxSize(pair.Key, level), pair.Value[4],
+                    pair.Key.ToString());
             }
         }
 
         [Test]
-        public void Size_상한이_Shape마다_달라_같은_단계도_크기가_다르다()
+        public void Size는_간격이_아니라_비율이_일정하다()
         {
-            var sizes = new PrimitiveCandidates(Level(), 2).At(Vector2.zero)
-                .GroupBy(p => p.Shape)
-                .ToDictionary(g => g.Key, g => g.Select(p => p.Size).Max());
+            foreach (var pair in SizesByShape(Level(), 5))
+            {
+                var sizes = pair.Value;
+                float ratio = sizes[1] / sizes[0];
 
-            Assert.Greater(sizes[PrimitiveShape.Line], sizes[PrimitiveShape.Bowl]);
-            Assert.Greater(sizes[PrimitiveShape.Bowl], sizes[PrimitiveShape.Triangle]);
+                for (int i = 2; i < sizes.Length; i++)
+                    Assert.AreEqual(ratio, sizes[i] / sizes[i - 1], 0.001f, pair.Key.ToString());
+
+                Assert.Greater(ratio, 1f, pair.Key.ToString());
+            }
+        }
+
+        [Test]
+        public void 단계가_하나면_상한만_나온다()
+        {
+            var level = Level();
+
+            foreach (var pair in SizesByShape(level, 1))
+                Assert.AreEqual(PrimitiveValidator.MaxSize(pair.Key, level), pair.Value.Single(),
+                    pair.Key.ToString());
+        }
+
+        [Test]
+        public void 가장_큰_후보도_혼자서는_잉크를_넘지_않는다()
+        {
+            var level = Level();
+
+            foreach (var candidate in new PrimitiveCandidates(level, 5).At(Vector2.zero))
+                Assert.AreNotEqual(PlacementReject.TooLarge,
+                    PrimitiveValidator.Validate(candidate, level, 0f),
+                    $"{candidate.Shape} {candidate.Size}");
+        }
+
+        [Test]
+        public void 상한이_Shape마다_달라_같은_단계도_크기가_다르다()
+        {
+            var sizes = SizesByShape(Level(), 5);
+
+            Assert.Greater(sizes[PrimitiveShape.Line][3], sizes[PrimitiveShape.Bowl][3]);
+            Assert.Greater(sizes[PrimitiveShape.Bowl][3], sizes[PrimitiveShape.Triangle][3]);
         }
 
         [Test]

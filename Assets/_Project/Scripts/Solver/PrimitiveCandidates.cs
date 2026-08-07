@@ -67,11 +67,18 @@ namespace PPS.Solver
         }
 
         /// <summary>
-        /// 칸 가운데를 쓴다. 끝을 그대로 쓰면 하한·상한이
-        /// 곧 기각 경계라 오차 한 번에 통째로 죽는다.
-        /// 상한이 Shape 마다 달라 같은 s 도 크기가 다르다.
+        /// 공 반지름에서 Shape 별 상한까지 등비로 나눈다.
+        /// 작은 쪽이 조금만 달라져도 결과가 갈려서다.
         /// </summary>
-        float SizeAt(int step, float maxSize) =>
-            Mathf.Lerp(_level.BallRadius, maxSize, (step + 0.5f) / _sizeSteps);
+        float SizeAt(int step, float maxSize)
+        {
+            // 등비식으로 짚으면 오차가 상한을 넘길 수 있고
+            // 그러면 가장 큰 후보가 TooLarge 로 죽는다.
+            if (step == _sizeSteps - 1)
+                return maxSize;
+
+            float span = maxSize / _level.BallRadius;
+            return _level.BallRadius * Mathf.Pow(span, (float)step / (_sizeSteps - 1));
+        }
     }
 }
