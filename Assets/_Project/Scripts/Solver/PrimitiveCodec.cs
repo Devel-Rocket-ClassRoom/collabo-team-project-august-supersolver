@@ -40,7 +40,7 @@ namespace PPS.Solver
         public PrimitiveCodec(LevelData level)
         {
             _level = level;
-            _area = PrimitiveValidator.PlayArea(level);
+            _area = LevelDataArea.Calculate(level);
         }
 
         /// 프리미티브 k 개를 담는 벡터 길이.
