@@ -1767,7 +1767,7 @@ MonoBehaviour:
       m_Calls:
       - m_Target: {fileID: 1986295716}
         m_TargetAssemblyTypeName: PPS.DrawingTool.ToolSelection, PPS.DrawingTool
-        m_MethodName: SelectFixedLine
+        m_MethodName: OnClickSelectFixedLine
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -3444,7 +3444,7 @@ MonoBehaviour:
       m_Calls:
       - m_Target: {fileID: 1986295716}
         m_TargetAssemblyTypeName: PPS.DrawingTool.ToolSelection, PPS.DrawingTool
-        m_MethodName: SelectFreeBody
+        m_MethodName: OnClickSelectFreeBody
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
