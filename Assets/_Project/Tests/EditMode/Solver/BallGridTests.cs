@@ -15,9 +15,8 @@ namespace PPS.Solver.Tests
 
         /// 산수가 눈에 보이라고 고른 값이다.
         const float PosStep = 0.25f;
-        const float VelStep = 1f;
 
-        static BallQuantizer Quantizer() => new BallQuantizer(PosStep, VelStep);
+        static BallQuantizer Quantizer() => new BallQuantizer(PosStep);
 
         /// <param name="terrainRight">지형 오른쪽 끝. 레벨 크기를 이걸로 바꾼다.</param>
         static LevelData Level(float terrainRight = 5f)
@@ -77,7 +76,7 @@ namespace PPS.Solver.Tests
         public void 폭이_좁아지면_셀_수가_는다()
         {
             var coarse = new BallGrid(Level(), Quantizer());
-            var fine = new BallGrid(Level(), new BallQuantizer(PosStep * 0.5f, VelStep));
+            var fine = new BallGrid(Level(), new BallQuantizer(PosStep * 0.5f));
 
             Assert.Greater(fine.CellCount, coarse.CellCount);
         }

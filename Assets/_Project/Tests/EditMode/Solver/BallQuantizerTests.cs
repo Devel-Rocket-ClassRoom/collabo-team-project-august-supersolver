@@ -5,19 +5,18 @@ namespace PPS.Solver.Tests
 {
     /// <summary>
     /// 셀 키의 최소 보장.
-    /// 결정성·경계 안정성·폭 분리를 못박는다.
+    /// 결정성·경계 안정성·위치와 속도의 분리를 못박는다.
     /// </summary>
     public class BallQuantizerTests
     {
         /// 산수가 눈에 보이라고 고른 값이다.
         /// 실제 폭은 실측 후 결정하므로 기준이 아니다.
         const float PosStep = 0.25f;
-        const float VelStep = 1f;
 
         /// 스냅 폭(격자 1e-4)보다 작은 흔들림.
         const float Eps = 0.000001f;
 
-        static BallQuantizer Quantizer() => new BallQuantizer(PosStep, VelStep);
+        static BallQuantizer Quantizer() => new BallQuantizer(PosStep);
 
         [Test]
         public void SameStateGivesSameCellEveryTime()
@@ -53,20 +52,80 @@ namespace PPS.Solver.Tests
             Assert.AreEqual(exact, above, "경계 위");
         }
 
-        [TestCase(0f)]
-        [TestCase(3f)]
-        [TestCase(-3f)]
-        public void VelocityBoundaryStaysInOneCell(float line)
+        /// 크기 구간의 경계 속력. 정지 경계도 포함한다.
+        [TestCase(0.5f)]
+        [TestCase(1.5f)]
+        [TestCase(4.5f)]
+        [TestCase(13.5f)]
+        public void SpeedBoundaryStaysInOneCell(float line)
         {
             var q = Quantizer();
             var position = Vector2.zero;
 
-            BallCell exact = q.Quantize(position, new Vector2(line, line));
-            BallCell below = q.Quantize(position, new Vector2(line - Eps, line - Eps));
-            BallCell above = q.Quantize(position, new Vector2(line + Eps, line + Eps));
+            BallCell exact = q.Quantize(position, new Vector2(line, 0f));
+            BallCell below = q.Quantize(position, new Vector2(line - Eps, 0f));
+            BallCell above = q.Quantize(position, new Vector2(line + Eps, 0f));
 
             Assert.AreEqual(exact, below, "경계 아래");
             Assert.AreEqual(exact, above, "경계 위");
+        }
+
+        /// <summary>
+        /// 멈춘 공은 방향이 의미가 없다.
+        /// 8칸으로 갈리면 같은 상태가 여러 키를 갖는다.
+        /// </summary>
+        [TestCase(0f, 0f)]
+        [TestCase(0.1f, 0.2f)]
+        [TestCase(-0.3f, 0.1f)]
+        public void StoppedBallHasNoDirection(float vx, float vy)
+        {
+            BallCell cell = Quantizer().Quantize(Vector2.zero, new Vector2(vx, vy));
+
+            Assert.AreEqual(0, cell.VX);
+            Assert.AreEqual(0, cell.VY);
+        }
+
+        /// 속력 5 는 전부 크기 3 구간이라 방향만 갈린다.
+        [TestCase(5f, 0f, 3, 0)]
+        [TestCase(-5f, 0f, -3, 0)]
+        [TestCase(0f, 5f, 0, 3)]
+        [TestCase(0f, -5f, 0, -3)]
+        [TestCase(5f, 5f, 3, 3)]
+        [TestCase(-5f, 5f, -3, 3)]
+        public void HeadingFoldsIntoEightDirections(float vx, float vy, int ex, int ey)
+        {
+            BallCell cell = Quantizer().Quantize(Vector2.zero, new Vector2(vx, vy));
+
+            Assert.AreEqual(ex, cell.VX);
+            Assert.AreEqual(ey, cell.VY);
+        }
+
+        /// <summary>
+        /// 수평·수직은 구간 한가운데라 조금 기울어도 안 갈린다.
+        /// 평지를 구르는 공과 곧장 떨어지는 공이 가장 흔하다.
+        /// </summary>
+        [Test]
+        public void FlatAndVerticalHeadingsSitAtSectorCenter()
+        {
+            var q = Quantizer();
+
+            Assert.AreEqual(
+                q.Quantize(Vector2.zero, new Vector2(5f, 0f)),
+                q.Quantize(Vector2.zero, new Vector2(5f, 0.5f)));
+
+            Assert.AreEqual(
+                q.Quantize(Vector2.zero, new Vector2(0f, -5f)),
+                q.Quantize(Vector2.zero, new Vector2(0.5f, -5f)));
+        }
+
+        /// 상한 위는 전부 최상단으로 접는다.
+        [Test]
+        public void SpeedClampsAtTopBand()
+        {
+            var q = Quantizer();
+
+            Assert.AreEqual(4, q.Quantize(Vector2.zero, new Vector2(100f, 0f)).VX);
+            Assert.AreEqual(4, q.Quantize(Vector2.zero, new Vector2(1000f, 0f)).VX);
         }
 
         [Test]
@@ -75,7 +134,7 @@ namespace PPS.Solver.Tests
             var q = Quantizer();
             Assert.AreEqual(
                 q.Quantize(new Vector2(0.76f, 0.76f), new Vector2(3.1f, 3.1f)),
-                q.Quantize(new Vector2(0.99f, 0.99f), new Vector2(3.9f, 3.9f)));
+                q.Quantize(new Vector2(0.99f, 0.99f), new Vector2(2.5f, 2.5f)));
         }
 
         [Test]
@@ -87,16 +146,16 @@ namespace PPS.Solver.Tests
                 q.Quantize(new Vector2(0.76f, 0f), Vector2.zero));
         }
 
-        /// 위치는 갈라지고 속도는 안 갈라지는 폭 차이.
+        /// 위치는 갈라지고 속도는 안 갈라지는 해상도 차이.
         [Test]
-        public void PositionAndVelocityUseSeparateSteps()
+        public void PositionAndVelocityUseSeparateResolutions()
         {
             var q = Quantizer();
             BallCell a = q.Quantize(new Vector2(0.5f, 0f), new Vector2(0.5f, 0f));
             BallCell b = q.Quantize(new Vector2(0.9f, 0f), new Vector2(0.9f, 0f));
 
             Assert.AreNotEqual(a.X, b.X, "위치는 폭 0.25 라 갈라진다");
-            Assert.AreEqual(a.VX, b.VX, "속도는 폭 1 이라 같다");
+            Assert.AreEqual(a.VX, b.VX, "속도는 같은 크기 구간이라 안 갈라진다");
         }
 
         [Test]
@@ -112,8 +171,8 @@ namespace PPS.Solver.Tests
         [Test]
         public void RejectsNonPositiveStep()
         {
-            Assert.Throws<System.ArgumentOutOfRangeException>(() => new BallQuantizer(0f, VelStep));
-            Assert.Throws<System.ArgumentOutOfRangeException>(() => new BallQuantizer(PosStep, -1f));
+            Assert.Throws<System.ArgumentOutOfRangeException>(() => new BallQuantizer(0f));
+            Assert.Throws<System.ArgumentOutOfRangeException>(() => new BallQuantizer(-1f));
         }
     }
 }

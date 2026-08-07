@@ -14,6 +14,11 @@ namespace PPS.Solver
 
         public readonly int X;
         public readonly int Y;
+
+        /// 속도는 성분이 아니라 방향 부호 × 크기 구간이다.
+        /// (3,0) 은 초속 3 이 아니라 "오른쪽, 크기 3" 이고
+        /// (0,0) 은 방향 없는 정지다.
+        /// 방향은 부호쌍 8 가지, 크기는 max(|VX|,|VY|) 로 되짚는다.
         public readonly int VX;
         public readonly int VY;
 

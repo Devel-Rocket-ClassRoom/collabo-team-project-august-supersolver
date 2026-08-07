@@ -70,7 +70,7 @@ namespace PPS.Solver.Tests
             return buffer;
         }
 
-        static BallQuantizer NewQuantizer() => new BallQuantizer(0.5f, 2f);
+        static BallQuantizer NewQuantizer() => new BallQuantizer(0.5f);
 
         static Primitive[] Placement() => new[]
         {
