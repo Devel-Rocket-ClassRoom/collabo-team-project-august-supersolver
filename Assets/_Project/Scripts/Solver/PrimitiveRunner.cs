@@ -30,5 +30,19 @@ namespace PPS.Solver
             int seed,
             int maxSteps = SimWorld.DefaultMaxSteps)
             => SimRunner.Run(level, PrimitiveDecoder.Decode(primitives), seed, maxSteps);
+
+        /// <summary>
+        /// 궤적을 담으며 돌린다.
+        /// 수집은 선택 경로다 — 결정론 검사나 배치 판정은
+        /// 궤적이 필요 없고 수집 비용만 든다.
+        /// </summary>
+        public static SimResult RunSampled(
+            LevelData level,
+            IReadOnlyList<Primitive> primitives,
+            int seed,
+            TrajectoryBuffer buffer,
+            int maxSteps = SimWorld.DefaultMaxSteps)
+            => SimRunner.RunSampled(
+                level, PrimitiveDecoder.Decode(primitives), seed, buffer, maxSteps);
     }
 }
