@@ -154,7 +154,7 @@ namespace PPS.Solver.Tests
         [Test]
         public void 모든_사유가_구분된다()
         {
-            Assert.AreEqual(5, Enum.GetValues(typeof(PlacementReject)).Length);
+            Assert.AreEqual(6, Enum.GetValues(typeof(PlacementReject)).Length);
         }
     }
 }

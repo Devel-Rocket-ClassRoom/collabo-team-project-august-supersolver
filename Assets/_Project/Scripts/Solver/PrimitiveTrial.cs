@@ -32,9 +32,24 @@ namespace PPS.Solver
         /// 거부는 시뮬 전에 끝난다.
         /// </summary>
         public TrialResult Run(float[] vector, int maxSteps = SimWorld.DefaultMaxSteps)
+            => Run(vector, null, maxSteps);
+
+        /// <summary>
+        /// 궤적을 담으며 돌린다.
+        /// 거부된 시행은 시뮬이 없으므로 버퍼가 비어서 온다 —
+        /// 지난 시행 값이 남으면 남의 궤적을 읽게 된다.
+        /// </summary>
+        public TrialResult RunSampled(
+            float[] vector, TrajectoryBuffer buffer, int maxSteps = SimWorld.DefaultMaxSteps)
+        {
+            if (buffer == null) throw new System.ArgumentNullException(nameof(buffer));
+            return Run(vector, buffer, maxSteps);
+        }
+
+        TrialResult Run(float[] vector, TrajectoryBuffer buffer, int maxSteps)
         {
             if (vector.Length % PrimitiveCodec.Dimensions != 0)
-                return new TrialResult(PlacementReject.BadVector);
+                return Reject(PlacementReject.BadVector, buffer);
 
             var primitives = _codec.Decode(vector);
 
@@ -43,12 +58,20 @@ namespace PPS.Solver
             {
                 var reject = PrimitiveValidator.Validate(primitives[i], _level, usedInk);
                 if (reject != PlacementReject.None)
-                    return new TrialResult(reject);
+                    return Reject(reject, buffer);
 
                 usedInk += PrimitiveValidator.Ink(primitives[i]);
             }
 
-            return new TrialResult(PrimitiveRunner.Run(_level, primitives, _seed, maxSteps));
+            return new TrialResult(buffer == null
+                ? PrimitiveRunner.Run(_level, primitives, _seed, maxSteps)
+                : PrimitiveRunner.RunSampled(_level, primitives, _seed, buffer, maxSteps));
+        }
+
+        static TrialResult Reject(PlacementReject reject, TrajectoryBuffer buffer)
+        {
+            buffer?.Clear();
+            return new TrialResult(reject);
         }
     }
 }

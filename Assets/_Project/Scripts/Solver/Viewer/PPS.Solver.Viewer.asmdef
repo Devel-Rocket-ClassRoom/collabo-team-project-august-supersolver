@@ -1,8 +1,10 @@
 {
-    "name": "PPS.Solver",
-    "rootNamespace": "PPS.Solver",
+    "name": "PPS.Solver.Viewer",
+    "rootNamespace": "PPS.Solver.Viewer",
     "references": [
-        "PPS.Core"
+        "PPS.Core",
+        "PPS.Solver",
+        "PPS.Core.TestFixtures"
     ],
     "includePlatforms": [
         "Editor"
