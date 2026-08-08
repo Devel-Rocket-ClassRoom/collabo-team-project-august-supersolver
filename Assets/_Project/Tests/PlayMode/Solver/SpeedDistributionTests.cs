@@ -87,6 +87,157 @@ namespace PPS.Solver.Tests
                 "최상단 구간에 표본이 몰린다 — 빠른 상태가 한 셀로 뭉개진다");
         }
 
+        // ── 셀 대표 상태에서 굴린 분포 ──
+        // 기저 시뮬은 중력만으로 돌아 빠른 쪽으로 치우친다.
+        // 맵 빌드는 모든 셀에서 굴리므로 그쪽을 따로 잰다.
+
+        /// 레벨당 굴려 볼 셀 수. 전수 비용은 C11 의 몫이다.
+        const int SampledCells = 120;
+
+        /// 셀 하나당 굴리는 스텝. 3초면 분포를 보기 충분하다.
+        const int CellRollSteps = 180;
+
+        /// 지형이 서로 다른 판만 고른다. 비탈·다단·평지.
+        static IEnumerable<TestCaseData> CellLevels()
+        {
+            yield return new TestCaseData("L001_Ramp", SampleLevelFile.Load());
+            yield return new TestCaseData("L002_Feature", FeatureLevelFile.LoadLevel());
+            yield return new TestCaseData("FlatRest", TestLevels.FlatRest());
+        }
+
+        [Test]
+        public void 셀_대표_상태에서_구른_분포가_구간_경계를_뒷받침한다()
+        {
+            var all = new List<float>();
+            var text = new StringBuilder();
+
+            foreach (var data in CellLevels())
+            {
+                string name = (string)data.Arguments[0];
+                var level = (LevelData)data.Arguments[1];
+
+                var speeds = MeasureFromCells(level, out int rolled, out int skipped);
+                all.AddRange(speeds);
+
+                text.AppendLine($"=== {name} — 셀 {rolled} 판 (지형에 박혀 건너뜀 {skipped}) ===");
+                text.Append(Format("영역 안", speeds));
+            }
+
+            all.Sort();
+            text.AppendLine(Format("합산(셀 대표 상태)", all));
+            text.AppendLine(FormatBands(all));
+
+            Debug.Log(text.ToString());
+
+            for (int band = 1; band <= SolverConfig.SpeedBands; band++)
+                Assert.Greater(CountInBand(all, band), 0, $"크기 구간 {band} 이 비었다");
+
+            Assert.LessOrEqual(ClampShare(all), MaxClampShare,
+                "최상단 구간에 표본이 몰린다 — 빠른 상태가 한 셀로 뭉개진다");
+        }
+
+        /// <summary>
+        /// 셀을 고정 간격으로 훑어 대표 상태에서 무배치로 굴린다.
+        /// 전수는 셀 수 × 후보 수라 감당이 안 되고, 고정 간격이라
+        /// 실행마다 같은 표본이 나온다.
+        /// </summary>
+        static List<float> MeasureFromCells(LevelData level, out int rolled, out int skipped)
+        {
+            var quantizer = new BallQuantizer(SolverConfig.PositionStep(level));
+            var grid = new BallGrid(level, quantizer);
+            var area = LevelDataArea.Calculate(level);
+            var trial = new PrimitiveTrial(level, seed: 0);
+            var buffer = new TrajectoryBuffer(Interval, CellRollSteps);
+
+            var speeds = new List<float>();
+            rolled = 0;
+            skipped = 0;
+
+            foreach (var cell in SampleCells(grid))
+            {
+                BallState start = quantizer.Dequantize(cell);
+
+                // 벽 안에서 출발한 공은 밀려나며 튀어 분포를 오염시킨다.
+                if (InsideTerrain(level, start.Position, level.BallRadius))
+                {
+                    skipped++;
+                    continue;
+                }
+
+                trial.RunSampled(new float[0], buffer, CellRollSteps, start);
+                rolled++;
+
+                for (int i = 0; i < buffer.Count; i++)
+                {
+                    if (area.Contains(buffer[i].Position))
+                        speeds.Add(buffer[i].Velocity.magnitude);
+                }
+            }
+
+            speeds.Sort();
+            return speeds;
+        }
+
+        static IEnumerable<BallCell> SampleCells(BallGrid grid)
+        {
+            var labels = new List<Vector2Int>(VelocityLabels());
+            int total = grid.Columns * grid.Rows * labels.Count;
+            int stride = Mathf.Max(1, total / SampledCells);
+
+            int index = 0;
+            for (int cx = 0; cx < grid.Columns; cx++)
+            {
+                for (int cy = 0; cy < grid.Rows; cy++)
+                {
+                    foreach (var label in labels)
+                    {
+                        if (index++ % stride != 0) continue;
+                        yield return new BallCell(
+                            grid.MinX + cx, grid.MinY + cy, label.x, label.y);
+                    }
+                }
+            }
+        }
+
+        /// 유효한 속도 라벨 전부. 방향 8 × 크기 구간 + 정지 1.
+        static IEnumerable<Vector2Int> VelocityLabels()
+        {
+            yield return Vector2Int.zero;
+
+            for (int band = 1; band <= SolverConfig.SpeedBands; band++)
+            {
+                yield return new Vector2Int(band, 0);
+                yield return new Vector2Int(-band, 0);
+                yield return new Vector2Int(0, band);
+                yield return new Vector2Int(0, -band);
+                yield return new Vector2Int(band, band);
+                yield return new Vector2Int(band, -band);
+                yield return new Vector2Int(-band, band);
+                yield return new Vector2Int(-band, -band);
+            }
+        }
+
+        static bool InsideTerrain(LevelData level, Vector2 point, float radius)
+        {
+            for (int i = 0; i < level.Terrain.Count; i++)
+            {
+                var segment = level.Terrain[i];
+                if (DistanceToSegment(point, segment.A, segment.B) < radius)
+                    return true;
+            }
+            return false;
+        }
+
+        static float DistanceToSegment(Vector2 point, Vector2 a, Vector2 b)
+        {
+            Vector2 ab = b - a;
+            float lengthSq = ab.sqrMagnitude;
+            if (lengthSq <= 0f) return Vector2.Distance(point, a);
+
+            float t = Mathf.Clamp01(Vector2.Dot(point - a, ab) / lengthSq);
+            return Vector2.Distance(point, a + ab * t);
+        }
+
         static int CountInBand(List<float> sorted, int band)
         {
             int above = CountBelow(sorted, SolverConfig.BandFloor(band));
