@@ -68,5 +68,59 @@ namespace PPS.Solver
         /// </summary>
         public static float BandFloor(int band)
             => StopSpeed * Mathf.Pow(SpeedRatio, band - 1);
+
+        // ── 후보 배치 ──
+
+        /// <summary>
+        /// 공이 가는 쪽으로 부챗살을 몇 갈래 펼칠지.
+        /// 실측에서 진행 방향 ±90° 밖은 새 셀을 거의 못 열었다 —
+        /// 공이 안 가는 쪽에 놓아 봐야 닿지 않는다.
+        /// 그래서 부채는 180° 로 고정하고 갈래 수만 손잡이다.
+        /// 홀수라야 정면이 한 갈래로 잡힌다. 정면이 압도적이다.
+        /// </summary>
+        public const int CandidateDirections = 5;
+
+        /// 후보 Size 축을 몇 칸으로 쪼갤지.
+        /// 1 은 최대 크기 하나만 나오므로 쓰지 않는다.
+        public const int CandidateSizeSteps = 2;
+
+        /// <summary>
+        /// 후보로 낼 Shape. enum 에서 빼면 코덱과 직렬화가 딸려 오므로
+        /// 목록으로 끄고 켠다.
+        /// 그릇은 뺐다 — 같은 비용에 새 셀을 3분의 1만 열고,
+        /// 클리어가 순간 판정이라 "받아서 가두기" 가 필요 없다.
+        /// </summary>
+        public static readonly PrimitiveShape[] CandidateShapes =
+        {
+            PrimitiveShape.Line,
+            PrimitiveShape.Triangle,
+        };
+
+        // ── 맵 빌드 ──
+
+        /// <summary>
+        /// 셀 하나를 굴리는 스텝 상한.
+        /// 시뮬은 공이 잠들거나 죽으면 알아서 끝나므로
+        /// 이 값은 그때까지 안 끝난 판에만 문다.
+        /// 짧게 자르면 한 배치로 닿는 먼 셀을 놓쳐 h 가 비관이 된다.
+        /// </summary>
+        public const int RollSteps = 180;
+
+        /// <summary>
+        /// 궤적을 몇 스텝마다 뜰지. 시뮬 비용과는 무관하다 —
+        /// 물리는 어차피 매 스텝 돌고 표본만 고르는 것이다.
+        /// 중앙 속력에서 표본 간격이 위치 셀 하나 남짓이라
+        /// 이보다 성기면 셀을 건너뛰어 간선을 잃는다.
+        /// </summary>
+        public const int TrajectoryInterval = 10;
+
+        /// <summary>
+        /// 도달 폐포를 몇 홉까지 넓힐지. 곧 프리미티브 개수다.
+        /// 실측에서 새 셀 생산이 여기서 정점을 찍고 꺾인다 —
+        /// 한 홉 더 가면 값은 오르고 얻는 셀은 준다.
+        /// 자른 너머는 h 가 ∞ 지만 컷이 아니라 페널티라
+        /// 탐색이 답을 잃지는 않는다. ∞ 셀 비율로 사후 검증한다.
+        /// </summary>
+        public const int MapDepth = 4;
     }
 }

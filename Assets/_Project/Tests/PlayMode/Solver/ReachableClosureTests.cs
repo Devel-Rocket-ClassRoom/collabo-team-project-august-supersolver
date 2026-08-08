@@ -19,24 +19,16 @@ namespace PPS.Solver.Tests
     /// </summary>
     public class ReachableClosureTests
     {
-        /// <summary>
-        /// 후보 Size 분할. 2 면 공 반지름과 최대 크기 둘 다 나온다.
-        /// 1 로 두면 안 된다 — 규칙표가 마지막 단계에 최대 크기를
-        /// 주므로 거대 프리미티브만 남아 거부율이 90% 로 뜬다.
-        /// </summary>
-        const int SizeSteps = 2;
+        static readonly int RollSteps = SolverConfig.RollSteps;
 
-        /// 한 셀을 굴리는 스텝 상한.
-        const int RollSteps = 180;
-
-        const int TrajectoryInterval = 10;
+        static readonly int TrajectoryInterval = SolverConfig.TrajectoryInterval;
 
         /// <summary>
         /// 안전장치. 넘으면 그 자리에서 멈추고 곡선만 보고한다 —
         /// 폭주하는지 아닌지가 알고 싶은 것이지
         /// 끝까지 도는 것이 목적이 아니다.
         /// </summary>
-        const int MaxSims = 400000;
+        const int MaxSims = 1200000;
 
         /// <summary>
         /// 동시에 로드해 둘 시뮬 씬의 상한.
@@ -54,12 +46,15 @@ namespace PPS.Solver.Tests
         /// </summary>
         const int MaxWaitFrames = 600;
 
-        /// 깊이는 곧 프리미티브 개수다. 잉크 예산이
-        /// 허용하는 것보다 깊은 셀은 답에 못 들어간다.
-        const int MaxDepth = 4;
+        /// <summary>
+        /// 증가 배수가 2.4 → 1.8 → 1.2 로 꺾이는 중이다.
+        /// 꼬리가 이어지는지 보려면 한 홉 더 봐야 한다.
+        /// SolverConfig.MapDepth 는 이 곡선을 보고 정한다.
+        /// </summary>
+        const int MaxDepth = 5;
 
         /// 기본 상한 3분으로는 못 끝낸다. 일회성 측정이라 넉넉히 준다.
-        [UnityTest, Timeout(1800000)]
+        [UnityTest, Timeout(3600000)]
         public IEnumerator 도달_가능_셀의_증가_곡선을_찍는다()
         {
             var level = SampleLevelFile.Load();
@@ -72,7 +67,8 @@ namespace PPS.Solver.Tests
             // 상한이나 타임아웃에 걸릴 때 측정이 통째로 날아간다.
             Debug.Log($"[격자] 전체 셀 {allCells:N0} " +
                       $"(위치 {grid.CellCount} × 속도 {SolverConfig.VelocityCellCount})\n" +
-                      $"[설정] 후보 {new PrimitiveCandidates(level, SizeSteps).Count} 개 · " +
+                      $"[설정] 후보 {new PrimitiveCandidates(level, SolverConfig.CandidateSizeSteps).Count} 개 " +
+                      $"(방향 {SolverConfig.CandidateDirections} · 크기 {SolverConfig.CandidateSizeSteps}) · " +
                       $"굴림 {RollSteps} 스텝 · 시뮬 상한 {MaxSims:N0}");
 
             var explorer = new Explorer(level, quantizer);
@@ -97,9 +93,12 @@ namespace PPS.Solver.Tests
                     $"시뮬 {explorer.Sims,7:N0} (월드 {explorer.Worlds,7:N0}) · " +
                     $"간선 {explorer.Edges,7:N0} · " +
                     $"거부 {(float)explorer.Rejected / explorer.Sims:P0} · " +
-                    $"중심이면 잃을 셀 {explorer.CenterBlocked,5:N0} · " +
+                    $"헛방 {(float)explorer.Unchanged / Mathf.Max(explorer.Worlds, 1):P0} · " +
+                    $"상한걸림 {(float)explorer.Capped / Mathf.Max(explorer.Worlds, 1):P0} · " +
+                    $"간선/월드 {(float)explorer.Edges / Mathf.Max(explorer.Worlds, 1):F2} · " +
                     $"{explorer.Elapsed.TotalSeconds,6:F1}초 " +
-                    $"(월드당 {explorer.MsPerWorld:F2}ms · 씬 최고 {explorer.PeakScenes})");
+                    $"(월드당 {explorer.MsPerWorld:F2}ms · 씬 최고 {explorer.PeakScenes})\n" +
+                    explorer.Breakdown());
 
                 if (explorer.Stopped)
                 {
@@ -131,11 +130,10 @@ namespace PPS.Solver.Tests
             readonly CellEdgeCollector _collector;
             readonly Stopwatch _watch = new Stopwatch();
 
-            /// 후보는 셀의 위치에만 달렸다. 속도 셀들이 나눠 쓴다.
-            readonly Dictionary<Vector2Int, List<Primitive>> _byPosition =
-                new Dictionary<Vector2Int, List<Primitive>>();
-
             readonly Primitive[] _one = new Primitive[1];
+
+            /// 버퍼는 배치 시뮬이 덮어쓰므로 후보를 미리 떠 둔다.
+            readonly List<Primitive> _candidateBuffer = new List<Primitive>();
 
             /// <summary>
             /// 셀 → 그 셀을 처음 낸 실제 표본.
@@ -153,8 +151,62 @@ namespace PPS.Solver.Tests
             /// 유효성 검사에서 걸려 시뮬을 안 돈 시행.
             public int Rejected { get; private set; }
 
+            /// <summary>
+            /// 돌렸는데 기저와 결과가 같았던 배치. 공에 안 닿았다는 뜻이다.
+            /// 시뮬 값은 다 치르고 간선은 하나도 안 만든다 —
+            /// 후보 설계가 좋은지 나쁜지가 이 수로 갈린다.
+            /// </summary>
+            public int Unchanged { get; private set; }
+
+            // 축마다 값을 하는지 본다. 헛방은 순서에 안 딸리지만
+            // 새 셀은 먼저 닿은 후보가 가져가므로 순서를 탄다.
+            readonly int[] _dirRolls = new int[SolverConfig.CandidateDirections];
+            readonly int[] _dirUnchanged = new int[SolverConfig.CandidateDirections];
+            readonly int[] _dirNew = new int[SolverConfig.CandidateDirections];
+
+            static readonly int ShapeCount =
+                System.Enum.GetValues(typeof(PrimitiveShape)).Length;
+
+            readonly int[] _shapeRolls = new int[ShapeCount];
+            readonly int[] _shapeUnchanged = new int[ShapeCount];
+            readonly int[] _shapeNew = new int[ShapeCount];
+
+            /// <summary>축별 성적표. 자를 축을 여기서 고른다.</summary>
+            public string Breakdown()
+            {
+                var text = new System.Text.StringBuilder();
+
+                // 진행 방향 기준 상대각이다. 0° 가 정면.
+                text.AppendLine("  방향  월드      헛방     새 셀");
+                for (int d = 0; d < _dirRolls.Length; d++)
+                {
+                    float degrees = _dirRolls.Length == 1
+                        ? 0f
+                        : -90f + 180f * d / (_dirRolls.Length - 1);
+                    text.AppendLine(
+                        $"  {degrees,+5:F0}° {_dirRolls[d],7:N0} " +
+                        $"{Share(_dirUnchanged[d], _dirRolls[d]),8} {_dirNew[d],9:N0}");
+                }
+
+                text.AppendLine("  Shape        월드      헛방     새 셀");
+                for (int s = 0; s < _shapeRolls.Length; s++)
+                {
+                    text.AppendLine(
+                        $"  {(PrimitiveShape)s,-10} {_shapeRolls[s],7:N0} " +
+                        $"{Share(_shapeUnchanged[s], _shapeRolls[s]),8} {_shapeNew[s],9:N0}");
+                }
+
+                return text.ToString();
+            }
+
+            static string Share(int part, int whole)
+                => whole == 0 ? "-" : $"{(float)part / whole:P0}";
+
             /// 실제로 만든 물리 씬 수. 메모리를 먹는 것은 이쪽이다.
             public int Worlds { get; private set; }
+
+            /// 스텝 상한에 걸려 잘린 판. 상한이 h 를 깎는지 본다.
+            public int Capped { get; private set; }
 
             /// 동시에 로드돼 있던 시뮬 씬의 최고점. 상한이 먹히는지 본다.
             public int PeakScenes { get; private set; }
@@ -180,7 +232,7 @@ namespace PPS.Solver.Tests
             {
                 _level = level;
                 _quantizer = quantizer;
-                _candidates = new PrimitiveCandidates(level, SizeSteps);
+                _candidates = new PrimitiveCandidates(level, SolverConfig.CandidateSizeSteps);
                 _codec = new PrimitiveCodec(level);
                 _trial = new PrimitiveTrial(level, seed: 0);
                 _buffer = new TrajectoryBuffer(TrajectoryInterval, RollSteps);
@@ -218,16 +270,25 @@ namespace PPS.Solver.Tests
                     // 셀 중심을 대표로 썼다면 잃었을 셀. 실제 표본은 안 막힌다.
                     if (BallSpawn.Blocked(_level, center)) CenterBlocked++;
 
-                    Roll(new float[0], start, placed: false, next);
+                    TrialResult free = Roll(new float[0], start, placed: false, next);
 
                     var drain = Drain();
                     while (drain.MoveNext()) yield return drain.Current;
 
-                    // 후보는 위치 셀에 붙는다. 공만 실제 표본에서 출발한다.
-                    foreach (var candidate in CandidatesAt(cell, center))
+                    // 후보는 공을 둘러싼 고리 위다. 공 자리에 놓으면 박힌다.
+                    _candidateBuffer.Clear();
+                    _candidateBuffer.AddRange(_candidates.At(start));
+
+                    foreach (var candidate in _candidateBuffer)
                     {
                         _one[0] = candidate;
-                        Roll(_codec.Encode(_one), start, placed: true, next);
+
+                        int before = next.Count;
+                        TrialResult placed = Roll(_codec.Encode(_one), start, placed: true, next);
+
+                        if (placed.Reject == PlacementReject.None)
+                            Tally(candidate, start, next.Count - before,
+                                  Same(placed.Sim, free.Sim));
 
                         drain = Drain();
                         while (drain.MoveNext()) yield return drain.Current;
@@ -266,7 +327,7 @@ namespace PPS.Solver.Tests
                 PeakScenes = Mathf.Max(PeakScenes, SceneManager.sceneCount - _sceneBaseline);
             }
 
-            void Roll(float[] vector, BallState start, bool placed, List<BallCell> next)
+            TrialResult Roll(float[] vector, BallState start, bool placed, List<BallCell> next)
             {
                 _watch.Start();
                 var result = _trial.RunSampled(vector, _buffer, RollSteps, start);
@@ -277,16 +338,67 @@ namespace PPS.Solver.Tests
                 if (result.Reject != PlacementReject.None)
                 {
                     Rejected++;
-                    return;
+                    return result;
                 }
 
                 Worlds++;
+
+                // 상한에 걸린 판은 아직 굴러가는 중에 잘린 것이다.
+                // 그만큼 한 배치로 닿을 먼 셀을 못 보고 h 가 비관이 된다.
+                if (result.Sim.EndStep >= RollSteps) Capped++;
 
                 if (placed) _collector.CollectPlaced(_buffer);
                 else _collector.CollectFree(_buffer);
 
                 next.AddRange(TakeNew());
+                return result;
             }
+
+            /// <summary>
+            /// 어느 방향·Shape 이 값을 하는지 센다.
+            /// 방향은 후보를 만든 순서가 아니라 좌표에서 되짚는다 —
+            /// 생성 순서에 기대면 순서만 바뀌어도 조용히 어긋난다.
+            /// </summary>
+            void Tally(in Primitive candidate, in BallState ball, int found, bool unchanged)
+            {
+                int dir = DirectionOf(candidate.Center, ball);
+                int shape = (int)candidate.Shape;
+
+                _dirRolls[dir]++;
+                _dirNew[dir] += found;
+                _shapeRolls[shape]++;
+                _shapeNew[shape] += found;
+
+                if (!unchanged) return;
+
+                Unchanged++;
+                _dirUnchanged[dir]++;
+                _shapeUnchanged[shape]++;
+            }
+
+            static int DirectionOf(Vector2 center, in BallState ball)
+            {
+                int count = SolverConfig.CandidateDirections;
+                if (count == 1) return 0;
+
+                // 생성기와 같은 기준을 써야 한다 — 멈춘 공은 아래쪽.
+                float facing =
+                    ball.Velocity.sqrMagnitude > SolverConfig.StopSpeed * SolverConfig.StopSpeed
+                        ? Mathf.Atan2(ball.Velocity.y, ball.Velocity.x)
+                        : -Mathf.PI * 0.5f;
+
+                float theta = Mathf.Atan2(center.y - ball.Position.y, center.x - ball.Position.x);
+                float offset = Mathf.Repeat(theta - facing + Mathf.PI, 2f * Mathf.PI) - Mathf.PI;
+
+                int index = Mathf.RoundToInt(
+                    (offset + Mathf.PI * 0.5f) / (Mathf.PI / (count - 1)));
+                return Mathf.Clamp(index, 0, count - 1);
+            }
+
+            /// 배치가 궤적을 건드리지 않으면 결과가 글자 그대로 같다.
+            static bool Same(in SimResult a, in SimResult b)
+                => a.Outcome == b.Outcome && a.EndStep == b.EndStep && a.MinGoalDist == b.MinGoalDist;
+
 
             /// <summary>
             /// 이번 궤적이 지난 셀 중 처음 보는 것.
@@ -311,15 +423,6 @@ namespace PPS.Solver.Tests
                 return found;
             }
 
-            List<Primitive> CandidatesAt(BallCell cell, Vector2 center)
-            {
-                var key = new Vector2Int(cell.X, cell.Y);
-                if (_byPosition.TryGetValue(key, out var cached)) return cached;
-
-                var list = new List<Primitive>(_candidates.At(center));
-                _byPosition[key] = list;
-                return list;
-            }
         }
     }
 }

@@ -140,7 +140,7 @@ namespace PPS.Solver.Tests
                 if (BallSpawn.Blocked(level, start.Position)) continue;
 
                 candidates.Clear();
-                candidates.AddRange(candidateGrid.At(start.Position));
+                candidates.AddRange(candidateGrid.At(start));
 
                 float[] vector = codec.Encode(new[] { candidates[index % candidates.Count] });
 
