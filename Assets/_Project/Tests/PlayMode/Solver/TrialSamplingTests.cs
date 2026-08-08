@@ -71,6 +71,30 @@ namespace PPS.Solver.Tests
                 "종료 뒤 스텝이 궤적에 남았다");
         }
 
+        /// <summary>
+        /// 시행에서 시뮬까지 세 번 넘어가는 인자라
+        /// 중간에 흘리면 조용히 레벨 시작점으로 돈다.
+        /// </summary>
+        [Test]
+        public void 시작_상태가_시뮬까지_전달된다()
+        {
+            var level = Ground();
+            var start = new BallState(new Vector2(-2f, 6f), new Vector2(2f, 0f));
+            var trial = new PrimitiveTrial(level, 0);
+
+            var given = NewBuffer();
+            var defaulted = NewBuffer();
+
+            trial.RunSampled(new float[0], given, Steps, start);
+            trial.RunSampled(new float[0], defaulted, Steps);
+
+            Assert.Greater(given.Count, 0);
+            Assert.Less(Vector2.Distance(given[0].Position, start.Position), 1f,
+                "첫 스냅샷이 준 시작 위치 근처가 아니다");
+            Assert.AreNotEqual(defaulted[0].Position, given[0].Position,
+                "시작 상태가 무시되고 레벨 시작점으로 돌았다");
+        }
+
         [Test]
         public void 거부된_시행은_버퍼를_비운_채_돌려준다()
         {
