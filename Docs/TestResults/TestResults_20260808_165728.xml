@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+<test-run id="2" testcasecount="1" result="Passed" total="1" passed="1" failed="0" inconclusive="0" skipped="0" asserts="0" engine-version="3.5.0.0" clr-version="4.0.30319.42000" start-time="2026-08-08 07:55:15Z" end-time="2026-08-08 07:55:48Z" duration="33.146867">
+  <test-suite type="TestSuite" id="1147" name="PhysicsPuzzleSolver" fullname="PhysicsPuzzleSolver" runstate="Runnable" testcasecount="109" result="Passed" start-time="2026-08-08 07:55:15Z" end-time="2026-08-08 07:55:48Z" duration="33.146867" total="1" passed="1" failed="0" inconclusive="0" skipped="0" asserts="0">
+    <properties>
+      <property name="platform" value="PlayMode" />
+    </properties>
+    <test-suite type="Assembly" id="1140" name="PPS.Solver.PlayTests.dll" fullname="D:/GitRepos/TmpPhysicsPuzzleSolver/Library/ScriptAssemblies/PPS.Solver.PlayTests.dll" runstate="Runnable" testcasecount="38" result="Passed" start-time="2026-08-08 07:55:15Z" end-time="2026-08-08 07:55:48Z" duration="33.129895" total="1" passed="1" failed="0" inconclusive="0" skipped="0" asserts="0">
+      <properties>
+        <property name="_PID" value="8944" />
+        <property name="_APPDOMAIN" value="Unity Child Domain" />
+        <property name="platform" value="PlayMode" />
+        <property name="EditorOnly" value="False" />
+      </properties>
+      <test-suite type="TestSuite" id="1141" name="PPS" fullname="PPS" runstate="Runnable" testcasecount="38" result="Passed" start-time="2026-08-08 07:55:15Z" end-time="2026-08-08 07:55:48Z" duration="33.120317" total="1" passed="1" failed="0" inconclusive="0" skipped="0" asserts="0">
+        <properties />
+        <test-suite type="TestSuite" id="1142" name="Solver" fullname="PPS.Solver" runstate="Runnable" testcasecount="38" result="Passed" start-time="2026-08-08 07:55:15Z" end-time="2026-08-08 07:55:48Z" duration="33.100024" total="1" passed="1" failed="0" inconclusive="0" skipped="0" asserts="0">
+          <properties />
+          <test-suite type="TestSuite" id="1143" name="Tests" fullname="PPS.Solver.Tests" runstate="Runnable" testcasecount="38" result="Passed" start-time="2026-08-08 07:55:15Z" end-time="2026-08-08 07:55:48Z" duration="33.086546" total="1" passed="1" failed="0" inconclusive="0" skipped="0" asserts="0">
+            <properties />
+            <test-suite type="TestFixture" id="1122" name="ReachableClosureTests" fullname="PPS.Solver.Tests.ReachableClosureTests" classname="PPS.Solver.Tests.ReachableClosureTests" runstate="Runnable" testcasecount="1" result="Passed" start-time="2026-08-08 07:55:15Z" end-time="2026-08-08 07:55:48Z" duration="33.066187" total="1" passed="1" failed="0" inconclusive="0" skipped="0" asserts="0">
+              <properties />
+              <test-case id="1123" name="도달_가능_셀의_증가_곡선을_찍는다" fullname="PPS.Solver.Tests.ReachableClosureTests.도달_가능_셀의_증가_곡선을_찍는다" methodname="도달_가능_셀의_증가_곡선을_찍는다" classname="PPS.Solver.Tests.ReachableClosureTests" runstate="Runnable" seed="514197609" result="Passed" start-time="2026-08-08 07:55:15Z" end-time="2026-08-08 07:55:48Z" duration="33.045240" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+                <output><![CDATA[[격자] 전체 셀 17,056 (위치 416 × 속도 41)
+[설정] 후보 60 개 · 굴림 180 스텝 · 시뮬 상한 100,000
+깊이 0: 셀      15 (무배치 궤적) 새 셀 15
+깊이 1: 셀     156 (0.91 %) 새 셀     141 · 누적 시뮬     367 · 간선     189 ·    0.1초
+깊이 2: 셀     713 (4.18 %) 새 셀     557 · 누적 시뮬   6,345 · 간선   1,857 ·    2.5초
+깊이 3: 셀   1,738 (10.19 %) 새 셀   1,025 · 누적 시뮬  35,320 · 간선   7,111 ·   12.5초
+깊이 4: 셀   2,881 (16.89 %) 새 셀   1,143 · 누적 시뮬  95,222 · 간선  14,183 ·   26.7초
+깊이 5: 셀   3,002 (17.60 %) 새 셀     121 · 누적 시뮬 100,000 · 간선  16,265 ·   32.8초
+  ⚠ 시뮬 상한 100,000 에서 중단. 위 값은 미완성이다.
+
+Saving results to: C:/Users/User/AppData/LocalLow/DefaultCompany/PhysicsPuzzleSolver\TestResults.xml
+]]></output>
+              </test-case>
+            </test-suite>
+          </test-suite>
+        </test-suite>
+      </test-suite>
+    </test-suite>
+  </test-suite>
+</test-run>
