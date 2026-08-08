@@ -36,13 +36,15 @@ namespace PPS.Core
         /// 시드를 직접 주는 저수준 경로.
         /// 조기 종료가 솔버 처리량을 좌우한다.
         /// </summary>
+        /// <param name="start">공의 출발 상태. null 이면 레벨의 시작점.</param>
         public static SimResult Run(
             LevelData level,
             Solution solution,
             int seed,
-            int maxSteps = SimWorld.DefaultMaxSteps)
+            int maxSteps = SimWorld.DefaultMaxSteps,
+            BallState? start = null)
         {
-            using (var world = WorldBuilder.Build(level, solution, seed))
+            using (var world = WorldBuilder.Build(level, solution, seed, start))
             {
                 while (world.CurrentStep < maxSteps && !world.IsTerminal)
                     world.Step();
@@ -57,16 +59,18 @@ namespace PPS.Core
         /// 위상 정보가 없다.
         /// </summary>
         /// <param name="buffer">시작할 때 비운다. 재사용해도 된다.</param>
+        /// <param name="start">공의 출발 상태. null 이면 레벨의 시작점.</param>
         public static SimResult RunSampled(
             LevelData level,
             Solution solution,
             int seed,
             TrajectoryBuffer buffer,
-            int maxSteps = SimWorld.DefaultMaxSteps)
+            int maxSteps = SimWorld.DefaultMaxSteps,
+            BallState? start = null)
         {
             buffer.Clear();
 
-            using (var world = WorldBuilder.Build(level, solution, seed))
+            using (var world = WorldBuilder.Build(level, solution, seed, start))
             {
                 while (world.CurrentStep < maxSteps && !world.IsTerminal)
                 {
@@ -86,16 +90,18 @@ namespace PPS.Core
         /// 갈라진 첫 스텝을 알아야 디버깅이 된다.
         /// </summary>
         /// <param name="trace">i = i번째 Step 직후의 해시.</param>
+        /// <param name="start">공의 출발 상태. null 이면 레벨의 시작점.</param>
         public static SimResult RunTraced(
             LevelData level,
             Solution solution,
             int seed,
             List<ulong> trace,
-            int maxSteps = SimWorld.DefaultMaxSteps)
+            int maxSteps = SimWorld.DefaultMaxSteps,
+            BallState? start = null)
         {
             trace.Clear();
 
-            using (var world = WorldBuilder.Build(level, solution, seed))
+            using (var world = WorldBuilder.Build(level, solution, seed, start))
             {
                 while (world.CurrentStep < maxSteps && !world.IsTerminal)
                 {

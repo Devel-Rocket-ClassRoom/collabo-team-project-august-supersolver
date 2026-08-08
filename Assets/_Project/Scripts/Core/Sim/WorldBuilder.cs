@@ -27,7 +27,9 @@ namespace PPS.Core
         /// 시드를 직접 주는 저수준 진입점.
         /// 시드를 축으로 훑는 곳만 쓴다.
         /// </summary>
-        public static SimWorld Build(LevelData level, Solution solution, int seed)
+        /// <param name="start">공의 출발 상태. null 이면 레벨의 시작점에 정지로 둔다.</param>
+        public static SimWorld Build(
+            LevelData level, Solution solution, int seed, BallState? start = null)
         {
             if (level == null) throw new System.ArgumentNullException(nameof(level));
             solution = solution ?? Solution.Empty;
@@ -45,7 +47,11 @@ namespace PPS.Core
             var hazards = new List<Collider2D>();
 
             // 1. 공 — 항상 인덱스 0. 해시를 읽을 기준점.
-            var ball = ColliderFactory.CreateBall(scene, level, "Ball");
+            //    속도는 바디가 생긴 뒤에만 줄 수 있고,
+            //    Judge 가 초기 상태를 재기 전이어야 한다.
+            var ball = ColliderFactory.CreateBall(
+                scene, level, start?.Position ?? level.BallStart, "Ball");
+            if (start.HasValue) ball.linearVelocity = start.Value.Velocity;
             bodies.Add(ball);
 
             // 2. 지형 — 레벨 데이터 순서

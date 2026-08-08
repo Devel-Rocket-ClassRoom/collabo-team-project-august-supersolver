@@ -28,8 +28,9 @@ namespace PPS.Solver
             LevelData level,
             IReadOnlyList<Primitive> primitives,
             int seed,
-            int maxSteps = SimWorld.DefaultMaxSteps)
-            => SimRunner.Run(level, PrimitiveDecoder.Decode(primitives), seed, maxSteps);
+            int maxSteps = SimWorld.DefaultMaxSteps,
+            BallState? start = null)
+            => SimRunner.Run(level, PrimitiveDecoder.Decode(primitives), seed, maxSteps, start);
 
         /// <summary>
         /// 궤적을 담으며 돌린다.
@@ -41,8 +42,9 @@ namespace PPS.Solver
             IReadOnlyList<Primitive> primitives,
             int seed,
             TrajectoryBuffer buffer,
-            int maxSteps = SimWorld.DefaultMaxSteps)
+            int maxSteps = SimWorld.DefaultMaxSteps,
+            BallState? start = null)
             => SimRunner.RunSampled(
-                level, PrimitiveDecoder.Decode(primitives), seed, buffer, maxSteps);
+                level, PrimitiveDecoder.Decode(primitives), seed, buffer, maxSteps, start);
     }
 }

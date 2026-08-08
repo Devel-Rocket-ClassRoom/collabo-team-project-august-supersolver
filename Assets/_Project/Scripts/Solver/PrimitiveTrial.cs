@@ -31,22 +31,26 @@ namespace PPS.Solver
         /// 시뮬 한 번이 앞의 둘을 합친 것보다 훨씬 비싸므로
         /// 거부는 시뮬 전에 끝난다.
         /// </summary>
-        public TrialResult Run(float[] vector, int maxSteps = SimWorld.DefaultMaxSteps)
-            => Run(vector, null, maxSteps);
+        public TrialResult Run(
+            float[] vector, int maxSteps = SimWorld.DefaultMaxSteps, BallState? start = null)
+            => Run(vector, null, maxSteps, start);
 
         /// <summary>
         /// 궤적을 담으며 돌린다.
         /// 거부된 시행은 시뮬이 없으므로 버퍼가 비어서 온다 —
         /// 지난 시행 값이 남으면 남의 궤적을 읽게 된다.
         /// </summary>
+        /// <param name="start">공의 출발 상태. null 이면 레벨의 시작점.
+        /// 맵 빌드는 셀의 대표 상태를 여기 넣는다.</param>
         public TrialResult RunSampled(
-            float[] vector, TrajectoryBuffer buffer, int maxSteps = SimWorld.DefaultMaxSteps)
+            float[] vector, TrajectoryBuffer buffer,
+            int maxSteps = SimWorld.DefaultMaxSteps, BallState? start = null)
         {
             if (buffer == null) throw new System.ArgumentNullException(nameof(buffer));
-            return Run(vector, buffer, maxSteps);
+            return Run(vector, buffer, maxSteps, start);
         }
 
-        TrialResult Run(float[] vector, TrajectoryBuffer buffer, int maxSteps)
+        TrialResult Run(float[] vector, TrajectoryBuffer buffer, int maxSteps, BallState? start)
         {
             if (vector.Length % PrimitiveCodec.Dimensions != 0)
                 return Reject(PlacementReject.BadVector, buffer);
@@ -64,8 +68,8 @@ namespace PPS.Solver
             }
 
             return new TrialResult(buffer == null
-                ? PrimitiveRunner.Run(_level, primitives, _seed, maxSteps)
-                : PrimitiveRunner.RunSampled(_level, primitives, _seed, buffer, maxSteps));
+                ? PrimitiveRunner.Run(_level, primitives, _seed, maxSteps, start)
+                : PrimitiveRunner.RunSampled(_level, primitives, _seed, buffer, maxSteps, start));
         }
 
         static TrialResult Reject(PlacementReject reject, TrajectoryBuffer buffer)
