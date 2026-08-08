@@ -53,10 +53,11 @@ namespace PPS.Solver.Tests
         }
 
         /// 크기 구간의 경계 속력. 정지 경계도 포함한다.
-        [TestCase(0.5f)]
-        [TestCase(1.5f)]
-        [TestCase(4.5f)]
-        [TestCase(13.5f)]
+        [TestCase(0.125f)]
+        [TestCase(0.375f)]
+        [TestCase(1.125f)]
+        [TestCase(3.375f)]
+        [TestCase(10.125f)]
         public void SpeedBoundaryStaysInOneCell(float line)
         {
             var q = Quantizer();
@@ -75,8 +76,8 @@ namespace PPS.Solver.Tests
         /// 8칸으로 갈리면 같은 상태가 여러 키를 갖는다.
         /// </summary>
         [TestCase(0f, 0f)]
-        [TestCase(0.1f, 0.2f)]
-        [TestCase(-0.3f, 0.1f)]
+        [TestCase(0.05f, 0.08f)]
+        [TestCase(-0.06f, 0.02f)]
         public void StoppedBallHasNoDirection(float vx, float vy)
         {
             BallCell cell = Quantizer().Quantize(Vector2.zero, new Vector2(vx, vy));
@@ -85,13 +86,13 @@ namespace PPS.Solver.Tests
             Assert.AreEqual(0, cell.VY);
         }
 
-        /// 속력 5 는 전부 크기 3 구간이라 방향만 갈린다.
-        [TestCase(5f, 0f, 3, 0)]
-        [TestCase(-5f, 0f, -3, 0)]
-        [TestCase(0f, 5f, 0, 3)]
-        [TestCase(0f, -5f, 0, -3)]
-        [TestCase(5f, 5f, 3, 3)]
-        [TestCase(-5f, 5f, -3, 3)]
+        /// 속력 5 는 전부 크기 4 구간이라 방향만 갈린다.
+        [TestCase(5f, 0f, 4, 0)]
+        [TestCase(-5f, 0f, -4, 0)]
+        [TestCase(0f, 5f, 0, 4)]
+        [TestCase(0f, -5f, 0, -4)]
+        [TestCase(5f, 5f, 4, 4)]
+        [TestCase(-5f, 5f, -4, 4)]
         public void HeadingFoldsIntoEightDirections(float vx, float vy, int ex, int ey)
         {
             BallCell cell = Quantizer().Quantize(Vector2.zero, new Vector2(vx, vy));
@@ -124,8 +125,10 @@ namespace PPS.Solver.Tests
         {
             var q = Quantizer();
 
-            Assert.AreEqual(4, q.Quantize(Vector2.zero, new Vector2(100f, 0f)).VX);
-            Assert.AreEqual(4, q.Quantize(Vector2.zero, new Vector2(1000f, 0f)).VX);
+            Assert.AreEqual(SolverConfig.SpeedBands,
+                q.Quantize(Vector2.zero, new Vector2(100f, 0f)).VX);
+            Assert.AreEqual(SolverConfig.SpeedBands,
+                q.Quantize(Vector2.zero, new Vector2(1000f, 0f)).VX);
         }
 
         [Test]
