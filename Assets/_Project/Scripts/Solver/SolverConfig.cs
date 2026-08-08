@@ -1,4 +1,5 @@
 using PPS.Core;
+using UnityEngine;
 
 namespace PPS.Solver
 {
@@ -49,5 +50,13 @@ namespace PPS.Solver
 
         /// 속도 축의 셀 수. 방향 8 × 크기 + 정지 1.
         public const int VelocityCellCount = SpeedBands * 8 + 1;
+
+        /// <summary>
+        /// 크기 구간 band 의 하한 속력. band 1 이면 정지 경계다.
+        /// 양자화·역양자화·실측이 같은 식을 봐야 한다 —
+        /// 따로 적으면 한쪽만 고쳤을 때 조용히 어긋난다.
+        /// </summary>
+        public static float BandFloor(int band)
+            => StopSpeed * Mathf.Pow(SpeedRatio, band - 1);
     }
 }

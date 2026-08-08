@@ -1,4 +1,5 @@
 using System;
+using PPS.Core;
 using UnityEngine;
 
 namespace PPS.Solver
@@ -28,6 +29,51 @@ namespace PPS.Solver
             Velocity(velocity, out int vx, out int vy);
             return new BallCell(Index(position.x), Index(position.y), vx, vy);
         }
+
+        /// <summary>
+        /// 셀을 대표 상태로 되돌린다. 맵 빌드가 셀마다
+        /// 어디서 굴릴지를 여기서 얻는다.
+        /// 대표 속도를 전부 0 으로 두면 속도가 0 이 아닌 셀에서
+        /// 나가는 간선이 안 생겨 h 가 전부 ∞ 가 된다.
+        /// </summary>
+        public BallState Dequantize(BallCell cell)
+            => new BallState(
+                new Vector2(Center(cell.X), Center(cell.Y)),
+                Velocity(cell.VX, cell.VY));
+
+        /// 셀 중심. 경계에 두면 왕복이 옆 셀로 샌다.
+        float Center(int index) => (index + 0.5f) * PositionStep;
+
+        /// <summary>
+        /// 방향 부호 × 크기 구간 라벨을 속도 벡터로 되돌린다.
+        /// 부호쌍이 곧 8방향이라 정규화만 하면 방향이 나온다.
+        /// </summary>
+        static Vector2 Velocity(int vx, int vy)
+        {
+            int band = Mathf.Max(Mathf.Abs(vx), Mathf.Abs(vy));
+            if (band == 0)
+                return Vector2.zero;
+
+            var direction = new Vector2(Unit(vx), Unit(vy)).normalized;
+            return direction * BandSpeed(band);
+        }
+
+        /// <summary>
+        /// 구간의 대표 속력. 로그 축으로 나눈 구간이라
+        /// 기하 중앙이 가운데다.
+        /// 최상단은 위가 열려 있어 중앙이 없다 — 실측에서
+        /// 표본이 하한에 붙어 있어 하한을 그대로 쓴다.
+        /// </summary>
+        static float BandSpeed(int band)
+        {
+            float floor = SolverConfig.BandFloor(band);
+            return band == SolverConfig.SpeedBands
+                ? floor
+                : floor * Mathf.Sqrt(SolverConfig.SpeedRatio);
+        }
+
+        /// Mathf.Sign 은 0 에 1 을 준다. 0 은 0 이어야 한다.
+        static float Unit(int label) => label == 0 ? 0f : (label < 0 ? -1f : 1f);
 
         /// <summary>
         /// 격자선 바로 옆의 값은 선 위로 끌어다 놓고 자른다.
