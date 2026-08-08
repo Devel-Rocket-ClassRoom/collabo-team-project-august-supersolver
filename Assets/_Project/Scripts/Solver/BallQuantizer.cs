@@ -61,15 +61,17 @@ namespace PPS.Solver
         /// <summary>
         /// 구간의 대표 속력. 로그 축으로 나눈 구간이라
         /// 기하 중앙이 가운데다.
-        /// 최상단은 위가 열려 있어 중앙이 없다 — 실측에서
-        /// 표본이 하한에 붙어 있어 하한을 그대로 쓴다.
+        /// 최상단은 위가 열려 있어 중앙이 없어,
+        /// 실측 점유 구간의 가운데로 따로 잡는다.
         /// </summary>
         static float BandSpeed(int band)
         {
             float floor = SolverConfig.BandFloor(band);
-            return band == SolverConfig.SpeedBands
-                ? floor
-                : floor * Mathf.Sqrt(SolverConfig.SpeedRatio);
+            float exponent = band == SolverConfig.SpeedBands
+                ? SolverConfig.ClampMidExponent
+                : 0.5f;
+
+            return floor * Mathf.Pow(SolverConfig.SpeedRatio, exponent);
         }
 
         /// Mathf.Sign 은 0 에 1 을 준다. 0 은 0 이어야 한다.

@@ -158,7 +158,7 @@ namespace PPS.Solver.Tests
                 BallState start = quantizer.Dequantize(cell);
 
                 // 벽 안에서 출발한 공은 밀려나며 튀어 분포를 오염시킨다.
-                if (InsideTerrain(level, start.Position, level.BallRadius))
+                if (BallSpawn.Blocked(level, start.Position))
                 {
                     skipped++;
                     continue;
@@ -215,27 +215,6 @@ namespace PPS.Solver.Tests
                 yield return new Vector2Int(-band, band);
                 yield return new Vector2Int(-band, -band);
             }
-        }
-
-        static bool InsideTerrain(LevelData level, Vector2 point, float radius)
-        {
-            for (int i = 0; i < level.Terrain.Count; i++)
-            {
-                var segment = level.Terrain[i];
-                if (DistanceToSegment(point, segment.A, segment.B) < radius)
-                    return true;
-            }
-            return false;
-        }
-
-        static float DistanceToSegment(Vector2 point, Vector2 a, Vector2 b)
-        {
-            Vector2 ab = b - a;
-            float lengthSq = ab.sqrMagnitude;
-            if (lengthSq <= 0f) return Vector2.Distance(point, a);
-
-            float t = Mathf.Clamp01(Vector2.Dot(point - a, ab) / lengthSq);
-            return Vector2.Distance(point, a + ab * t);
         }
 
         static int CountInBand(List<float> sorted, int band)
