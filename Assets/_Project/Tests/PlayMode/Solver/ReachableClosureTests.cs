@@ -1,10 +1,12 @@
+using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.Text;
 using NUnit.Framework;
 using PPS.Core;
 using PPS.Core.Tests;
 using UnityEngine;
+using UnityEngine.SceneManagement;
+using UnityEngine.TestTools;
 using Debug = UnityEngine.Debug;
 
 namespace PPS.Solver.Tests
@@ -18,11 +20,11 @@ namespace PPS.Solver.Tests
     public class ReachableClosureTests
     {
         /// <summary>
-        /// 후보 Size 분할. 1 이라 후보가 60 개다.
-        /// 적게 잡을수록 덜 퍼지므로 결과는 C* 의 **하한**이다.
-        /// 깊이를 보려면 폭을 줄여야 한다.
+        /// 후보 Size 분할. 2 면 공 반지름과 최대 크기 둘 다 나온다.
+        /// 1 로 두면 안 된다 — 규칙표가 마지막 단계에 최대 크기를
+        /// 주므로 거대 프리미티브만 남아 거부율이 90% 로 뜬다.
         /// </summary>
-        const int SizeSteps = 1;
+        const int SizeSteps = 2;
 
         /// 한 셀을 굴리는 스텝 상한.
         const int RollSteps = 180;
@@ -34,12 +36,31 @@ namespace PPS.Solver.Tests
         /// 폭주하는지 아닌지가 알고 싶은 것이지
         /// 끝까지 도는 것이 목적이 아니다.
         /// </summary>
-        const int MaxSims = 100000;
+        const int MaxSims = 400000;
 
-        const int MaxDepth = 6;
+        /// <summary>
+        /// 동시에 로드해 둘 시뮬 씬의 상한.
+        /// `SimWorld.Dispose` 의 언로드는 프레임 끝에 처리되는데,
+        /// 씬이 쌓이면 생성·해제 비용이 로드된 씬 수를 타서
+        /// 전체가 O(씬수 × 판수) 가 된다. 상수로 묶어 선형으로 만든다.
+        /// 만든 개수가 아니라 **남아 있는 개수**를 눌러야 한다 —
+        /// 얼마나 빠졌는지는 만든 쪽에서 알 수 없다.
+        /// </summary>
+        const int MaxLoadedScenes = 16;
 
-        [Test]
-        public void 도달_가능_셀의_증가_곡선을_찍는다()
+        /// <summary>
+        /// 씬이 끝내 안 줄어들 때 포기하고 진행할 프레임 수.
+        /// 없으면 조용히 멈춘 것과 구분이 안 된다.
+        /// </summary>
+        const int MaxWaitFrames = 600;
+
+        /// 깊이는 곧 프리미티브 개수다. 잉크 예산이
+        /// 허용하는 것보다 깊은 셀은 답에 못 들어간다.
+        const int MaxDepth = 4;
+
+        /// 기본 상한 3분으로는 못 끝낸다. 일회성 측정이라 넉넉히 준다.
+        [UnityTest, Timeout(1800000)]
+        public IEnumerator 도달_가능_셀의_증가_곡선을_찍는다()
         {
             var level = SampleLevelFile.Load();
             var quantizer = new BallQuantizer(SolverConfig.PositionStep(level));
@@ -47,42 +68,50 @@ namespace PPS.Solver.Tests
 
             long allCells = (long)grid.CellCount * SolverConfig.VelocityCellCount;
 
-            var text = new StringBuilder();
-            text.AppendLine($"[격자] 전체 셀 {allCells:N0} " +
-                            $"(위치 {grid.CellCount} × 속도 {SolverConfig.VelocityCellCount})");
-            text.AppendLine($"[설정] 후보 {new PrimitiveCandidates(level, SizeSteps).Count} 개 · " +
-                            $"굴림 {RollSteps} 스텝 · 시뮬 상한 {MaxSims:N0}");
+            // 깊이마다 바로 찍는다. 끝에 몰아서 찍으면
+            // 상한이나 타임아웃에 걸릴 때 측정이 통째로 날아간다.
+            Debug.Log($"[격자] 전체 셀 {allCells:N0} " +
+                      $"(위치 {grid.CellCount} × 속도 {SolverConfig.VelocityCellCount})\n" +
+                      $"[설정] 후보 {new PrimitiveCandidates(level, SizeSteps).Count} 개 · " +
+                      $"굴림 {RollSteps} 스텝 · 시뮬 상한 {MaxSims:N0}");
 
             var explorer = new Explorer(level, quantizer);
             var frontier = explorer.Seed();
 
-            text.AppendLine($"깊이 0: 셀 {explorer.Visited.Count,7:N0} " +
-                            $"(무배치 궤적) 새 셀 {frontier.Count}");
+            Debug.Log($"깊이 0: 셀 {explorer.CellCount,7:N0} (무배치 궤적) 새 셀 {frontier.Count}");
 
             for (int depth = 1; depth <= MaxDepth && frontier.Count > 0; depth++)
             {
-                frontier = explorer.Expand(frontier);
+                var next = new List<BallCell>();
 
-                text.AppendLine(
-                    $"깊이 {depth}: 셀 {explorer.Visited.Count,7:N0} " +
-                    $"({(double)explorer.Visited.Count / allCells:P2}) " +
+                // 씬 언로드가 프레임 끝에 처리되므로 중간중간 넘겨야 한다.
+                var routine = explorer.Expand(frontier, next);
+                while (routine.MoveNext()) yield return routine.Current;
+
+                frontier = next;
+
+                Debug.Log(
+                    $"깊이 {depth}: 셀 {explorer.CellCount,7:N0} " +
+                    $"({(double)explorer.CellCount / allCells:P2}) " +
                     $"새 셀 {frontier.Count,7:N0} · " +
-                    $"누적 시뮬 {explorer.Sims,7:N0} · 간선 {explorer.Edges,7:N0} · " +
-                    $"{explorer.Elapsed.TotalSeconds,6:F1}초");
+                    $"시뮬 {explorer.Sims,7:N0} (월드 {explorer.Worlds,7:N0}) · " +
+                    $"간선 {explorer.Edges,7:N0} · " +
+                    $"거부 {(float)explorer.Rejected / explorer.Sims:P0} · " +
+                    $"중심이면 잃을 셀 {explorer.CenterBlocked,5:N0} · " +
+                    $"{explorer.Elapsed.TotalSeconds,6:F1}초 " +
+                    $"(월드당 {explorer.MsPerWorld:F2}ms · 씬 최고 {explorer.PeakScenes})");
 
                 if (explorer.Stopped)
                 {
-                    text.AppendLine($"  ⚠ 시뮬 상한 {MaxSims:N0} 에서 중단. 위 값은 미완성이다.");
+                    Debug.Log($"  ⚠ 시뮬 상한 {MaxSims:N0} 에서 중단. 위 값은 미완성이다.");
                     break;
                 }
             }
 
             if (!explorer.Stopped && frontier.Count == 0)
-                text.AppendLine("  ✔ 더 나올 셀이 없다 — 고정점에 도달했다.");
+                Debug.Log("  ✔ 더 나올 셀이 없다 — 고정점에 도달했다.");
 
-            Debug.Log(text.ToString());
-
-            Assert.Greater(explorer.Visited.Count, 0, "무배치 궤적조차 셀을 못 냈다");
+            Assert.Greater(explorer.CellCount, 0, "무배치 궤적조차 셀을 못 냈다");
             Assert.Greater(explorer.Sims, 0, "한 판도 굴리지 못했다");
         }
 
@@ -108,9 +137,38 @@ namespace PPS.Solver.Tests
 
             readonly Primitive[] _one = new Primitive[1];
 
-            public readonly HashSet<BallCell> Visited = new HashSet<BallCell>();
+            /// <summary>
+            /// 셀 → 그 셀을 처음 낸 실제 표본.
+            /// 셀 중심을 지어내는 대신 시뮬이 실제로 지나간 상태를 쓴다 —
+            /// 지어낸 중심은 지형 안으로 들어가 버릴 수 있는데,
+            /// 이 상태는 물리가 실제로 통과했으니 반드시 유효하다.
+            /// </summary>
+            readonly Dictionary<BallCell, BallState> _states =
+                new Dictionary<BallCell, BallState>();
+
+            public int CellCount => _states.Count;
 
             public int Sims { get; private set; }
+
+            /// 유효성 검사에서 걸려 시뮬을 안 돈 시행.
+            public int Rejected { get; private set; }
+
+            /// 실제로 만든 물리 씬 수. 메모리를 먹는 것은 이쪽이다.
+            public int Worlds { get; private set; }
+
+            /// 동시에 로드돼 있던 시뮬 씬의 최고점. 상한이 먹히는지 본다.
+            public int PeakScenes { get; private set; }
+
+            /// 월드 하나당 시뮬 시간. 깊이가 깊어져도 평평해야 한다.
+            public double MsPerWorld => Worlds == 0 ? 0 : _watch.Elapsed.TotalMilliseconds / Worlds;
+
+            readonly int _sceneBaseline = SceneManager.sceneCount;
+
+            /// <summary>
+            /// 셀 중심을 대표로 썼다면 지형에 박혀 버려졌을 셀 수.
+            /// 실제 표본을 쓰면 잃지 않는다는 것을 재는 값이다.
+            /// </summary>
+            public int CenterBlocked { get; private set; }
 
             public bool Stopped { get; private set; }
 
@@ -139,6 +197,7 @@ namespace PPS.Solver.Tests
                 _trial.RunSampled(new float[0], _buffer, RollSteps);
                 _watch.Stop();
                 Sims++;
+                Worlds++;
 
                 _collector.CollectFree(_buffer);
                 return TakeNew();
@@ -146,35 +205,65 @@ namespace PPS.Solver.Tests
 
             /// <summary>
             /// 프론티어의 각 셀에서 무배치 1회 + 후보마다 1회 굴린다.
-            /// 처음 보는 셀만 다음 프론티어로 넘긴다.
+            /// 처음 보는 셀만 next 에 담는다.
+            /// 물리 씬을 걷으려면 프레임을 넘겨야 해 코루틴이다.
             /// </summary>
-            public List<BallCell> Expand(List<BallCell> frontier)
+            public IEnumerator Expand(List<BallCell> frontier, List<BallCell> next)
             {
-                var next = new List<BallCell>();
-
                 foreach (var cell in frontier)
                 {
-                    BallState start = _quantizer.Dequantize(cell);
+                    BallState start = _states[cell];
+                    Vector2 center = _quantizer.Dequantize(cell).Position;
 
-                    // 벽에 박힌 채 출발한 공은 튕겨 나가 없는 이동을 만든다.
-                    if (BallSpawn.Blocked(_level, start.Position)) continue;
+                    // 셀 중심을 대표로 썼다면 잃었을 셀. 실제 표본은 안 막힌다.
+                    if (BallSpawn.Blocked(_level, center)) CenterBlocked++;
 
                     Roll(new float[0], start, placed: false, next);
 
-                    foreach (var candidate in CandidatesAt(cell, start.Position))
+                    var drain = Drain();
+                    while (drain.MoveNext()) yield return drain.Current;
+
+                    // 후보는 위치 셀에 붙는다. 공만 실제 표본에서 출발한다.
+                    foreach (var candidate in CandidatesAt(cell, center))
                     {
                         _one[0] = candidate;
                         Roll(_codec.Encode(_one), start, placed: true, next);
 
+                        drain = Drain();
+                        while (drain.MoveNext()) yield return drain.Current;
+
                         if (Sims >= MaxSims)
                         {
                             Stopped = true;
-                            return next;
+                            yield break;
                         }
                     }
                 }
+            }
 
-                return next;
+            /// <summary>
+            /// 로드된 씬이 상한 아래로 내려올 때까지 프레임을 넘긴다.
+            /// 언로드가 프레임당 몇 개나 빠지는지는 우리가 모르므로,
+            /// 만든 개수로 세지 않고 남은 개수를 직접 본다.
+            /// </summary>
+            IEnumerator Drain()
+            {
+                int waited = 0;
+
+                while (SceneManager.sceneCount > _sceneBaseline + MaxLoadedScenes)
+                {
+                    if (++waited > MaxWaitFrames)
+                    {
+                        Debug.LogWarning(
+                            $"씬이 {MaxWaitFrames} 프레임 동안 안 줄었다 " +
+                            $"({SceneManager.sceneCount} 개). 그대로 진행한다.");
+                        yield break;
+                    }
+
+                    yield return null;
+                }
+
+                PeakScenes = Mathf.Max(PeakScenes, SceneManager.sceneCount - _sceneBaseline);
             }
 
             void Roll(float[] vector, BallState start, bool placed, List<BallCell> next)
@@ -184,8 +273,14 @@ namespace PPS.Solver.Tests
                 _watch.Stop();
                 Sims++;
 
-                // 거부된 시행은 시뮬이 없어 버퍼가 비어 온다.
-                if (result.Reject != PlacementReject.None) return;
+                // 거부된 시행은 월드를 아예 안 만든다 — 씬도 안 쌓인다.
+                if (result.Reject != PlacementReject.None)
+                {
+                    Rejected++;
+                    return;
+                }
+
+                Worlds++;
 
                 if (placed) _collector.CollectPlaced(_buffer);
                 else _collector.CollectFree(_buffer);
@@ -193,15 +288,24 @@ namespace PPS.Solver.Tests
                 next.AddRange(TakeNew());
             }
 
+            /// <summary>
             /// 이번 궤적이 지난 셀 중 처음 보는 것.
+            /// 그 셀의 대표로 이 표본을 그대로 박아 둔다 —
+            /// 먼저 본 것이 이기며, 탐색 순서가 결정적이라 재현된다.
+            /// </summary>
             List<BallCell> TakeNew()
             {
                 var found = new List<BallCell>();
 
                 for (int i = 0; i < _buffer.Count; i++)
                 {
-                    BallCell cell = _quantizer.Quantize(_buffer[i].Position, _buffer[i].Velocity);
-                    if (Visited.Add(cell)) found.Add(cell);
+                    var sample = _buffer[i];
+                    BallCell cell = _quantizer.Quantize(sample.Position, sample.Velocity);
+
+                    if (_states.ContainsKey(cell)) continue;
+
+                    _states[cell] = new BallState(sample.Position, sample.Velocity);
+                    found.Add(cell);
                 }
 
                 return found;
