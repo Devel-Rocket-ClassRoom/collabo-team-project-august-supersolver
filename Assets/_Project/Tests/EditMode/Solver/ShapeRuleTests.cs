@@ -89,7 +89,7 @@ namespace PPS.Solver.Tests
         {
             Assert.AreEqual(8, PrimitiveShapeExtensions.Rule(PrimitiveShape.Line).AngleDivisions);
             Assert.AreEqual(6, PrimitiveShapeExtensions.Rule(PrimitiveShape.Triangle).AngleDivisions);
-            Assert.AreEqual(16, PrimitiveShapeExtensions.Rule(PrimitiveShape.Bowl).AngleDivisions);
+            Assert.AreEqual(8, PrimitiveShapeExtensions.Rule(PrimitiveShape.Bowl).AngleDivisions);
         }
 
         [Test]
