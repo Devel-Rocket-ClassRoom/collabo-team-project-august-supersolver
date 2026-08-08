@@ -15,6 +15,13 @@ namespace PPS.Solver
         /// </summary>
         /// <param name="usedInk">이미 놓은 프리미티브가 쓴 잉크.</param>
         public static PlacementReject Validate(in Primitive primitive, LevelData level, float usedInk)
+            => Validate(primitive, level, usedInk, LevelDataArea.Calculate(level));
+
+        /// <param name="area">미리 구해 둔 플레이 영역.
+        /// 레벨당 고정이라 시행마다 다시 구할 이유가 없다.
+        /// 맵 빌드는 이 검사를 수십만 번 부른다.</param>
+        public static PlacementReject Validate(
+            in Primitive primitive, LevelData level, float usedInk, in Rect area)
         {
             if (primitive.Size < level.BallRadius)
                 return PlacementReject.TooSmall;
@@ -25,7 +32,7 @@ namespace PPS.Solver
             if (ink > level.InkLimit)
                 return PlacementReject.TooLarge;
 
-            if (!Inside(LevelDataArea.Calculate(level), primitive))
+            if (!Inside(area, primitive))
                 return PlacementReject.OutOfArea;
 
             if (usedInk + ink > level.InkLimit)

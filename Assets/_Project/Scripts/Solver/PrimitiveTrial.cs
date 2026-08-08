@@ -1,4 +1,5 @@
 using PPS.Core;
+using UnityEngine;
 
 namespace PPS.Solver
 {
@@ -15,6 +16,11 @@ namespace PPS.Solver
         readonly int _seed;
         readonly PrimitiveCodec _codec;
 
+        /// 레벨당 고정이라 한 번만 잰다.
+        /// 배치 검사가 시행마다 이걸 다시 구하면
+        /// 맵 빌드에서 수십만 번 헛돈다.
+        readonly Rect _area;
+
         public PrimitiveTrial(StageData stage) : this(stage.Level, stage.Seed)
         {
         }
@@ -24,6 +30,7 @@ namespace PPS.Solver
             _level = level;
             _seed = seed;
             _codec = new PrimitiveCodec(level);
+            _area = LevelDataArea.Calculate(level);
         }
 
         /// <summary>
@@ -60,7 +67,7 @@ namespace PPS.Solver
             float usedInk = 0f;
             for (int i = 0; i < primitives.Length; i++)
             {
-                var reject = PrimitiveValidator.Validate(primitives[i], _level, usedInk);
+                var reject = PrimitiveValidator.Validate(primitives[i], _level, usedInk, _area);
                 if (reject != PlacementReject.None)
                     return Reject(reject, buffer);
 
