@@ -7,32 +7,12 @@ namespace PPS.Solver
     /// 공의 위상 상태를 셀 하나로 접는다.
     /// 폭이 곧 "이 정도 차이는 같은 상황" 선언이라
     /// 인스턴스 하나가 맵 하나의 격자를 정한다.
-    /// 위치는 일정 폭으로, 속도는 방향 8 × 크기 4 로 나눈다.
+    /// 위치는 일정 폭으로, 속도는 방향 8 × 크기 구간으로 나눈다.
     /// </summary>
     public sealed class BallQuantizer
     {
-        /// 격자선에 붙일 폭. 격자 단위라 폭에 안 딸린다.
-        /// 부동소수 오차(~1e-7)보다 훨씬 크고
-        /// 물리적으로 유의미한 차이보다는 훨씬 작다.
-        const float SnapEpsilon = 0.0001f;
-
-        /// 8방향 분류의 경계. tan(22.5°) 다.
-        /// 이 값으로 자르면 수평·수직이 구간 한가운데 온다 —
-        /// 평지를 구르거나 곧장 떨어지는 공이 가장 흔한데
-        /// 그게 경계에 걸리면 오차 한 번에 셀이 갈린다.
-        const float DiagonalTangent = 0.4142136f;
-
-        /// 속도 구간. 실측 전 임시값이다.
-        /// 등비인 이유는 0.5 와 2 의 차이는 크고
-        /// 18 과 22 의 차이는 거의 없기 때문이다.
-        /// 구간 경계는 0.5 · 1.5 · 4.5 · 13.5 이고
-        /// 그 위는 전부 최상단으로 접는다.
-        const float StopSpeed = 0.5f;
-        const float SpeedRatio = 3f;
-        const int SpeedBands = 4;
-
-        /// 폭은 실측 후 결정한다. 히트율과 정확도가
-        /// 맞바뀌는 값이라 근거 없이 못 정한다.
+        /// 폭. 레벨마다 달라 인스턴스가 들고 있다.
+        /// 기준값은 SolverConfig.PositionStep 이 정한다.
         public readonly float PositionStep;
 
         public BallQuantizer(float positionStep)
@@ -58,7 +38,7 @@ namespace PPS.Solver
         {
             float q = value / PositionStep;
             float line = Mathf.Round(q);
-            if (Mathf.Abs(q - line) <= SnapEpsilon)
+            if (Mathf.Abs(q - line) <= SolverConfig.SnapEpsilon)
                 q = line;
 
             return Mathf.FloorToInt(q);
@@ -83,8 +63,8 @@ namespace PPS.Solver
             float ay = Mathf.Abs(velocity.y);
 
             // 22.5° 경계는 흔한 자세가 아니라 스냅을 두지 않는다.
-            bool horizontal = ay < ax * DiagonalTangent;
-            bool vertical = ax < ay * DiagonalTangent;
+            bool horizontal = ay < ax * SolverConfig.DiagonalTangent;
+            bool vertical = ax < ay * SolverConfig.DiagonalTangent;
 
             vx = vertical ? 0 : Sign(velocity.x) * band;
             vy = horizontal ? 0 : Sign(velocity.y) * band;
@@ -99,16 +79,16 @@ namespace PPS.Solver
             if (speed <= 0f)
                 return 0;
 
-            float q = Mathf.Log(speed / StopSpeed) / Mathf.Log(SpeedRatio);
+            float q = Mathf.Log(speed / SolverConfig.StopSpeed) / Mathf.Log(SolverConfig.SpeedRatio);
             float line = Mathf.Round(q);
-            if (Mathf.Abs(q - line) <= SnapEpsilon)
+            if (Mathf.Abs(q - line) <= SolverConfig.SnapEpsilon)
                 q = line;
 
             int band = 1 + Mathf.FloorToInt(q);
             if (band <= 0)
                 return 0;
 
-            return band > SpeedBands ? SpeedBands : band;
+            return band > SolverConfig.SpeedBands ? SolverConfig.SpeedBands : band;
         }
 
         static int Sign(float value) => value < 0f ? -1 : 1;
