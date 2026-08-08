@@ -87,16 +87,12 @@ namespace PPS.Solver.Tests
                 "최상단 구간에 표본이 몰린다 — 빠른 상태가 한 셀로 뭉개진다");
         }
 
-        /// 크기 구간 band 의 하한. 1 이면 정지 경계다.
-        static float BandFloor(int band)
-            => SolverConfig.StopSpeed * Mathf.Pow(SolverConfig.SpeedRatio, band - 1);
-
         static int CountInBand(List<float> sorted, int band)
         {
-            int above = CountBelow(sorted, BandFloor(band));
+            int above = CountBelow(sorted, SolverConfig.BandFloor(band));
             return band == SolverConfig.SpeedBands
                 ? sorted.Count - above
-                : CountBelow(sorted, BandFloor(band + 1)) - above;
+                : CountBelow(sorted, SolverConfig.BandFloor(band + 1)) - above;
         }
 
         static float ClampShare(List<float> sorted)
@@ -112,9 +108,9 @@ namespace PPS.Solver.Tests
             {
                 string upper = band == SolverConfig.SpeedBands
                     ? "      ∞"
-                    : $"{BandFloor(band + 1),7:F3}";
+                    : $"{SolverConfig.BandFloor(band + 1),7:F3}";
                 text.AppendLine(
-                    $"  {band} [{BandFloor(band),6:F3}, {upper}) " +
+                    $"  {band} [{SolverConfig.BandFloor(band),6:F3}, {upper}) " +
                     Bar(CountInBand(sorted, band), sorted.Count));
             }
 
