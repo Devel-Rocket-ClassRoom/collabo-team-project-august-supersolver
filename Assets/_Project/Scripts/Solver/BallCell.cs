@@ -15,23 +15,27 @@ namespace PPS.Solver
         public readonly int X;
         public readonly int Y;
 
-        /// 속도는 성분이 아니라 방향 부호 × 크기 구간이다.
-        /// (3,0) 은 초속 3 이 아니라 "오른쪽, 크기 3" 이고
-        /// (0,0) 은 방향 없는 정지다.
-        /// 방향은 부호쌍 8 가지, 크기는 max(|VX|,|VY|) 로 되짚는다.
-        public readonly int VX;
-        public readonly int VY;
+        /// 진행 방향 칸. 0 이 +x 이고 반시계로 45° 씩 돈다.
+        public readonly int Dir;
 
-        public BallCell(int x, int y, int vx, int vy)
+        /// 속력 구간 칸. 0 이면 정지이고 그때 Dir 은 뜻이 없다.
+        public readonly int Mag;
+
+        /// <summary>
+        /// 멈춘 공은 방향이 의미가 없어 Dir 을 0 으로 접는다.
+        /// 안 접으면 물리적으로 같은 정지 상태가 8칸으로 갈린다.
+        /// 표준형을 여기서 강제해야 부르는 쪽마다 안 챙긴다.
+        /// </summary>
+        public BallCell(int x, int y, int dir, int mag)
         {
             X = x;
             Y = y;
-            VX = vx;
-            VY = vy;
+            Mag = mag;
+            Dir = mag == 0 ? 0 : dir;
         }
 
         public bool Equals(BallCell other) =>
-            X == other.X && Y == other.Y && VX == other.VX && VY == other.VY;
+            X == other.X && Y == other.Y && Dir == other.Dir && Mag == other.Mag;
 
         public override bool Equals(object obj) => obj is BallCell other && Equals(other);
 
@@ -47,8 +51,8 @@ namespace PPS.Solver
                 uint h = FnvOffsetBasis;
                 Mix(ref h, X);
                 Mix(ref h, Y);
-                Mix(ref h, VX);
-                Mix(ref h, VY);
+                Mix(ref h, Dir);
+                Mix(ref h, Mag);
                 return (int)h;
             }
         }
@@ -57,7 +61,7 @@ namespace PPS.Solver
 
         public static bool operator !=(BallCell a, BallCell b) => !a.Equals(b);
 
-        public override string ToString() => $"p({X},{Y}) v({VX},{VY})";
+        public override string ToString() => $"p({X},{Y}) dir {Dir} mag {Mag}";
 
         static void Mix(ref uint h, int value)
         {

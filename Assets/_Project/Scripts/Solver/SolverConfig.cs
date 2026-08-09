@@ -49,8 +49,14 @@ namespace PPS.Solver
         /// </summary>
         public const int SpeedBands = 5;
 
-        /// 속도 축의 셀 수. 방향 8 × 크기 + 정지 1.
-        public const int VelocityCellCount = SpeedBands * 8 + 1;
+        /// <summary>
+        /// 속도 방향을 몇 칸으로 나눌지. 45° 씩 8 칸이다.
+        /// DiagonalTangent 가 이 칸의 경계라 둘은 함께 움직인다.
+        /// </summary>
+        public const int VelocityDirections = 8;
+
+        /// 속도 축의 셀 수. 방향 × 크기 + 정지 1.
+        public const int VelocityCellCount = SpeedBands * VelocityDirections + 1;
 
         /// <summary>
         /// 클램프 구간 대표 속력의 자리. 하한 × 비율^이 값이다.

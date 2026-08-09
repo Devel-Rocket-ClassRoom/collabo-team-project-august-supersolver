@@ -199,8 +199,8 @@ namespace PPS.Solver.Tests
         /// 고정 간격으로 훑어 실행마다 같은 표본을 뽑는다.
         static IEnumerable<BallCell> SampleCells(BallGrid grid)
         {
-            var labels = new List<Vector2Int>(VelocityLabels());
-            int total = grid.CellCount * labels.Count;
+            var velocities = new List<Vector2Int>(VelocityCells());
+            int total = grid.CellCount * velocities.Count;
             int stride = Mathf.Max(1, total / (SampleRolls * 2));
 
             int index = 0;
@@ -208,31 +208,24 @@ namespace PPS.Solver.Tests
             {
                 for (int cy = 0; cy < grid.Rows; cy++)
                 {
-                    foreach (var label in labels)
+                    foreach (var velocity in velocities)
                     {
                         if (index++ % stride != 0) continue;
                         yield return new BallCell(
-                            grid.MinX + cx, grid.MinY + cy, label.x, label.y);
+                            grid.MinX + cx, grid.MinY + cy, velocity.x, velocity.y);
                     }
                 }
             }
         }
 
-        static IEnumerable<Vector2Int> VelocityLabels()
+        /// 속도 축의 셀 전부. 정지 1 + 방향 × 크기.
+        static IEnumerable<Vector2Int> VelocityCells()
         {
             yield return Vector2Int.zero;
 
-            for (int band = 1; band <= SolverConfig.SpeedBands; band++)
-            {
-                yield return new Vector2Int(band, 0);
-                yield return new Vector2Int(-band, 0);
-                yield return new Vector2Int(0, band);
-                yield return new Vector2Int(0, -band);
-                yield return new Vector2Int(band, band);
-                yield return new Vector2Int(band, -band);
-                yield return new Vector2Int(-band, band);
-                yield return new Vector2Int(-band, -band);
-            }
+            for (int mag = 1; mag <= SolverConfig.SpeedBands; mag++)
+                for (int dir = 0; dir < SolverConfig.VelocityDirections; dir++)
+                    yield return new Vector2Int(dir, mag);
         }
     }
 }

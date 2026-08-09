@@ -18,25 +18,16 @@ namespace PPS.Solver.Tests
         static BallQuantizer Quantizer() => new BallQuantizer(PosStep);
 
         /// <summary>
-        /// 유효한 속도 라벨 전부. 방향 8 × 크기 구간 + 정지 1.
-        /// 라벨은 속도 성분이 아니라 부호 × 구간이라
-        /// 아무 정수쌍이나 셀이 되는 것이 아니다.
+        /// 속도 축의 셀 전부. 정지 1 + 방향 × 크기.
+        /// 범위 안 모든 조합이 유효해서 이중 루프로 끝난다.
         /// </summary>
-        static IEnumerable<Vector2Int> VelocityLabels()
+        static IEnumerable<Vector2Int> VelocityCells()
         {
             yield return Vector2Int.zero;
 
-            for (int band = 1; band <= SolverConfig.SpeedBands; band++)
-            {
-                yield return new Vector2Int(band, 0);
-                yield return new Vector2Int(-band, 0);
-                yield return new Vector2Int(0, band);
-                yield return new Vector2Int(0, -band);
-                yield return new Vector2Int(band, band);
-                yield return new Vector2Int(band, -band);
-                yield return new Vector2Int(-band, band);
-                yield return new Vector2Int(-band, -band);
-            }
+            for (int mag = 1; mag <= SolverConfig.SpeedBands; mag++)
+                for (int dir = 0; dir < SolverConfig.VelocityDirections; dir++)
+                    yield return new Vector2Int(dir, mag);
         }
 
         [Test]
@@ -44,13 +35,13 @@ namespace PPS.Solver.Tests
         {
             var q = Quantizer();
 
-            foreach (var label in VelocityLabels())
+            foreach (var velocity in VelocityCells())
             {
                 for (int x = -3; x <= 3; x++)
                 {
                     for (int y = -3; y <= 3; y++)
                     {
-                        var cell = new BallCell(x, y, label.x, label.y);
+                        var cell = new BallCell(x, y, velocity.x, velocity.y);
                         BallState state = q.Dequantize(cell);
 
                         Assert.AreEqual(cell, q.Quantize(state.Position, state.Velocity),
@@ -77,14 +68,14 @@ namespace PPS.Solver.Tests
         {
             var q = Quantizer();
 
-            foreach (var label in VelocityLabels())
+            foreach (var velocity in VelocityCells())
             {
-                if (label == Vector2Int.zero) continue;
+                if (velocity.y == 0) continue;
 
-                BallState state = q.Dequantize(new BallCell(0, 0, label.x, label.y));
+                BallState state = q.Dequantize(new BallCell(0, 0, velocity.x, velocity.y));
 
                 Assert.Greater(state.Velocity.magnitude, SolverConfig.StopSpeed,
-                    $"라벨 ({label.x},{label.y}) 의 대표 속도가 정지로 접힌다");
+                    $"방향 {velocity.x} 크기 {velocity.y} 의 대표 속도가 정지로 접힌다");
             }
         }
 
@@ -93,19 +84,19 @@ namespace PPS.Solver.Tests
         {
             var q = Quantizer();
 
-            foreach (var label in VelocityLabels())
+            foreach (var velocity in VelocityCells())
             {
-                int band = Mathf.Max(Mathf.Abs(label.x), Mathf.Abs(label.y));
-                if (band == 0) continue;
+                int mag = velocity.y;
+                if (mag == 0) continue;
 
-                float speed = q.Dequantize(new BallCell(0, 0, label.x, label.y)).Velocity.magnitude;
+                float speed = q.Dequantize(new BallCell(0, 0, velocity.x, mag)).Velocity.magnitude;
 
-                Assert.GreaterOrEqual(speed, SolverConfig.BandFloor(band) - 1e-4f,
-                    $"구간 {band} 의 하한 아래다");
+                Assert.GreaterOrEqual(speed, SolverConfig.BandFloor(mag) - 1e-4f,
+                    $"구간 {mag} 의 하한 아래다");
 
                 // 최상단은 위가 열려 있어 상한을 따지지 않는다.
-                if (band < SolverConfig.SpeedBands)
-                    Assert.Less(speed, SolverConfig.BandFloor(band + 1), $"구간 {band} 의 상한 위다");
+                if (mag < SolverConfig.SpeedBands)
+                    Assert.Less(speed, SolverConfig.BandFloor(mag + 1), $"구간 {mag} 의 상한 위다");
             }
         }
 

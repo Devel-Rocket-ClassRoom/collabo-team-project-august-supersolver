@@ -82,23 +82,26 @@ namespace PPS.Solver.Tests
         {
             BallCell cell = Quantizer().Quantize(Vector2.zero, new Vector2(vx, vy));
 
-            Assert.AreEqual(0, cell.VX);
-            Assert.AreEqual(0, cell.VY);
+            Assert.AreEqual(0, cell.Mag);
+            Assert.AreEqual(0, cell.Dir, "정지는 방향 칸이 하나여야 한다");
         }
 
-        /// 속력 5 는 전부 크기 4 구간이라 방향만 갈린다.
-        [TestCase(5f, 0f, 4, 0)]
-        [TestCase(-5f, 0f, -4, 0)]
-        [TestCase(0f, 5f, 0, 4)]
-        [TestCase(0f, -5f, 0, -4)]
-        [TestCase(5f, 5f, 4, 4)]
-        [TestCase(-5f, 5f, -4, 4)]
-        public void HeadingFoldsIntoEightDirections(float vx, float vy, int ex, int ey)
+        /// 속력 5 는 전부 크기 칸 4 라 방향만 갈린다.
+        /// 방향 칸은 0 이 +x 이고 반시계로 45° 씩이다.
+        [TestCase(5f, 0f, 0)]
+        [TestCase(5f, 5f, 1)]
+        [TestCase(0f, 5f, 2)]
+        [TestCase(-5f, 5f, 3)]
+        [TestCase(-5f, 0f, 4)]
+        [TestCase(-5f, -5f, 5)]
+        [TestCase(0f, -5f, 6)]
+        [TestCase(5f, -5f, 7)]
+        public void HeadingFoldsIntoEightDirections(float vx, float vy, int dir)
         {
             BallCell cell = Quantizer().Quantize(Vector2.zero, new Vector2(vx, vy));
 
-            Assert.AreEqual(ex, cell.VX);
-            Assert.AreEqual(ey, cell.VY);
+            Assert.AreEqual(dir, cell.Dir);
+            Assert.AreEqual(4, cell.Mag);
         }
 
         /// <summary>
@@ -119,6 +122,20 @@ namespace PPS.Solver.Tests
                 q.Quantize(Vector2.zero, new Vector2(0.5f, -5f)));
         }
 
+        /// <summary>
+        /// 정지는 방향이 의미가 없어 셀 하나여야 한다.
+        /// 생성자가 접지 않으면 부르는 쪽마다 챙겨야 하고,
+        /// 한 곳만 빠뜨려도 같은 상태가 8칸으로 갈린다.
+        /// </summary>
+        [Test]
+        public void 정지_셀은_방향을_무엇으로_주든_같은_셀이다()
+        {
+            var stopped = new BallCell(1, 2, 0, 0);
+
+            for (int dir = 0; dir < SolverConfig.VelocityDirections; dir++)
+                Assert.AreEqual(stopped, new BallCell(1, 2, dir, 0), $"방향 {dir}");
+        }
+
         /// 상한 위는 전부 최상단으로 접는다.
         [Test]
         public void SpeedClampsAtTopBand()
@@ -126,9 +143,9 @@ namespace PPS.Solver.Tests
             var q = Quantizer();
 
             Assert.AreEqual(SolverConfig.SpeedBands,
-                q.Quantize(Vector2.zero, new Vector2(100f, 0f)).VX);
+                q.Quantize(Vector2.zero, new Vector2(100f, 0f)).Mag);
             Assert.AreEqual(SolverConfig.SpeedBands,
-                q.Quantize(Vector2.zero, new Vector2(1000f, 0f)).VX);
+                q.Quantize(Vector2.zero, new Vector2(1000f, 0f)).Mag);
         }
 
         [Test]
@@ -158,7 +175,7 @@ namespace PPS.Solver.Tests
             BallCell b = q.Quantize(new Vector2(0.9f, 0f), new Vector2(0.9f, 0f));
 
             Assert.AreNotEqual(a.X, b.X, "위치는 폭 0.25 라 갈라진다");
-            Assert.AreEqual(a.VX, b.VX, "속도는 같은 크기 구간이라 안 갈라진다");
+            Assert.AreEqual(a.Mag, b.Mag, "속도는 같은 크기 칸이라 안 갈라진다");
         }
 
         [Test]
