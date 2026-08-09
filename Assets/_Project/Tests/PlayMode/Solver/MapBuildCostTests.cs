@@ -151,7 +151,7 @@ namespace PPS.Solver.Tests
                 if (result.Reject != PlacementReject.None) rejected++;
                 else simSteps += result.Sim.EndStep;
 
-                collector.CollectPlaced(buffer);
+                collector.CollectPlaced(cell, buffer);
                 rolled++;
                 index++;
 

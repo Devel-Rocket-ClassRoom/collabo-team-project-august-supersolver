@@ -8,6 +8,8 @@ namespace PPS.Solver
     /// 궤적 하나를 간선 여럿으로 바꿔 모은다.
     /// 시작 셀에서 그 배치로 닿을 수 있었던 셀들이므로
     /// 간선은 전부 시작 셀에서 뻗는다.
+    /// 그 시작 셀은 부르는 쪽이 알려줘야 한다 — 궤적은 자기가
+    /// 어디서 출발했는지 모른다.
     /// 비용은 프리미티브를 놓았으면 1, 아니면 0 이다.
     /// 여러 시행을 이어 넣으면 맵이 쌓인다.
     /// </summary>
@@ -28,14 +30,16 @@ namespace PPS.Solver
         public IReadOnlyDictionary<CellEdge, int> Edges => _edges;
 
         /// <summary>프리미티브 하나를 놓고 굴린 궤적. 비용 1.</summary>
-        public void CollectPlaced(TrajectoryBuffer trajectory) => Collect(trajectory, Placed);
+        public void CollectPlaced(BallCell from, TrajectoryBuffer trajectory)
+            => Collect(from, trajectory, Placed);
 
         /// <summary>
         /// 아무것도 놓지 않고 굴린 궤적. 비용 0.
         /// 중력만으로 되는 이동은 잉크를 안 쓰므로
         /// h 를 올리면 안 된다.
         /// </summary>
-        public void CollectFree(TrajectoryBuffer trajectory) => Collect(trajectory, Free);
+        public void CollectFree(BallCell from, TrajectoryBuffer trajectory)
+            => Collect(from, trajectory, Free);
 
         /// <summary>
         /// 궤적이 지나간 셀 전부가 대상이다.
@@ -44,18 +48,19 @@ namespace PPS.Solver
         /// 시작 셀로 되돌아온 구간은 자기 자신으로 가는
         /// 간선이라 거리 0인 자리에 1을 넣게 되므로 뺀다.
         /// </summary>
-        void Collect(TrajectoryBuffer trajectory, int cost)
+        /// <param name="from">공이 출발한 셀. 궤적에서 읽으면 안 된다 —
+        /// 첫 표본은 출발 상태가 아니라 Interval 스텝 뒤라,
+        /// 그러면 출발 셀에서 나가는 간선이 통째로 빠진다.</param>
+        void Collect(BallCell from, TrajectoryBuffer trajectory, int cost)
         {
             if (trajectory == null) throw new ArgumentNullException(nameof(trajectory));
-            if (trajectory.Count == 0) return;
 
-            BallCell start = Quantize(trajectory[0]);
-            for (int i = 1; i < trajectory.Count; i++)
+            for (int i = 0; i < trajectory.Count; i++)
             {
                 BallCell cell = Quantize(trajectory[i]);
-                if (cell == start) continue;
+                if (cell == from) continue;
 
-                Add(new CellEdge(start, cell), cost);
+                Add(new CellEdge(from, cell), cost);
             }
         }
 
