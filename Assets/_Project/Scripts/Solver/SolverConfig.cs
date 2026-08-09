@@ -141,5 +141,34 @@ namespace PPS.Solver
         /// 탐색이 답을 잃지는 않는다. ∞ 셀 비율로 사후 검증한다.
         /// </summary>
         public const int MapDepth = 4;
+
+        // ── 씬 상한 ──
+
+        /// <summary>
+        /// 동시에 로드해 둘 시뮬 씬의 상한.
+        /// SimWorld 의 언로드는 프레임 끝에 처리되는데, 씬이 쌓이면
+        /// 생성·해제 비용이 로드된 씬 수를 타서 전체가 제곱이 된다.
+        /// 성능 손잡이가 아니라 구조 제약이다 — 맵 빌드와 탐색 둘 다
+        /// 코루틴이어야 하는 이유가 이것이다.
+        /// </summary>
+        public const int MaxLoadedScenes = 16;
+
+        /// 씬이 끝내 안 줄어들 때 포기하고 진행할 프레임 수.
+        /// 없으면 조용히 멈춘 것과 구분이 안 된다.
+        public const int MaxDrainFrames = 600;
+
+        // ── 탐색 예산 ──
+
+        /// <summary>
+        /// 탐색이 돌릴 시뮬 횟수 상한.
+        /// 잉크는 해답 하나당 예산이라 탐색을 멈추지 못한다 —
+        /// 실제로 멈추는 것은 이 값과 시간이다.
+        /// 근거는 아직 없다. 맵 없는 탐색이 얼마나 드는지를
+        /// 재는 것이 지금 하는 일이고, 그 결과로 정한다.
+        /// </summary>
+        public const int SearchSimBudget = 200000;
+
+        /// 탐색이 쓸 시간 상한(초). 근거는 위와 같다.
+        public const double SearchSeconds = 600d;
     }
 }
