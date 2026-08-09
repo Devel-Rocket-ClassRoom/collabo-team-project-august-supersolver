@@ -28,7 +28,8 @@ namespace PPS.Solver.Tests
         /// 폭주하는지 아닌지가 알고 싶은 것이지
         /// 끝까지 도는 것이 목적이 아니다.
         /// </summary>
-        const int MaxSims = 1200000;
+        /// L002 는 위치 셀이 L001 의 2.75배라 상한을 넉넉히 잡는다.
+        const int MaxSims = 3000000;
 
         /// <summary>
         /// 동시에 로드해 둘 시뮬 씬의 상한.
@@ -55,9 +56,28 @@ namespace PPS.Solver.Tests
 
         /// 기본 상한 3분으로는 못 끝낸다. 일회성 측정이라 넉넉히 준다.
         [UnityTest, Timeout(3600000)]
-        public IEnumerator 도달_가능_셀의_증가_곡선을_찍는다()
+        public IEnumerator L001_비탈의_도달_가능_셀_곡선()
+            => Measure(SampleLevelFile.Load());
+
+        /// <summary>
+        /// L001 은 공이 비탈에 붙어 굴러 공중 구간이 없다.
+        /// 이 판은 낙하·틈·폭탄이 있어 정반대 지형이다 —
+        /// 정한 값들이 L001 에 과적합됐는지 여기서 드러난다.
+        /// </summary>
+        [UnityTest, Timeout(3600000)]
+        public IEnumerator L002_낙하와_틈의_도달_가능_셀_곡선()
+            => Measure(FeatureLevelFile.LoadLevel());
+
+        /// <summary>
+        /// 유일하게 풀 것이 있는 판. L001·L002 는 그냥 굴려도 Clear 라
+        /// 가지치기가 첫 홉에서 전부 잘라내 폐포가 성립하지 않는다.
+        /// </summary>
+        [UnityTest, Timeout(3600000)]
+        public IEnumerator 퍼즐_레벨의_도달_가능_셀_곡선()
+            => Measure(TestLevels.GapPuzzle());
+
+        static IEnumerator Measure(LevelData level)
         {
-            var level = SampleLevelFile.Load();
             var quantizer = new BallQuantizer(SolverConfig.PositionStep(level));
             var grid = new BallGrid(level, quantizer);
 
@@ -86,19 +106,16 @@ namespace PPS.Solver.Tests
 
                 frontier = next;
 
+                // 위 줄은 누적, 아래 표는 이 깊이만.
                 Debug.Log(
                     $"깊이 {depth}: 셀 {explorer.CellCount,7:N0} " +
                     $"({(double)explorer.CellCount / allCells:P2}) " +
                     $"새 셀 {frontier.Count,7:N0} · " +
-                    $"시뮬 {explorer.Sims,7:N0} (월드 {explorer.Worlds,7:N0}) · " +
-                    $"간선 {explorer.Edges,7:N0} · " +
-                    $"거부 {(float)explorer.Rejected / explorer.Sims:P0} · " +
-                    $"헛방 {(float)explorer.Unchanged / Mathf.Max(explorer.Worlds, 1):P0} · " +
-                    $"상한걸림 {(float)explorer.Capped / Mathf.Max(explorer.Worlds, 1):P0} · " +
-                    $"간선/월드 {(float)explorer.Edges / Mathf.Max(explorer.Worlds, 1):F2} · " +
+                    $"누적 시뮬 {explorer.Sims,9:N0} (월드 {explorer.Worlds,9:N0}) · " +
+                    $"간선 {explorer.Edges,8:N0} · " +
                     $"{explorer.Elapsed.TotalSeconds,6:F1}초 " +
                     $"(월드당 {explorer.MsPerWorld:F2}ms · 씬 최고 {explorer.PeakScenes})\n" +
-                    explorer.Breakdown());
+                    explorer.Depth.Report());
 
                 if (explorer.Stopped)
                 {
@@ -129,6 +146,7 @@ namespace PPS.Solver.Tests
             readonly TrajectoryBuffer _buffer;
             readonly CellEdgeCollector _collector;
             readonly Stopwatch _watch = new Stopwatch();
+            readonly IdleCutoff _idle;
 
             readonly Primitive[] _one = new Primitive[1];
 
@@ -148,68 +166,88 @@ namespace PPS.Solver.Tests
 
             public int Sims { get; private set; }
 
-            /// 유효성 검사에서 걸려 시뮬을 안 돈 시행.
-            public int Rejected { get; private set; }
+            /// 실제로 만든 물리 씬 수. 메모리를 먹는 것은 이쪽이다.
+            public int Worlds { get; private set; }
 
-            /// <summary>
-            /// 돌렸는데 기저와 결과가 같았던 배치. 공에 안 닿았다는 뜻이다.
-            /// 시뮬 값은 다 치르고 간선은 하나도 안 만든다 —
-            /// 후보 설계가 좋은지 나쁜지가 이 수로 갈린다.
-            /// </summary>
-            public int Unchanged { get; private set; }
-
-            // 축마다 값을 하는지 본다. 헛방은 순서에 안 딸리지만
-            // 새 셀은 먼저 닿은 후보가 가져가므로 순서를 탄다.
-            readonly int[] _dirRolls = new int[SolverConfig.CandidateDirections];
-            readonly int[] _dirUnchanged = new int[SolverConfig.CandidateDirections];
-            readonly int[] _dirNew = new int[SolverConfig.CandidateDirections];
+            /// 동시에 로드돼 있던 시뮬 씬의 최고점. 상한이 먹히는지 본다.
+            public int PeakScenes { get; private set; }
 
             static readonly int ShapeCount =
                 System.Enum.GetValues(typeof(PrimitiveShape)).Length;
 
-            readonly int[] _shapeRolls = new int[ShapeCount];
-            readonly int[] _shapeUnchanged = new int[ShapeCount];
-            readonly int[] _shapeNew = new int[ShapeCount];
+            /// <summary>
+            /// 이번 깊이만의 성적표. 누적으로 재면 판이 몰린 깊은 쪽이
+            /// 얕은 쪽을 덮어써서 값이 어디서 왔는지 안 보인다.
+            /// </summary>
+            public DepthStats Depth { get; private set; } = new DepthStats();
 
-            /// <summary>축별 성적표. 자를 축을 여기서 고른다.</summary>
-            public string Breakdown()
+            public sealed class DepthStats
             {
-                var text = new System.Text.StringBuilder();
+                /// 이 깊이에서 확장한 프론티어 셀 수.
+                public int Cells;
 
-                // 진행 방향 기준 상대각이다. 0° 가 정면.
-                text.AppendLine("  방향  월드      헛방     새 셀");
-                for (int d = 0; d < _dirRolls.Length; d++)
+                /// 무배치가 이미 이겨서 후보를 건너뛴 셀 수.
+                public int Pruned;
+
+                public int Sims, Worlds, Rejected, Unchanged;
+
+                /// 무배치 판만 따로 센다. 가지치기 절감폭이 여기서 나온다.
+                public int FreeWorlds, FreeCleared;
+
+                // 판이 왜 끝났는지. 판마다 사유는 하나뿐이다.
+                public int Cleared, Failed, Stalled, Idled, Capped;
+
+                // 헛방은 순서를 안 타지만 새 셀은 먼저 닿은 후보가 가져간다.
+                public readonly int[] DirWorlds = new int[SolverConfig.CandidateDirections];
+                public readonly int[] DirUnchanged = new int[SolverConfig.CandidateDirections];
+                public readonly int[] DirNew = new int[SolverConfig.CandidateDirections];
+
+                public readonly int[] ShapeWorlds = new int[ShapeCount];
+                public readonly int[] ShapeUnchanged = new int[ShapeCount];
+                public readonly int[] ShapeNew = new int[ShapeCount];
+
+                public string Report()
                 {
-                    float degrees = _dirRolls.Length == 1
-                        ? 0f
-                        : -90f + 180f * d / (_dirRolls.Length - 1);
+                    var text = new System.Text.StringBuilder();
+
                     text.AppendLine(
-                        $"  {degrees,+5:F0}° {_dirRolls[d],7:N0} " +
-                        $"{Share(_dirUnchanged[d], _dirRolls[d]),8} {_dirNew[d],9:N0}");
+                        $"  [이 깊이] 프론티어 {Cells:N0} · 가지침 {Share(Pruned, Cells)} · " +
+                        $"시뮬 {Sims:N0} (월드 {Worlds:N0}) · " +
+                        $"거부 {Share(Rejected, Sims)} · 헛방 {Share(Unchanged, Worlds)}");
+
+                    text.AppendLine(
+                        $"  [종료] 클리어 {Share(Cleared, Worlds)} · 실패 {Share(Failed, Worlds)} · " +
+                        $"잠듦 {Share(Stalled, Worlds)} · 정체 {Share(Idled, Worlds)} · " +
+                        $"상한 {Share(Capped, Worlds)}");
+
+                    text.AppendLine(
+                        $"  [무배치] {FreeWorlds:N0} 판 · 클리어 {Share(FreeCleared, FreeWorlds)}" +
+                        " ← 이 비율만큼 후보를 건너뛴다");
+
+                    // 진행 방향 기준 상대각이다. 0° 가 정면.
+                    text.AppendLine("  방향   월드      헛방     새 셀");
+                    for (int d = 0; d < DirWorlds.Length; d++)
+                    {
+                        float degrees = DirWorlds.Length == 1
+                            ? 0f
+                            : -90f + 180f * d / (DirWorlds.Length - 1);
+                        text.AppendLine(
+                            $"  {degrees,+5:F0}° {DirWorlds[d],8:N0} " +
+                            $"{Share(DirUnchanged[d], DirWorlds[d]),8} {DirNew[d],9:N0}");
+                    }
+
+                    text.AppendLine("  Shape         월드      헛방     새 셀");
+                    for (int s = 0; s < ShapeWorlds.Length; s++)
+                        text.AppendLine(
+                            $"  {(PrimitiveShape)s,-10} {ShapeWorlds[s],8:N0} " +
+                            $"{Share(ShapeUnchanged[s], ShapeWorlds[s]),8} {ShapeNew[s],9:N0}");
+
+                    return text.ToString();
                 }
 
-                text.AppendLine("  Shape        월드      헛방     새 셀");
-                for (int s = 0; s < _shapeRolls.Length; s++)
-                {
-                    text.AppendLine(
-                        $"  {(PrimitiveShape)s,-10} {_shapeRolls[s],7:N0} " +
-                        $"{Share(_shapeUnchanged[s], _shapeRolls[s]),8} {_shapeNew[s],9:N0}");
-                }
-
-                return text.ToString();
+                static string Share(int part, int whole)
+                    => whole == 0 ? "-" : $"{(float)part / whole:P0}";
             }
-
-            static string Share(int part, int whole)
-                => whole == 0 ? "-" : $"{(float)part / whole:P0}";
-
-            /// 실제로 만든 물리 씬 수. 메모리를 먹는 것은 이쪽이다.
-            public int Worlds { get; private set; }
-
-            /// 스텝 상한에 걸려 잘린 판. 상한이 h 를 깎는지 본다.
-            public int Capped { get; private set; }
-
-            /// 동시에 로드돼 있던 시뮬 씬의 최고점. 상한이 먹히는지 본다.
-            public int PeakScenes { get; private set; }
 
             /// 월드 하나당 시뮬 시간. 깊이가 깊어져도 평평해야 한다.
             public double MsPerWorld => Worlds == 0 ? 0 : _watch.Elapsed.TotalMilliseconds / Worlds;
@@ -237,6 +275,9 @@ namespace PPS.Solver.Tests
                 _trial = new PrimitiveTrial(level, seed: 0);
                 _buffer = new TrajectoryBuffer(TrajectoryInterval, RollSteps);
                 _collector = new CellEdgeCollector(quantizer);
+
+                // 반경이 위치 셀 폭이라 "셀 하나도 못 벗어났다"가 된다.
+                _idle = new IdleCutoff(quantizer.PositionStep, SolverConfig.IdleSteps);
             }
 
             /// <summary>
@@ -246,7 +287,7 @@ namespace PPS.Solver.Tests
             public List<BallCell> Seed()
             {
                 _watch.Start();
-                _trial.RunSampled(new float[0], _buffer, RollSteps);
+                _trial.RunSampled(new float[0], _buffer, RollSteps, null, _idle);
                 _watch.Stop();
                 Sims++;
                 Worlds++;
@@ -262,6 +303,8 @@ namespace PPS.Solver.Tests
             /// </summary>
             public IEnumerator Expand(List<BallCell> frontier, List<BallCell> next)
             {
+                Depth = new DepthStats { Cells = frontier.Count };
+
                 foreach (var cell in frontier)
                 {
                     BallState start = _states[cell];
@@ -274,6 +317,15 @@ namespace PPS.Solver.Tests
 
                     var drain = Drain();
                     while (drain.MoveNext()) yield return drain.Current;
+
+                    // 선 없이 이미 이기면 h = 0 이다. 더 놓아도 나아질 수 없고,
+                    // 이 상태를 지나는 풀이는 그 시점에 이미 끝난 것이다.
+                    // 무배치 판은 남긴다 — 비용 0 간선이 h=0 을 뒤로 전파한다.
+                    if (free.Cleared)
+                    {
+                        Depth.Pruned++;
+                        continue;
+                    }
 
                     // 후보는 공을 둘러싼 고리 위다. 공 자리에 놓으면 박힌다.
                     _candidateBuffer.Clear();
@@ -330,28 +382,49 @@ namespace PPS.Solver.Tests
             TrialResult Roll(float[] vector, BallState start, bool placed, List<BallCell> next)
             {
                 _watch.Start();
-                var result = _trial.RunSampled(vector, _buffer, RollSteps, start);
+                var result = _trial.RunSampled(vector, _buffer, RollSteps, start, _idle);
                 _watch.Stop();
                 Sims++;
+                Depth.Sims++;
 
                 // 거부된 시행은 월드를 아예 안 만든다 — 씬도 안 쌓인다.
                 if (result.Reject != PlacementReject.None)
                 {
-                    Rejected++;
+                    Depth.Rejected++;
                     return result;
                 }
 
                 Worlds++;
+                Depth.Worlds++;
+                Ending(result.Sim);
 
-                // 상한에 걸린 판은 아직 굴러가는 중에 잘린 것이다.
-                // 그만큼 한 배치로 닿을 먼 셀을 못 보고 h 가 비관이 된다.
-                if (result.Sim.EndStep >= RollSteps) Capped++;
-
-                if (placed) _collector.CollectPlaced(_buffer);
-                else _collector.CollectFree(_buffer);
+                if (placed)
+                {
+                    _collector.CollectPlaced(_buffer);
+                }
+                else
+                {
+                    _collector.CollectFree(_buffer);
+                    Depth.FreeWorlds++;
+                    if (result.Cleared) Depth.FreeCleared++;
+                }
 
                 next.AddRange(TakeNew());
                 return result;
+            }
+
+            /// 판이 왜 끝났는지. Timeout 인데 상한 전이면 정체로 끊은 것이다.
+            void Ending(in SimResult sim)
+            {
+                switch (sim.Outcome)
+                {
+                    case SimOutcome.Clear: Depth.Cleared++; return;
+                    case SimOutcome.Fail: Depth.Failed++; return;
+                    case SimOutcome.Stalled: Depth.Stalled++; return;
+                }
+
+                if (sim.EndStep >= RollSteps) Depth.Capped++;
+                else Depth.Idled++;
             }
 
             /// <summary>
@@ -364,16 +437,16 @@ namespace PPS.Solver.Tests
                 int dir = DirectionOf(candidate.Center, ball);
                 int shape = (int)candidate.Shape;
 
-                _dirRolls[dir]++;
-                _dirNew[dir] += found;
-                _shapeRolls[shape]++;
-                _shapeNew[shape] += found;
+                Depth.DirWorlds[dir]++;
+                Depth.DirNew[dir] += found;
+                Depth.ShapeWorlds[shape]++;
+                Depth.ShapeNew[shape] += found;
 
                 if (!unchanged) return;
 
-                Unchanged++;
-                _dirUnchanged[dir]++;
-                _shapeUnchanged[shape]++;
+                Depth.Unchanged++;
+                Depth.DirUnchanged[dir]++;
+                Depth.ShapeUnchanged[shape]++;
             }
 
             static int DirectionOf(Vector2 center, in BallState ball)
