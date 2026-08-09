@@ -22,6 +22,18 @@ namespace PPS.Solver
         /// 실제로 돌린 시뮬 횟수. 맵의 값어치를 재는 기준선이다.
         public int Sims;
 
+        /// <summary>
+        /// 모든 시뮬의 스텝 합. 시뮬 단가가 왜 변했는지는 이걸 봐야 안다 —
+        /// 순서가 바뀌면 굴리는 판의 길이가 통째로 달라진다.
+        /// </summary>
+        public long Steps;
+
+        /// 우리가 얹은 시뮬 씬의 최고점과, 그때의 절대 개수.
+        /// 절대 개수가 생성·해제 비용을 결정한다.
+        public int PeakScenes;
+
+        public int PeakTotalScenes;
+
         /// 시뮬 전에 걸러진 후보 수. 잉크·영역에 걸린 것들이다.
         public int Rejected;
 
@@ -49,6 +61,9 @@ namespace PPS.Solver
             => $"{Stop}{(Solution == null ? "" : $" · 선 {Solution.Strokes.Count}")} · " +
                $"시뮬 {Sims:N0} (거부 {Rejected:N0}) · 노드 {Nodes:N0} · " +
                $"열린목록 최고 {OpenPeak:N0} · 최대 깊이 {Deepest} · " +
-               $"최소 목표 거리 {MinGoalDist:F3} · {Elapsed.TotalSeconds:F1}초";
+               $"최소 목표 거리 {MinGoalDist:F3} · {Elapsed.TotalSeconds:F1}초\n" +
+               $"  시뮬당 {(Sims == 0 ? 0 : Elapsed.TotalMilliseconds / Sims):F2}ms · " +
+               $"평균 {(Sims == 0 ? 0 : (double)Steps / Sims):F0} 스텝 · " +
+               $"씬 최고 +{PeakScenes} (절대 {PeakTotalScenes})";
     }
 }

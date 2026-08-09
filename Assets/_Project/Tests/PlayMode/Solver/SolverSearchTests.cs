@@ -61,6 +61,41 @@ namespace PPS.Solver.Tests
         }
 
         /// <summary>
+        /// 맵을 h 자리에 꽂고 같은 판을 푼다.
+        /// 사흘 걸려 만든 맵이 값을 하는지가 여기서 처음 수치로 나온다 —
+        /// 비교 대상은 맵 없이 잰 D0 기준선이다.
+        /// </summary>
+        /// 맵 빌드 8.5분 + 탐색. 넉넉히 준다.
+        [UnityTest, Timeout(3600000)]
+        public IEnumerator 맵을_꽂으면_기준선보다_적은_시뮬로_푼다()
+        {
+            var level = TestLevels.GapPuzzle();
+
+            var builder = new CellGraphBuilder(level, seed: 0, maxDepth: 3);
+            yield return builder.Build();
+
+            HeuristicMap map = HeuristicMap.Build(builder.Edges, builder.Wins);
+            Debug.Log($"[맵] 셀 {builder.States.Count:N0} · 값을 아는 셀 {map.Count:N0} · " +
+                      $"벌점 {map.Penalty} · 빌드 {builder.Sims:N0} 시뮬 " +
+                      $"{builder.Elapsed.TotalSeconds:F0}초");
+
+            // 시간이 아니라 시뮬 횟수를 맞춰야 기준선과 견줄 수 있다.
+            // 앞선 실행은 시간 예산이 먼저 걸려 9% 만 굴리고 끝났다.
+            var search = new SolverSearch(level, map, timeBudget: 3000d);
+            yield return search.Run();
+
+            SolverReport report = search.Report;
+
+            // 기준선과 나란히 찍는다. 따로 찍으면 나중에 짝을 못 맞춘다.
+            Debug.Log($"[맵 있음] {report}\n" +
+                      $"[D0 기준선] SimBudget · 시뮬 200,000 · 노드 199,769 · " +
+                      $"최대 깊이 2 · 최소 목표 거리 1.149 · 226.5초 (시뮬당 1.13ms)");
+
+            Assert.AreEqual(SolverStop.Solved, report.Stop,
+                $"맵을 꽂고도 예산 {SolverConfig.SearchSimBudget:N0} 안에 못 찾았다");
+        }
+
+        /// <summary>
         /// 반환한 풀이를 그대로 재실행하면 Clear 여야 한다 (D8).
         /// 탐색이 Clear 를 받은 배치와 내보내는 Solution 이 어긋나면
         /// 검증기가 통과시킨 레벨을 사람이 못 푸는 일이 생긴다.
