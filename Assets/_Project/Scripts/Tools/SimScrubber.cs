@@ -462,6 +462,12 @@ namespace PPS.Tools
                 Stage("뷰어 기본 (폭탄)", ViewerLevels.BombRamp, ViewerLevels.BombRampSolution, seed: 3),
                 Stage("자유 물체 전시장", ViewerLevels.Showcase, ViewerLevels.ShowcaseSolution),
 
+                // 유일하게 "풀 것이 있는" 판. 나머지는 그냥 굴려도
+                // Clear 이거나 목표가 닿을 수 없는 곳에 있다.
+                Stage("퍼즐 (기저) → Fail 이어야 함", TestLevels.GapPuzzle, () => null),
+                Stage("퍼즐 + 선 3개 → Clear 여야 함",
+                    TestLevels.GapPuzzle, TestLevels.GapPuzzleSolution),
+
                 Stage("L001 (JSON 파일)", SampleLevelFile.Load, () => null),
                 Stage("L002 전 피처 (JSON)", FeatureLevelFile.LoadLevel, FeatureLevelFile.LoadSolution),
                 Stage("Ramp → Clear", TestLevels.RampToGoal, () => null),

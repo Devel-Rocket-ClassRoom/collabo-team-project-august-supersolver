@@ -84,6 +84,71 @@ namespace PPS.Core.Tests
         }
 
         /// <summary>
+        /// 유일한 퍼즐 레벨. 안 그리면 못 풀고, 그리면 풀린다.
+        /// 다른 픽스처는 전부 판정 하나를 안정적으로 내는 것이 목적이라
+        /// 그냥 굴려도 Clear 이거나 애초에 목표가 닿을 수 없는 곳에 있다.
+        /// 솔버를 재려면 "풀 것이 있는" 판이 있어야 한다.
+        /// </summary>
+        public static LevelData GapPuzzle()
+        {
+            return new LevelData
+            {
+                InkLimit = 20f,
+                BallStart = new Vector2(-5.5f, 3.5f),
+                BallRadius = 0.25f,
+
+                // 공 바로 아래. 경사로가 공을 오른쪽으로 데려가므로
+                // 가만 두면 목표에서 멀어지기만 한다.
+                GoalPosition = new Vector2(-5.5f, 0.1f),
+                GoalRadius = 0.5f,
+                KillY = -5f,
+                Terrain = new List<StaticSegment>
+                {
+                    // 경사로 — 공에 오른쪽 속도를 준다.
+                    new StaticSegment(new Vector2(-6f, 3f), new Vector2(-2f, 0.5f)),
+
+                    // 왼쪽 바닥. 여기서 끊기고 건너편은 없다.
+                    new StaticSegment(new Vector2(-2f, 0.5f), new Vector2(-1f, 0.5f)),
+                },
+            };
+        }
+
+        /// <summary>
+        /// 공을 왼쪽으로 흘려 목표 아래로 돌려보내는 풀이.
+        /// 목표가 경사로 밑에 있어 오른쪽으로 굴러가면 영영 못 온다.
+        /// 세 선이 각각 방향을 한 번씩 꺾는다.
+        /// </summary>
+        public static Solution GapPuzzleSolution()
+        {
+            var solution = new Solution();
+
+            // 1) 시작 바로 아래. 왼쪽으로 기울여 경사로를 건너뛰게 한다.
+            //    경사로 왼쪽 끝(x=-6, y=3)보다 위로 지나가야 하고,
+            //    벽과의 틈이 공 지름(0.5)보다 넓어야 안 낀다.
+            solution.Strokes.Add(new Stroke(ToolType.FixedLine, new List<Vector2>
+            {
+                new Vector2(-4.8f, 3.25f),
+                new Vector2(-6.6f, 2.95f),
+            }));
+
+            // 2) 왼쪽 벽. 없으면 왼쪽으로 흐르며 떨어져 영역 밖으로 나간다.
+            solution.Strokes.Add(new Stroke(ToolType.FixedLine, new List<Vector2>
+            {
+                new Vector2(-7.4f, 3.2f),
+                new Vector2(-7.4f, 0.4f),
+            }));
+
+            // 3) 받침. 오른쪽으로 기울여 목표 높이로 데려간다.
+            solution.Strokes.Add(new Stroke(ToolType.FixedLine, new List<Vector2>
+            {
+                new Vector2(-7.5f, 0.5f),
+                new Vector2(-5.0f, -0.2f),
+            }));
+
+            return solution;
+        }
+
+        /// <summary>
         /// 발판 사이가 끊겨 있다.
         /// 안 그리면 Fail, 다리를 그리면 Stalled.
         /// </summary>
