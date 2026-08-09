@@ -119,104 +119,6 @@ NavMeshSettings:
     debug:
       m_Flags: 0
   m_NavMeshData: {fileID: 0}
---- !u!1 &22656040
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 22656045}
-  - component: {fileID: 22656044}
-  - component: {fileID: 22656043}
-  - component: {fileID: 22656042}
-  - component: {fileID: 22656041}
-  m_Layer: 0
-  m_Name: GameObject
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!114 &22656041
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 22656040}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 5a93069b24169c141a42962e277852fa, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::PPS.Tools.SolverRenderer
-  _sampleInterval: 10
-  _primitiveCount: 2
-  _fitCamera: 1
-  _background: {r: 1, g: 0.9019608, b: 0.7019608, a: 1}
---- !u!114 &22656042
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 22656040}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 6aba95385048a64458f1e12eeabbd1a3, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::PPS.Tools.TrajectoryRenderer
-  _color: {r: 0.18039216, g: 0.18039216, b: 0.56078434, a: 1}
-  _velocityColor: {r: 0.83137256, g: 0.2901961, b: 0, a: 1}
-  _velocityScale: 0.1
---- !u!114 &22656043
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 22656040}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: ed6e76da75061bb4cb7942646b85bb29, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::PPS.Tools.PrimitiveRenderer
-  _fixedColor: {r: 0.13725491, g: 0.14509805, b: 0.16862746, a: 1}
-  _freeColor: {r: 0.105882354, g: 0.30980393, b: 0.627451, a: 1}
-  _rejectedColor: {r: 0.5411765, g: 0.10980392, b: 0.10980392, a: 1}
---- !u!114 &22656044
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 22656040}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: ca447fb688e7d5444ba8152551f12160, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::PPS.Tools.LevelRenderer
-  _terrainColor: {r: 0.13725491, g: 0.14509805, b: 0.16862746, a: 1}
-  _ballColor: {r: 0.7529412, g: 0.078431375, b: 0.23529412, a: 1}
-  _goalColor: {r: 0.05490196, g: 0.47843137, b: 0.23529412, a: 1}
-  _killLineColor: {r: 0.5411765, g: 0.10980392, b: 0.10980392, a: 1}
-  _deviceColor: {r: 0.41960785, g: 0.24705882, b: 0.627451, a: 1}
---- !u!4 &22656045
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 22656040}
-  serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -1.57894, y: 0.3955, z: 1.84775}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 0}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &330585543
 GameObject:
   m_ObjectHideFlags: 0
@@ -530,6 +432,53 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &876695191
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 876695193}
+  - component: {fileID: 876695192}
+  m_Layer: 0
+  m_Name: SolverViewer
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &876695192
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 876695191}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1743ea30bd71a734788d2a0330e5837f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::PPS.Tools.SimScrubber
+  _autoFitCamera: 1
+  _lineWidthRatio: 0.013
+  _background: {r: 1, g: 0.9019608, b: 0.7019608, a: 1}
+--- !u!4 &876695193
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 876695191}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
   m_ObjectHideFlags: 0
@@ -537,4 +486,4 @@ SceneRoots:
   - {fileID: 330585546}
   - {fileID: 410087041}
   - {fileID: 832575519}
-  - {fileID: 22656045}
+  - {fileID: 876695193}
