@@ -142,6 +142,13 @@ namespace PPS.Solver
         /// </summary>
         public const int MapDepth = 4;
 
+        /// <summary>
+        /// 맵 빌드가 돌릴 시뮬 횟수 상한.
+        /// 넘으면 그 자리에서 멈추고 미완성 맵을 내놓는다 —
+        /// 컷이 아니라 벌점으로 쓰이므로 미완성이어도 탐색이 답을 잃지는 않는다.
+        /// </summary>
+        public const int MapSimBudget = 3000000;
+
         // ── 씬 상한 ──
 
         /// <summary>
