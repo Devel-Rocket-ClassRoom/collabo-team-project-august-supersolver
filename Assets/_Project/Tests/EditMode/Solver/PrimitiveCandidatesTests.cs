@@ -202,6 +202,7 @@ namespace PPS.Solver.Tests
         public void Size는_공_반지름에서_시작해_상한에서_끝난다()
         {
             var level = Level();
+            var candidates = new PrimitiveCandidates(level, 5, Directions, Shapes);
 
             foreach (var pair in SizesByShape(level, 5))
             {
@@ -209,8 +210,30 @@ namespace PPS.Solver.Tests
                 Assert.AreEqual(level.BallRadius, pair.Value[0], Eps, pair.Key.ToString());
 
                 // 상한은 근사가 아니라 그 값이어야 한다.
-                Assert.AreEqual(PrimitiveValidator.MaxSize(pair.Key, level), pair.Value[4],
+                Assert.AreEqual(candidates.MaxSizeOf(pair.Key), pair.Value[4],
                     pair.Key.ToString());
+            }
+        }
+
+        /// <summary>
+        /// 영역보다 큰 프리미티브는 어디에 놓아도 OutOfArea 라
+        /// 만들어 봐야 전부 버려진다. 잉크 상한만 보면 그런 후보가
+        /// 절반씩 섞여 들어와, 사실상 쓸 수 있는 크기가 하나로 줄어든다.
+        /// </summary>
+        [Test]
+        public void 상한이_영역에도_걸린다()
+        {
+            var level = Level();
+            var area = LevelDataArea.Calculate(level);
+            var candidates = new PrimitiveCandidates(level, 3, Directions, Shapes);
+
+            float fits = Mathf.Min(area.width, area.height) * 0.5f;
+
+            foreach (PrimitiveShape shape in Shapes)
+            {
+                Assert.LessOrEqual(candidates.MaxSizeOf(shape), fits + Eps, shape.ToString());
+                Assert.LessOrEqual(candidates.MaxSizeOf(shape),
+                    PrimitiveValidator.MaxSize(shape, level) + Eps, shape.ToString());
             }
         }
 
@@ -234,8 +257,10 @@ namespace PPS.Solver.Tests
         {
             var level = Level();
 
+            var candidates = new PrimitiveCandidates(level, 1, Directions, Shapes);
+
             foreach (var pair in SizesByShape(level, 1))
-                Assert.AreEqual(PrimitiveValidator.MaxSize(pair.Key, level), pair.Value.Single(),
+                Assert.AreEqual(candidates.MaxSizeOf(pair.Key), pair.Value.Single(),
                     pair.Key.ToString());
         }
 
@@ -253,10 +278,27 @@ namespace PPS.Solver.Tests
         [Test]
         public void 상한이_Shape마다_달라_같은_단계도_크기가_다르다()
         {
-            var sizes = SizesByShape(Level(), 5);
+            // 좁은 판에서는 셋 다 영역 상한에 걸려 구분이 사라진다.
+            // Shape 별 잉크 차이를 보려면 잉크가 먼저 걸려야 한다.
+            var sizes = SizesByShape(WideLevel(), 5);
 
             Assert.Greater(sizes[PrimitiveShape.Line][3], sizes[PrimitiveShape.Bowl][3]);
             Assert.Greater(sizes[PrimitiveShape.Bowl][3], sizes[PrimitiveShape.Triangle][3]);
+        }
+
+        /// 잉크가 영역보다 먼저 걸리도록 넓게 잡은 판.
+        static LevelData WideLevel()
+        {
+            var level = new LevelData
+            {
+                InkLimit = 20f,
+                BallStart = Vector2.zero,
+                BallRadius = 0.25f,
+                GoalPosition = new Vector2(5f, 0f),
+                GoalRadius = 0.5f,
+            };
+            level.Terrain.Add(new StaticSegment(new Vector2(-30f, -30f), new Vector2(30f, 30f)));
+            return level;
         }
 
         [Test]

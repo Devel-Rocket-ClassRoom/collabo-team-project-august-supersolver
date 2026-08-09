@@ -86,9 +86,13 @@ namespace PPS.Solver
         /// </summary>
         public const int CandidateDirections = 5;
 
+        /// <summary>
         /// 후보 Size 축을 몇 칸으로 쪼갤지.
-        /// 1 은 최대 크기 하나만 나오므로 쓰지 않는다.
-        public const int CandidateSizeSteps = 2;
+        /// 등비라 2 면 공 반지름과 상한 둘뿐이고 그 사이가 통째로 빈다 —
+        /// 사람이 그리는 풀이는 대개 그 중간에 있다.
+        /// 1 은 상한 하나만 나오므로 더 쓸 수 없다.
+        /// </summary>
+        public const int CandidateSizeSteps = 4;
 
         /// <summary>
         /// 후보로 낼 Shape. enum 에서 빼면 코덱과 직렬화가 딸려 오므로
@@ -106,11 +110,20 @@ namespace PPS.Solver
 
         /// <summary>
         /// 셀 하나를 굴리는 스텝 상한.
-        /// 시뮬은 공이 잠들거나 죽으면 알아서 끝나므로
-        /// 이 값은 그때까지 안 끝난 판에만 문다.
+        /// 정체 판정이 맴도는 판을 걷어내므로 여기까지 오는 것은
+        /// 꾸준히 멀리 가는 판뿐이다. 넉넉해도 값이 안 든다.
         /// 짧게 자르면 한 배치로 닿는 먼 셀을 놓쳐 h 가 비관이 된다.
         /// </summary>
-        public const int RollSteps = 180;
+        public const int RollSteps = 600;
+
+        /// <summary>
+        /// 공이 제자리를 맴돈다고 볼 시간.
+        /// 위치 셀 하나를 이 시간 안에 못 벗어나면 그만 본다 —
+        /// 2초에 제 지름도 못 가는 수는 유저가 볼 풀이가 아니다.
+        /// StopSpeed 와 다른 것을 잰다. 그쪽은 방향이 정보가 되는지,
+        /// 이쪽은 진행이 볼 만한지를 묻는다.
+        /// </summary>
+        public const int IdleSteps = 120;
 
         /// <summary>
         /// 궤적을 몇 스텝마다 뜰지. 시뮬 비용과는 무관하다 —

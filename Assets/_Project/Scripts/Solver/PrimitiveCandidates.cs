@@ -48,7 +48,22 @@ namespace PPS.Solver
             _level = level;
             _sizeSteps = sizeSteps;
             _directions = directions;
+
+            // 영역보다 큰 프리미티브는 어디에 놓아도 OutOfArea 다.
+            // 잉크 상한만 보면 그런 후보가 절반씩 섞여 들어와
+            // 만들자마자 전부 버려진다.
+            Rect area = LevelDataArea.Calculate(level);
+            _areaLimit = Mathf.Min(area.width, area.height) * 0.5f;
         }
+
+        readonly float _areaLimit;
+
+        /// <summary>
+        /// 이 레벨에서 실제로 놓을 수 있는 Shape 별 Size 상한.
+        /// 잉크와 영역 중 먼저 걸리는 쪽이다.
+        /// </summary>
+        public float MaxSizeOf(PrimitiveShape shape)
+            => Mathf.Min(PrimitiveValidator.MaxSize(shape, _level), _areaLimit);
 
         /// 위치와 무관하게 고정인 후보 수.
         public int Count
@@ -77,7 +92,7 @@ namespace PPS.Solver
             foreach (PrimitiveShape shape in _shapes)
             {
                 var rule = PrimitiveShapeExtensions.Rule(shape);
-                float maxSize = PrimitiveValidator.MaxSize(shape, _level);
+                float maxSize = MaxSizeOf(shape);
 
                 for (int a = 0; a < rule.AngleDivisions; a++)
                 {
