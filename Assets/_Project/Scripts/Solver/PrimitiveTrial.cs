@@ -49,15 +49,20 @@ namespace PPS.Solver
         /// </summary>
         /// <param name="start">공의 출발 상태. null 이면 레벨의 시작점.
         /// 맵 빌드는 셀의 대표 상태를 여기 넣는다.</param>
+        /// <param name="idle">제자리를 맴돌 때 끊을 기준. 맵 빌드가 쓴다.
+        /// 탐색은 여기서 끊으면 판정이 바뀌므로 따로 정한다.</param>
         public TrialResult RunSampled(
             float[] vector, TrajectoryBuffer buffer,
-            int maxSteps = SimWorld.DefaultMaxSteps, BallState? start = null)
+            int maxSteps = SimWorld.DefaultMaxSteps, BallState? start = null,
+            IdleCutoff? idle = null)
         {
             if (buffer == null) throw new System.ArgumentNullException(nameof(buffer));
-            return Run(vector, buffer, maxSteps, start);
+            return Run(vector, buffer, maxSteps, start, idle);
         }
 
-        TrialResult Run(float[] vector, TrajectoryBuffer buffer, int maxSteps, BallState? start)
+        TrialResult Run(
+            float[] vector, TrajectoryBuffer buffer, int maxSteps,
+            BallState? start, IdleCutoff? idle = null)
         {
             if (vector.Length % PrimitiveCodec.Dimensions != 0)
                 return Reject(PlacementReject.BadVector, buffer);
@@ -76,7 +81,8 @@ namespace PPS.Solver
 
             return new TrialResult(buffer == null
                 ? PrimitiveRunner.Run(_level, primitives, _seed, maxSteps, start)
-                : PrimitiveRunner.RunSampled(_level, primitives, _seed, buffer, maxSteps, start));
+                : PrimitiveRunner.RunSampled(
+                    _level, primitives, _seed, buffer, maxSteps, start, idle));
         }
 
         static TrialResult Reject(PlacementReject reject, TrajectoryBuffer buffer)

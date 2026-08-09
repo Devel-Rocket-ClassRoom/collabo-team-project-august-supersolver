@@ -43,8 +43,9 @@ namespace PPS.Solver
             int seed,
             TrajectoryBuffer buffer,
             int maxSteps = SimWorld.DefaultMaxSteps,
-            BallState? start = null)
+            BallState? start = null,
+            IdleCutoff? idle = null)
             => SimRunner.RunSampled(
-                level, PrimitiveDecoder.Decode(primitives), seed, buffer, maxSteps, start);
+                level, PrimitiveDecoder.Decode(primitives), seed, buffer, maxSteps, start, idle);
     }
 }
