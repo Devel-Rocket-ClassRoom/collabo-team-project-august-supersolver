@@ -69,7 +69,7 @@ namespace PPS.Solver.Viewer
             }
 
             GL.Color(_goalColor);
-            GLDraw.Circle(_level.GoalPosition, _level.GoalRadius);
+            GLDraw.Circle(_level.GoalPosition, LevelData.GoalRadius);
 
             GL.Color(_killLineColor);
             GLDraw.Line(new Vector2(-KillLineHalfWidth, _level.KillY),
@@ -89,7 +89,7 @@ namespace PPS.Solver.Viewer
             }
 
             GL.Color(_ballColor);
-            GLDraw.Circle(_ballAt, _level.BallRadius);
+            GLDraw.Circle(_ballAt, LevelData.BallRadius);
 
             GL.End();
             GL.PopMatrix();

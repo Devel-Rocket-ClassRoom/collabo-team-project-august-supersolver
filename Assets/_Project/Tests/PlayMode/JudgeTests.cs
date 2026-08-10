@@ -61,7 +61,7 @@ namespace PPS.Core.Tests
                 Assert.GreaterOrEqual(result.MinGoalDist, 0f);
             }
 
-            Assert.Less(clear.MinGoalDist, TestLevels.RampToGoal().GoalRadius + 0.3f,
+            Assert.Less(clear.MinGoalDist, LevelData.GoalRadius + 0.3f,
                 "클리어했는데 최소 거리가 목표 반경보다 크다 — 계측 시점이 어긋나 있다.");
         }
 

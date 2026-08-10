@@ -16,11 +16,9 @@ namespace PPS.Core.Tests
             {
                 // 공은 원점에 있고 반지름은 0.25다.
                 BallStart = Vector2.zero,
-                BallRadius = 0.25f,
 
                 // 목표는 오른쪽 5에 있고 반지름은 0.5다.
                 GoalPosition = new Vector2(5f,0f),
-                GoalRadius = 0.5f,
             };
             // 왼쪽 -5부터 오른쪽 5까지의 지형 선분을 추가한다.
             level.Terrain.Add(new StaticSegment(new Vector2(-5f, -1f), new Vector2(5f, -1f)));

@@ -12,23 +12,23 @@ namespace PPS.Core
     [Serializable]
     public class LevelData
     {
-        /// 그릴 수 있는 총 길이 제한.
+        public const float BallRadius = 0.25f;
+        public const float GoalRadius = 0.5f;
+        public const float StarCaptureRadius = 0.35f;
+
         public float InkLimit = 20f;
 
         public Vector2 BallStart;
-        public float BallRadius = 0.25f;
 
         public Vector2 GoalPosition;
-        public float GoalRadius = 0.5f;
 
         /// 리스트 순서 = 월드 등록 순서.
         public List<StaticSegment> Terrain = new List<StaticSegment>();
 
-        /// 리스트 순서 = 로직 등록 순서
-        /// = 난수 소비 순서.
+        /// 리스트 순서 = 로직 등록 순서 = 난수 소비 순서.
         public List<DeviceData> Devices = new List<DeviceData>();
+        public List<Vector2> Stars = new List<Vector2>();
 
-        /// 이 아래로 떨어지면 Fail.
         public float KillY = -20f;
     }
 

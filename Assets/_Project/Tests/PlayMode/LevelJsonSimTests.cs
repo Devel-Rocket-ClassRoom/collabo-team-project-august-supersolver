@@ -34,8 +34,8 @@ namespace PPS.Core.Tests
 
                 var circle = world.Ball.GetComponent<CircleCollider2D>();
                 Assert.IsNotNull(circle);
-                Assert.AreEqual(SampleLevelFile.ExpectedBallRadius, circle.radius, 1e-4f,
-                    "JSON 의 공 반지름이 콜라이더에 반영되지 않았다.");
+                Assert.AreEqual(LevelData.BallRadius, circle.radius, 1e-4f,
+                    "공 반지름 상수가 콜라이더에 반영되지 않았다.");
             }
         }
 

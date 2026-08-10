@@ -17,9 +17,7 @@ namespace PPS.Core.Tests
             {
                 InkLimit = 20f,
                 BallStart = new Vector2(-4.5f, 3.3f),
-                BallRadius = 0.25f,
                 GoalPosition = new Vector2(4.5f, -0.5f),
-                GoalRadius = 0.5f,
                 KillY = -20f,
                 Terrain = new List<StaticSegment>
                 {
@@ -39,9 +37,7 @@ namespace PPS.Core.Tests
             {
                 InkLimit = 20f,
                 BallStart = new Vector2(-19f, 4.3f),
-                BallRadius = 0.25f,
                 GoalPosition = new Vector2(100f, 100f),
-                GoalRadius = 0.5f,
                 KillY = -50f,
                 Terrain = new List<StaticSegment>
                 {
@@ -57,9 +53,7 @@ namespace PPS.Core.Tests
             {
                 InkLimit = 20f,
                 BallStart = new Vector2(0f, 2f),
-                BallRadius = 0.25f,
                 GoalPosition = new Vector2(50f, 50f),
-                GoalRadius = 0.5f,
                 KillY = -20f,
                 Terrain = new List<StaticSegment>
                 {
@@ -75,9 +69,7 @@ namespace PPS.Core.Tests
             {
                 InkLimit = 20f,
                 BallStart = new Vector2(0f, 0f),
-                BallRadius = 0.25f,
                 GoalPosition = new Vector2(50f, 50f),
-                GoalRadius = 0.5f,
                 KillY = -5f,
                 Terrain = new List<StaticSegment>(),
             };
@@ -93,9 +85,7 @@ namespace PPS.Core.Tests
             {
                 InkLimit = 20f,
                 BallStart = new Vector2(0f, 3f),
-                BallRadius = 0.25f,
                 GoalPosition = new Vector2(50f, 50f),
-                GoalRadius = 0.5f,
                 KillY = -5f,
                 Terrain = new List<StaticSegment>
                 {
@@ -164,9 +154,7 @@ namespace PPS.Core.Tests
             {
                 InkLimit = 20f,
                 BallStart = new Vector2(0f, 0.6f),
-                BallRadius = 0.25f,
                 GoalPosition = new Vector2(50f, 50f),   // 못 닿는 곳
-                GoalRadius = 0.5f,
                 KillY = -20f,
                 Terrain = new List<StaticSegment>
                 {
@@ -236,9 +224,7 @@ namespace PPS.Core.Tests
             {
                 InkLimit = 20f,
                 BallStart = new Vector2(-6f, 1f),
-                BallRadius = 0.25f,
                 GoalPosition = new Vector2(50f, 50f),
-                GoalRadius = 0.5f,
                 KillY = -20f,
                 Terrain = new List<StaticSegment>
                 {
