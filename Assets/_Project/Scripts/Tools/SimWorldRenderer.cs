@@ -35,6 +35,11 @@ namespace PPS.Tools
         [SerializeField] bool _autoFitCamera = true;
         [SerializeField, Range(0, MaxSteps)] int _targetStep;
         [SerializeField] int _levelIndex;
+        // 현재 리플레이가 자동으로 재생 중인지 저장한다.
+        [SerializeField] bool _isPlaying;
+
+        // 한 프레임에 자동 실행할 물리 스텝 수다.
+        [SerializeField, Range(1, MaxStepsPerFrame)] int _stepsPerFrame = 1;
 
         SimWorld _world;  // 현재 재생할 물리 세계를 담기.
         StageData _stage; // 어떤 스테이지(레벨)을 재생할지,
@@ -77,8 +82,17 @@ namespace PPS.Tools
             //새로 만든 월드를 포함하여 Terminal 상태인지 확인한다.
             // 과거 이동 검사보다 먼저 배치하면 Terminal 상태에서 돌아갈 수 없다.
             // Clear, Fail 또는 Stalled가 확정된 월드는 더 진행하지 않는다.
-            if (_world.IsTerminal)
+            if (_world.IsTerminal || _world.CurrentStep >= MaxSteps)  // 판정 끝났거나 최대 스텝에 도달하면 자동 재생 중단.
+            {
+                _isPlaying = false;
                 return;
+            }
+
+            // 자동 재생 중이면 현재 스텝을 기준으로 이번 프레임의 목표 스텝을 계산한다.
+            if (_isPlaying)
+            {
+                _targetStep = Mathf.Min(_world.CurrentStep + _stepsPerFrame, MaxSteps);
+            }
 
             // 이번 프레임에 실행한 수다.
             int stepped = 0;
@@ -95,10 +109,47 @@ namespace PPS.Tools
 
                 //이번 스텝에서 결과가 확정되었다면 즉시 중단한다.
                 if (_world.IsTerminal)
+                {
+                    _isPlaying = false;
                     break;
+                }
             }
+            // 최대 스텝에 도달한 경우에도 자동 재생 상태를 종료한다.
+            if (_world.CurrentStep >= MaxSteps)
+                _isPlaying = false;
+        }
+        // 자동 재생을 시작한다.
+        // 나중에 재생 버튼이 이 함수를 호출한다.
+        public void Play()
+        {
+            // 재생할 월드가 없다면 시작 할 수 없다.
+            if (_world == null)
+                return;
+
+            // 판정이 끝났거나 최대 스텝에 도달한 월드는 더 진행하지 않는다.
+            if (_world.IsTerminal || _world.CurrentStep >= MaxSteps) return;
+
+            _isPlaying = true;
         }
 
+        // 현재 스텝에서 자동 재생을 중단한다.
+        // 나중에 일시정지 버튼이 이 함수를 호출한다.
+        public void Pause()
+        {
+            _isPlaying = false;
+
+            // 기존 목표가 현재보다 앞에 남아 있으면 일시정지 후에도 진행할 수 있어 현재로 맞춘다.
+            if (_world != null)
+                _targetStep = _world.CurrentStep;
+        }
+
+        // 프레임당 실행할 물리 스텝 수를 설정한다.
+        // 나중에 재생 속도 UI가 이 함수를 호출한다.
+        public void SetPlaybackSpeed(int stepsPerFrame)
+        {
+            // 속도값을 1부터 MaxStepsPerFrame 사이로 제한한다.
+            _stepsPerFrame = Mathf.Clamp(stepsPerFrame, 1, MaxStepsPerFrame);
+        }
         private void OnDestroy()
         {
             _world?.Dispose();
@@ -117,7 +168,7 @@ namespace PPS.Tools
             // 새 StageData와 Solution으로 실제 물리 월드를 생성한다.
             _world = WorldBuilder.Build(_stage, _solution);
         }
-
+        
         ReplayData CreateReplayData()
         {
             // 저장 이후 Solution이 변경 되어도 저장 데이터가 함께 바뀌지 않도록 복제한다
