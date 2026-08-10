@@ -1764,7 +1764,19 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 1038678675}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 1986295716}
+        m_TargetAssemblyTypeName: PPS.DrawingTool.ToolSelection, PPS.DrawingTool
+        m_MethodName: OnClickSelectFixedLine
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!114 &1038678675
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -3429,7 +3441,19 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 1812495604}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 1986295716}
+        m_TargetAssemblyTypeName: PPS.DrawingTool.ToolSelection, PPS.DrawingTool
+        m_MethodName: OnClickSelectFreeBody
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!114 &1812495604
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -3802,6 +3826,96 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1919065259}
   m_CullTransparentMesh: 1
+--- !u!1 &1986295713
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1986295718}
+  - component: {fileID: 1986295717}
+  - component: {fileID: 1986295716}
+  - component: {fileID: 1986295715}
+  - component: {fileID: 1986295714}
+  m_Layer: 0
+  m_Name: DrawInput
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &1986295714
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1986295713}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a785d39977c42f64688d15f28534f12c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: PPS.DrawingTool::PPS.DrawingTool.InkGauge
+  _input: {fileID: 1986295717}
+  _fill: {fileID: 1019385168}
+--- !u!114 &1986295715
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1986295713}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e1bcf1eccc2ffd143a9fa6970dacb060, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: PPS.DrawingTool::PPS.DrawingTool.StrokePreviewRenderer
+  _input: {fileID: 1986295717}
+  _material: {fileID: 2100000, guid: a10c6925914c6a44080d5bda42206668, type: 2}
+--- !u!114 &1986295716
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1986295713}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2725a2a6254df1a499cb28c6cb36118b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: PPS.DrawingTool::PPS.DrawingTool.ToolSelection
+--- !u!114 &1986295717
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1986295713}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5808096cb7b9b3341ac4845521e6ef2d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: PPS.DrawingTool::PPS.DrawingTool.DrawInputBehaviour
+  _fitter: {fileID: 1381881759}
+  _tools: {fileID: 1986295716}
+  _inkLimit: 50
+--- !u!4 &1986295718
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1986295713}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &2141536936
 GameObject:
   m_ObjectHideFlags: 0
@@ -3888,3 +4002,4 @@ SceneRoots:
   - {fileID: 1398489713}
   - {fileID: 579132668}
   - {fileID: 334098476}
+  - {fileID: 1986295718}
