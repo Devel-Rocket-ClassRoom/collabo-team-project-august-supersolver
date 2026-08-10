@@ -43,6 +43,9 @@ namespace PPS.MapEditor
         Selection _selected = Selection.None;
         bool _dragging;
 
+        /// 직전 프레임의 스테이지. 갈아끼워졌는지 본다.
+        StageData _lastStage;
+
         /// 드래그 중 직전 손가락 위치. 이동량을 여기서 낸다.
         Vector2 _dragFrom;
 
@@ -56,8 +59,23 @@ namespace PPS.MapEditor
         {
             if (_session == null || _fitter == null || !_fitter.IsReady) return;
 
+            DropStaleSelection();
             HandleInput();
             Redraw();
+        }
+
+        /// <summary>
+        /// 새 맵·불러오기·초기화는 스테이지를 통째로
+        /// 갈아끼운다. 고른 번호는 예전 맵 기준이라
+        /// 그대로 두면 없는 것을 지우려 든다.
+        /// </summary>
+        void DropStaleSelection()
+        {
+            if (ReferenceEquals(_lastStage, _session.Current)) return;
+
+            _lastStage = _session.Current;
+            _selected = Selection.None;
+            _dragging = false;
         }
 
         /// <summary>
