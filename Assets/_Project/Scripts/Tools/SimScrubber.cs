@@ -295,7 +295,7 @@ namespace PPS.Tools
             var level = _world.Level;
 
             GL.Color(GoalColor);
-            Circle(level.GoalPosition, level.GoalRadius);
+            Circle(level.GoalPosition, LevelData.GoalRadius);
 
             GL.Color(KillLineColor);
             Line(new Vector2(-30f, level.KillY), new Vector2(30f, level.KillY));

@@ -28,8 +28,6 @@ namespace PPS.Core.Tests
 
         // 파일에 적힌 값. 기본값으로 채워졌는지 잡는 기준.
         public const float ExpectedInkLimit = 14.5f;
-        public const float ExpectedBallRadius = 0.28f;
-        public const float ExpectedGoalRadius = 0.55f;
         public const float ExpectedKillY = -12f;
 
         public static readonly Vector2 ExpectedBallStart = new Vector2(-4.5f, 3.3f);

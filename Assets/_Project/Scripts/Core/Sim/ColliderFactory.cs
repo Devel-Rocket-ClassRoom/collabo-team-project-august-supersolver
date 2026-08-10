@@ -132,7 +132,7 @@ namespace PPS.Core
             body.collisionDetectionMode = CollisionDetectionMode2D.Continuous;
 
             var circle = go.AddComponent<CircleCollider2D>();
-            circle.radius = level.BallRadius;
+            circle.radius = LevelData.BallRadius;
 
             return body;
         }
