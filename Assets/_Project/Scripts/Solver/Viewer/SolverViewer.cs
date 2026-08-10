@@ -32,6 +32,7 @@ namespace PPS.Solver.Viewer
         static readonly Color BombFiredColor = new Color32(0xC4, 0x00, 0x6B, 0xFF); // 진한 마젠타
         static readonly Color HazardColor = new Color32(0xD4, 0x4A, 0x00, 0xFF);    // 진한 주황 — 닿으면 실패
         static readonly Color PathColor = new Color32(0x0B, 0x3F, 0x7A, 0xFF);      // 진한 감청
+        static readonly Color SolutionColor = new Color32(0x0B, 0x6E, 0x6E, 0xFF);  // 진한 청록 — 솔버가 그린 것
 
         [SerializeField] bool _autoFitCamera = true;
 
@@ -50,6 +51,11 @@ namespace PPS.Solver.Viewer
 
         /// 공이 지날 통로들. 레벨을 바꿀 때만 다시 짓는다. 시뮬과 무관하다.
         List<Vector2[]> _paths;
+
+        /// 통로마다 하나씩. 지금 굴리고 있는 것은 _index 번이다.
+        List<Solution> _solutions;
+        Solution _solution;
+        int _index;
 
         bool _showPath = true;
 
@@ -106,12 +112,24 @@ namespace PPS.Solver.Viewer
             var entry = _catalog[_levelIndex];
             _stage = entry.MakeStage();
 
+            _paths = BallPath.Find(_stage.Level);
+            _solutions = new SolutionBuilder().Build(_stage);
+
+            _index = Mathf.Clamp(_index, 0, Mathf.Max(0, _solutions.Count - 1));
+            _solution = _solutions.Count == 0 ? Solution.Empty : _solutions[_index];
+
             // 스테이지를 매번 새로 만든다.
             // 장치가 발동 여부를 들고 있는 상태 객체다.
-            // 풀이는 넣지 않는다 — 솔버가 보는 것은 빈 레벨이다.
-            _world = WorldBuilder.Build(_stage, Solution.Empty);
+            _world = WorldBuilder.Build(_stage, _solution);
+        }
 
-            _paths = BallPath.Find(_stage.Level);
+        /// 굴릴 통로를 바꾼다. 끝에서 넘어가면 반대쪽으로 돈다.
+        void Show(int index)
+        {
+            _index = (index + _solutions.Count) % _solutions.Count;
+            _targetStep = 0;
+            _stepInput = "0";
+            Rebuild();
         }
 
         void ApplyLevel(int index)
@@ -185,9 +203,19 @@ namespace PPS.Solver.Viewer
 
             _showPath = GUILayout.Toggle(_showPath, " 통로", GUILayout.Width(100f));
 
-            GUILayout.Label(_paths.Count == 0
-                ? "통로 없음 — 공이 목표까지 갈 길이 지형에 막혀 있다"
-                : $"통로 {_paths.Count}개");
+            if (_solutions.Count == 0)
+            {
+                GUILayout.Label("통로 없음 — 공이 목표까지 갈 길이 지형에 막혀 있다");
+                return;
+            }
+
+            GUILayout.BeginHorizontal();
+            if (GUILayout.Button("◀", GUILayout.Width(30f))) Show(_index - 1);
+            GUILayout.Label($"통로 {_index + 1} / {_solutions.Count}   " +
+                            $"선 {_solution.Strokes.Count}개   잉크 {_solution.TotalInk():F1}",
+                            GUILayout.Width(260f));
+            if (GUILayout.Button("▶", GUILayout.Width(30f))) Show(_index + 1);
+            GUILayout.EndHorizontal();
         }
 
         /// <summary>
@@ -236,6 +264,16 @@ namespace PPS.Solver.Viewer
                 DrawBody(body);
             }
 
+            // 솔버가 그린 선. 바디 위에 덧그려 지형과 색이 갈리게 한다.
+            GL.Color(SolutionColor);
+            for (int i = 0; i < _solution.Strokes.Count; i++)
+            {
+                var points = _solution.Strokes[i].Points;
+                if (points == null) continue;
+
+                for (int p = 0; p + 1 < points.Count; p++) Line(points[p], points[p + 1]);
+            }
+
             GL.End();
             GL.PopMatrix();
         }
@@ -246,14 +284,14 @@ namespace PPS.Solver.Viewer
         /// </summary>
         void DrawTopology()
         {
-            if (!_showPath || _paths == null) return;
+            if (!_showPath || _paths == null || _index >= _paths.Count) return;
+
+            // 지금 고른 통로만 그린다. 전부 겹쳐 그리면
+            // 어느 선이 어느 통로에서 나온 것인지 알 수 없다.
+            Vector2[] path = _paths[_index];
 
             GL.Color(PathColor);
-            for (int i = 0; i < _paths.Count; i++)
-            {
-                Vector2[] path = _paths[i];
-                for (int p = 0; p + 1 < path.Length; p++) Line(path[p], path[p + 1]);
-            }
+            for (int p = 0; p + 1 < path.Length; p++) Line(path[p], path[p + 1]);
         }
 
         /// <summary>목록이 짧아 선형 검색으로 충분하다.</summary>

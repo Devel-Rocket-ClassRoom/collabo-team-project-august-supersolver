@@ -7,12 +7,14 @@ namespace PPS.Solver
 {
     /// <summary>
     /// 솔버가 놓아 보는 그림 하나.
-    /// 위치는 갖지 않는다 — 어디에 놓을지는 앵커가 정하고,
-    /// 이쪽은 "무엇을 어떻게 그리는가" 만 담는다.
+    /// 어디에·무엇을·어떻게 가 모두 여기 담긴다.
     /// </summary>
     [Serializable]
     public struct Primitive
     {
+        /// 외접원 중심. 월드 좌표.
+        public Vector2 Position;
+
         public PrimitiveShape Shape;
 
         /// 외접원 반지름.
@@ -25,20 +27,17 @@ namespace PPS.Solver
         /// 같은 모양도 뒤집히면 물리가 다르다.
         public float Angle;
 
-        public Primitive(PrimitiveShape shape, float size, ToolType tool, float angle)
+        public Primitive(
+            Vector2 position, PrimitiveShape shape, float size, ToolType tool, float angle)
         {
+            Position = position;
             Shape = shape;
             Size = size;
             Tool = tool;
             Angle = angle;
         }
 
-        /// <summary>
-        /// 이 그림을 position 에 놓았을 때의 획.
-        /// 외접원 중심이 position 에 온다.
-        /// </summary>
-        public Stroke ToStroke(Vector2 position)
-            => new Stroke(Tool, Points(position));
+        public Stroke ToStroke() => new Stroke(Tool, Points(Position));
 
         /// <summary>
         /// 종류별 꼭짓점. 외접원 위의 점을 Angle 만큼 돌려 찍는다.

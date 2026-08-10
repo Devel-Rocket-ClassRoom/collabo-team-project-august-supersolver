@@ -1,6 +1,6 @@
-using System;
 using System.Collections.Generic;
 using PPS.Core;
+using UnityEngine;
 
 namespace PPS.Solver
 {
@@ -12,13 +12,28 @@ namespace PPS.Solver
     {
         /// <summary>
         /// 이 스테이지에 시도해 볼 배치 전부. 하나당 한 판을 굴린다.
+        /// 통로 하나가 배치 하나다 — 통로가 서로 다른 갈래이므로
+        /// 배치도 그만큼 다르다.
         /// </summary>
         public List<Solution> Build(StageData stage)
         {
-            // 무엇을 어디에 놓을지가 아직 안 정해졌다.
-            // 빈 목록을 내면 "시도할 것이 없다" 로 읽혀
-            // 못 푸는 레벨이라는 판정과 구분되지 않는다.
-            throw new NotImplementedException();
+            List<Vector2[]> paths = BallPath.Find(stage.Level);
+            var solutions = new List<Solution>(paths.Count);
+
+            for (int i = 0; i < paths.Count; i++)
+                solutions.Add(ToSolution(PrimitiveCandidates.Select(paths[i])));
+
+            return solutions;
+        }
+
+        static Solution ToSolution(Primitive[] primitives)
+        {
+            var solution = new Solution();
+
+            for (int i = 0; i < primitives.Length; i++)
+                solution.Strokes.Add(primitives[i].ToStroke());
+
+            return solution;
         }
     }
 }
