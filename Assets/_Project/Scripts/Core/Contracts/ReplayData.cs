@@ -20,6 +20,6 @@ namespace PPS.Core
 
         // 플레이어가 확전한 Stroke와 Pivot 정보를 저장한다.
         // null 사용을 피하기 위해 빈 Solution을 기본으로 생성한다.
-        public Solution solution = new Solution();
+        public Solution Solution = new Solution();
     }
 }
