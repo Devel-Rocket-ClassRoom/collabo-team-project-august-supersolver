@@ -149,6 +149,48 @@ namespace PPS.Core.Tests
         }
 
         /// <summary>
+        /// 기둥 셋을 지나 오른쪽 목표까지 가는 판. 목표가 공과 같은 높이다.
+        /// 기둥마다 위로 넘는 길과 아래로 도는 길이 있어 갈래가 여럿이고,
+        /// 기둥이 공중에 떠 있어 그리지 않으면 어느 길도 못 간다.
+        /// 솔버가 서로 다른 경로를 몇 개나 찾는지 보려고 만든 판이다.
+        /// </summary>
+        public static LevelData PillarRun() => PillarRun(0f);
+
+        /// 목표가 공보다 높다. 올려 보내야 풀린다.
+        public static LevelData PillarRunUp() => PillarRun(3f);
+
+        /// 목표가 공보다 낮다. 떨어뜨려야 풀린다.
+        public static LevelData PillarRunDown() => PillarRun(-3f);
+
+        /// <param name="goalY">목표 발판의 높이. 공 발판은 언제나 0 이다.</param>
+        static LevelData PillarRun(float goalY)
+        {
+            return new LevelData
+            {
+                InkLimit = 40f,
+                BallStart = new Vector2(-8f, 0.3f),
+                BallRadius = 0.25f,
+                GoalPosition = new Vector2(8f, goalY + 0.5f),
+                GoalRadius = 0.5f,
+                KillY = -8f,
+                Terrain = new List<StaticSegment>
+                {
+                    // 공이 놓인 발판. 없으면 시작하자마자 떨어진다.
+                    new StaticSegment(new Vector2(-9.5f, 0f), new Vector2(-6.5f, 0f)),
+
+                    // 기둥 셋. 높이를 엇갈리게 두어 위로 넘는 길과
+                    // 아래로 도는 길의 값이 기둥마다 달라진다.
+                    new StaticSegment(new Vector2(-4f, -2f), new Vector2(-4f, 1f)),
+                    new StaticSegment(new Vector2(0f, -1f), new Vector2(0f, 3f)),
+                    new StaticSegment(new Vector2(4f, -2f), new Vector2(4f, 1f)),
+
+                    // 목표가 놓인 발판.
+                    new StaticSegment(new Vector2(6.5f, goalY), new Vector2(9.5f, goalY)),
+                },
+            };
+        }
+
+        /// <summary>
         /// 발판 사이가 끊겨 있다.
         /// 안 그리면 Fail, 다리를 그리면 Stalled.
         /// </summary>
