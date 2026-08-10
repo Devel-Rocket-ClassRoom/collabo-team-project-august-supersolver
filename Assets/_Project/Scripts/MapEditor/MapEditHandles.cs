@@ -18,9 +18,6 @@ namespace PPS.MapEditor
         [SerializeField] MapEditSession _session;
         [SerializeField] CanvasCameraFitter _fitter;
 
-        /// 시작·목표를 놓을 수 있는 고정 영역.
-        [SerializeField] Rect _editArea = new Rect(-4f, -6f, 8f, 12f);
-
         [SerializeField] Color _startColor = new Color32(0xC0, 0x14, 0x3C, 0xFF);
         [SerializeField] Color _goalColor = new Color32(0x0E, 0x7A, 0x3C, 0xFF);
         [SerializeField] Color _selectedColor = new Color32(0xFF, 0xD8, 0x66, 0xFF);
@@ -85,18 +82,11 @@ namespace PPS.MapEditor
         {
             // 끝없이 멀리 놓으면 플레이 영역이 같이 커져
             // 화면이 줌아웃되고 편집을 못 하게 된다.
-            Vector2 clamped = ClampToEditArea(world);
+            Vector2 clamped = _fitter.ClampToPlayArea(world);
             var level = _session.Current.Level;
 
             if (_selected == 0) level.BallStart = clamped;
             else if (_selected == 1) level.GoalPosition = clamped;
-        }
-
-        Vector2 ClampToEditArea(Vector2 world)
-        {
-            return new Vector2(
-                Mathf.Clamp(world.x, _editArea.xMin, _editArea.xMax),
-                Mathf.Clamp(world.y, _editArea.yMin, _editArea.yMax));
         }
 
         void Redraw()
