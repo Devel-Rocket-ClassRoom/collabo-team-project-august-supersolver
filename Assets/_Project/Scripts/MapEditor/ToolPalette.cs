@@ -19,6 +19,9 @@ namespace PPS.MapEditor
         [SerializeField] Color _selectedColor = new Color32(0xFF, 0xD8, 0x66, 0xFF);
         [SerializeField] Color _normalColor = Color.white;
 
+        /// 지금 고른 탭. 맵 편집이 무엇을 놓을지 판단한다.
+        public int SelectedTab { get; private set; } = -1;
+
         void Awake()
         {
             for (int i = 0; i < _tabs.Length; i++)
@@ -32,6 +35,8 @@ namespace PPS.MapEditor
 
         void Select(int index)
         {
+            SelectedTab = index;
+
             for (int i = 0; i < _tabs.Length; i++)
                 _tabs[i].targetGraphic.color = i == index ? _selectedColor : _normalColor;
 
