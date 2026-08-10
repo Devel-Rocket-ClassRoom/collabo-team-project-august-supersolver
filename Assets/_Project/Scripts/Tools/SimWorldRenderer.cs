@@ -1,6 +1,7 @@
 using UnityEngine;
 using PPS.Core;
 using System;
+using System.IO;
 
 
 #if UNITY_INCLUDE_TESTS
@@ -115,6 +116,62 @@ namespace PPS.Tools
             _solution = entry.MakeSolution() ?? new Solution();
             // 새 StageData와 Solution으로 실제 물리 월드를 생성한다.
             _world = WorldBuilder.Build(_stage, _solution);
+        }
+
+        ReplayData CreateReplayData()
+        {
+            // 저장 이후 Solution이 변경 되어도 저장 데이터가 함께 바뀌지 않도록 복제한다
+            Solution solutionCopy = _solution.Clone();
+
+            return new ReplayData
+            {
+                // ReplayData 저장 형식을 기록한다.
+                Version = ReplayData.CurrentVersion,
+                // 6.1 현재 플레이의 StageId를 수집한다.
+                StageId = _stage.StageId,
+                // 6.2 현재 플레이의 Seed를 수집한다.
+                Seed = _stage.Seed,
+                // 6.3 확정된 Stroke와 Pivot을 복제하여 수집한다.
+                Solution = solutionCopy
+            };
+        }
+
+        string CreateReplayJson()
+        {
+            // 현재 플레이 정보를 ReplayData로 수집한다.
+            ReplayData replayData = CreateReplayData();
+
+            // 파일 내용을 확인 할 수 있도록 들여쓰기가 적용된 Json으로 변환한다.
+            return JsonUtility.ToJson(replayData, true);
+        }
+
+        string GetReplayFilePath()
+        {
+            // 운영체제에 맞는 Unity 전용 저장 폴더와 리플레이 파일 이름을 하나의 결로로 조합 한다.
+            return Path.Combine(Application.persistentDataPath, "replay.json");
+        }
+
+        // Inspector에서 저장 기능을 직접 실행 할 수 있게 한다.
+        [ContextMenu("Save Replay")]
+        public void SaveReplay()
+        {
+            //Start() 이전에는 저장할 플레이 정보가 없다.
+            if(_stage == null)
+            {
+                Debug.LogWarning("Play Mode에서 월드 생성 후 저장해야 합니다.");
+                return;
+            }
+            // 현재 플레이 데이터를 Json 문자열로 만든다.
+            string json = CreateReplayJson();
+
+            // Json 파일을 저장 할 전체 경로를 가져온다.
+            string filePath = GetReplayFilePath();
+
+            // 지정한 경로에 Json 문자열을 저장한다.
+            File.WriteAllText(filePath, json);
+
+            // 저장된 파일의 위치를 Console에서 확인한다.
+            Debug.Log($"리플레이 저장 완료: {filePath}");
         }
 
         static Entry Stage(string  name, Func<LevelData> makeLevel, Func<Solution> makeSolution, int seed = 0)
