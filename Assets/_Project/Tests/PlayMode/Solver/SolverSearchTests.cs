@@ -9,9 +9,9 @@ using UnityEngine.TestTools;
 namespace PPS.Solver.Tests
 {
     /// <summary>
-    /// 맵 없이 도는 탐색의 계약.
-    /// 여기서 나오는 시뮬 횟수가 D0 기준선이다 — 나중에 맵을 h 자리에
-    /// 꽂았을 때 이 값과 비교해야 맵이 값을 하는지 알 수 있다.
+    /// 탐색의 계약.
+    /// D0 기준선(맵 없이 20만 시뮬, 못 품)은 이미 재서 문서에 남았고,
+    /// 다시 재는 데 4분이 들어 맵을 꽂은 쪽만 남긴다.
     /// </summary>
     public class SolverSearchTests
     {
@@ -39,25 +39,6 @@ namespace PPS.Solver.Tests
             Assert.IsNotNull(report.Solution);
             Assert.IsEmpty(report.Solution.Strokes, "기저가 이기는 판의 답은 빈 Solution 이다");
             Assert.AreEqual(1, report.Sims, "무배치 한 판으로 끝났어야 한다");
-        }
-
-        /// <summary>
-        /// 풀 것이 있는 유일한 판. 여기서 나온 시뮬 횟수가 기준선이다.
-        /// 예산 안에 못 찾으면 실패로 뜨지만, 그 실패가 곧
-        /// "맵 없이는 이만큼도 못 간다" 는 측정값이다.
-        /// </summary>
-        [UnityTest, Timeout(3600000)]
-        public IEnumerator 퍼즐_레벨을_예산_안에_푼다()
-        {
-            var level = TestLevels.GapPuzzle();
-            var search = new SolverSearch(level);
-            yield return search.Run();
-
-            SolverReport report = search.Report;
-            Debug.Log($"[GapPuzzle · D0 기준선] {report}");
-
-            Assert.AreEqual(SolverStop.Solved, report.Stop,
-                $"예산 {SolverConfig.SearchSimBudget:N0} 시뮬 안에 못 찾았다");
         }
 
         /// <summary>
@@ -93,25 +74,9 @@ namespace PPS.Solver.Tests
 
             Assert.AreEqual(SolverStop.Solved, report.Stop,
                 $"맵을 꽂고도 예산 {SolverConfig.SearchSimBudget:N0} 안에 못 찾았다");
-        }
 
-        /// <summary>
-        /// 반환한 풀이를 그대로 재실행하면 Clear 여야 한다 (D8).
-        /// 탐색이 Clear 를 받은 배치와 내보내는 Solution 이 어긋나면
-        /// 검증기가 통과시킨 레벨을 사람이 못 푸는 일이 생긴다.
-        /// </summary>
-        [UnityTest, Timeout(3600000)]
-        public IEnumerator 찾은_풀이를_재실행하면_클리어한다()
-        {
-            var level = TestLevels.GapPuzzle();
-            var search = new SolverSearch(level);
-            yield return search.Run();
-
-            if (!search.Report.Solved)
-                Assert.Ignore($"풀이를 못 찾아 재실행할 것이 없다: {search.Report}");
-
-            SimResult replay = SimRunner.Run(level, search.Report.Solution, 0);
-
+            // 재실행 검증(D8)을 여기 붙인다. 따로 두면 맵을 두 번 지어야 한다.
+            SimResult replay = SimRunner.Run(level, report.Solution, 0);
             Assert.AreEqual(SimOutcome.Clear, replay.Outcome,
                 $"탐색은 풀었다는데 재실행이 {replay.Outcome} 다");
         }
