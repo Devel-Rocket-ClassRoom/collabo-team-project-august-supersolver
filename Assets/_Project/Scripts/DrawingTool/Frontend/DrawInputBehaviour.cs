@@ -24,9 +24,10 @@ namespace PPS.DrawingTool
         [SerializeField] CanvasCameraFitter _fitter;
         [SerializeField] ToolSelection _tools;
 
-        /// 레벨이 붙기 전까지 쓰는 임시 상한.
-        /// 레벨이 생기면 LevelData.InkLimit 이 주인이다.
-        [SerializeField] float _inkLimit = 20f;
+        /// 잉크 상한이 나오는 판. 상한을 float 로 복사해
+        /// 두면 원본과 갈라질 자리가 생겨 판을 통째로 든다.
+        /// 레벨이 붙기 전까지는 기본값 판이다.
+        LevelData _level = new LevelData();
 
         readonly StrokeGestureRecognizer _recognizer = new StrokeGestureRecognizer(new StrokeProcessor());
         readonly Solution _solution = new Solution();
@@ -49,11 +50,19 @@ namespace PPS.DrawingTool
         public IReadOnlyList<Vector2> PreviewPoints => _recognizer.PreviewPoints;
 
         /// 확정된 획만 센 잔량. 획을 시작할 때 쓰는 값이다.
-        public float RemainingInk => _inkLimit - _solution.TotalInk();
+        public float RemainingInk => _level.InkLimit - _solution.TotalInk();
+
+        /// <summary>
+        /// 잉크 상한이 나오는 판을 물린다. 획을 그린 뒤에
+        /// 바뀌면 잔량이 음수가 되므로 레벨을 붙일 때
+        /// 한 번만 부른다.
+        /// </summary>
+        public void SetLevel(LevelData level) => _level = level;
 
         /// 게이지용. 그리는 중에는 프리뷰 근사를 보여준다.
         public float InkRatio => Mathf.Clamp01(
-            (_recognizer.IsDrawing ? _recognizer.PreviewRemainingInk : RemainingInk) / _inkLimit);
+            (_recognizer.IsDrawing ? _recognizer.PreviewRemainingInk : RemainingInk)
+            / _level.InkLimit);
 
         void OnEnable()
         {
