@@ -4,8 +4,8 @@ using UnityEngine.UI;
 namespace PPS.MapEditor
 {
     /// <summary>
-    /// 도구 카테고리를 고르면 그 항목만 띄운다.
-    /// 항목이 하는 일은 아직 없다.
+    /// 어느 도구가 골라졌는지 알린다.
+    /// 도구가 하는 일은 맵 편집 쪽에 있다.
     /// </summary>
     public sealed class ToolPalette : MonoBehaviour
     {
@@ -19,19 +19,52 @@ namespace PPS.MapEditor
         [SerializeField] Color _selectedColor = new Color32(0xFF, 0xD8, 0x66, 0xFF);
         [SerializeField] Color _normalColor = Color.white;
 
+        /// 페이지별 항목 버튼. 계층에서 그대로 읽는다.
+        Button[][] _items;
+
+        /// 지금 고른 탭. 맵 편집이 무엇을 놓을지 판단한다.
+        public int SelectedTab { get; private set; } = -1;
+
+        /// 그 탭 안에서 고른 항목. 없으면 -1.
+        public int SelectedItem { get; private set; } = -1;
+
         void Awake()
         {
             for (int i = 0; i < _tabs.Length; i++)
             {
-                int index = i;
-                _tabs[i].onClick.AddListener(() => Select(index));
+                int tab = i;
+                _tabs[i].onClick.AddListener(() => SelectTab(tab));
             }
 
-            if (_tabs.Length > 0) Select(0);
+            CacheItems();
+
+            if (_tabs.Length > 0) SelectTab(0);
         }
 
-        void Select(int index)
+        /// <summary>
+        /// 페이지가 꺼져 있어도 자식을 읽어야 해서
+        /// 포함 인자를 켠다.
+        /// </summary>
+        void CacheItems()
         {
+            _items = new Button[_pages.Length][];
+
+            for (int page = 0; page < _pages.Length; page++)
+            {
+                _items[page] = _pages[page].GetComponentsInChildren<Button>(true);
+
+                for (int i = 0; i < _items[page].Length; i++)
+                {
+                    int item = i;
+                    _items[page][i].onClick.AddListener(() => SelectItem(item));
+                }
+            }
+        }
+
+        void SelectTab(int index)
+        {
+            SelectedTab = index;
+
             for (int i = 0; i < _tabs.Length; i++)
                 _tabs[i].targetGraphic.color = i == index ? _selectedColor : _normalColor;
 
@@ -41,7 +74,19 @@ namespace PPS.MapEditor
             // 카테고리를 바꾸면 앞에서부터 본다.
             _itemScroll.horizontalNormalizedPosition = 0f;
 
-            Debug.Log($"[맵 에디터] 도구 선택: {_tabs[index].name}");
+            SelectItem(_items[index].Length > 0 ? 0 : -1);
+        }
+
+        void SelectItem(int index)
+        {
+            SelectedItem = index;
+
+            var page = _items[SelectedTab];
+            for (int i = 0; i < page.Length; i++)
+                page[i].targetGraphic.color = i == index ? _selectedColor : _normalColor;
+
+            if (index >= 0)
+                Debug.Log($"[맵 에디터] 도구: {_tabs[SelectedTab].name} / {page[index].name}");
         }
     }
 }
