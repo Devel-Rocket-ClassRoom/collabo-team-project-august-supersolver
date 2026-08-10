@@ -95,9 +95,7 @@ namespace PPS.Solver.Tests
             {
                 InkLimit = 100f,
                 BallStart = new Vector2(-5f, 5f),
-                BallRadius = 0.25f,
                 GoalPosition = new Vector2(6f, 0.5f),
-                GoalRadius = 0.5f,
                 KillY = -20f,
                 Terrain = new List<StaticSegment>
                 {

@@ -16,15 +16,24 @@ namespace PPS.Core
         /// 판정이 확정된 스텝. 아직이면 -1.
         public int DecidedStep { get; private set; } = -1;
 
-        /// 별 장치가 들어올 때까지 항상 0.
+        /// 지금까지 모은 별 개수.
         public int Stars { get; private set; }
 
         /// 초기 상태부터 계측한다.
         public float MinGoalDist { get; private set; } = float.PositiveInfinity;
 
+        /// 별마다 수집 여부. 인덱스는 레벨 순서.
+        bool[] _collected;
+
         internal void Initialize(SimWorld world)
         {
+            var stars = world.Level.Stars;
+            _collected = new bool[stars == null ? 0 : stars.Count];
+
             UpdateGoalDistance(world);
+
+            // 시작 지점에 별이 겹쳐 있으면 0 스텝에 먹는다.
+            CollectStars(world);
         }
 
         /// <summary>
@@ -35,10 +44,14 @@ namespace PPS.Core
         {
             if (Cleared || Failed || Stalled) return;
 
+            // 판정보다 먼저 센다. 같은 스텝에 골에
+            // 닿아도 그때 지나친 별은 인정한다.
+            CollectStars(world);
+
             float dist = UpdateGoalDistance(world);
             var level = world.Level;
 
-            if (dist <= level.GoalRadius + level.BallRadius)
+            if (dist <= LevelData.GoalRadius + LevelData.BallRadius)
             {
                 Cleared = true;
                 DecidedStep = step;
@@ -86,6 +99,26 @@ namespace PPS.Core
                 if (ball.IsTouching(hazard)) return true;
             }
             return false;
+        }
+
+        /// <summary>
+        /// 별은 콜라이더가 없다. 물리에 끼면
+        /// 공의 궤적이 바뀌어 솔버가 푼 답이 달라진다.
+        /// </summary>
+        void CollectStars(SimWorld world)
+        {
+            var stars = world.Level.Stars;
+            float reach = LevelData.StarCaptureRadius+ LevelData.BallRadius;
+            Vector2 ball = world.Ball.position;
+
+            for (int i = 0; i < _collected.Length; i++)
+            {
+                if (_collected[i]) continue;
+                if (Vector2.Distance(ball, stars[i]) > reach) continue;
+
+                _collected[i] = true;
+                Stars++;
+            }
         }
 
         float UpdateGoalDistance(SimWorld world)

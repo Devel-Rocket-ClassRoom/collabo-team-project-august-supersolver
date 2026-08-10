@@ -22,9 +22,7 @@ namespace PPS.Solver.Tests
             {
                 InkLimit = 20f,
                 BallStart = Vector2.zero,
-                BallRadius = 0.25f,
                 GoalPosition = new Vector2(5f, 0f),
-                GoalRadius = 0.5f,
             };
             level.Terrain.Add(new StaticSegment(new Vector2(-5f, -1f), new Vector2(5f, -1f)));
             return level;
@@ -111,7 +109,7 @@ namespace PPS.Solver.Tests
             foreach (var pair in SizesByShape(level, 5))
             {
                 Assert.AreEqual(5, pair.Value.Length, pair.Key.ToString());
-                Assert.AreEqual(level.BallRadius, pair.Value[0], Eps, pair.Key.ToString());
+                Assert.AreEqual(LevelData.BallRadius, pair.Value[0], Eps, pair.Key.ToString());
 
                 // 상한은 근사가 아니라 그 값이어야 한다.
                 Assert.AreEqual(PrimitiveValidator.MaxSize(pair.Key, level), pair.Value[4],

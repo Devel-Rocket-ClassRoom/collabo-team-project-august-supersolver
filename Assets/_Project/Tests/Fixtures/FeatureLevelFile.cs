@@ -33,7 +33,6 @@ namespace PPS.Core.Tests
 
         // 기본값으로 채워졌는지 잡는 기준.
         public const float ExpectedInkLimit = 24f;
-        public const float ExpectedBallRadius = 0.26f;
         public const float ExpectedKillY = -8f;
         public const int ExpectedTerrainCount = 4;
         public const int ExpectedDeviceCount = 1;

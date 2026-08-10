@@ -10,16 +10,16 @@ namespace PPS.Core
         public static Rect Calculate(LevelData level)
         {
             //공의 왼쪽 아래 좌표를 최초 최솟값으로 설정한다.
-            Vector2 min = level.BallStart - Vector2.one * level.BallRadius;
+            Vector2 min = level.BallStart - Vector2.one * LevelData.BallRadius;
 
             // 공의 오른쪽 위 좌표를 최초 최댓값으로 설정한다.
-            Vector2 max = level.BallStart + Vector2.one * level.BallRadius;
+            Vector2 max = level.BallStart + Vector2.one * LevelData.BallRadius;
 
             // 목표 지점의 왼쪽 아래 좌표를 영역에 포함한다.
-            Include(level.GoalPosition - Vector2.one * level.GoalRadius, ref min, ref max);
+            Include(level.GoalPosition - Vector2.one * LevelData.GoalRadius, ref min, ref max);
 
             // 목표의 오른쪽 위 좌표를 영역에 포함한다.
-            Include (level.GoalPosition + Vector2.one * level.GoalRadius, ref min, ref max);
+            Include (level.GoalPosition + Vector2.one * LevelData.GoalRadius, ref min, ref max);
 
             // 레벨에 등록된 모든 지형 선분을 차례대로 확인한다.
             for (int i = 0; i < level.Terrain.Count; i++)

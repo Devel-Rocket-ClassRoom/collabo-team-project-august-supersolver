@@ -89,7 +89,7 @@ namespace PPS.Solver
             vector[AngleSinAxis + at] = (Mathf.Sin(radians) + 1f) * 0.5f;
 
             vector[SizeAxis + at] = Normalize(primitive.Size,
-                _level.BallRadius, PrimitiveValidator.MaxSize(primitive.Shape, _level));
+                LevelData.BallRadius, PrimitiveValidator.MaxSize(primitive.Shape, _level));
 
             vector[ShapeAxis + at] = CategoryToAxis((int)primitive.Shape, PrimitiveShapeExtensions.RuleCount);
             vector[BodyAxis + at] = CategoryToAxis((int)primitive.Body, BodyCount);
@@ -116,7 +116,7 @@ namespace PPS.Solver
             float angle = turn * PrimitiveShapeExtensions.AnglePeriod(shape);
 
             float size = Denormalize(vector[SizeAxis + at],
-                _level.BallRadius, PrimitiveValidator.MaxSize(shape, _level));
+                LevelData.BallRadius, PrimitiveValidator.MaxSize(shape, _level));
 
             var body = (ToolType)AxisToCategory(vector[BodyAxis + at], BodyCount);
             var pivot = (PivotSpot)AxisToCategory(vector[PivotAxis + at], PivotCount);

@@ -16,7 +16,7 @@ namespace PPS.Solver
         /// <param name="usedInk">이미 놓은 프리미티브가 쓴 잉크.</param>
         public static PlacementReject Validate(in Primitive primitive, LevelData level, float usedInk)
         {
-            if (primitive.Size < level.BallRadius)
+            if (primitive.Size < LevelData.BallRadius)
                 return PlacementReject.TooSmall;
 
             // 상한을 Size 가 아니라 잉크로 비교해야
