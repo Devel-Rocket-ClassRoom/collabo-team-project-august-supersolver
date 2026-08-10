@@ -28,6 +28,18 @@ namespace PPS.Core
         /// = 난수 소비 순서.
         public List<DeviceData> Devices = new List<DeviceData>();
 
+        /// 모으면 점수가 되는 지점.
+        /// 물리에 관여하지 않는다 — 콜라이더가 없다.
+        public List<Vector2> Stars = new List<Vector2>();
+
+        /// 공 중심이 이 안에 들어오면 수집.
+        public float StarRadius = 0.35f;
+
+        /// 플레이어가 쓸 수 있는 도구.
+        /// 비어 있으면 제한 없음 — 기존 레벨 파일에
+        /// 이 항목이 없어도 그대로 열린다.
+        public List<ToolType> AllowedTools = new List<ToolType>();
+
         /// 이 아래로 떨어지면 Fail.
         public float KillY = -20f;
     }
