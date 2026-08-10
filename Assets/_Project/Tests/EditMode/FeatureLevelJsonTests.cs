@@ -21,7 +21,6 @@ namespace PPS.Core.Tests
             var level = FeatureLevelFile.LoadLevel();
 
             Assert.AreEqual(FeatureLevelFile.ExpectedInkLimit, level.InkLimit, 1e-4f);
-            Assert.AreEqual(FeatureLevelFile.ExpectedBallRadius, level.BallRadius, 1e-4f);
             Assert.AreEqual(FeatureLevelFile.ExpectedKillY, level.KillY, 1e-4f);
             Assert.AreEqual(FeatureLevelFile.ExpectedTerrainCount, level.Terrain.Count,
                 "지형 세그먼트 개수가 파일과 다르다.");

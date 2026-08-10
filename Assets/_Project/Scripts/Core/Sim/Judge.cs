@@ -51,7 +51,7 @@ namespace PPS.Core
             float dist = UpdateGoalDistance(world);
             var level = world.Level;
 
-            if (dist <= level.GoalRadius + level.BallRadius)
+            if (dist <= LevelData.GoalRadius + LevelData.BallRadius)
             {
                 Cleared = true;
                 DecidedStep = step;
@@ -108,7 +108,7 @@ namespace PPS.Core
         void CollectStars(SimWorld world)
         {
             var stars = world.Level.Stars;
-            float reach = world.Level.StarRadius + world.Level.BallRadius;
+            float reach = LevelData.StarCaptureRadius+ LevelData.BallRadius;
             Vector2 ball = world.Ball.position;
 
             for (int i = 0; i < _collected.Length; i++)

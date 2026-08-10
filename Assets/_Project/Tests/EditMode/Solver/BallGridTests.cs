@@ -25,9 +25,7 @@ namespace PPS.Solver.Tests
             var level = new LevelData
             {
                 BallStart = new Vector2(0f, 0f),
-                BallRadius = 0.25f,
                 GoalPosition = new Vector2(5f, 0f),
-                GoalRadius = 0.5f,
             };
             level.Terrain.Add(new StaticSegment(
                 new Vector2(-5f, -1f), new Vector2(terrainRight, -1f)));

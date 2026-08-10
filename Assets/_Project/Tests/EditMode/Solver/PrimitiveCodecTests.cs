@@ -31,9 +31,7 @@ namespace PPS.Solver.Tests
             {
                 InkLimit = 20f,
                 BallStart = Vector2.zero,
-                BallRadius = 0.25f,
                 GoalPosition = new Vector2(5f, 0f),
-                GoalRadius = 0.5f,
             };
             level.Terrain.Add(new StaticSegment(new Vector2(-5f, -1f), new Vector2(5f, -1f)));
             return level;
@@ -162,7 +160,7 @@ namespace PPS.Solver.Tests
             foreach (var primitive in codec.Decode(vector))
             {
                 Assert.IsTrue(area.Contains(primitive.Center), "중심이 영역 안");
-                Assert.GreaterOrEqual(primitive.Size, level.BallRadius);
+                Assert.GreaterOrEqual(primitive.Size, LevelData.BallRadius);
                 Assert.LessOrEqual(primitive.Size, PrimitiveValidator.MaxSize(primitive.Shape, level));
                 Assert.GreaterOrEqual(primitive.Angle, 0f);
                 Assert.Less(primitive.Angle, primitive.AnglePeriod);

@@ -25,9 +25,7 @@ namespace PPS.Solver.Tests
             {
                 InkLimit = 20f,
                 BallStart = Vector2.zero,
-                BallRadius = 0.25f,
                 GoalPosition = new Vector2(5f, 0f),
-                GoalRadius = 0.5f,
             };
             level.Terrain.Add(new StaticSegment(new Vector2(-5f, -1f), new Vector2(5f, -1f)));
             return level;

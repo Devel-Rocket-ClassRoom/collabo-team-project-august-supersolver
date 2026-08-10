@@ -77,8 +77,8 @@ namespace PPS.Solver
             if (step == _sizeSteps - 1)
                 return maxSize;
 
-            float span = maxSize / _level.BallRadius;
-            return _level.BallRadius * Mathf.Pow(span, (float)step / (_sizeSteps - 1));
+            float span = maxSize / LevelData.BallRadius;
+            return LevelData.BallRadius * Mathf.Pow(span, (float)step / (_sizeSteps - 1));
         }
     }
 }
