@@ -129,17 +129,20 @@ namespace PPS.DrawingTool
         }
 
         /// <summary>
-        /// 손가락이 영역 밖이면 클램프가 아니라 미추가다 —
-        /// 클램프하면 경계를 따라 직선이 그려진다.
+        /// 손가락이 영역을 벗어나도 점은 경계에 붙여 찍는다.
+        /// 드래그는 범위를 벗어나면 클램프하는 게 관행이고,
+        /// 끊으면 복귀할 때 안 그린 선분이 튀어나온다.
         /// </summary>
         void AddPoint(Vector2 world)
         {
-            if (!_context.PlayArea.Contains(world)) return;
+            Rect area = _context.PlayArea;
 
-            // offset 은 화면 위쪽 고정이라 Y 만 민다.
-            // X 는 손가락이 안에 있는 이상 넘칠 수 없다.
+            // offset 은 화면 위쪽 고정이라 Y 에만 더한다.
             float y = world.y + _context.ToWorld(_context.OffsetDp);
-            _builder.AddPoint(new Vector2(world.x, Mathf.Min(y, _context.PlayArea.yMax)));
+
+            _builder.AddPoint(new Vector2(
+                Mathf.Clamp(world.x, area.xMin, area.xMax),
+                Mathf.Clamp(y, area.yMin, area.yMax)));
         }
     }
 }

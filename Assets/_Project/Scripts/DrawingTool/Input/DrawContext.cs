@@ -24,8 +24,8 @@ namespace PPS.DrawingTool
         /// 손가락 가림 대책. 마우스는 0 이라 분기가 없다.
         public readonly float OffsetDp;
 
-        /// 점을 받는 유일한 영역. 캔버스가 아니다 —
-        /// 캔버스 경계는 영역 밖이라 도달할 수 없다.
+        /// 점이 갇히는 영역. 캔버스가 아니다 —
+        /// 손가락이 나가도 점은 이 경계에 붙는다.
         public readonly Rect PlayArea;
 
         public DrawContext(

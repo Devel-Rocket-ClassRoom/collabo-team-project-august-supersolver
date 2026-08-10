@@ -57,6 +57,13 @@ namespace PPS.DrawingTool.Tests
 
         static Vector2 V(float x, float y) => new Vector2(x, y);
 
+        /// <summary>
+        /// Rect.Contains 는 최댓값을 제외해서 경계에 딱 붙은
+        /// 점을 밖으로 친다. 클램프 결과를 재려면 못 쓴다.
+        /// </summary>
+        static bool Inside(Vector2 p) =>
+            p.x >= Area.xMin && p.x <= Area.xMax && p.y >= Area.yMin && p.y <= Area.yMax;
+
         [Test]
         public void 캔버스에서_시작하면_UI_위를_지나도_획이_하나_나온다()
         {
@@ -103,14 +110,37 @@ namespace PPS.DrawingTool.Tests
         }
 
         [Test]
-        public void 플레이_영역_밖_구간은_점을_남기지_않는다()
+        public void 플레이_영역_밖_구간은_경계에_붙어_기록된다()
         {
+            // x=5, x=6 이 영역(xMax=4) 밖이다.
             Drag(V(0f, 0f), V(2f, 0f), V(5f, 1f), V(6f, 2f), V(3f, 1f), V(3.5f, 0f));
 
             Assert.AreEqual(1, _confirmed.Count, "밖으로 나갔다고 획이 끊겼다");
 
-            foreach (Vector2 point in _confirmed[0].Points)
-                Assert.LessOrEqual(point.x, Area.xMax, $"영역 밖 점이 남았다: {point}");
+            List<Vector2> points = _confirmed[0].Points;
+
+            foreach (Vector2 point in points)
+                Assert.IsTrue(Inside(point), $"영역 밖 점이 남았다: {point}");
+
+            // 버리는 방식이었다면 경계에 붙은 점이 하나도 없다.
+            // 두 동작을 가르는 유일한 검사다.
+            Assert.IsTrue(points.Exists(p => Mathf.Approximately(p.x, Area.xMax)),
+                "밖 구간이 경계에 안 붙고 통째로 버려졌다");
+        }
+
+        [Test]
+        public void offset_이_있어도_영역_바닥까지_그릴_수_있다()
+        {
+            _offsetDp = ScreenConstants.DrawOffsetDp;
+
+            // 손가락이 바닥(yMin=-6) 아래로 내려간다. offset 이
+            // 위로 미는 값이라 클램프가 없으면 바닥에 못 닿는다.
+            Drag(V(0f, -5f), V(0f, -5.5f), V(0f, -6.5f), V(0f, -7f));
+
+            Assert.AreEqual(1, _confirmed.Count);
+
+            Assert.IsTrue(_confirmed[0].Points.Exists(p => Mathf.Approximately(p.y, Area.yMin)),
+                "바닥에 닿지 못했다");
         }
 
         [Test]
