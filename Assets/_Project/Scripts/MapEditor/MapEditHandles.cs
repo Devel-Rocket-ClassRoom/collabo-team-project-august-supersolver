@@ -22,9 +22,6 @@ namespace PPS.MapEditor
         /// 새로 놓는 지형 도형의 크기.
         const float ShapeSize = 1f;
 
-        /// 지형을 그리는 굵기. 표시용일 뿐 물리는 선이다.
-        const float LineWidth = 0.12f;
-
         [SerializeField] MapEditSession _session;
         [SerializeField] CanvasCameraFitter _fitter;
         [SerializeField] ToolPalette _palette;
@@ -43,9 +40,6 @@ namespace PPS.MapEditor
         readonly List<SpriteRenderer> _starHandles = new List<SpriteRenderer>();
         readonly List<SpriteRenderer> _terrainHandles = new List<SpriteRenderer>();
 
-        Sprite _circle;
-        Sprite _square;
-
         Selection _selected = Selection.None;
         bool _dragging;
 
@@ -54,11 +48,8 @@ namespace PPS.MapEditor
 
         void Awake()
         {
-            _circle = CircleSprite();
-            _square = SquareSprite();
-
-            _startHandle = CreateHandle("StartHandle", _circle);
-            _goalHandle = CreateHandle("GoalHandle", _circle);
+            _startHandle = CreateHandle("StartHandle", MapHandleGfx.Circle);
+            _goalHandle = CreateHandle("GoalHandle", MapHandleGfx.Circle);
         }
 
         void Update()
@@ -285,29 +276,29 @@ namespace PPS.MapEditor
         {
             var level = _session.Current.Level;
 
-            PlaceDot(_startHandle, level.BallStart, LevelData.BallRadius,
+            MapHandleGfx.PlaceDot(_startHandle, level.BallStart, LevelData.BallRadius,
                 Tint(_startColor, HandleKind.Start, 0));
-            PlaceDot(_goalHandle, level.GoalPosition, LevelData.GoalRadius,
+            MapHandleGfx.PlaceDot(_goalHandle, level.GoalPosition, LevelData.GoalRadius,
                 Tint(_goalColor, HandleKind.Goal, 0));
 
             // 개수가 변한다. 남는 핸들은 끄고 다시 쓴다.
-            Grow(_starHandles, level.Stars.Count, "StarHandle", _circle);
+            Grow(_starHandles, level.Stars.Count, "StarHandle", MapHandleGfx.Circle);
             for (int i = 0; i < _starHandles.Count; i++)
             {
                 bool used = i < level.Stars.Count;
                 _starHandles[i].gameObject.SetActive(used);
                 if (used)
-                    PlaceDot(_starHandles[i], level.Stars[i], LevelData.StarCaptureRadius,
-                        Tint(_starColor, HandleKind.Star, i));
+                    MapHandleGfx.PlaceDot(_starHandles[i], level.Stars[i],
+                        LevelData.StarCaptureRadius, Tint(_starColor, HandleKind.Star, i));
             }
 
-            Grow(_terrainHandles, level.Terrain.Count, "TerrainHandle", _square);
+            Grow(_terrainHandles, level.Terrain.Count, "TerrainHandle", MapHandleGfx.Square);
             for (int i = 0; i < _terrainHandles.Count; i++)
             {
                 bool used = i < level.Terrain.Count;
                 _terrainHandles[i].gameObject.SetActive(used);
                 if (used)
-                    PlaceLine(_terrainHandles[i], level.Terrain[i],
+                    MapHandleGfx.PlaceLine(_terrainHandles[i], level.Terrain[i],
                         Tint(_terrainColor, HandleKind.Terrain, i));
             }
         }
@@ -321,26 +312,6 @@ namespace PPS.MapEditor
         Color Tint(Color normal, HandleKind kind, int index) =>
             _selected.Kind == kind && _selected.Index == index ? _selectedColor : normal;
 
-        static void PlaceDot(SpriteRenderer handle, Vector2 world, float radius, Color color)
-        {
-            handle.transform.position = new Vector3(world.x, world.y, 0f);
-            handle.transform.rotation = Quaternion.identity;
-            handle.transform.localScale = Vector3.one * (radius * 2f);
-            handle.color = color;
-        }
-
-        static void PlaceLine(SpriteRenderer handle, in StaticSegment segment, Color color)
-        {
-            Vector2 center = (segment.A + segment.B) * 0.5f;
-            Vector2 ab = segment.B - segment.A;
-
-            handle.transform.position = new Vector3(center.x, center.y, 0f);
-            handle.transform.rotation =
-                Quaternion.Euler(0f, 0f, Mathf.Atan2(ab.y, ab.x) * Mathf.Rad2Deg);
-            handle.transform.localScale = new Vector3(ab.magnitude, LineWidth, 1f);
-            handle.color = color;
-        }
-
         float PickRadiusWorld()
         {
             float pixels = new DeviceUnits(Screen.dpi).ToPixels(PickRadiusDp);
@@ -351,46 +322,8 @@ namespace PPS.MapEditor
         static bool OverUI() =>
             EventSystem.current != null && EventSystem.current.IsPointerOverGameObject();
 
-        SpriteRenderer CreateHandle(string name, Sprite sprite)
-        {
-            var go = new GameObject(name);
-            go.transform.SetParent(transform, false);
-
-            var renderer = go.AddComponent<SpriteRenderer>();
-            renderer.sprite = sprite;
-            return renderer;
-        }
-
-        /// <summary>
-        /// 임시 표시라 스프라이트를 코드로 만든다.
-        /// 실제 아트가 들어오면 통째로 갈아낀다.
-        /// </summary>
-        static Sprite CircleSprite()
-        {
-            const int size = 64;
-            var texture = new Texture2D(size, size, TextureFormat.RGBA32, false);
-            float center = (size - 1) * 0.5f;
-
-            for (int y = 0; y < size; y++)
-            for (int x = 0; x < size; x++)
-            {
-                float dist = Vector2.Distance(new Vector2(x, y), new Vector2(center, center));
-                texture.SetPixel(x, y, dist <= center ? Color.white : Color.clear);
-            }
-
-            texture.Apply();
-            return Sprite.Create(texture, new Rect(0, 0, size, size), Vector2.one * 0.5f, size);
-        }
-
-        /// 지형 선분을 늘려 그리는 데 쓴다.
-        static Sprite SquareSprite()
-        {
-            var texture = new Texture2D(1, 1, TextureFormat.RGBA32, false);
-            texture.SetPixel(0, 0, Color.white);
-            texture.Apply();
-
-            return Sprite.Create(texture, new Rect(0, 0, 1, 1), Vector2.one * 0.5f, 1);
-        }
+        SpriteRenderer CreateHandle(string name, Sprite sprite) =>
+            MapHandleGfx.Create(transform, name, sprite);
 
         enum HandleKind
         {
