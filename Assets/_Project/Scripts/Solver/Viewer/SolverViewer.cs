@@ -113,7 +113,9 @@ namespace PPS.Solver.Viewer
             _stage = entry.MakeStage();
 
             _paths = BallPath.Find(_stage.Level);
-            _solutions = new SolutionBuilder().Build(_stage);
+            _solutions = entry.MakeSolution == null
+                ? new SolutionBuilder().Build(_stage)
+                : new List<Solution> { entry.MakeSolution() };
 
             _index = Mathf.Clamp(_index, 0, Mathf.Max(0, _solutions.Count - 1));
             _solution = _solutions.Count == 0 ? Solution.Empty : _solutions[_index];
@@ -147,7 +149,7 @@ namespace PPS.Solver.Viewer
         {
             if (_world == null) return;
 
-            GUILayout.BeginArea(new Rect(10f, 10f, 460f, 410f), GUI.skin.box);
+            GUILayout.BeginArea(new Rect(10f, 10f, 460f, 610f), GUI.skin.box);
 
             int picked = GUILayout.SelectionGrid(_levelIndex, _catalogNames, 2);
             if (picked != _levelIndex) ApplyLevel(picked);
@@ -468,6 +470,17 @@ namespace PPS.Solver.Viewer
                 }
             }
 
+            // 지형이 없는 무대는 그림이 화면 밖으로 나간다 —
+            // 도구 하나만 놓고 보는 자리가 그렇다.
+            for (int i = 0; i < _solution.Strokes.Count; i++)
+            {
+                var points = _solution.Strokes[i].Points;
+                if (points == null) continue;
+
+                for (int p = 0; p < points.Count; p++)
+                    Encapsulate(ref min, ref max, points[p]);
+            }
+
             Vector2 center = (min + max) * 0.5f;
             Vector2 extent = (max - min) * 0.5f;
 
@@ -495,10 +508,19 @@ namespace PPS.Solver.Viewer
         {
             public readonly string Name;
             public readonly Func<StageData> MakeStage;
-            public Entry(string name, Func<StageData> makeStage)
+
+            /// <summary>
+            /// 풀이를 직접 주는 자리. null 이면 SolutionBuilder 가 낸다.
+            /// 아직 SolutionBuilder 에 붙지 않은 도구를 눈으로 보려면
+            /// 통로를 거치지 않고 넣을 길이 있어야 한다.
+            /// </summary>
+            public readonly Func<Solution> MakeSolution;
+
+            public Entry(string name, Func<StageData> makeStage, Func<Solution> makeSolution = null)
             {
                 Name = name;
                 MakeStage = makeStage;
+                MakeSolution = makeSolution;
             }
         }
 
@@ -512,6 +534,20 @@ namespace PPS.Solver.Viewer
                 () => new StageData { StageId = name, Seed = seed, Level = makeLevel() });
 
         /// <summary>
+        /// 도구 하나만 놓고 보는 자리.
+        /// 통로에서 유도된 배치가 아니라 실측값을 그대로 넣는다.
+        /// </summary>
+        static Entry Probe(in ViewerLevers.Sample sample)
+        {
+            Lever lever = sample.Lever;
+
+            return new Entry(
+                sample.Name,
+                () => ViewerLevers.Stage(lever),
+                () => ViewerLevers.Build(lever));
+        }
+
+        /// <summary>
         /// 레벨은 전부 픽스처 어셈블리에서 온다.
         /// 목록의 레벨과 시드는 테스트가 돌리는 것과
         /// 같아야 눈으로 본 것이 근거가 된다.
@@ -520,7 +556,13 @@ namespace PPS.Solver.Viewer
         static Entry[] BuildCatalog()
         {
 #if UNITY_INCLUDE_TESTS
-            return new[]
+            // 실측 상위가 앞에 온다. 스윕을 다시 돌리면 이 목록만 갈아 끼운다.
+            var entries = new List<Entry>();
+
+            for (int i = 0; i < ViewerLevers.Top.Length; i++)
+                entries.Add(Probe(ViewerLevers.Top[i]));
+
+            entries.AddRange(new[]
             {
                 Stage("뷰어 기본 (폭탄)", ViewerLevels.BombRamp, seed: 3),
                 Stage("자유 물체 전시장", ViewerLevels.Showcase),
@@ -540,7 +582,9 @@ namespace PPS.Solver.Viewer
                 // 시드 7 = FragBombPitStage 의 기본값.
                 Stage("파편 구덩이", TestLevels.FragBombPit, seed: 7),
                 Stage("파편 멀리", TestLevels.FragBombFarAway, seed: 7),
-            };
+            });
+
+            return entries.ToArray();
 #else
             // 픽스처가 없는 빌드. 가드를 빼면
             // 없는 타입을 참조해 빌드가 깨진다.
