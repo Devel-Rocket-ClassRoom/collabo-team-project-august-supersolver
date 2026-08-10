@@ -220,6 +220,59 @@ namespace PPS.Tools
             return replayData;
         }
 
+        int FindEntryIndex(string stageId)
+        {
+            // 카탈로그에서 저장된 StageId와 같은 이름의 Entry를 찾는다.
+            for (int i = 0; i < _catalog.Length; i++)
+            {
+                if (_catalog[i].Name == stageId)
+                    return i;
+            }
+            //일치하는 Entry가 없다는 것을 나타낸다.
+            return -1;
+        }
+        void RestoreReplayWorld(ReplayData replayData)
+        {
+            // 저장된 StageId와 일치하는 Entry를 찾는다.
+            int entryIndex = FindEntryIndex(replayData.StageId);
+
+            // 원본 레벨을 찾지 못하면 복원할 수 있다.
+            if (entryIndex < 0)
+            {
+                Debug.LogWarning($"등록되지 않는 StageId입니다:" + $"{replayData.StageId}");
+                return;
+            }
+
+            // 찾은 Entry에서 원본 StageData를 생성한다.
+            Entry entry = _catalog[entryIndex];
+            StageData restoredStage = entry.MakeStage();
+
+            // 저장 당시의 난수 결과를 재현하도록 Json에서 읽은 Seed를 적용한다.
+            restoredStage.Seed = replayData.Seed;
+
+            // 이후 원본 ReplayData가 변경되어도 실행중인 입력이 영향받지 않도록 복제한다.
+            Solution restoredSolution = replayData.Solution.Clone();
+
+            // 현재 실행 중인 물리 월드를 종료한다.
+            _world?.Dispose();
+
+            // 복원한 데이터를 현재 재생 정보로 교체한다.
+            _stage = restoredStage;
+            _solution = restoredSolution;
+
+            // 복원한 레벨, Seed와 Solution으로 새로운 물리 월드를 생성한다.
+            _world = WorldBuilder.Build(_stage, _solution);
+
+            // Inspector의 레벨 번호를 복원한 Entry와 맞춘다.
+            _levelIndex = entryIndex;
+
+            // ReplayData에는 현재 스텝을 저장하지 않으므로 복원한 월드는 0스텝부터 시작한다.
+            _targetStep = 0;
+
+            // 복원된 월드가 초기 상태에서 생성 됐는지 확인한다.
+            Debug.Log($"복원 월드 생성 완료: " + $"StageId={_stage.StageId}, " + $"Seed={_world.Seed}, " + $"CurrentStep={_world.CurrentStep}");
+        }
+
         // Inspector에서 Json 불러오기를 실행 할 수 있게 한다.
         [ContextMenu("Load Replay Data")]
         public void LoadReplayData()
@@ -231,6 +284,9 @@ namespace PPS.Tools
             if (replayData == null)
                 return;
 
+            // 불러온 데이터로 실제 물리 월드를 다시 만든다.
+            RestoreReplayWorld(replayData);
+
             // 불러온 Solution의 입력 개수를 확인한다.
             int strokeCount = replayData.Solution.Strokes.Count;
             int pivotCount = replayData.Solution.Pivots.Count;
@@ -239,6 +295,8 @@ namespace PPS.Tools
             Debug.Log($"리플레이 불러오기 완료: " + $"Version={replayData.Version}, " + $"StageId={replayData.StageId}, " +
                        $"Seed={replayData.Seed}, " + $"Strokes={strokeCount}, " + $"Pivots={pivotCount}");
         }
+
+        
         static Entry Stage(string  name, Func<LevelData> makeLevel, Func<Solution> makeSolution, int seed = 0)
         {
             return new Entry(name, () => new StageData
