@@ -63,11 +63,53 @@ namespace PPS.Solver
 
                 if (best < 0 || float.IsPositiveInfinity(least)) continue;
 
-                Vector2[] path = Stitch(nodes, backBall, backGoal, best);
-                if (!Seen(paths, path)) paths.Add(path);
+                Vector2[] path = Pull(Stitch(nodes, backBall, backGoal, best), level);
+
+                // 팽팽하게 당기면 같은 갈래로 도는 길들이 하나로 겹친다.
+                // 겹치면 짧은 쪽만 남긴다.
+                int same = IndexOfSame(paths, path);
+
+                if (same < 0) paths.Add(path);
+                else if (Length(path) < Length(paths[same])) paths[same] = path;
             }
 
             return paths;
+        }
+
+        /// <summary>
+        /// 지날 이유가 없는 꼭짓점을 걷어낸다.
+        /// 끝점을 하나씩 강제로 지나게 해서 뽑은 길이라, 그 끝점이
+        /// 실은 돌아갈 필요가 없으면 길이 불룩하게 남는다.
+        /// 당기고 나면 같은 갈래는 같은 모양이 되어 서로 겹쳐진다.
+        /// </summary>
+        static Vector2[] Pull(Vector2[] path, LevelData level)
+        {
+            var points = new List<Vector2>(path);
+
+            for (int i = 1; i + 1 < points.Count; )
+            {
+                if (Blocked(level, points[i - 1], points[i + 1]))
+                {
+                    i++;
+                    continue;
+                }
+
+                points.RemoveAt(i);
+
+                // 하나 지우면 앞쪽도 다시 볼 수 있게 된다.
+                if (i > 1) i--;
+            }
+
+            return points.ToArray();
+        }
+
+        static float Length(Vector2[] path)
+        {
+            float sum = 0f;
+            for (int i = 0; i + 1 < path.Length; i++)
+                sum += Vector2.Distance(path[i], path[i + 1]);
+
+            return sum;
         }
 
         /// <summary>
@@ -129,7 +171,8 @@ namespace PPS.Solver
             return points.ToArray();
         }
 
-        static bool Seen(List<Vector2[]> paths, Vector2[] path)
+        /// 같은 길이 이미 있으면 그 자리. 없으면 -1.
+        static int IndexOfSame(List<Vector2[]> paths, Vector2[] path)
         {
             for (int i = 0; i < paths.Count; i++)
             {
@@ -140,10 +183,10 @@ namespace PPS.Solver
                 for (int p = 0; p < path.Length && same; p++)
                     same = Vector2.Distance(other[p], path[p]) < NodeMerge;
 
-                if (same) return true;
+                if (same) return i;
             }
 
-            return false;
+            return -1;
         }
 
         // ── 노드 ──
