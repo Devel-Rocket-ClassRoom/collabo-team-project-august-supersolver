@@ -87,12 +87,10 @@ namespace PPS.Core.Tests
             {
                 InkLimit = 20f,
                 BallStart = new Vector2(-5.5f, 3.5f),
-                BallRadius = 0.25f,
 
                 // 공 바로 아래. 경사로가 공을 오른쪽으로 데려가므로
                 // 가만 두면 목표에서 멀어지기만 한다.
                 GoalPosition = new Vector2(-5.5f, 0.1f),
-                GoalRadius = 0.5f,
                 KillY = -5f,
                 Terrain = new List<StaticSegment>
                 {
@@ -161,9 +159,7 @@ namespace PPS.Core.Tests
             {
                 InkLimit = 40f,
                 BallStart = new Vector2(-8f, 0.3f),
-                BallRadius = 0.25f,
                 GoalPosition = new Vector2(8f, goalY + 0.5f),
-                GoalRadius = 0.5f,
                 KillY = -8f,
                 Terrain = new List<StaticSegment>
                 {

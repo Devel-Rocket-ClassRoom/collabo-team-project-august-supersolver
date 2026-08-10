@@ -225,7 +225,7 @@ namespace PPS.Solver
             // 노드를 반지름에 딱 맞춰 놓으면 이웃한 두 노드를 잇는 현이
             // 원 안쪽으로 파고들어, 모서리를 감아 도는 간선이 전부 막힌다.
             // 외접시켜 두면 현의 가장 깊은 곳이 정확히 반지름에 온다.
-            float ring = level.BallRadius / Mathf.Cos(Mathf.PI / RingSamples);
+            float ring = LevelData.BallRadius / Mathf.Cos(Mathf.PI / RingSamples);
 
             for (int i = 0; i < corners.Count; i++)
             {
@@ -235,7 +235,7 @@ namespace PPS.Solver
                     Vector2 at = corners[i] + new Vector2(
                         Mathf.Cos(angle), Mathf.Sin(angle)) * ring;
 
-                    if (Clearance(terrain, at) < level.BallRadius - Slack) continue;
+                    if (Clearance(terrain, at) < LevelData.BallRadius - Slack) continue;
 
                     int before = nodes.Count;
                     Include(nodes, at);
@@ -268,16 +268,58 @@ namespace PPS.Solver
             var terrain = level.Terrain;
             if (terrain == null) return false;
 
-            // 양 끝이 이미 지형에 더 가까우면 그만큼만 요구한다.
-            // 목표가 바닥에 붙어 있으면 목표로 가는 간선이 통째로 사라진다.
-            float need = Mathf.Min(level.BallRadius,
-                Mathf.Min(Clearance(terrain, from), Clearance(terrain, to)));
+            // 목표 원 안은 이미 닿은 자리라 여유를 묻지 않는다.
+            // 원 밖 구간만 잘라 내 검사한다 — 간선을 통째로 면제하면
+            // 어디서든 지형을 뚫고 목표까지 직선으로 갈 수 있게 된다.
+            if (!Trim(level, ref from, ref to)) return false;
 
             for (int i = 0; i < terrain.Count; i++)
-                if (Distance(from, to, terrain[i].A, terrain[i].B) < need - Slack)
+                if (Distance(from, to, terrain[i].A, terrain[i].B)
+                    < LevelData.BallRadius - Slack)
                     return true;
 
             return false;
+        }
+
+        /// <summary>
+        /// 간선에서 목표 원 안에 잠긴 부분을 잘라 낸다.
+        /// 통째로 잠겨 있으면 검사할 것이 없어 거짓을 낸다.
+        /// </summary>
+        static bool Trim(LevelData level, ref Vector2 from, ref Vector2 to)
+        {
+            bool fromInside = Inside(level, from);
+            bool toInside = Inside(level, to);
+
+            if (fromInside && toInside) return false;
+
+            if (fromInside) from = Exit(level, from, to);
+            else if (toInside) to = Exit(level, to, from);
+
+            return true;
+        }
+
+        static bool Inside(LevelData level, Vector2 point)
+            => Vector2.Distance(point, level.GoalPosition) <= LevelData.GoalRadius;
+
+        /// <summary>
+        /// 원 안의 inside 에서 바깥의 outside 로 갈 때 원을 벗어나는 자리.
+        /// </summary>
+        static Vector2 Exit(LevelData level, Vector2 inside, Vector2 outside)
+        {
+            Vector2 along = outside - inside;
+            Vector2 offset = inside - level.GoalPosition;
+
+            float a = Vector2.Dot(along, along);
+            if (a <= Mathf.Epsilon) return inside;
+
+            float b = 2f * Vector2.Dot(offset, along);
+            float c = Vector2.Dot(offset, offset)
+                - LevelData.GoalRadius * LevelData.GoalRadius;
+
+            float root = Mathf.Sqrt(Mathf.Max(0f, b * b - 4f * a * c));
+            float t = Mathf.Clamp01((-b + root) / (2f * a));
+
+            return inside + along * t;
         }
 
         /// 이 자리에서 가장 가까운 지형까지의 거리.
