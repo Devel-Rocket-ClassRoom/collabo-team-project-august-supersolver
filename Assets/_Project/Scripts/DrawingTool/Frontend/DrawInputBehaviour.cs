@@ -11,8 +11,8 @@ using TouchPhase = UnityEngine.InputSystem.TouchPhase;
 namespace PPS.DrawingTool
 {
     /// <summary>
-    /// 장치를 읽어 라우터에 밀어 넣는 얇은 층.
-    /// 판정은 전부 StrokeInputRouter 가 한다 — 여기 로직이
+    /// 장치를 읽어 인식기에 밀어 넣는 얇은 층.
+    /// 판정은 전부 StrokeGestureRecognizer 가 한다 — 여기 로직이
     /// 늘면 기기 없이 검증 못 하는 코드가 늘어난다.
     /// </summary>
     [DisallowMultipleComponent]
@@ -28,7 +28,7 @@ namespace PPS.DrawingTool
         /// 레벨이 생기면 LevelData.InkLimit 이 주인이다.
         [SerializeField] float _inkLimit = 20f;
 
-        readonly StrokeInputRouter _router = new StrokeInputRouter(new StrokeProcessor());
+        readonly StrokeGestureRecognizer _recognizer = new StrokeGestureRecognizer(new StrokeProcessor());
         readonly Solution _solution = new Solution();
         readonly List<RaycastResult> _hits = new List<RaycastResult>();
 
@@ -44,27 +44,27 @@ namespace PPS.DrawingTool
         /// 확정된 획. 렌더러가 듣는다.
         public event Action<Stroke> StrokeConfirmed;
 
-        public bool IsDrawing => _router.IsDrawing;
+        public bool IsDrawing => _recognizer.IsDrawing;
 
-        public IReadOnlyList<Vector2> PreviewPoints => _router.PreviewPoints;
+        public IReadOnlyList<Vector2> PreviewPoints => _recognizer.PreviewPoints;
 
         /// 확정된 획만 센 잔량. 획을 시작할 때 쓰는 값이다.
         public float RemainingInk => _inkLimit - _solution.TotalInk();
 
         /// 게이지용. 그리는 중에는 프리뷰 근사를 보여준다.
         public float InkRatio => Mathf.Clamp01(
-            (_router.IsDrawing ? _router.PreviewRemainingInk : RemainingInk) / _inkLimit);
+            (_recognizer.IsDrawing ? _recognizer.PreviewRemainingInk : RemainingInk) / _inkLimit);
 
         void OnEnable()
         {
             // 안 부르면 activeTouches 가 항상 비어 있다.
             EnhancedTouchSupport.Enable();
-            _router.StrokeConfirmed += Append;
+            _recognizer.StrokeConfirmed += Append;
         }
 
         void OnDisable()
         {
-            _router.StrokeConfirmed -= Append;
+            _recognizer.StrokeConfirmed -= Append;
             EnhancedTouchSupport.Disable();
         }
 
@@ -157,7 +157,7 @@ namespace PPS.DrawingTool
                 _fitter.ScreenToWorld(screenPixels),
                 phase == PointerPhase.Down && IsOverUI(screenPixels));
 
-            _router.Feed(sample, new DrawContext(
+            _recognizer.Feed(sample, new DrawContext(
                 _tools.Current, RemainingInk, _fitter.PixelsPerUnit,
                 Screen.dpi, offsetDp, _fitter.PlayArea));
         }

@@ -10,7 +10,7 @@ namespace PPS.DrawingTool
     /// 소유권·탭·경계·offset·멀티터치를 여기서 정하고
     /// 점 필터와 단순화는 파이프라인에 맡긴다.
     /// </summary>
-    public sealed class StrokeInputRouter
+    public sealed class StrokeGestureRecognizer
     {
         /// 어떤 장치도 이 값을 포인터 id 로 쓰지 않는다.
         const int NoPointer = int.MinValue;
@@ -24,7 +24,7 @@ namespace PPS.DrawingTool
         Vector2 _downWorld;
         float _maxTravel;
 
-        public StrokeInputRouter(IStrokeProcessor processor)
+        public StrokeGestureRecognizer(IStrokeProcessor processor)
         {
             _processor = processor;
         }

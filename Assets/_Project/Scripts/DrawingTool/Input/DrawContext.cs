@@ -5,7 +5,7 @@ namespace PPS.DrawingTool
 {
     /// <summary>
     /// 획 하나를 만드는 데 필요한 바깥 값.
-    /// 라우터가 Down 에서 캡처해 끝까지 쓴다 — 도중에
+    /// 인식기가 Down 에서 캡처해 끝까지 쓴다 — 도중에
     /// fit 이 바뀌면 한 획 안에서 좌표계가 갈라진다.
     /// </summary>
     public readonly struct DrawContext

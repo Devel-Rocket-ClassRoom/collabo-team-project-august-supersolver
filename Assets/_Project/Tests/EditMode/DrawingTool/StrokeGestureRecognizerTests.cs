@@ -10,7 +10,7 @@ namespace PPS.DrawingTool.Tests
     /// 기기 없이 잰다. 점 밀도와 단순화는 파이프라인
     /// 테스트가 맡는다.
     /// </summary>
-    public class StrokeInputRouterTests
+    public class StrokeGestureRecognizerTests
     {
         /// 1dp = 1px 이 되는 dpi. 환산을 눈으로 따라갈 수 있다.
         const float Dpi = DeviceUnits.BaselineDpi;
@@ -24,12 +24,12 @@ namespace PPS.DrawingTool.Tests
         /// 씬의 폴백 영역과 같다. x∈[-4,4] y∈[-6,6].
         static readonly Rect Area = new Rect(-4f, -6f, 8f, 12f);
 
-        StrokeInputRouter _router;
+        StrokeGestureRecognizer _recognizer;
         List<Stroke> _confirmed;
         float _offsetDp;
 
         [SetUp]
-        public void 라우터를_만든다()
+        public void 인식기를_만든다()
         {
             _offsetDp = 0f;
             Reset();
@@ -38,12 +38,12 @@ namespace PPS.DrawingTool.Tests
         void Reset()
         {
             _confirmed = new List<Stroke>();
-            _router = new StrokeInputRouter(new StrokeProcessor());
-            _router.StrokeConfirmed += _confirmed.Add;
+            _recognizer = new StrokeGestureRecognizer(new StrokeProcessor());
+            _recognizer.StrokeConfirmed += _confirmed.Add;
         }
 
         void Feed(PointerPhase phase, Vector2 world, bool overUI = false, int id = FirstFinger) =>
-            _router.Feed(
+            _recognizer.Feed(
                 new PointerSample(id, phase, world, overUI),
                 new DrawContext(ToolType.FixedLine, 100f, PixelsPerUnit, Dpi, _offsetDp, Area));
 
