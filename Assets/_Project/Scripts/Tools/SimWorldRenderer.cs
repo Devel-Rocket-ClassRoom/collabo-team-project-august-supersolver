@@ -174,6 +174,71 @@ namespace PPS.Tools
             Debug.Log($"리플레이 저장 완료: {filePath}");
         }
 
+        ReplayData ReadReplayData()
+        {
+            // 저장 할 때 사용한 것과 동일한 파일 경로룰 가져온다.
+            string filePath = GetReplayFilePath();
+
+            // 저장된 replay.json이 없으면 불러 올 수 없다.
+            if (!File.Exists(filePath))
+            {
+                Debug.LogWarning($"리플레이 파일이 없습니다. {filePath}");
+                return null;
+            }
+
+            //로컬 replay.json의 내용을 문자열로 읽는다.
+            string json = File.ReadAllText(filePath);
+
+            // Json 문자열을 ReplayData 객체로 복원한다.
+            ReplayData replayData = JsonUtility.FromJson<ReplayData>(json);
+
+            // Json을 ReplayData로 복우너하지 못했다면 중단한다.
+            if (replayData == null)
+            {
+                Debug.LogWarning("리플레이 데이터를 복원하지 못했습니다.");
+                return null;
+            }
+            // 현재 코드가 지원하는 저장 형식인지 확인한다.
+            if (replayData.Version != ReplayData.CurrentVersion)
+            {
+                Debug.LogWarning($"지원하지 않는 리플레이 버전입니다. : {replayData.Version}");
+                return null;
+            }
+            // 원본 레벨을 찾을 StageId가 있는지 확인한다.
+            if (string.IsNullOrEmpty(replayData.StageId))
+            {
+                Debug.LogWarning("리플레이에 StageId가 없습니다.");
+                return null;
+            }
+            // 플레이어 입력 정보가 존재하는지 확인한다.
+            if (replayData.Solution == null)
+            {
+                Debug.LogWarning("리플레이에 Solution이 없습니다.");
+                return null;
+            }
+            // 검증을 통과한 ReplayData를 반환한다.
+            return replayData;
+        }
+
+        // Inspector에서 Json 불러오기를 실행 할 수 있게 한다.
+        [ContextMenu("Load Replay Data")]
+        public void LoadReplayData()
+        {
+            // replay.json을 읽고 검증된 ReplayData를 가져온다.
+            ReplayData replayData = ReadReplayData();
+
+            // 파일 읽기나 데이터 검증에 실패했다면 중단한다.
+            if (replayData == null)
+                return;
+
+            // 불러온 Solution의 입력 개수를 확인한다.
+            int strokeCount = replayData.Solution.Strokes.Count;
+            int pivotCount = replayData.Solution.Pivots.Count;
+
+            // 복원된 리플레이 정보를 Console에 출력한다.
+            Debug.Log($"리플레이 불러오기 완료: " + $"Version={replayData.Version}, " + $"StageId={replayData.StageId}, " +
+                       $"Seed={replayData.Seed}, " + $"Strokes={strokeCount}, " + $"Pivots={pivotCount}");
+        }
         static Entry Stage(string  name, Func<LevelData> makeLevel, Func<Solution> makeSolution, int seed = 0)
         {
             return new Entry(name, () => new StageData
