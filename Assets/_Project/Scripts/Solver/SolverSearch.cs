@@ -7,11 +7,11 @@ using UnityEngine;
 namespace PPS.Solver
 {
     /// <summary>
-    /// 레벨 하나를 풀어 보는 최선우선 탐색.
-    /// 순위는 g + h 다. 둘 다 "선 개수" 라 더할 수 있고,
-    /// 같은 값이면 잉크가 적은 쪽을 고른다.
-    /// 맵이 없어도 돈다 — 그때는 1축이 통째로 0 이라
-    /// 잉크만 보는 탐색이 되고, 그게 D0 기준선이다.
+    /// 레벨 하나를 풀어 보는 깊이 제한 전수 순회.
+    /// 순위를 매기지 않는다 — 순위를 매기면 실패가
+    /// "후보에 없어서" 인지 "가지치기에 잘려서" 인지 갈리지 않고,
+    /// 그러면 실패를 레벨에 대한 판정으로 쓸 수 없다.
+    /// 끝까지 돌아 Exhausted 로 끝났을 때만 그 판정이 성립한다.
     /// 물리 씬을 걷으려면 프레임을 넘겨야 해 코루틴이다.
     /// </summary>
     public sealed class SolverSearch
@@ -20,288 +20,204 @@ namespace PPS.Solver
         readonly PrimitiveTrial _trial;
         readonly PrimitiveCandidates _candidates;
         readonly PrimitiveCodec _codec;
-        readonly BallQuantizer _quantizer;
         readonly TrajectoryBuffer _buffer;
         readonly Rect _area;
 
-        /// null 이면 h = 0 이다. 순위 1축이 통째로 0 이 되어 잉크만 남는다.
-        readonly HeuristicMap _map;
-
+        readonly int _maxDepth;
         readonly int _simBudget;
         readonly double _timeBudget;
 
-        readonly Heap _open = new Heap();
         readonly Stopwatch _watch = new Stopwatch();
         readonly SimScenes _scenes = new SimScenes();
 
         /// <summary>
         /// 제자리를 맴도는 판을 끊는 기준.
         /// 위치 셀 하나를 IdleSteps 동안 못 벗어난 공은 목표에 못 간다.
-        /// 안 걸면 그런 판이 상한 1800 스텝까지 도는데, h 를 꽂은 뒤로는
-        /// 공을 받아 살려 두는 배치가 뽑혀서 그게 시뮬 단가를 지배했다.
+        /// 안 걸면 그런 판이 상한 1800 스텝까지 돈다.
         /// Stalled 가 Timeout 으로 바뀌지만 탐색은 Cleared 만 본다.
         /// </summary>
         readonly IdleCutoff _idle;
 
-        /// <summary>
-        /// 궤적 캐시. 지금 후보를 펼쳐 둔 노드다.
-        /// 한 칸뿐인 이유는 궤적이 노드당 메모리가 되면 안 되기 때문이다 —
-        /// 빗나가면 그 노드를 다시 굴린다. 그 값은 Sims - Nodes 로 보인다.
-        /// </summary>
-        SearchNode _expanded;
+        /// 지금 놓여 있는 선들. 깊이를 오르내리며 밀고 뺀다.
+        readonly List<Primitive> _placed = new List<Primitive>();
 
-        readonly List<Primitive> _pool = new List<Primitive>();
+        /// _placed 의 누적 잉크. 매번 다시 재면 검사 비용이 시뮬에 붙는다.
+        float _ink;
 
-        /// _pool 과 짝인 잉크 값. 비교마다 다시 재면
-        /// 정렬 비용이 시뮬 한 판과 맞먹는다.
-        readonly List<float> _inks = new List<float>();
+        /// 깊이마다 후보 목록 하나. 자식으로 내려가도 부모 목록은 살아 있어야 한다.
+        readonly List<List<Primitive>> _pools = new List<List<Primitive>>();
 
-        /// <summary>
-        /// _pool 과 짝인, 그 후보를 놓는 자리의 h.
-        /// 자식의 순위를 굴려 보지 않고 매길 수 있는 유일한 값이다 —
-        /// 셀 c 에 선 하나를 놓은 자식은 (g+1) + (h(c)-1) = g + h(c) 다.
-        /// 맵이 없으면 전부 0 이라 정렬이 잉크로 떨어진다.
-        /// </summary>
-        readonly List<int> _siteH = new List<int>();
+        /// 후보를 놓을 자리를 추릴 때 쓴다. 표본을 그대로 쓰면
+        /// 같은 자리에 열 번씩 놓게 된다.
+        readonly HashSet<Vector2Int> _sites = new HashSet<Vector2Int>();
 
-        /// <summary>
-        /// _pool 을 훑는 순서. h 가 작은 자리부터, 같으면 잉크가 싼 것부터다.
-        /// 부모가 싼 자식부터 내야 열린 목록이 순위를 지킨다.
-        /// List.Sort 는 안정적이지 않아 번호로 한 번 더 가른다.
-        /// </summary>
-        readonly List<int> _order = new List<int>();
+        readonly float _positionStep;
 
-        /// 궤적에서 후보를 놓을 자리를 추릴 때 쓴다.
-        readonly HashSet<BallCell> _sites = new HashSet<BallCell>();
-
-        int _seq;
+        /// 풀렸거나 예산이 끝났다. 재귀를 통째로 접는다.
+        bool _halt;
 
         public SolverReport Report { get; private set; }
 
-        /// <param name="map">셀별 h. null 이면 h = 0 으로 돌아 D0 기준선이 된다.</param>
+        /// <param name="maxDepth">한 풀이에 쓸 선 개수의 상한.
+        /// 유저가 한 번에 구상하는 획 수를 뜻한다.</param>
         /// <param name="simBudget">돌릴 시뮬 횟수 상한.</param>
         /// <param name="timeBudget">쓸 시간 상한(초).</param>
         public SolverSearch(
-            LevelData level, HeuristicMap map = null, int seed = 0,
+            LevelData level, int seed = 0,
+            int maxDepth = SolverConfig.SearchMaxDepth,
             int simBudget = SolverConfig.SearchSimBudget,
             double timeBudget = SolverConfig.SearchSeconds)
         {
-            _map = map;
             _level = level;
             _trial = new PrimitiveTrial(level, seed);
             _candidates = new PrimitiveCandidates(level, SolverConfig.CandidateSizeSteps);
             _codec = new PrimitiveCodec(level);
-            _quantizer = new BallQuantizer(SolverConfig.PositionStep(level));
             _buffer = new TrajectoryBuffer(SolverConfig.TrajectoryInterval);
             _area = LevelDataArea.Calculate(level);
-            _idle = new IdleCutoff(_quantizer.PositionStep, SolverConfig.IdleSteps);
+            _positionStep = SolverConfig.PositionStep(level);
+            _idle = new IdleCutoff(_positionStep, SolverConfig.IdleSteps);
 
+            _maxDepth = maxDepth;
             _simBudget = simBudget;
             _timeBudget = timeBudget;
+
+            for (int d = 0; d < maxDepth; d++)
+                _pools.Add(new List<Primitive>());
         }
 
         /// <summary>
         /// 다 돌면 Report 에 결과가 들어 있다.
-        /// 출발 노드는 아무것도 안 놓은 빈 배치다 — 그냥 굴려도 이기는 판은
-        /// 첫 팝에서 끝나고 빈 Solution 이 나간다.
+        /// 출발은 아무것도 안 놓은 빈 배치다 — 그냥 굴려도 이기는 판은
+        /// 첫 판에서 끝나고 빈 Solution 이 나간다.
         /// </summary>
         public IEnumerator Run()
         {
             Report = new SolverReport();
 
             // 앞 단계가 남긴 언로드 대기분이 빠진 뒤에 기준선을 잡는다.
-            // 맵을 짓고 바로 돌리면 빌드가 남긴 씬을 통째로 물려받는다.
             var settle = _scenes.Settle();
             while (settle.MoveNext()) yield return settle.Current;
 
-            Push(new SearchNode(new Primitive[0], 0f, _seq++, estimate: 0));
-
-            while (_open.Count > 0)
+            if (Visit())
             {
-                SearchNode node = _open.Pop();
-                bool rolled = node != _expanded;
-
-                if (rolled)
-                {
-                    // 레벨 시작점에서 전체 배치로 굴린다. 중간 상태에서
-                    // 새 선만 놓고 굴리면(맵 빌더가 그렇게 한다) 반환한 풀이를
-                    // 재실행했을 때 같은 결과가 난다는 보장이 없다.
-                    TrialResult result = Roll(node.Primitives);
-
-                    if (!node.Rolled)
-                    {
-                        node.Rolled = true;
-                        Report.Nodes++;
-                        Report.Deepest = Mathf.Max(Report.Deepest, node.Depth);
-                    }
-
-                    if (result.Cleared)
-                    {
-                        Report.Stop = SolverStop.Solved;
-                        Report.Solution = Rebuild(node.Primitives);
-                        break;
-                    }
-
-                    Spread(node);
-
-                    var drain = _scenes.Drain();
-                    while (drain.MoveNext()) yield return drain.Current;
-                }
-
-                // 궤적이 손에 있는 동안 낼 수 있는 만큼 낸다.
-                // 하나만 내고 물러나면 곧 캐시에서 밀려나, 다음 자식을 내려고
-                // 같은 배치를 또 굴린다 — 첫 측정에서 시뮬의 절반이 그 재굴림이었다.
-                // 열린 목록의 최소보다 비싼 자식에서 멈추므로 잉크 순서는 그대로다.
-                // 굴린 값은 적어도 자식 하나로 회수한다.
-                bool owed = rolled;
-                while (Advance(node) && (owed || !Costlier(node)))
-                {
-                    owed = false;
-                    int index = _order[node.Cursor++];
-                    Push(Child(node, _pool[index], index));
-                }
-
-                // 낼 것이 더 있으면 다음 자식의 f 를 달고 다시 줄에 선다.
-                if (node.Cursor < _order.Count) Push(node);
-
-                if (OverBudget()) break;
+                Finish();
+                yield break;
             }
 
-            Report.Elapsed = _watch.Elapsed;
-            Report.PeakScenes = _scenes.Peak;
-            Report.PeakTotalScenes = _scenes.PeakTotal;
+            var drain = _scenes.Drain();
+            while (drain.MoveNext()) yield return drain.Current;
+
+            var descend = Descend(0);
+            while (descend.MoveNext()) yield return descend.Current;
+
+            Finish();
         }
 
         /// <summary>
-        /// 이 배치를 굴려 궤적을 _buffer 에 받는다.
-        /// 스텝 상한은 맵 빌드보다 넉넉한 기본값을 쓴다 —
-        /// 늦게 이기는 풀이를 길이로 잘라 버리면 안 된다.
-        /// 대신 제자리를 맴도는 판만 정체 판정으로 끊는다.
+        /// 이 깊이에서 놓을 수 있는 후보를 하나씩 놓아 본다.
+        /// 들어올 때 _buffer 에는 부모 배치의 궤적이 들어 있어야 한다 —
+        /// 후보를 놓을 자리가 거기서 나온다.
         /// </summary>
-        TrialResult Roll(Primitive[] primitives)
+        IEnumerator Descend(int depth)
+        {
+            if (depth >= _maxDepth) yield break;
+
+            List<Primitive> pool = _pools[depth];
+            Fill(pool);
+
+            for (int i = 0; i < pool.Count; i++)
+            {
+                Primitive candidate = pool[i];
+
+                // 잉크나 영역에 걸리는 후보는 시뮬 없이 여기서 버려진다.
+                if (PrimitiveValidator.Validate(candidate, _level, _ink, _area)
+                    != PlacementReject.None)
+                {
+                    Report.Rejected++;
+                    continue;
+                }
+
+                _placed.Add(candidate);
+                _ink += PrimitiveValidator.Ink(candidate);
+
+                bool cleared = Visit();
+
+                if (!cleared)
+                {
+                    var drain = _scenes.Drain();
+                    while (drain.MoveNext()) yield return drain.Current;
+
+                    var deeper = Descend(depth + 1);
+                    while (deeper.MoveNext()) yield return deeper.Current;
+                }
+
+                _ink -= PrimitiveValidator.Ink(candidate);
+                _placed.RemoveAt(_placed.Count - 1);
+
+                if (_halt) yield break;
+            }
+        }
+
+        /// <summary>
+        /// 지금 배치를 굴려 궤적을 _buffer 에 받고 결과를 기록한다.
+        /// 참을 내면 풀렸다는 뜻이고, 그때 _halt 가 선다.
+        /// 레벨 시작점에서 전체 배치로 굴린다 — 중간 상태에서 새 선만 놓고
+        /// 굴리면 반환한 풀이를 재실행했을 때 같은 결과가 난다는 보장이 없다.
+        /// </summary>
+        bool Visit()
         {
             _watch.Start();
             TrialResult result = _trial.RunSampled(
-                _codec.Encode(primitives), _buffer, SimWorld.DefaultMaxSteps, null, _idle);
+                _codec.Encode(_placed.ToArray()), _buffer,
+                SimWorld.DefaultMaxSteps, null, _idle);
             _watch.Stop();
 
             Report.Sims++;
             Report.Steps += result.Sim.EndStep;
             Report.MinGoalDist = Mathf.Min(Report.MinGoalDist, result.Sim.MinGoalDist);
-            return result;
+            Report.Deepest = Mathf.Max(Report.Deepest, _placed.Count);
+
+            if (result.Cleared)
+            {
+                Report.Stop = SolverStop.Solved;
+                Report.Solution = Rebuild(_placed.ToArray());
+                _halt = true;
+                return true;
+            }
+
+            _halt = OverBudget();
+            return false;
         }
 
         /// <summary>
-        /// 이 노드가 낼 후보를 전부 펼쳐 순위대로 세운다.
-        /// 놓는 자리는 궤적을 셀로 접은 서로 다른 지점들이다 —
-        /// 맵도 셀 대표 상태에 놓으므로 둘이 같은 자리를 본다.
-        /// 표본을 그대로 쓰면 같은 셀에 열 번씩 놓게 된다.
+        /// 궤적 위의 서로 다른 자리마다 후보를 전부 펼친다.
+        /// 순서를 손대지 않는다 — 정렬은 곧 순위이고, 순위는
+        /// 전수 순회가 아니게 만든다.
         /// </summary>
-        void Spread(SearchNode node)
+        void Fill(List<Primitive> pool)
         {
-            _expanded = node;
-            _pool.Clear();
-            _inks.Clear();
-            _siteH.Clear();
-            _order.Clear();
+            pool.Clear();
             _sites.Clear();
 
             for (int i = 0; i < _buffer.Count; i++)
             {
                 BallSample sample = _buffer[i];
-                BallCell cell = _quantizer.Quantize(sample.Position, sample.Velocity);
+
+                var cell = new Vector2Int(
+                    Mathf.FloorToInt(sample.Position.x / _positionStep),
+                    Mathf.FloorToInt(sample.Position.y / _positionStep));
+
                 if (!_sites.Add(cell)) continue;
 
-                int h = _map == null ? 0 : _map.Of(cell);
-                int before = _pool.Count;
-                _pool.AddRange(_candidates.At(new BallState(sample.Position, sample.Velocity)));
-
-                for (int p = before; p < _pool.Count; p++)
-                {
-                    _inks.Add(PrimitiveValidator.Ink(_pool[p]));
-                    _siteH.Add(h);
-                    _order.Add(p);
-                }
+                pool.AddRange(_candidates.At(new BallState(sample.Position, sample.Velocity)));
             }
-
-            _order.Sort(CompareCandidates);
         }
 
-        /// <summary>
-        /// 목표에 가까운 자리부터, 같으면 싼 것부터.
-        /// 노드 하나가 수만 개의 자식을 내는데 그중 무엇을 먼저 볼지
-        /// 고르는 근거가 이것뿐이다 — 맵이 값을 한다면 여기서 한다.
-        /// 잉크까지 같으면 만든 순서를 따른다. 실행마다 같아야 한다.
-        /// </summary>
-        int CompareCandidates(int a, int b)
+        void Finish()
         {
-            int byH = _siteH[a].CompareTo(_siteH[b]);
-            if (byH != 0) return byH;
-
-            int byInk = _inks[a].CompareTo(_inks[b]);
-            return byInk != 0 ? byInk : a.CompareTo(b);
-        }
-
-        /// <summary>
-        /// 놓을 수 있는 다음 후보까지 커서를 밀고 Key 를 갱신한다.
-        /// 잉크나 영역에 걸리는 후보는 시뮬 없이 여기서 버려진다.
-        /// 잉크 한도가 이 검사에 걸리므로 깊이 상한을 따로 두지 않는다.
-        /// </summary>
-        bool Advance(SearchNode node)
-        {
-            while (node.Cursor < _order.Count)
-            {
-                Primitive candidate = _pool[_order[node.Cursor]];
-
-                if (PrimitiveValidator.Validate(candidate, _level, node.Ink, _area)
-                    == PlacementReject.None)
-                {
-                    node.KeyLines = Estimate(node, _order[node.Cursor]);
-                    node.KeyInk = node.Ink + _inks[_order[node.Cursor]];
-                    return true;
-                }
-
-                Report.Rejected++;
-                node.Cursor++;
-            }
-
-            return false;
-        }
-
-        /// <summary>
-        /// 자리 c 에 선 하나를 더 놓은 자식이 최종적으로 쓸 선 개수 추정치.
-        /// (g+1) + (h(c)-1) 이라 g + h(c) 로 떨어진다 — 자식을 굴려 보지 않고
-        /// 순위를 매길 수 있는 이유가 이 상쇄다.
-        /// 맵이 없으면 1축을 아예 안 쓴다. 깊이를 넣으면 얕은 쪽이
-        /// 먼저 나와 D0 기준선과 다른 탐색이 된다.
-        /// </summary>
-        int Estimate(SearchNode parent, int poolIndex)
-            => _map == null ? 0 : parent.Depth + _siteH[poolIndex];
-
-        /// <summary>
-        /// 이 노드의 다음 자식이 열린 목록의 최소보다 비싼가.
-        /// 비싸지면 물러나야 순위가 지켜진다.
-        /// 깊이·번호 동점 규칙은 보지 않는다 — 그것까지 보면
-        /// 동점에서 바로 물러나 궤적 캐시가 매번 빗나간다.
-        /// </summary>
-        bool Costlier(SearchNode node)
-            => _open.Count > 0 && Heap.CompareKeys(node, _open.Peek()) > 0;
-
-        SearchNode Child(SearchNode parent, in Primitive candidate, int poolIndex)
-        {
-            var primitives = new Primitive[parent.Primitives.Length + 1];
-            parent.Primitives.CopyTo(primitives, 0);
-            primitives[parent.Primitives.Length] = candidate;
-
-            return new SearchNode(
-                primitives, parent.Ink + PrimitiveValidator.Ink(candidate), _seq++,
-                Estimate(parent, poolIndex));
-        }
-
-        void Push(SearchNode node)
-        {
-            _open.Push(node);
-            Report.OpenPeak = Mathf.Max(Report.OpenPeak, _open.Count);
+            Report.Elapsed = _watch.Elapsed;
+            Report.PeakScenes = _scenes.Peak;
+            Report.PeakTotalScenes = _scenes.PeakTotal;
         }
 
         /// <summary>
@@ -341,89 +257,6 @@ namespace PPS.Solver
             }
 
             return false;
-        }
-
-        /// <summary>
-        /// 순위가 앞선 노드부터 내는 이진 힙.
-        /// .NET Standard 2.1 에는 우선순위 큐가 없어 직접 둔다.
-        /// 완전히 동점이면 깊은 쪽이 먼저다 — 얕은 쪽을 먼저 내면
-        /// 부모가 자식을 다 낳을 때까지 아무도 못 굴려
-        /// 열린 목록이 한 노드의 후보 수만큼 부푼다.
-        /// </summary>
-        sealed class Heap
-        {
-            readonly List<SearchNode> _items = new List<SearchNode>();
-
-            public int Count => _items.Count;
-
-            public SearchNode Peek() => _items[0];
-
-            public void Push(SearchNode node)
-            {
-                _items.Add(node);
-
-                int child = _items.Count - 1;
-                while (child > 0)
-                {
-                    int parent = (child - 1) / 2;
-                    if (!Precedes(_items[child], _items[parent])) break;
-
-                    Swap(child, parent);
-                    child = parent;
-                }
-            }
-
-            public SearchNode Pop()
-            {
-                SearchNode top = _items[0];
-                int last = _items.Count - 1;
-                _items[0] = _items[last];
-                _items.RemoveAt(last);
-
-                int parent = 0;
-                while (true)
-                {
-                    int left = parent * 2 + 1;
-                    if (left >= _items.Count) break;
-
-                    int best = left;
-                    int right = left + 1;
-                    if (right < _items.Count && Precedes(_items[right], _items[left]))
-                        best = right;
-
-                    if (!Precedes(_items[best], _items[parent])) break;
-
-                    Swap(best, parent);
-                    parent = best;
-                }
-
-                return top;
-            }
-
-            /// <summary>
-            /// 순위 두 축만 견준다. 1축은 선 개수(g + h), 2축은 잉크다.
-            /// 더하지 않고 사전식으로 쌓는다 — 개수와 미터는 못 더한다.
-            /// </summary>
-            public static int CompareKeys(SearchNode a, SearchNode b)
-            {
-                int byLines = a.KeyLines.CompareTo(b.KeyLines);
-                return byLines != 0 ? byLines : a.KeyInk.CompareTo(b.KeyInk);
-            }
-
-            static bool Precedes(SearchNode a, SearchNode b)
-            {
-                int byKey = CompareKeys(a, b);
-                if (byKey != 0) return byKey < 0;
-                if (a.Depth != b.Depth) return a.Depth > b.Depth;
-                return a.Seq < b.Seq;
-            }
-
-            void Swap(int a, int b)
-            {
-                SearchNode t = _items[a];
-                _items[a] = _items[b];
-                _items[b] = t;
-            }
         }
     }
 }

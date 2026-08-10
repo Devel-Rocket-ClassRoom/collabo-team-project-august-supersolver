@@ -10,13 +10,11 @@ namespace PPS.Solver.Tests
 {
     /// <summary>
     /// 탐색의 계약.
-    /// D0 기준선(맵 없이 20만 시뮬, 못 품)은 이미 재서 문서에 남았고,
-    /// 다시 재는 데 4분이 들어 맵을 꽂은 쪽만 남긴다.
     /// </summary>
     public class SolverSearchTests
     {
         /// <summary>
-        /// 기저가 이미 Clear 인 판은 첫 팝에서 끝나야 한다 (D10).
+        /// 기저가 이미 Clear 인 판은 첫 판에서 끝나야 한다 (D10).
         /// 한 판이라도 더 굴렸다면 "이미 이긴 판" 을 못 알아본 것이다.
         /// </summary>
         [UnityTest]
@@ -42,43 +40,21 @@ namespace PPS.Solver.Tests
         }
 
         /// <summary>
-        /// 맵을 h 자리에 꽂고 같은 판을 푼다.
-        /// 사흘 걸려 만든 맵이 값을 하는지가 여기서 처음 수치로 나온다 —
-        /// 비교 대상은 맵 없이 잰 D0 기준선이다.
+        /// 깊이 1 을 끝까지 훑으면 Exhausted 로 끝나야 한다.
+        /// 전수 순회의 계약이 이것뿐이다 — 예산에 걸려 끝나면
+        /// 그 실행은 레벨에 대해 아무것도 말하지 못한다.
         /// </summary>
-        /// 맵 빌드 8.5분 + 탐색. 넉넉히 준다.
-        [UnityTest, Timeout(3600000)]
-        public IEnumerator 맵을_꽂으면_기준선보다_적은_시뮬로_푼다()
+        [UnityTest, Timeout(1800000)]
+        public IEnumerator 깊이_1_은_예산_안에_전수_순회를_끝낸다()
         {
-            var level = TestLevels.GapPuzzle();
-
-            var builder = new CellGraphBuilder(level, seed: 0, maxDepth: 3);
-            yield return builder.Build();
-
-            HeuristicMap map = HeuristicMap.Build(builder.Edges, builder.Wins);
-            Debug.Log($"[맵] 셀 {builder.States.Count:N0} · 값을 아는 셀 {map.Count:N0} · " +
-                      $"벌점 {map.Penalty} · 빌드 {builder.Sims:N0} 시뮬 " +
-                      $"{builder.Elapsed.TotalSeconds:F0}초");
-
-            // 시간이 아니라 시뮬 횟수를 맞춰야 기준선과 견줄 수 있다.
-            // 앞선 실행은 시간 예산이 먼저 걸려 9% 만 굴리고 끝났다.
-            var search = new SolverSearch(level, map, timeBudget: 3000d);
+            var search = new SolverSearch(TestLevels.GapPuzzle(), maxDepth: 1);
             yield return search.Run();
 
             SolverReport report = search.Report;
+            Debug.Log($"[깊이 1 전수] {report}");
 
-            // 기준선과 나란히 찍는다. 따로 찍으면 나중에 짝을 못 맞춘다.
-            Debug.Log($"[맵 있음] {report}\n" +
-                      $"[D0 기준선] SimBudget · 시뮬 200,000 · 노드 199,769 · " +
-                      $"최대 깊이 2 · 최소 목표 거리 1.149 · 226.5초 (시뮬당 1.13ms)");
-
-            Assert.AreEqual(SolverStop.Solved, report.Stop,
-                $"맵을 꽂고도 예산 {SolverConfig.SearchSimBudget:N0} 안에 못 찾았다");
-
-            // 재실행 검증(D8)을 여기 붙인다. 따로 두면 맵을 두 번 지어야 한다.
-            SimResult replay = SimRunner.Run(level, report.Solution, 0);
-            Assert.AreEqual(SimOutcome.Clear, replay.Outcome,
-                $"탐색은 풀었다는데 재실행이 {replay.Outcome} 다");
+            Assert.AreEqual(SolverStop.Exhausted, report.Stop,
+                "예산이 먼저 걸리면 실패를 판정으로 쓸 수 없다");
         }
 
         /// <summary>
@@ -161,7 +137,6 @@ namespace PPS.Solver.Tests
             SolverReport report = search.Report;
 
             Assert.AreEqual(40, report.Sims, "예산만큼 시도했어야 한다");
-            Assert.Greater(report.Nodes, 0, "굴려 본 배치가 없다");
             Assert.IsTrue(float.IsFinite(report.MinGoalDist),
                 "한 판이라도 굴렸으면 목표까지의 최소 거리가 있다");
             Assert.Greater(report.Elapsed.TotalSeconds, 0d);

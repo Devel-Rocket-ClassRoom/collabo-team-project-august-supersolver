@@ -19,7 +19,7 @@ namespace PPS.Solver
         /// </summary>
         public Solution Solution;
 
-        /// 실제로 돌린 시뮬 횟수. 맵의 값어치를 재는 기준선이다.
+        /// 실제로 돌린 시뮬 횟수. 곧 굴려 본 배치의 수다.
         public int Sims;
 
         /// <summary>
@@ -37,12 +37,6 @@ namespace PPS.Solver
         /// 시뮬 전에 걸러진 후보 수. 잉크·영역에 걸린 것들이다.
         public int Rejected;
 
-        /// 팝해서 굴린 노드 수. 캐시가 먹으면 Sims 와 같아진다.
-        public int Nodes;
-
-        /// 열린 목록의 최고점. 노드 메모리가 여기에 비례한다.
-        public int OpenPeak;
-
         /// 굴려 본 것 중 가장 깊은 배치의 선 개수.
         public int Deepest;
 
@@ -59,8 +53,7 @@ namespace PPS.Solver
 
         public override string ToString()
             => $"{Stop}{(Solution == null ? "" : $" · 선 {Solution.Strokes.Count}")} · " +
-               $"시뮬 {Sims:N0} (거부 {Rejected:N0}) · 노드 {Nodes:N0} · " +
-               $"열린목록 최고 {OpenPeak:N0} · 최대 깊이 {Deepest} · " +
+               $"시뮬 {Sims:N0} (거부 {Rejected:N0}) · 최대 깊이 {Deepest} · " +
                $"최소 목표 거리 {MinGoalDist:F3} · {Elapsed.TotalSeconds:F1}초\n" +
                $"  시뮬당 {(Sims == 0 ? 0 : Elapsed.TotalMilliseconds / Sims):F2}ms · " +
                $"평균 {(Sims == 0 ? 0 : (double)Steps / Sims):F0} 스텝 · " +
