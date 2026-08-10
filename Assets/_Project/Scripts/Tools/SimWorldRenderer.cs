@@ -24,7 +24,12 @@ namespace PPS.Tools
                 MakeSolution = makeSolution;
             }
         }
+        // SimWorld에서 허용하는 전체 최대 스텝 수.
         const int MaxSteps = SimWorld.DefaultMaxSteps;
+
+        // 한 프레임에서 실행할 최대 물리 스텝 수
+        // 목표값이 멀리 있어도 모든 계산이 한 프레임에 몰리지 않게 한다.
+        const int MaxStepsPerFrame = 8;
         
         [SerializeField] bool _autoFitCamera = true;
         [SerializeField, Range(0, MaxSteps)] int _targetStep;
@@ -53,8 +58,46 @@ namespace PPS.Tools
         // Update is called once per frame
         void Update()
         {
+            //아직 물리 월드가 만들어지지 않았다면 실행하지 않는다.
+            if(_world == null)
+                return;
+            // ------------------------과거 스텝 재생성 -------------------
+            // 음수는 0으로, MaxSteps보다 큰 값은 MaxSteps로 변경한다.
+            // 목표 스템을 0부터 MaxSteps 사이의 값으로 제한한다.
+            _targetStep = Mathf.Clamp(_targetStep, 0, MaxSteps);
 
+            // 현재보다 과거 스텝을 선택하면 월드를 처음부터 다시 만든다.
+            if(_targetStep < _world.CurrentStep)
+            {
+                Rebuild();
+            }
+            
+            // --------- 목표 스텝까지 전진 생성 ---------------------------
+            //새로 만든 월드를 포함하여 Terminal 상태인지 확인한다.
+            // 과거 이동 검사보다 먼저 배치하면 Terminal 상태에서 돌아갈 수 없다.
+            // Clear, Fail 또는 Stalled가 확정된 월드는 더 진행하지 않는다.
+            if (_world.IsTerminal)
+                return;
+
+            // 이번 프레임에 실행한 수다.
+            int stepped = 0;
+
+            // 새로 만든 월드라면 0부터 목표 스텝까지 다시 전진한다.
+            // 목표 스텝까지 진행하되 한 프레임의 실행 제한을 지킨다.
+            while (_world.CurrentStep < _targetStep && stepped < MaxStepsPerFrame)
+            {
+                // 물리 월드를 한 스텝 진행한다.
+                _world.Step();
+
+                // 이번 프레임에서 실행한 횟수를 증가시킨다.
+                stepped++;
+
+                //이번 스텝에서 결과가 확정되었다면 즉시 중단한다.
+                if (_world.IsTerminal)
+                    break;
+            }
         }
+
         private void OnDestroy()
         {
             _world?.Dispose();
