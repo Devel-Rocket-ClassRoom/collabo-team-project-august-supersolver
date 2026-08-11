@@ -22,9 +22,23 @@ namespace PPS.MapEditor
         /// 새로 놓는 지형 도형의 크기.
         const float ShapeSize = 1f;
 
+        /// <summary>
+        /// 한 번에 도는 각도(도).
+        /// 자유 회전은 손가락으로 맞추기 어렵고,
+        /// 45도는 완만한 경사를 못 만든다.
+        /// </summary>
+        const float RotateStep = 15f;
+
+        /// <summary>
+        /// 붙여넣은 것을 원본에서 밀어 놓는 거리.
+        /// 겹쳐 놓으면 어느 쪽이 새것인지 알 수 없다.
+        /// </summary>
+        static readonly Vector2 PasteOffset = new Vector2(0.6f, -0.6f);
+
         [SerializeField] MapEditSession _session;
         [SerializeField] CanvasCameraFitter _fitter;
         [SerializeField] ToolPalette _palette;
+        [SerializeField] MapEditHistory _history;
 
         [SerializeField] int _starTab = 3;
         [SerializeField] int _terrainTab = 1;
@@ -48,6 +62,22 @@ namespace PPS.MapEditor
 
         /// 드래그 중 직전 손가락 위치. 이동량을 여기서 낸다.
         Vector2 _dragFrom;
+
+        /// <summary>
+        /// 다음에 놓을 도형의 각도(도).
+        /// 놓을 때마다 다시 맞추지 않도록 남겨둔다.
+        /// </summary>
+        float _placeAngle;
+
+        /// 복사해 둔 것의 종류. None 이면 비어 있다.
+        HandleKind _clipKind = HandleKind.None;
+
+        Vector2 _clipStar;
+        StaticSegment _clipSegment;
+
+        /// 이번 드래그의 스냅샷을 이미 남겼는가.
+        /// 끄는 내내 남기면 되돌리기가 한 픽셀씩 간다.
+        bool _dragRecorded;
 
         void Awake()
         {
@@ -79,6 +109,104 @@ namespace PPS.MapEditor
         }
 
         /// <summary>
+        /// 상단바 복사 버튼이 부른다.
+        /// 시작·목표는 하나씩만 존재해 복사가 성립하지 않는다.
+        /// </summary>
+        public void CopySelected()
+        {
+            var level = _session.Current.Level;
+
+            if (_selected.Kind == HandleKind.Star)
+            {
+                _clipStar = level.Stars[_selected.Index];
+                _clipKind = HandleKind.Star;
+            }
+            else if (_selected.Kind == HandleKind.Terrain)
+            {
+                _clipSegment = level.Terrain[_selected.Index];
+                _clipKind = HandleKind.Terrain;
+            }
+            else
+            {
+                return;
+            }
+
+            Debug.Log($"[맵 에디터] 복사: {_clipKind}");
+        }
+
+        /// <summary>
+        /// 상단바 붙여넣기 버튼이 부른다.
+        /// 붙인 것을 고른 채로 둬서 바로 옮길 수 있게 한다.
+        /// </summary>
+        public void PasteClipboard()
+        {
+            var level = _session.Current.Level;
+
+            if (_clipKind == HandleKind.None) return;
+
+            if (_clipKind == HandleKind.Star)
+            {
+                if (level.Stars.Count >= MaxStars)
+                {
+                    Debug.Log($"[맵 에디터] 별은 {MaxStars} 개까지다.");
+                    return;
+                }
+
+                Record();
+
+                Vector2 shift = ClampDelta(PasteOffset, _clipStar, _clipStar);
+                level.Stars.Add(_clipStar + shift);
+                _selected = new Selection(HandleKind.Star, level.Stars.Count - 1);
+            }
+            else if (_clipKind == HandleKind.Terrain)
+            {
+                Record();
+
+                Vector2 shift = ClampDelta(PasteOffset, _clipSegment.A, _clipSegment.B);
+                level.Terrain.Add(
+                    new StaticSegment(_clipSegment.A + shift, _clipSegment.B + shift));
+                _selected = new Selection(HandleKind.Terrain, level.Terrain.Count - 1);
+            }
+        }
+
+        /// <summary>
+        /// 상단바 회전 버튼이 부른다.
+        /// 고른 지형이 있으면 그것을, 없으면 다음에 놓을
+        /// 각도를 돌린다. 시작·목표·별은 원이라 안 돈다.
+        /// </summary>
+        public void RotateSelected()
+        {
+            if (_selected.Kind != HandleKind.Terrain)
+            {
+                _placeAngle += RotateStep;
+                Debug.Log($"[맵 에디터] 놓을 각도: {_placeAngle % 360f:F0}도");
+                return;
+            }
+
+            Record();
+
+            var terrain = _session.Current.Level.Terrain;
+            var segment = terrain[_selected.Index];
+
+            Vector2 center = (segment.A + segment.B) * 0.5f;
+            Vector2 a = Rotate(segment.A - center, RotateStep) + center;
+            Vector2 b = Rotate(segment.B - center, RotateStep) + center;
+
+            // 돌다가 밖으로 나가면 안으로 밀어 넣는다.
+            Vector2 shift = ClampDelta(Vector2.zero, a, b);
+            terrain[_selected.Index] = new StaticSegment(a + shift, b + shift);
+        }
+
+        static Vector2 Rotate(Vector2 v, float degrees)
+        {
+            float rad = degrees * Mathf.Deg2Rad;
+            float cos = Mathf.Cos(rad);
+            float sin = Mathf.Sin(rad);
+
+            return new Vector2(v.x * cos - v.y * sin, v.x * sin + v.y * cos);
+        }
+
+        /// <summary>
         /// 상단바 삭제 버튼이 부른다.
         /// 시작·목표는 레벨의 필수 요소라 지우지 않는다.
         /// </summary>
@@ -86,9 +214,12 @@ namespace PPS.MapEditor
         {
             var level = _session.Current.Level;
 
+            if (_selected.Kind != HandleKind.Star && _selected.Kind != HandleKind.Terrain) return;
+
+            Record();
+
             if (_selected.Kind == HandleKind.Star) level.Stars.RemoveAt(_selected.Index);
-            else if (_selected.Kind == HandleKind.Terrain) level.Terrain.RemoveAt(_selected.Index);
-            else return;
+            else level.Terrain.RemoveAt(_selected.Index);
 
             _selected = Selection.None;
             _dragging = false;
@@ -108,6 +239,7 @@ namespace PPS.MapEditor
 
                 _dragging = _selected.Kind != HandleKind.None;
                 _dragFrom = world;
+                _dragRecorded = false;
             }
 
             if (pointer.press.wasReleasedThisFrame) _dragging = false;
@@ -120,11 +252,22 @@ namespace PPS.MapEditor
         {
             if (_palette == null) return Selection.None;
 
-            if (_palette.SelectedTab == _starTab) return AddStar(world);
-            if (_palette.SelectedTab == _terrainTab) return AddTerrain(world, _palette.SelectedItem);
+            if (_palette.SelectedTab == _starTab)
+            {
+                Record();
+                return AddStar(world);
+            }
+
+            if (_palette.SelectedTab == _terrainTab)
+            {
+                Record();
+                return AddTerrain(world, _palette.SelectedItem);
+            }
 
             return Selection.None;
         }
+
+        void Record() => _history?.BeginEdit();
 
         /// <summary>
         /// 손가락에 제일 가까운 것 하나만 고른다.
@@ -193,6 +336,11 @@ namespace PPS.MapEditor
             Vector2[] points = ShapePoints(center, shape);
             if (points == null) return Selection.None;
 
+            // 놓을 때 각도를 먹인다. 놓고 나면 도형이 변으로
+            // 쪼개져 통째로 돌릴 수 없다.
+            for (int i = 0; i < points.Length; i++)
+                points[i] = Rotate(points[i] - center, _placeAngle) + center;
+
             var terrain = _session.Current.Level.Terrain;
             int first = terrain.Count;
 
@@ -239,6 +387,12 @@ namespace PPS.MapEditor
         {
             Vector2 delta = world - _dragFrom;
             if (delta == Vector2.zero) return;
+
+            if (!_dragRecorded)
+            {
+                _dragRecorded = true;
+                Record();
+            }
 
             var level = _session.Current.Level;
 

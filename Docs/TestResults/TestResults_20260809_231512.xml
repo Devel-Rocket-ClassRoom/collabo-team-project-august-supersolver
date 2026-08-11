@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="utf-8"?>
+<test-run id="2" testcasecount="1" result="Failed(Child)" total="1" passed="0" failed="1" inconclusive="0" skipped="0" asserts="0" engine-version="3.5.0.0" clr-version="4.0.30319.42000" start-time="2026-08-09 13:47:26Z" end-time="2026-08-09 14:13:32Z" duration="1566.3471434">
+  <test-suite type="TestSuite" id="1164" name="PhysicsPuzzleSolver" fullname="PhysicsPuzzleSolver" runstate="Runnable" testcasecount="123" result="Failed" site="Child" start-time="2026-08-09 13:47:26Z" end-time="2026-08-09 14:13:32Z" duration="1566.347143" total="1" passed="0" failed="1" inconclusive="0" skipped="0" asserts="0">
+    <properties>
+      <property name="platform" value="PlayMode" />
+    </properties>
+    <failure>
+      <message><![CDATA[One or more child tests had errors]]></message>
+    </failure>
+    <test-suite type="Assembly" id="1157" name="PPS.Solver.PlayTests.dll" fullname="D:/GitRepos/TmpPhysicsPuzzleSolver/Library/ScriptAssemblies/PPS.Solver.PlayTests.dll" runstate="Runnable" testcasecount="49" result="Failed" site="Child" start-time="2026-08-09 13:47:26Z" end-time="2026-08-09 14:13:32Z" duration="1566.326254" total="1" passed="0" failed="1" inconclusive="0" skipped="0" asserts="0">
+      <properties>
+        <property name="_PID" value="14988" />
+        <property name="_APPDOMAIN" value="Unity Child Domain" />
+        <property name="platform" value="PlayMode" />
+        <property name="EditorOnly" value="False" />
+      </properties>
+      <failure>
+        <message><![CDATA[One or more child tests had errors]]></message>
+      </failure>
+      <test-suite type="TestSuite" id="1158" name="PPS" fullname="PPS" runstate="Runnable" testcasecount="49" result="Failed" site="Child" start-time="2026-08-09 13:47:26Z" end-time="2026-08-09 14:13:32Z" duration="1566.319345" total="1" passed="0" failed="1" inconclusive="0" skipped="0" asserts="0">
+        <properties />
+        <failure>
+          <message><![CDATA[One or more child tests had errors]]></message>
+        </failure>
+        <test-suite type="TestSuite" id="1159" name="Solver" fullname="PPS.Solver" runstate="Runnable" testcasecount="49" result="Failed" site="Child" start-time="2026-08-09 13:47:26Z" end-time="2026-08-09 14:13:32Z" duration="1566.302665" total="1" passed="0" failed="1" inconclusive="0" skipped="0" asserts="0">
+          <properties />
+          <failure>
+            <message><![CDATA[One or more child tests had errors]]></message>
+          </failure>
+          <test-suite type="TestSuite" id="1160" name="Tests" fullname="PPS.Solver.Tests" runstate="Runnable" testcasecount="49" result="Failed" site="Child" start-time="2026-08-09 13:47:26Z" end-time="2026-08-09 14:13:32Z" duration="1566.280257" total="1" passed="0" failed="1" inconclusive="0" skipped="0" asserts="0">
+            <properties />
+            <failure>
+              <message><![CDATA[One or more child tests had errors]]></message>
+            </failure>
+            <test-suite type="TestFixture" id="1132" name="SolverSearchTests" fullname="PPS.Solver.Tests.SolverSearchTests" classname="PPS.Solver.Tests.SolverSearchTests" runstate="Runnable" testcasecount="8" result="Failed" site="Child" start-time="2026-08-09 13:47:26Z" end-time="2026-08-09 14:13:32Z" duration="1566.267887" total="1" passed="0" failed="1" inconclusive="0" skipped="0" asserts="0">
+              <properties />
+              <failure>
+                <message><![CDATA[One or more child tests had errors]]></message>
+              </failure>
+              <test-case id="1136" name="맵을_꽂으면_기준선보다_적은_시뮬로_푼다" fullname="PPS.Solver.Tests.SolverSearchTests.맵을_꽂으면_기준선보다_적은_시뮬로_푼다" methodname="맵을_꽂으면_기준선보다_적은_시뮬로_푼다" classname="PPS.Solver.Tests.SolverSearchTests" runstate="Runnable" seed="1878003730" result="Failed" start-time="2026-08-09 13:47:26Z" end-time="2026-08-09 14:13:32Z" duration="1566.249103" asserts="0">
+                <properties>
+                  <property name="_JOINTYPE" value="UnityCombinatorial" />
+                  <property name="Timeout" value="3600000" />
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+                <failure>
+                  <message><![CDATA[  맵을 꽂고도 예산 200,000 안에 못 찾았다
+  Expected: Solved
+  But was:  TimeBudget
+]]></message>
+                  <stack-trace><![CDATA[at PPS.Solver.Tests.SolverSearchTests+<맵을_꽂으면_기준선보다_적은_시뮬로_푼다>d__4.MoveNext () [0x00165] in D:\GitRepos\TmpPhysicsPuzzleSolver\Assets\_Project\Tests\PlayMode\Solver\SolverSearchTests.cs:92
+at UnityEngine.TestTools.TestEnumerator+<Execute>d__7.MoveNext () [0x0003a] in .\Library\PackageCache\com.unity.test-framework@aebcb98460c6\UnityEngine.TestRunner\NUnitExtensions\Attributes\TestEnumerator.cs:44
+]]></stack-trace>
+                </failure>
+                <output><![CDATA[[맵] 셀 5,876 · 값을 아는 셀 1,844 · 벌점 14 · 빌드 1,465,980 시뮬 554초
+[맵 있음] TimeBudget · 시뮬 17,992 (거부 82) · 노드 17,847 · 열린목록 최고 35,779 · 최대 깊이 2 · 최소 목표 거리 1.231 · 600.2초
+[D0 기준선] SimBudget · 시뮬 200,000 · 노드 199,769 · 최대 깊이 2 · 최소 목표 거리 1.149 · 226.5초
+Saving results to: C:/Users/User/AppData/LocalLow/DefaultCompany/PhysicsPuzzleSolver\TestResults.xml
+]]></output>
+              </test-case>
+            </test-suite>
+          </test-suite>
+        </test-suite>
+      </test-suite>
+    </test-suite>
+  </test-suite>
+</test-run>
