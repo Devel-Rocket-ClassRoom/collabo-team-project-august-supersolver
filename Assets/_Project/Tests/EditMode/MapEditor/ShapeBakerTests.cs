@@ -256,6 +256,28 @@ namespace PPS.MapEditor.Tests
         }
 
         [Test]
+        public void 최소_간격보다_짧은_변에도_버텍스를_넣을_수_있다()
+        {
+            var shape = new ShapeData
+            {
+                Kind = ShapeKind.Circle,
+                Points = new List<Vector2> { Vector2.zero },
+                Radius = 1f,
+            };
+
+            shape.ConvertCircleToPolygon(ShapeBaker.CircleSegments);
+
+            // 기본 크기 원의 변은 0.26 정도라 손가락 기준(0.25)의
+            // 두 배에 못 미친다. 절대 기준만 쓰면 영영 못 넣는다.
+            float edge = Vector2.Distance(shape.Points[0], shape.Points[1]);
+            Assert.Less(edge, 0.5f, "이 테스트는 변이 짧다는 전제 위에 있다.");
+
+            Vector2 middle = (shape.Points[0] + shape.Points[1]) * 0.5f;
+
+            Assert.IsTrue(shape.TryFindVertexInsertion(middle, 0.5f, 0.25f, out _, out _));
+        }
+
+        [Test]
         public void 폴리곤으로_바꾼_원에도_버텍스를_넣을_수_있다()
         {
             var shape = new ShapeData

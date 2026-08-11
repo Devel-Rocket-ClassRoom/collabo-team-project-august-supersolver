@@ -155,8 +155,14 @@ namespace PPS.MapEditor
             int before = insertAt - 1;
             int after = insertAt % Points.Count;
 
-            return Vector2.Distance(position, Points[before]) >= minGap
-                && Vector2.Distance(position, Points[after]) >= minGap;
+            // 간격 기준은 손가락 정밀도지만, 그보다 짧은 변에서는
+            // 어디를 찍어도 막혀 삽입 자체가 불가능해진다.
+            // 짧은 변에서는 변 길이에 비례한 기준으로 내린다.
+            float gap = Mathf.Min(
+                minGap, Vector2.Distance(Points[before], Points[after]) * 0.25f);
+
+            return Vector2.Distance(position, Points[before]) >= gap
+                && Vector2.Distance(position, Points[after]) >= gap;
         }
 
         static Vector2 ClosestPoint(Vector2 point, Vector2 a, Vector2 b)
