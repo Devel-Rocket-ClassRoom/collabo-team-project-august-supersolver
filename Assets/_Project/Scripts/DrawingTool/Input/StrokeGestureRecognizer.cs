@@ -20,6 +20,11 @@ namespace PPS.DrawingTool
 
         int _pointerId = NoPointer;
         bool _ownedByCanvas;
+
+        /// 획을 쌓는 중인가. 핀 도구는 캔버스를 쥐고도
+        /// 빌더를 안 열어 이 값이 false 다.
+        bool _buildingStroke;
+
         DrawContext _context;
         Vector2 _downWorld;
         float _maxTravel;
@@ -32,7 +37,13 @@ namespace PPS.DrawingTool
         /// 확정된 획. 탭·롤백·Canceled 에서는 오지 않는다.
         public event Action<Stroke> StrokeConfirmed;
 
-        public bool IsDrawing => _pointerId != NoPointer && _ownedByCanvas;
+        /// <summary>
+        /// 회전축 탭. 도구·앵커·히트 반경(월드)을 준다.
+        /// 어느 획에 걸리는지는 Solution 을 아는 쪽이 정한다.
+        /// </summary>
+        public event Action<DrawTool, Vector2, float> PivotRequested;
+
+        public bool IsDrawing => _buildingStroke;
 
         /// 그리는 중인 점. IsDrawing 이 false 면 직전 획의
         /// 잔재라 읽으면 안 된다.
@@ -66,6 +77,10 @@ namespace PPS.DrawingTool
             _downWorld = sample.World;
             _maxTravel = 0f;
 
+            // 핀은 잉크도 프리뷰도 쓰지 않는다.
+            if (context.Tool.IsPivot()) return;
+
+            _buildingStroke = true;
             _builder.Begin(context.RemainingInk);
             AddPoint(sample.World);
         }
@@ -85,7 +100,9 @@ namespace PPS.DrawingTool
                 // 뗀 자리도 실제 샘플이다. 버리면 Down·Up 만
                 // 오는 빠른 획이 이동 0 으로 잡혀 탭이 된다.
                 Track(sample.World);
-                Confirm();
+
+                if (_buildingStroke) Confirm();
+                else ConfirmPivot();
             }
 
             Release();
@@ -108,14 +125,28 @@ namespace PPS.DrawingTool
             // 물리에서 터널링·지터를 일으킨다.
             if (_maxTravel < _context.ToWorld(ScreenConstants.TapThresholdDp)) return;
 
-            Stroke stroke = _processor.Process(_context.Tool, _builder.Points);
+            Stroke stroke = _processor.Process(_context.Tool.ToToolType(), _builder.Points);
             if (stroke.IsValid) StrokeConfirmed?.Invoke(stroke);
+        }
+
+        /// <summary>
+        /// 핀은 탭만 받는다. 끌었으면 아무것도 만들지
+        /// 않는다 — 획을 그으려다 도구를 잘못 고른 손이다.
+        /// 히트 반경은 탭 임계값과 같은 값을 쓴다.
+        /// </summary>
+        void ConfirmPivot()
+        {
+            float radius = _context.ToWorld(ScreenConstants.TapThresholdDp);
+            if (_maxTravel >= radius) return;
+
+            PivotRequested?.Invoke(_context.Tool, Adjust(_downWorld), radius);
         }
 
         void Release()
         {
             _pointerId = NoPointer;
             _ownedByCanvas = false;
+            _buildingStroke = false;
         }
 
         /// <summary>
@@ -125,24 +156,26 @@ namespace PPS.DrawingTool
         void Track(Vector2 world)
         {
             _maxTravel = Mathf.Max(_maxTravel, Vector2.Distance(_downWorld, world));
-            AddPoint(world);
+            if (_buildingStroke) AddPoint(world);
         }
 
+        void AddPoint(Vector2 world) => _builder.AddPoint(Adjust(world));
+
         /// <summary>
-        /// 손가락이 영역을 벗어나도 점은 경계에 붙여 찍는다.
-        /// 드래그는 범위를 벗어나면 클램프하는 게 관행이고,
-        /// 끊으면 복귀할 때 안 그린 선분이 튀어나온다.
+        /// offset 을 얹고 영역 안에 가둔다. 손가락이 영역을
+        /// 벗어나도 점은 경계에 붙는다 — 버리면 복귀할 때
+        /// 그린 적 없는 선분이 튀어나온다.
         /// </summary>
-        void AddPoint(Vector2 world)
+        Vector2 Adjust(Vector2 world)
         {
             Rect area = _context.PlayArea;
 
             // offset 은 화면 위쪽 고정이라 Y 에만 더한다.
             float y = world.y + _context.ToWorld(_context.OffsetDp);
 
-            _builder.AddPoint(new Vector2(
+            return new Vector2(
                 Mathf.Clamp(world.x, area.xMin, area.xMax),
-                Mathf.Clamp(y, area.yMin, area.yMax)));
+                Mathf.Clamp(y, area.yMin, area.yMax));
         }
     }
 }

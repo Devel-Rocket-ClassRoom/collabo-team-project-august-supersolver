@@ -1,4 +1,3 @@
-using PPS.Core;
 using UnityEngine;
 
 namespace PPS.DrawingTool
@@ -10,7 +9,7 @@ namespace PPS.DrawingTool
     /// </summary>
     public readonly struct DrawContext
     {
-        public readonly ToolType Tool;
+        public readonly DrawTool Tool;
 
         /// 획 시작 시점의 잔량.
         /// 진실은 확정 후의 재계산이다.
@@ -29,7 +28,7 @@ namespace PPS.DrawingTool
         public readonly Rect PlayArea;
 
         public DrawContext(
-            ToolType tool,
+            DrawTool tool,
             float remainingInk,
             float pixelsPerUnit,
             float dpi,
