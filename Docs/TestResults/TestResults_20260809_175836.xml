@@ -1,0 +1,262 @@
+<?xml version="1.0" encoding="utf-8"?>
+<test-run id="2" testcasecount="3" result="Passed" total="3" passed="3" failed="0" inconclusive="0" skipped="0" asserts="0" engine-version="3.5.0.0" clr-version="4.0.30319.42000" start-time="2026-08-09 08:34:33Z" end-time="2026-08-09 08:58:07Z" duration="1414.528644">
+  <test-suite type="TestSuite" id="1153" name="PhysicsPuzzleSolver" fullname="PhysicsPuzzleSolver" runstate="Runnable" testcasecount="114" result="Passed" start-time="2026-08-09 08:34:33Z" end-time="2026-08-09 08:58:07Z" duration="1414.528644" total="3" passed="3" failed="0" inconclusive="0" skipped="0" asserts="0">
+    <properties>
+      <property name="platform" value="PlayMode" />
+    </properties>
+    <test-suite type="Assembly" id="1146" name="PPS.Solver.PlayTests.dll" fullname="D:/GitRepos/TmpPhysicsPuzzleSolver/Library/ScriptAssemblies/PPS.Solver.PlayTests.dll" runstate="Runnable" testcasecount="40" result="Passed" start-time="2026-08-09 08:34:33Z" end-time="2026-08-09 08:58:07Z" duration="1414.510748" total="3" passed="3" failed="0" inconclusive="0" skipped="0" asserts="0">
+      <properties>
+        <property name="_PID" value="14988" />
+        <property name="_APPDOMAIN" value="Unity Child Domain" />
+        <property name="platform" value="PlayMode" />
+        <property name="EditorOnly" value="False" />
+      </properties>
+      <test-suite type="TestSuite" id="1147" name="PPS" fullname="PPS" runstate="Runnable" testcasecount="40" result="Passed" start-time="2026-08-09 08:34:33Z" end-time="2026-08-09 08:58:07Z" duration="1414.502477" total="3" passed="3" failed="0" inconclusive="0" skipped="0" asserts="0">
+        <properties />
+        <test-suite type="TestSuite" id="1148" name="Solver" fullname="PPS.Solver" runstate="Runnable" testcasecount="40" result="Passed" start-time="2026-08-09 08:34:33Z" end-time="2026-08-09 08:58:07Z" duration="1414.482358" total="3" passed="3" failed="0" inconclusive="0" skipped="0" asserts="0">
+          <properties />
+          <test-suite type="TestSuite" id="1149" name="Tests" fullname="PPS.Solver.Tests" runstate="Runnable" testcasecount="40" result="Passed" start-time="2026-08-09 08:34:33Z" end-time="2026-08-09 08:58:07Z" duration="1414.468590" total="3" passed="3" failed="0" inconclusive="0" skipped="0" asserts="0">
+            <properties />
+            <test-suite type="TestFixture" id="1126" name="ReachableClosureTests" fullname="PPS.Solver.Tests.ReachableClosureTests" classname="PPS.Solver.Tests.ReachableClosureTests" runstate="Runnable" testcasecount="3" result="Passed" start-time="2026-08-09 08:34:33Z" end-time="2026-08-09 08:58:07Z" duration="1414.449905" total="3" passed="3" failed="0" inconclusive="0" skipped="0" asserts="0">
+              <properties />
+              <test-case id="1127" name="L001_비탈의_도달_가능_셀_곡선" fullname="PPS.Solver.Tests.ReachableClosureTests.L001_비탈의_도달_가능_셀_곡선" methodname="L001_비탈의_도달_가능_셀_곡선" classname="PPS.Solver.Tests.ReachableClosureTests" runstate="Runnable" seed="286956447" result="Passed" start-time="2026-08-09 08:34:33Z" end-time="2026-08-09 08:34:33Z" duration="0.096027" asserts="0">
+                <properties>
+                  <property name="_JOINTYPE" value="UnityCombinatorial" />
+                  <property name="Timeout" value="3600000" />
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+                <output><![CDATA[[격자] 전체 셀 17,056 (위치 416 × 속도 41)
+[설정] 후보 560 개 (방향 5 · 크기 4) · 굴림 600 스텝 · 시뮬 상한 3,000,000
+깊이 0: 셀      15 (무배치 궤적) 새 셀 15
+깊이 1: 셀      24 (0.14 %) 새 셀       9 · 누적 시뮬        16 (월드        16) · 간선      103 ·    0.0초 (월드당 0.96ms · 씬 최고 16)
+  [이 깊이] 프론티어 15 · 가지침 100 % · 시뮬 15 (월드 15) · 거부 0 % · 헛방 0 %
+  [종료] 클리어 100 % · 실패 0 % · 잠듦 0 % · 정체 0 % · 상한 0 %
+  [무배치] 15 판 · 클리어 100 % ← 이 비율만큼 후보를 건너뛴다
+  방향   월드      헛방     새 셀
+    -90°        0        -         0
+    -45°        0        -         0
+      0°        0        -         0
+     45°        0        -         0
+     90°        0        -         0
+  Shape         월드      헛방     새 셀
+  Line              0        -         0
+  Bowl              0        -         0
+  Triangle          0        -         0
+
+깊이 2: 셀      27 (0.16 %) 새 셀       3 · 누적 시뮬        25 (월드        25) · 간선      129 ·    0.0초 (월드당 0.74ms · 씬 최고 16)
+  [이 깊이] 프론티어 9 · 가지침 100 % · 시뮬 9 (월드 9) · 거부 0 % · 헛방 0 %
+  [종료] 클리어 100 % · 실패 0 % · 잠듦 0 % · 정체 0 % · 상한 0 %
+  [무배치] 9 판 · 클리어 100 % ← 이 비율만큼 후보를 건너뛴다
+  방향   월드      헛방     새 셀
+    -90°        0        -         0
+    -45°        0        -         0
+      0°        0        -         0
+     45°        0        -         0
+     90°        0        -         0
+  Shape         월드      헛방     새 셀
+  Line              0        -         0
+  Bowl              0        -         0
+  Triangle          0        -         0
+
+깊이 3: 셀      29 (0.17 %) 새 셀       2 · 누적 시뮬        28 (월드        28) · 간선      137 ·    0.0초 (월드당 0.70ms · 씬 최고 16)
+  [이 깊이] 프론티어 3 · 가지침 100 % · 시뮬 3 (월드 3) · 거부 0 % · 헛방 0 %
+  [종료] 클리어 100 % · 실패 0 % · 잠듦 0 % · 정체 0 % · 상한 0 %
+  [무배치] 3 판 · 클리어 100 % ← 이 비율만큼 후보를 건너뛴다
+  방향   월드      헛방     새 셀
+    -90°        0        -         0
+    -45°        0        -         0
+      0°        0        -         0
+     45°        0        -         0
+     90°        0        -         0
+  Shape         월드      헛방     새 셀
+  Line              0        -         0
+  Bowl              0        -         0
+  Triangle          0        -         0
+
+깊이 4: 셀      31 (0.18 %) 새 셀       2 · 누적 시뮬        30 (월드        30) · 간선      146 ·    0.0초 (월드당 0.69ms · 씬 최고 16)
+  [이 깊이] 프론티어 2 · 가지침 100 % · 시뮬 2 (월드 2) · 거부 0 % · 헛방 0 %
+  [종료] 클리어 100 % · 실패 0 % · 잠듦 0 % · 정체 0 % · 상한 0 %
+  [무배치] 2 판 · 클리어 100 % ← 이 비율만큼 후보를 건너뛴다
+  방향   월드      헛방     새 셀
+    -90°        0        -         0
+    -45°        0        -         0
+      0°        0        -         0
+     45°        0        -         0
+     90°        0        -         0
+  Shape         월드      헛방     새 셀
+  Line              0        -         0
+  Bowl              0        -         0
+  Triangle          0        -         0
+
+깊이 5: 셀      34 (0.20 %) 새 셀       3 · 누적 시뮬        32 (월드        32) · 간선      151 ·    0.0초 (월드당 0.66ms · 씬 최고 16)
+  [이 깊이] 프론티어 2 · 가지침 100 % · 시뮬 2 (월드 2) · 거부 0 % · 헛방 0 %
+  [종료] 클리어 100 % · 실패 0 % · 잠듦 0 % · 정체 0 % · 상한 0 %
+  [무배치] 2 판 · 클리어 100 % ← 이 비율만큼 후보를 건너뛴다
+  방향   월드      헛방     새 셀
+    -90°        0        -         0
+    -45°        0        -         0
+      0°        0        -         0
+     45°        0        -         0
+     90°        0        -         0
+  Shape         월드      헛방     새 셀
+  Line              0        -         0
+  Bowl              0        -         0
+  Triangle          0        -         0
+
+]]></output>
+              </test-case>
+              <test-case id="1128" name="L002_낙하와_틈의_도달_가능_셀_곡선" fullname="PPS.Solver.Tests.ReachableClosureTests.L002_낙하와_틈의_도달_가능_셀_곡선" methodname="L002_낙하와_틈의_도달_가능_셀_곡선" classname="PPS.Solver.Tests.ReachableClosureTests" runstate="Runnable" seed="1077099011" result="Passed" start-time="2026-08-09 08:34:33Z" end-time="2026-08-09 08:34:33Z" duration="0.210266" asserts="0">
+                <properties>
+                  <property name="_JOINTYPE" value="UnityCombinatorial" />
+                  <property name="Timeout" value="3600000" />
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+                <output><![CDATA[[격자] 전체 셀 46,904 (위치 1144 × 속도 41)
+[설정] 후보 560 개 (방향 5 · 크기 4) · 굴림 600 스텝 · 시뮬 상한 3,000,000
+깊이 0: 셀      21 (무배치 궤적) 새 셀 21
+깊이 1: 셀      73 (0.16 %) 새 셀      52 · 누적 시뮬        22 (월드        22) · 간선      257 ·    0.0초 (월드당 0.71ms · 씬 최고 16)
+  [이 깊이] 프론티어 21 · 가지침 100 % · 시뮬 21 (월드 21) · 거부 0 % · 헛방 0 %
+  [종료] 클리어 100 % · 실패 0 % · 잠듦 0 % · 정체 0 % · 상한 0 %
+  [무배치] 21 판 · 클리어 100 % ← 이 비율만큼 후보를 건너뛴다
+  방향   월드      헛방     새 셀
+    -90°        0        -         0
+    -45°        0        -         0
+      0°        0        -         0
+     45°        0        -         0
+     90°        0        -         0
+  Shape         월드      헛방     새 셀
+  Line              0        -         0
+  Bowl              0        -         0
+  Triangle          0        -         0
+
+깊이 2: 셀     100 (0.21 %) 새 셀      27 · 누적 시뮬        74 (월드        74) · 간선      581 ·    0.0초 (월드당 0.63ms · 씬 최고 16)
+  [이 깊이] 프론티어 52 · 가지침 100 % · 시뮬 52 (월드 52) · 거부 0 % · 헛방 0 %
+  [종료] 클리어 100 % · 실패 0 % · 잠듦 0 % · 정체 0 % · 상한 0 %
+  [무배치] 52 판 · 클리어 100 % ← 이 비율만큼 후보를 건너뛴다
+  방향   월드      헛방     새 셀
+    -90°        0        -         0
+    -45°        0        -         0
+      0°        0        -         0
+     45°        0        -         0
+     90°        0        -         0
+  Shape         월드      헛방     새 셀
+  Line              0        -         0
+  Bowl              0        -         0
+  Triangle          0        -         0
+
+깊이 3: 셀     102 (0.22 %) 새 셀       2 · 누적 시뮬       101 (월드       101) · 간선      752 ·    0.1초 (월드당 0.69ms · 씬 최고 16)
+  [이 깊이] 프론티어 27 · 가지침 100 % · 시뮬 27 (월드 27) · 거부 0 % · 헛방 0 %
+  [종료] 클리어 100 % · 실패 0 % · 잠듦 0 % · 정체 0 % · 상한 0 %
+  [무배치] 27 판 · 클리어 100 % ← 이 비율만큼 후보를 건너뛴다
+  방향   월드      헛방     새 셀
+    -90°        0        -         0
+    -45°        0        -         0
+      0°        0        -         0
+     45°        0        -         0
+     90°        0        -         0
+  Shape         월드      헛방     새 셀
+  Line              0        -         0
+  Bowl              0        -         0
+  Triangle          0        -         0
+
+깊이 4: 셀     102 (0.22 %) 새 셀       0 · 누적 시뮬       103 (월드       103) · 간선      779 ·    0.1초 (월드당 0.70ms · 씬 최고 16)
+  [이 깊이] 프론티어 2 · 가지침 100 % · 시뮬 2 (월드 2) · 거부 0 % · 헛방 0 %
+  [종료] 클리어 100 % · 실패 0 % · 잠듦 0 % · 정체 0 % · 상한 0 %
+  [무배치] 2 판 · 클리어 100 % ← 이 비율만큼 후보를 건너뛴다
+  방향   월드      헛방     새 셀
+    -90°        0        -         0
+    -45°        0        -         0
+      0°        0        -         0
+     45°        0        -         0
+     90°        0        -         0
+  Shape         월드      헛방     새 셀
+  Line              0        -         0
+  Bowl              0        -         0
+  Triangle          0        -         0
+
+  ✔ 더 나올 셀이 없다 — 고정점에 도달했다.
+]]></output>
+              </test-case>
+              <test-case id="1129" name="퍼즐_레벨의_도달_가능_셀_곡선" fullname="PPS.Solver.Tests.ReachableClosureTests.퍼즐_레벨의_도달_가능_셀_곡선" methodname="퍼즐_레벨의_도달_가능_셀_곡선" classname="PPS.Solver.Tests.ReachableClosureTests" runstate="Runnable" seed="1982317008" result="Passed" start-time="2026-08-09 08:34:33Z" end-time="2026-08-09 08:58:07Z" duration="1414.120534" asserts="0">
+                <properties>
+                  <property name="_JOINTYPE" value="UnityCombinatorial" />
+                  <property name="Timeout" value="3600000" />
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+                <output><![CDATA[[격자] 전체 셀 13,243 (위치 323 × 속도 41)
+[설정] 후보 560 개 (방향 5 · 크기 4) · 굴림 600 스텝 · 시뮬 상한 3,000,000
+깊이 0: 셀      16 (무배치 궤적) 새 셀 16
+깊이 1: 셀     775 (5.85 %) 새 셀     759 · 누적 시뮬     8,977 (월드     4,097) · 간선    5,738 ·    5.3초 (월드당 1.28ms · 씬 최고 16)
+  [이 깊이] 프론티어 16 · 가지침 0 % · 시뮬 8,976 (월드 4,096) · 거부 54 % · 헛방 40 %
+  [종료] 클리어 0 % · 실패 77 % · 잠듦 16 % · 정체 7 % · 상한 0 %
+  [무배치] 16 판 · 클리어 0 % ← 이 비율만큼 후보를 건너뛴다
+  방향   월드      헛방     새 셀
+    -90°      852     85 %         3
+    -45°      784     35 %        86
+      0°      812      5 %       382
+     45°      796     13 %       183
+     90°      836     62 %       104
+  Shape         월드      헛방     새 셀
+  Line          2,304     47 %       462
+  Bowl              0        -         0
+  Triangle      1,776     32 %       296
+
+깊이 2: 셀   2,483 (18.75 %) 새 셀   1,708 · 누적 시뮬   434,776 (월드   219,808) · 간선   82,191 ·  279.5초 (월드당 1.27ms · 씬 최고 16)
+  [이 깊이] 프론티어 759 · 가지침 0 % · 시뮬 425,799 (월드 215,711) · 거부 49 % · 헛방 41 %
+  [종료] 클리어 0 % · 실패 77 % · 잠듦 13 % · 정체 10 % · 상한 0 %
+  [무배치] 759 판 · 클리어 0 % ← 이 비율만큼 후보를 건너뛴다
+  방향   월드      헛방     새 셀
+    -90°   46,004     55 %       136
+    -45°   43,424     35 %       535
+      0°   41,692     30 %       659
+     45°   41,560     35 %       258
+     90°   42,272     50 %       119
+  Shape         월드      헛방     새 셀
+  Line        122,048     47 %     1,026
+  Bowl              0        -         0
+  Triangle     92,904     35 %       681
+
+깊이 3: 셀   7,127 (53.82 %) 새 셀   4,644 · 누적 시뮬 1,353,204 (월드   556,292) · 간선  194,489 ·  537.0초 (월드당 0.97ms · 씬 최고 16)
+  [이 깊이] 프론티어 1,708 · 가지침 4 % · 시뮬 918,428 (월드 336,484) · 거부 63 % · 헛방 44 %
+  [종료] 클리어 1 % · 실패 88 % · 잠듦 5 % · 정체 6 % · 상한 0 %
+  [무배치] 1,708 판 · 클리어 4 % ← 이 비율만큼 후보를 건너뛴다
+  방향   월드      헛방     새 셀
+    -90°   73,184     66 %       146
+    -45°   66,036     35 %       762
+      0°   61,688     23 %     1,556
+     45°   63,028     30 %     1,640
+     90°   70,840     62 %       522
+  Shape         월드      헛방     새 셀
+  Line        190,224     50 %     2,859
+  Bowl              0        -         0
+  Triangle    144,552     37 %     1,767
+
+깊이 4: 셀  10,446 (78.88 %) 새 셀   3,319 · 누적 시뮬 3,000,000 (월드   966,261) · 간선  385,096 ·  806.3초 (월드당 0.83ms · 씬 최고 16)
+  [이 깊이] 프론티어 4,644 · 가지침 2 % · 시뮬 1,646,796 (월드 409,969) · 거부 75 % · 헛방 47 %
+  [종료] 클리어 1 % · 실패 94 % · 잠듦 2 % · 정체 3 % · 상한 0 %
+  [무배치] 3,037 판 · 클리어 3 % ← 이 비율만큼 후보를 건너뛴다
+  방향   월드      헛방     새 셀
+    -90°   80,884     66 %       249
+    -45°   77,320     36 %       551
+      0°   77,324     26 %       663
+     45°   82,004     39 %     1,354
+     90°   89,400     67 %       489
+  Shape         월드      헛방     새 셀
+  Line        230,976     53 %     1,863
+  Bowl              0        -         0
+  Triangle    175,956     40 %     1,443
+
+  ⚠ 시뮬 상한 3,000,000 에서 중단. 위 값은 미완성이다.
+Saving results to: C:/Users/User/AppData/LocalLow/DefaultCompany/PhysicsPuzzleSolver\TestResults.xml
+]]></output>
+              </test-case>
+            </test-suite>
+          </test-suite>
+        </test-suite>
+      </test-suite>
+    </test-suite>
+  </test-suite>
+</test-run>

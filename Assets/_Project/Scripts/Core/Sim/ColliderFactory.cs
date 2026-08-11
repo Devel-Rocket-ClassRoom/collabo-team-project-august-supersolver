@@ -117,11 +117,12 @@ namespace PPS.Core
             return body;
         }
 
-        public static Rigidbody2D CreateBall(Scene scene, LevelData level, string name)
+        /// <param name="position">출발 위치. 레벨의 시작점과 다를 수 있다.</param>
+        public static Rigidbody2D CreateBall(Scene scene, LevelData level, Vector2 position, string name)
         {
             var go = new GameObject(name);
             SceneManager.MoveGameObjectToScene(go, scene);
-            go.transform.position = level.BallStart;
+            go.transform.position = position;
 
             var body = go.AddComponent<Rigidbody2D>();
             body.bodyType = RigidbodyType2D.Dynamic;
