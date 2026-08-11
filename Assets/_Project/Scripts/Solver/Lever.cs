@@ -97,6 +97,32 @@ namespace PPS.Solver
         /// 판과 추를 그리는 데 드는 잉크. 후보를 볼 순서를 정한다.
         public float Ink => Length + Weight.Length;
 
+        /// <summary>
+        /// 판이 축을 중심으로 angle 만큼 돈 자리.
+        /// 양수가 추 쪽이 내려가는 방향이다 — 지렛대가 실제로 도는 쪽이다.
+        /// 놓을 자리가 되는지 보려면 시작 자리만이 아니라
+        /// 지나갈 자리를 전부 봐야 한다.
+        /// </summary>
+        public void Swept(float angle, out Vector2 from, out Vector2 to)
+        {
+            // 왼쪽을 보면 같은 회전이 반대로 보인다.
+            float turn = FacingRight ? angle : -angle;
+
+            Vector2 pivot = Fulcrum;
+            from = pivot + Turn(Origin - pivot, turn);
+            to = pivot + Turn(PlankEnd - pivot, turn);
+        }
+
+        static Vector2 Turn(Vector2 vector, float radians)
+        {
+            float cos = Mathf.Cos(radians);
+            float sin = Mathf.Sin(radians);
+
+            return new Vector2(
+                vector.x * cos - vector.y * sin,
+                vector.x * sin + vector.y * cos);
+        }
+
         /// 같은 지렛대를 반대쪽으로 뒤집은 것.
         public Lever Mirrored => new Lever(
             BallSeat, Length, FulcrumAt, BallAt, WeightRows, Drop, !FacingRight);

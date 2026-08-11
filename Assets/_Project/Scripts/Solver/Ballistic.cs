@@ -24,6 +24,13 @@ namespace PPS.Solver
         }
 
         /// <summary>
+        /// step 스텝 뒤의 속도. 자리와 달리 중력이 그대로 쌓인다.
+        /// 어디로 들어오는지를 알아야 어디를 열어 줄지가 정해진다.
+        /// </summary>
+        public static Vector2 VelocityAt(Vector2 velocity, int step)
+            => velocity + (Vector2)Physics2D.gravity * (SimWorld.FixedDt * step);
+
+        /// <summary>
         /// 이 길이 target 을 tolerance 안쪽으로 지나가는 첫 스텝. 안 지나면 -1.
         /// 스텝 사이를 선분으로 이어 재는 것이 중요하다 — 빠른 공은
         /// 좁은 판정 구간을 두 샘플 사이로 통째로 건너뛴다.
