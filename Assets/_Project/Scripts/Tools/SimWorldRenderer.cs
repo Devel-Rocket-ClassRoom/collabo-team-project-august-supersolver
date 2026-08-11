@@ -235,10 +235,56 @@ namespace PPS.Tools
             return JsonUtility.ToJson(replayData, true);
         }
 
-        string GetReplayFilePath()
+        string GetReplayFolderPath()
         {
             // 운영체제에 맞는 Unity 전용 저장 폴더와 리플레이 파일 이름을 하나의 결로로 조합 한다.
-            return Path.Combine(Application.persistentDataPath, "replay.json");
+            return Path.Combine(Application.dataPath, "_Project", "Replays");
+        }
+        // 기존 파일을 덮어쓰지 않도록 다음 리플레이 파일 경로를 찾는다.
+        string GetNextReplayFilePath()
+        {
+            // 리플레이를 저장할 프로젝트 내부 폴더를 가져온다.
+            string folderPath = GetReplayFolderPath();
+
+            // Replays 폴더가 없으면 새로 만든다.
+            Directory.CreateDirectory(folderPath);
+
+            // Replay001부터 순서대로 사용되지 않은 번호를 찾는다.
+            for (int number = 1; ; number++)
+            {
+                // 숫자를 세 자리로 표시해 Replay001.json 형태로 만든다.
+                string fileName = $"Replay{number:000}.json";
+
+                // 폴더 경로와 파일 이름을 결합한다.
+                string filePath = Path.Combine(folderPath, fileName);
+
+                // 해당 파일이 아직 없다면 이번에 사용할 저장 경로로 반환한다.
+                if (!File.Exists(filePath))
+                    return filePath;
+            }
+        }
+        // 저장된 리플레이 중 번호가 가장 큰 최신 파일 경로를 반환한다.
+        string GetLatestReplayFilePath()
+        {
+            // 프로젝트 내부의 리플레이 폴더를 가져온다.
+            string folderPath = GetReplayFolderPath();
+
+            // 폴더 자체가 없다면 불러올 파일도 없다.
+            if (!Directory.Exists(folderPath))
+                return null;
+
+            // Replay로 시작하고 json으로 끝나는 파일을 모두 찾는다.
+            string[] filePaths = Directory.GetFiles(folderPath, "Replay*.json");
+
+            // 저장된 리플레이 파일이 없다면 불러올 수 없다.
+            if (filePaths.Length == 0)
+                return null;
+
+            // Replay001, Replay002 순서로 정렬한다.
+            Array.Sort(filePaths, StringComparer.OrdinalIgnoreCase);
+
+            // 정렬된 목록의 마지막 파일을 반환한다.
+            return filePaths[filePaths.Length - 1];
         }
 
         // Inspector에서 저장 기능을 직접 실행 할 수 있게 한다.
@@ -255,7 +301,7 @@ namespace PPS.Tools
             string json = CreateReplayJson();
 
             // Json 파일을 저장 할 전체 경로를 가져온다.
-            string filePath = GetReplayFilePath();
+            string filePath = GetNextReplayFilePath();
 
             // 지정한 경로에 Json 문자열을 저장한다.
             File.WriteAllText(filePath, json);
@@ -266,13 +312,13 @@ namespace PPS.Tools
 
         ReplayData ReadReplayData()
         {
-            // 저장 할 때 사용한 것과 동일한 파일 경로룰 가져온다.
-            string filePath = GetReplayFilePath();
+            // 가장 최근 번호의 리플레이 파일 경로를 가져온다.
+            string filePath = GetLatestReplayFilePath();
 
-            // 저장된 replay.json이 없으면 불러 올 수 없다.
-            if (!File.Exists(filePath))
+            // 최근 리플레이를 찾지 못했거나 파일이 존재하지 않으면 중단한다.
+            if (string.IsNullOrEmpty(filePath) || !File.Exists(filePath))
             {
-                Debug.LogWarning($"리플레이 파일이 없습니다. {filePath}");
+                Debug.LogWarning("저장된 리플레이 파일이 없습니다.");
                 return null;
             }
 
@@ -294,7 +340,7 @@ namespace PPS.Tools
                 Debug.LogWarning($"지원하지 않는 리플레이 버전입니다. : {replayData.Version}");
                 return null;
             }
-            // 원본 레벨을 찾을 StageId가 있는지 확인한다.
+            // 원본 레벨을 찾는 데 필요한 StageId가 비어 있는지 확인한다.
             if (string.IsNullOrEmpty(replayData.StageId))
             {
                 Debug.LogWarning("리플레이에 StageId가 없습니다.");
