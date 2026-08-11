@@ -21,17 +21,17 @@ namespace PPS.Solver
             var solutions = new List<Solution>(paths.Count);
 
             for (int i = 0; i < paths.Count; i++)
-                solutions.Add(ToSolution(PrimitiveCandidates.Select(paths[i])));
+                solutions.Add(ToSolution(PrimitiveCandidates.Select(stage, paths[i])));
 
             return solutions;
         }
 
-        static Solution ToSolution(Primitive[] primitives)
+        static Solution ToSolution(IPrimitive[] primitives)
         {
             var solution = new Solution();
 
             for (int i = 0; i < primitives.Length; i++)
-                solution.Strokes.Add(primitives[i].ToStroke());
+                primitives[i].AppendTo(solution);
 
             return solution;
         }

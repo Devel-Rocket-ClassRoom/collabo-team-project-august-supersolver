@@ -39,10 +39,12 @@ namespace PPS.Solver
         /// 통로는 BallPath 가 낸 점 목록이고 공에서 목표 순이다.
         /// 구간이 없으면(점이 둘 미만) 빈 배열이다.
         /// </summary>
-        public static Primitive[] Select(Vector2[] path)
+        /// <param name="stage">지형을 물어볼 자리. 도구를 놓을 여유가
+        /// 나오는지는 통로만 봐서는 알 수 없다.</param>
+        public static IPrimitive[] Select(StageData stage, Vector2[] path)
         {
             float half = LevelData.BallRadius * WallSpread;
-            var picked = new List<Primitive>();
+            var picked = new List<IPrimitive>();
 
             Wall(picked, Offset(path, half), path, half);
             Wall(picked, Offset(path, -half), path, half);
@@ -138,7 +140,7 @@ namespace PPS.Solver
         /// 그 자리에는 애초에 벽이 들어갈 틈이 없다는 뜻이다.
         /// </summary>
         static void Wall(
-            List<Primitive> picked, List<List<Vector2>> chains, Vector2[] path, float half)
+            List<IPrimitive> picked, List<List<Vector2>> chains, Vector2[] path, float half)
         {
             for (int c = 0; c < chains.Count; c++)
             {
@@ -155,7 +157,7 @@ namespace PPS.Solver
         /// 이차식을 풀어야 하는데, 통로가 짧아 그 값을 못 한다.
         /// </summary>
         static void Keep(
-            List<Primitive> picked, Vector2 from, Vector2 to, Vector2[] path, float half)
+            List<IPrimitive> picked, Vector2 from, Vector2 to, Vector2[] path, float half)
         {
             float length = Vector2.Distance(from, to);
             if (length <= 1e-4f) return;
@@ -214,7 +216,7 @@ namespace PPS.Solver
             return Vector2.Distance(point, a + along * t);
         }
 
-        static void Add(List<Primitive> picked, Vector2 from, Vector2 to)
+        static void Add(List<IPrimitive> picked, Vector2 from, Vector2 to)
         {
             Vector2 along = to - from;
             if (along.sqrMagnitude <= 1e-8f) return;

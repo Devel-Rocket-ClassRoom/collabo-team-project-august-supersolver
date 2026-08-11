@@ -10,7 +10,7 @@ namespace PPS.Solver
     /// 어디에·무엇을·어떻게 가 모두 여기 담긴다.
     /// </summary>
     [Serializable]
-    public struct Primitive
+    public struct Primitive : IPrimitive
     {
         /// 외접원 중심. 월드 좌표.
         public Vector2 Position;
@@ -37,7 +37,8 @@ namespace PPS.Solver
             Angle = angle;
         }
 
-        public Stroke ToStroke() => new Stroke(Tool, Points(Position));
+        public void AppendTo(Solution solution)
+            => solution.Strokes.Add(new Stroke(Tool, Points(Position)));
 
         /// <summary>
         /// 종류별 꼭짓점. 외접원 위의 점을 Angle 만큼 돌려 찍는다.
