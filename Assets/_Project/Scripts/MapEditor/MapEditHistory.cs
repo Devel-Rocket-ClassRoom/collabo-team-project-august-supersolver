@@ -16,8 +16,8 @@ namespace PPS.MapEditor
 
         [SerializeField] MapEditSession _session;
 
-        readonly List<string> _undo = new List<string>();
-        readonly List<string> _redo = new List<string>();
+        readonly List<Snapshot> _undo = new List<Snapshot>();
+        readonly List<Snapshot> _redo = new List<Snapshot>();
 
         public bool CanUndo => _undo.Count > 0;
         public bool CanRedo => _redo.Count > 0;
@@ -30,7 +30,7 @@ namespace PPS.MapEditor
         {
             if (_session == null) return;
 
-            Push(_undo, _session.Current.ToJson(false));
+            Push(_undo, Capture());
 
             // 되돌린 뒤 새로 편집하면 앞선 갈래는 버린다.
             _redo.Clear();
@@ -42,24 +42,46 @@ namespace PPS.MapEditor
         /// <summary>상단바 다시 실행 버튼이 부른다.</summary>
         public void Redo() => Move(_redo, _undo);
 
-        void Move(List<string> from, List<string> to)
+        void Move(List<Snapshot> from, List<Snapshot> to)
         {
             if (_session == null || from.Count == 0) return;
 
-            Push(to, _session.Current.ToJson(false));
+            Push(to, Capture());
 
-            string json = from[from.Count - 1];
+            Snapshot snapshot = from[from.Count - 1];
             from.RemoveAt(from.Count - 1);
 
-            _session.Replace(StageData.FromJson(json));
+            _session.Replace(
+                StageData.FromJson(snapshot.Stage),
+                MapShapes.FromJson(snapshot.Shapes));
         }
 
-        static void Push(List<string> stack, string json)
+        /// <summary>
+        /// 도형이 원본이라 판만 되돌리면 다음 굽기에
+        /// 되살아난다. 둘을 함께 뜬다.
+        /// </summary>
+        Snapshot Capture() => new Snapshot(
+            _session.Current.ToJson(false),
+            _session.Shapes.ToJson(false));
+
+        static void Push(List<Snapshot> stack, Snapshot snapshot)
         {
-            stack.Add(json);
+            stack.Add(snapshot);
 
             // 오래된 것부터 버린다.
             if (stack.Count > MaxDepth) stack.RemoveAt(0);
+        }
+
+        readonly struct Snapshot
+        {
+            public readonly string Stage;
+            public readonly string Shapes;
+
+            public Snapshot(string stage, string shapes)
+            {
+                Stage = stage;
+                Shapes = shapes;
+            }
         }
     }
 }
