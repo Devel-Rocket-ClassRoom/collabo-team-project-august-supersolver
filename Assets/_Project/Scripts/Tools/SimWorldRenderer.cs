@@ -21,11 +21,6 @@ namespace PPS.Tools
         // 한 프레임에 자동 실행할 물리 스텝 수다.
         [SerializeField, Range(1, MaxStepsPerFrame)] int _stepsPerFrame = 1;
 
-        // 맵 에디터가 만든 StageData JSON 파일이다.
-        [SerializeField] TextAsset _stageJson;
-        // 드로잉 툴이 만든 Solution JSON 파일이다.
-        [SerializeField] TextAsset _solutionJson;
-
         // 생성된 물리 월드를 실제 화면에 그릴 컴포넌트다.
         [SerializeField] ReplayWorldView _worldView;
 
@@ -191,30 +186,6 @@ namespace PPS.Tools
 
             // 새로 생성한 물리 월드와 레벨 정보를 화면 표시 컴포넌트에 전달한다.
             _worldView?.Show(_stage.Level, _world);
-        }
-        // Inspector에 연결된 두 Json 파일을 읽어 리플레이 월드를 구성한다.
-        public void LoadReplayInputs()
-        {
-            // 두 파일이 모두 연결 됐는지 확인한다.
-            if (_stageJson == null || _solutionJson == null)
-            {
-                Debug.LogWarning("Stage JSON과 Solution JSON을 연결해야 합니다.");
-                return;
-            }
-            // 맵 Json을 StageData로 변환한다.
-            StageData stage = StageData.FromJson(_stageJson.text);
-
-            // 그림 Json을 Solution으로 변환한다.
-            Solution solution = JsonUtility.FromJson<Solution>(_solutionJson.text);
-
-            // 변환한 두 데이터로 재생 월드를 만든다.
-            SetReplay(stage, solution);
-
-            // 연결 결과를 Console에서 확인한다.
-            Debug.Log(
-        $"리플레이 입력 연결 완료: {stage.StageId}, " +
-        $"Strokes={solution.Strokes.Count}, " +
-        $"Pivots={solution.Pivots.Count}");
         }
         private void OnDestroy()
         {
