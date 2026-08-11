@@ -38,7 +38,9 @@ namespace PPS.MapEditor
             handle.color = color;
         }
 
-        public static void PlaceLine(SpriteRenderer handle, in StaticSegment segment, Color color)
+        /// <param name="width">지형보다 얇게 그릴 때 넘긴다.</param>
+        public static void PlaceLine(SpriteRenderer handle, in StaticSegment segment, Color color,
+            float width = LineWidth)
         {
             Vector2 center = (segment.A + segment.B) * 0.5f;
             Vector2 ab = segment.B - segment.A;
@@ -46,7 +48,7 @@ namespace PPS.MapEditor
             handle.transform.position = new Vector3(center.x, center.y, 0f);
             handle.transform.rotation =
                 Quaternion.Euler(0f, 0f, Mathf.Atan2(ab.y, ab.x) * Mathf.Rad2Deg);
-            handle.transform.localScale = new Vector3(ab.magnitude, LineWidth, 1f);
+            handle.transform.localScale = new Vector3(ab.magnitude, width, 1f);
             handle.color = color;
         }
 

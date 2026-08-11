@@ -15,10 +15,23 @@ namespace PPS.MapEditor
 
         public static string PathOf(string stageId) => $"{Folder}/{stageId}.json";
 
-        public static void Save(StageData stage)
+        /// <summary>
+        /// 도형 그룹은 에디터만 읽는다. 레벨 파일에
+        /// 섞으면 게임·솔버가 쓰지 않는 값을 지고 간다.
+        /// </summary>
+        public static string ShapePathOf(string stageId) => $"{Folder}/{stageId}.edit.json";
+
+        public static void Save(StageData stage, MapShapes shapes)
         {
             Directory.CreateDirectory(Folder);
+
             File.WriteAllText(PathOf(stage.StageId), stage.ToJson());
+
+            if (shapes != null)
+            {
+                shapes.StageId = stage.StageId;
+                File.WriteAllText(ShapePathOf(stage.StageId), shapes.ToJson());
+            }
 
 #if UNITY_EDITOR
             // 새로 쓴 파일을 프로젝트 창이 알아채게 한다.
@@ -34,6 +47,35 @@ namespace PPS.MapEditor
 
             stage = StageData.FromJson(File.ReadAllText(path));
             return stage != null && stage.Level != null;
+        }
+
+        /// <summary>
+        /// 도형 파일을 읽는다. 없으면 지형 선분을
+        /// 하나씩 도형으로 본다 — 예전 레벨도 열린다.
+        /// </summary>
+        public static MapShapes LoadShapes(string stagePath, StageData stage)
+        {
+            string path = ShapePathFor(stagePath);
+
+            if (File.Exists(path))
+            {
+                var shapes = MapShapes.FromJson(File.ReadAllText(path));
+
+                // 짝이 어긋난 파일을 물면 엉뚱한 도형이 뜬다.
+                if (shapes != null && shapes.StageId == stage.StageId) return shapes;
+
+                Debug.LogWarning($"[맵 에디터] 도형 파일의 판 이름이 다르다: {path}");
+            }
+
+            return ShapeBaker.FromTerrain(stage.Level, stage.StageId);
+        }
+
+        static string ShapePathFor(string stagePath)
+        {
+            string directory = Path.GetDirectoryName(stagePath);
+            string name = Path.GetFileNameWithoutExtension(stagePath);
+
+            return Path.Combine(directory ?? Folder, name + ".edit.json");
         }
     }
 }
