@@ -32,18 +32,31 @@ namespace PPS.Solver
         public readonly float MinGoalDist;
         public readonly int EndStep;
 
+        /// 그리는 데 든 잉크.
+        public readonly float Ink;
+
+        /// 그림이 차지한 자리. 정렬에 쓰려고 미리 재 둔다 —
+        /// 목록을 그릴 때마다 수백 개를 다시 재면 화면이 느려진다.
+        public readonly Rect Area;
+
         public Attempt(
-            SolvePass pass, Solution solution, SimOutcome outcome, float minGoalDist, int endStep)
+            SolvePass pass, Solution solution, SimOutcome outcome,
+            float minGoalDist, int endStep, float ink, Rect area)
         {
             Pass = pass;
             Solution = solution;
             Outcome = outcome;
             MinGoalDist = minGoalDist;
             EndStep = endStep;
+            Ink = ink;
+            Area = area;
         }
 
+        public bool Cleared => Outcome == SimOutcome.Clear;
+
         public override string ToString()
-            => $"패스{(int)Pass} {Outcome} 거리 {MinGoalDist:F2} @{EndStep}";
+            => $"패스{(int)Pass} {Outcome} 거리 {MinGoalDist:F2} @{EndStep} "
+               + $"잉크 {Ink:F1} 영역 {Area.width:F1}x{Area.height:F1}";
     }
 
     /// <summary>
@@ -117,39 +130,29 @@ namespace PPS.Solver
 
         public SolutionSearch(LeverPresets presets) => _presets = presets;
 
-        public SolveReport Solve(StageData stage)
+        /// <param name="stopAtClear">첫 답에서 멈출지.
+        /// 끄면 예산을 다 쓸 때까지 굴려 본다 — 답 하나가 아니라
+        /// 어떤 답들이 있었는지를 보고 싶을 때다.</param>
+        public SolveReport Solve(StageData stage, bool stopAtClear = true)
         {
             List<Vector2[]> paths = BallPath.Find(stage.Level);
-            var attempts = new Attempts();
+            var attempts = new Attempts(stopAtClear);
 
             // 1. 통로만. 어느 통로든 이것으로 풀리면 가장 싼 답이다.
-            for (int i = 0; i < paths.Count; i++)
-            {
-                Solution corridor = Corridor(stage, paths[i]);
-
-                if (attempts.Run(SolvePass.Corridor, stage, corridor))
-                    return attempts.Done(SolvePass.Corridor, corridor);
-            }
+            for (int i = 0; i < paths.Count && !attempts.Stop; i++)
+                attempts.Run(SolvePass.Corridor, stage, Corridor(stage, paths[i]));
 
             // 2. 지렛대로 통로의 점까지 바로 보낸다. 벽은 안 세운다 —
             //    벽이 없으니 판이 걸릴 것도, 날아가는 공이 막힐 것도 없다.
             attempts.Begin();
-            for (int i = 0; i < paths.Count && !attempts.Spent; i++)
-            {
-                Solution found = WithLever(stage, paths[i], attempts);
-
-                if (found != null) return attempts.Done(SolvePass.Lever, found);
-            }
+            for (int i = 0; i < paths.Count && !attempts.Stop && !attempts.Spent; i++)
+                WithLever(stage, paths[i], attempts);
 
             // 3. 목표보다 높은 데로 올려놓고 거기서부터 굴린다.
             attempts.Begin();
-            {
-                Solution found = FromHighGround(stage, attempts);
+            if (!attempts.Stop) FromHighGround(stage, attempts);
 
-                if (found != null) return attempts.Done(SolvePass.LeverThenCorridor, found);
-            }
-
-            return attempts.Done(SolvePass.None, null);
+            return attempts.Done();
         }
 
 
@@ -162,9 +165,19 @@ namespace PPS.Solver
             public int Tries;
 
             readonly List<Attempt> _log = new List<Attempt>();
+            readonly bool _stopAtClear;
 
             /// 지금 패스가 시작한 시점의 횟수.
             int _mark;
+
+            float _best = float.PositiveInfinity;
+            Solution _closest;
+
+            /// 처음으로 목표에 닿은 판. 답으로 삼는다.
+            SolvePass _wonPass;
+            Solution _won;
+
+            public Attempts(bool stopAtClear) => _stopAtClear = stopAtClear;
 
             /// 새 패스를 연다. 예산은 여기서부터 다시 센다.
             public void Begin() => _mark = Tries;
@@ -172,8 +185,8 @@ namespace PPS.Solver
             /// 이 패스의 예산을 다 썼는가.
             public bool Spent => Tries - _mark >= MaxTriesPerPass;
 
-            float _best = float.PositiveInfinity;
-            Solution _closest;
+            /// 더 굴려 볼 이유가 없는가. 답을 찾았고 거기서 멈추기로 했을 때다.
+            public bool Stop => _won != null && _stopAtClear;
 
             /// 한 판 굴린다. 목표에 닿았으면 참이다.
             public bool Run(SolvePass pass, StageData stage, Solution solution)
@@ -182,7 +195,8 @@ namespace PPS.Solver
                 Tries++;
 
                 _log.Add(new Attempt(
-                    pass, solution, result.Outcome, result.MinGoalDist, result.EndStep));
+                    pass, solution, result.Outcome, result.MinGoalDist, result.EndStep,
+                    solution.TotalInk(), Extent(solution)));
 
                 if (result.MinGoalDist < _best)
                 {
@@ -190,12 +204,49 @@ namespace PPS.Solver
                     _closest = solution;
                 }
 
+                // 첫 답만 붙잡는다. 뒤에 더 나와도 앞의 것이 더 싼 패스에서 나온 것이다.
+                if (result.Cleared && _won == null)
+                {
+                    _won = solution;
+                    _wonPass = pass;
+                }
+
                 return result.Cleared;
             }
 
-            public SolveReport Done(SolvePass pass, Solution solution)
-                => new SolveReport(pass, solution, _closest, Tries, _best, _log);
+            public SolveReport Done()
+                => new SolveReport(_wonPass, _won, _closest, Tries, _best, _log);
         }
+
+        /// <summary>
+        /// 이 그림까지 담으려면 플레이 영역이 얼마나 되어야 하는지.
+        /// 레벨이 이미 차지한 영역에 그림이 밀어낸 만큼을 더한다 —
+        /// 레벨 쪽과 같은 여백을 두르므로 LevelDataArea 와 잣대가 같다.
+        /// 여백이 균일해서 "합친 뒤 두르기"와 "각자 두르고 합치기"가 같다.
+        /// </summary>
+        /// <summary>그림이 차지한 사각형. 점이 없으면 넓이 0 이다.</summary>
+        static Rect Extent(Solution solution)
+        {
+            var min = new Vector2(float.PositiveInfinity, float.PositiveInfinity);
+            var max = new Vector2(float.NegativeInfinity, float.NegativeInfinity);
+            bool any = false;
+
+            for (int i = 0; i < solution.Strokes.Count; i++)
+            {
+                var points = solution.Strokes[i].Points;
+                if (points == null) continue;
+
+                for (int p = 0; p < points.Count; p++)
+                {
+                    min = Vector2.Min(min, points[p]);
+                    max = Vector2.Max(max, points[p]);
+                    any = true;
+                }
+            }
+
+            return any ? Rect.MinMaxRect(min.x, min.y, max.x, max.y) : new Rect();
+        }
+
 
         static Solution Corridor(StageData stage, Vector2[] path)
         {
@@ -214,7 +265,7 @@ namespace PPS.Solver
         /// 자리에 놓으면 추가 이미 떨어진 뒤다.
         /// 목표는 통로의 지점들이고, 먼 곳부터 본다 — 멀리 갈수록 이득이다.
         /// </summary>
-        Solution WithLever(StageData stage, Vector2[] path, Attempts attempts)
+        void WithLever(StageData stage, Vector2[] path, Attempts attempts)
         {
             LevelData level = stage.Level;
             Vector2 seat = level.BallStart;
@@ -226,7 +277,7 @@ namespace PPS.Solver
 
                 for (int i = 0; i < _reaching.Count; i++)
                 {
-                    if (attempts.Spent) return null;
+                    if (attempts.Spent || attempts.Stop) return;
 
                     Lever lever = _reaching[i].ToLever(seat, target.x >= 0f);
                     if (!Fits(level, lever)) continue;
@@ -234,11 +285,9 @@ namespace PPS.Solver
                     var solution = new Solution();
                     lever.AppendTo(solution);
 
-                    if (attempts.Run(SolvePass.Lever, stage, solution)) return solution;
+                    attempts.Run(SolvePass.Lever, stage, solution);
                 }
             }
-
-            return null;
         }
 
         /// <summary>
@@ -248,7 +297,7 @@ namespace PPS.Solver
         /// 통로는 착지점에서 다시 찾는다 — 공의 출발점에서 낸 통로는
         /// 착지점과 상관이 없다.
         /// </summary>
-        Solution FromHighGround(StageData stage, Attempts attempts)
+        void FromHighGround(StageData stage, Attempts attempts)
         {
             LevelData level = stage.Level;
             Vector2 seat = level.BallStart;
@@ -274,19 +323,17 @@ namespace PPS.Solver
 
                     for (int o = 0; o < onward.Count; o++)
                     {
-                        if (attempts.Spent) return null;
+                        if (attempts.Spent || attempts.Stop) return;
 
                         Solution solution = Corridor(stage, onward[o]);
 
                         OpenEntry(solution, preset, seat, target);
                         lever.AppendTo(solution);
 
-                        if (attempts.Run(SolvePass.LeverThenCorridor, stage, solution)) return solution;
+                        attempts.Run(SolvePass.LeverThenCorridor, stage, solution);
                     }
                 }
             }
-
-            return null;
         }
 
         /// 착지 후보를 이 간격의 격자로 접는다. 궤적은 이어져 있어 그냥 두면 끝이 없다.

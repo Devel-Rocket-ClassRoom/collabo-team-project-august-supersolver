@@ -16,10 +16,10 @@ namespace PPS.Solver
         public const float WeightWidthRatio = 0.2f;
 
         /// <summary>
-        /// 추 상자의 중심이 오는 자리. 상자 반폭과 같아 상자가 판 끝에 맞는다.
-        /// 추를 더 안쪽으로 들이면 팔이 짧아지기만 해서 이득이 없다.
+        /// 추 상자가 판 끝에서 얼마나 안쪽에 앉는지. 상자 반폭이다.
+        /// 더 안쪽으로 들이면 팔이 짧아지기만 해서 이득이 없다.
         /// </summary>
-        public const float WeightAt = WeightWidthRatio * 0.5f;
+        public const float WeightInset = WeightWidthRatio * 0.5f;
 
         /// 공이 얹히는 자리. 월드 좌표다.
         public readonly Vector2 BallSeat;
@@ -39,12 +39,18 @@ namespace PPS.Solver
         /// 추 상자 바닥이 판에서 얼마나 위에 있는지. 낙차다.
         public readonly float Drop;
 
+        /// <summary>
+        /// 추가 판의 어느 끝에 앉는지. 공의 반대쪽이라야 지렛대가 된다.
+        /// 공이 0.5 보다 왼쪽이면 추는 오른쪽 끝이다.
+        /// </summary>
+        public readonly bool WeightLeft;
+
         /// 판이 뻗는 쪽.
         public readonly bool FacingRight;
 
         public Lever(
             Vector2 ballSeat, float length, float fulcrumAt, float ballAt,
-            int weightRows, float drop, bool facingRight = true)
+            int weightRows, float drop, bool weightLeft = true, bool facingRight = true)
         {
             BallSeat = ballSeat;
             Length = length;
@@ -52,14 +58,29 @@ namespace PPS.Solver
             BallAt = ballAt;
             WeightRows = Mathf.Max(1, weightRows);
             Drop = drop;
+            WeightLeft = weightLeft;
             FacingRight = facingRight;
         }
+
+        /// 추 상자의 중심이 오는 자리. 길이 대비 비율이다.
+        public float WeightAt => WeightLeft ? WeightInset : 1f - WeightInset;
+
+        /// 축에서 추까지. 부호가 없다.
+        public float WeightArm => Mathf.Abs(FulcrumAt - WeightAt) * Length;
+
+        /// 축에서 공까지. 부호가 없다.
+        public float BallArm => Mathf.Abs(BallAt - FulcrumAt) * Length;
 
         /// <summary>
         /// 말이 되는 배치인가.
         /// 추와 공이 축을 사이에 두고 갈라져야 지렛대가 된다.
+        /// 공은 판 위에 있어야 하고, 추가 앉을 자리를 침범해도 안 된다.
         /// </summary>
-        public bool IsValid => FulcrumAt > WeightAt && BallAt > FulcrumAt && BallAt <= 1f;
+        public bool IsValid
+            => BallAt >= 0f && BallAt <= 1f
+               && (WeightLeft
+                   ? WeightAt < FulcrumAt && FulcrumAt < BallAt
+                   : BallAt < FulcrumAt && FulcrumAt < WeightAt);
 
         /// 판이 뻗는 방향. 늘 수평이다.
         public Vector2 Along => FacingRight ? Vector2.right : Vector2.left;
@@ -125,11 +146,11 @@ namespace PPS.Solver
 
         /// 같은 지렛대를 반대쪽으로 뒤집은 것.
         public Lever Mirrored => new Lever(
-            BallSeat, Length, FulcrumAt, BallAt, WeightRows, Drop, !FacingRight);
+            BallSeat, Length, FulcrumAt, BallAt, WeightRows, Drop, WeightLeft, !FacingRight);
 
         /// 이 지렛대를 다른 자리에 그대로 옮긴 것.
         public Lever At(Vector2 ballSeat) => new Lever(
-            ballSeat, Length, FulcrumAt, BallAt, WeightRows, Drop, FacingRight);
+            ballSeat, Length, FulcrumAt, BallAt, WeightRows, Drop, WeightLeft, FacingRight);
 
         /// <summary>
         /// 판·추·축을 솔루션에 붙인다.
@@ -150,6 +171,7 @@ namespace PPS.Solver
         }
 
         public override string ToString()
-            => $"L{Length:F2} 축{FulcrumAt:F2} 공{BallAt:F2} {WeightRows}줄 낙차{Drop:F2}";
+            => $"L{Length:F2} 축{FulcrumAt:F2} 공{BallAt:F2} 추{WeightAt:F2} "
+               + $"{WeightRows}줄 낙차{Drop:F2}";
     }
 }

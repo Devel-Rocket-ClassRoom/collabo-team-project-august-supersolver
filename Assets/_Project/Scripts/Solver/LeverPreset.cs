@@ -21,6 +21,9 @@ namespace PPS.Solver
         public int WeightRows;
         public float Drop;
 
+        /// 추가 판의 어느 끝에 앉는지. 공의 반대쪽이다.
+        public bool WeightLeft;
+
         /// 공이 판을 떠난 자리. 공이 얹혀 있던 자리 기준이다.
         public Vector2 LaunchOffset;
 
@@ -42,6 +45,7 @@ namespace PPS.Solver
                 BallAt = lever.BallAt,
                 WeightRows = lever.WeightRows,
                 Drop = lever.Drop,
+                WeightLeft = lever.WeightLeft,
                 LaunchOffset = launchOffset,
                 LaunchVelocity = launchVelocity,
                 LaunchStep = launchStep,
@@ -50,7 +54,8 @@ namespace PPS.Solver
 
         /// <param name="facingRight">목표가 공의 오른쪽인지. 표는 오른쪽으로만 만든다.</param>
         public Lever ToLever(Vector2 ballSeat, bool facingRight = true)
-            => new Lever(ballSeat, Length, FulcrumAt, BallAt, WeightRows, Drop, facingRight);
+            => new Lever(
+                ballSeat, Length, FulcrumAt, BallAt, WeightRows, Drop, WeightLeft, facingRight);
 
         /// <summary>
         /// 공 자리에서 target 만큼 떨어진 곳을 지나가는가.

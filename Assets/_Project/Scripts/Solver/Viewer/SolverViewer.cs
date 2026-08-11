@@ -63,6 +63,18 @@ namespace PPS.Solver.Viewer
         string[] _catalogNames;
         int _levelIndex;
 
+        /// <summary>
+        /// 파일에서 온 항목이 시작하는 자리.
+        /// 목록은 하나로 두고 보여줄 때만 나눈다 — 둘로 쪼개면
+        /// Rebuild 가 어느 쪽 항목인지부터 가려야 한다.
+        /// </summary>
+        int _fileFrom;
+
+        /// 읽히지 않은 파일들. 이름과 이유.
+        readonly List<string> _fileProblems = new List<string>();
+
+        Vector2 _fileScroll;
+
         /// 실측이 남긴 표. 파일이 없으면 null 이고 프리셋 항목도 안 생긴다.
         List<LeverPreset> _presets;
 
@@ -85,6 +97,18 @@ namespace PPS.Solver.Viewer
 
         /// 패스로 거르기. 0 이면 전부.
         int _attemptPass;
+
+        /// 결과로 거르기. 0 이면 전부, 나머지는 SimOutcome + 1.
+        int _attemptOutcome;
+
+        /// 0 순서 · 1 잉크 · 2 클리어 타임 · 3 영역 크기.
+        int _attemptSort;
+
+        /// <summary>
+        /// 걸러 내고 줄 세운 결과. 목록이 수백 줄이라
+        /// OnGUI 가 돌 때마다 다시 만들면 화면이 느려진다.
+        /// </summary>
+        readonly List<int> _attemptView = new List<int>();
 
         Vector2 _attemptScroll;
 
@@ -185,6 +209,7 @@ namespace PPS.Solver.Viewer
             _attemptAt = -1;
 
             Rebuild();
+            RefreshAttemptView();
             FitCamera();
         }
 
@@ -233,7 +258,8 @@ namespace PPS.Solver.Viewer
                         ? LeverPresets.Load()
                         : new LeverPresets(new List<LeverPreset>()));
 
-                report = search.Solve(stage);
+                // 첫 답에서 멈추지 않는다. 어떤 답들이 있었는지를 보는 자리다.
+                report = search.Solve(stage, stopAtClear: false);
                 _searched[stage.StageId] = report;
             }
 
@@ -279,65 +305,66 @@ namespace PPS.Solver.Viewer
             GUILayout.Space(6f);
 
             if (_tab == 0) DrawCatalogTab();
-            else if (_tab == 1) DrawAttemptTab();
+            else if (_tab == 1) DrawFileTab();
+            else if (_tab == 2) DrawAttemptTab();
             else DrawPresetTab();
 
             GUILayout.EndArea();
         }
 
-        static readonly string[] TabNames = { "카탈로그", "시도", "프리셋" };
-
-        static readonly string[] PassNames = { "전부", "1 통로", "2 지렛대", "3 지렛대+통로" };
+        static readonly string[] TabNames = { "카탈로그", "레벨 파일", "시도", "프리셋" };
 
         /// <summary>
-        /// 탐색이 굴려 본 판들. 실패한 것까지 골라 재생할 수 있다 —
-        /// 왜 못 풀었는지는 결과 숫자가 아니라 그 판을 봐야 알 수 있다.
+        /// Levels 폴더에서 읽어 온 레벨들.
+        /// 못 읽은 파일도 이유와 함께 보여준다 — 목록에서 조용히
+        /// 빠지면 파일을 잘못 뒀는지 형식이 틀렸는지 알 길이 없다.
         /// </summary>
-        void DrawAttemptTab()
+        void DrawFileTab()
         {
-            if (!_searched.TryGetValue(_stage.StageId, out SolveReport report) || report.Log == null)
-            {
-                GUILayout.Label("탐색을 거치지 않은 스테이지다.");
-                GUILayout.Label("카탈로그 탭에서 '탐색으로 풀기'를 켠 뒤 레벨을 고른다.");
-                return;
-            }
-
-            GUILayout.Label($"{report}");
-
-            int pass = GUILayout.Toolbar(_attemptPass, PassNames);
-            if (pass != _attemptPass) _attemptPass = pass;
-
-            if (GUILayout.Button(_attemptAt < 0 ? "▶ 결과 보는 중" : "결과로 돌아가기"))
-                ApplyAttempt(-1);
+            GUILayout.BeginHorizontal();
+            GUILayout.Label($"{LevelFiles.RelativeFolder}", GUILayout.Width(200f));
+            if (GUILayout.Button("다시 읽기", GUILayout.Width(80f))) ReloadCatalog();
+            GUILayout.EndHorizontal();
 
             GUILayout.Space(4f);
 
-            _attemptScroll = GUILayout.BeginScrollView(_attemptScroll, GUILayout.Height(420f));
+            int count = _catalog.Length - _fileFrom;
 
-            for (int i = 0; i < report.Log.Count; i++)
+            if (count <= 0)
             {
-                Attempt attempt = report.Log[i];
-                if (_attemptPass != 0 && (int)attempt.Pass != _attemptPass) continue;
-
-                // 목표에 닿은 판은 색으로 구분한다. 목록이 길어 눈으로 훑게 된다.
-                Color was = GUI.backgroundColor;
-                GUI.backgroundColor = attempt.Outcome == SimOutcome.Clear
-                    ? new Color32(0xB8, 0xD4, 0x8A, 0xFF)
-                    : i == _attemptAt
-                        ? new Color32(0x7A, 0xC7, 0xC7, 0xFF)
-                        : was;
-
-                if (GUILayout.Button($"#{i}  {attempt}")) ApplyAttempt(i);
-
-                GUI.backgroundColor = was;
+                GUILayout.Label("읽어 온 레벨이 없다.");
             }
+            else
+            {
+                var names = new string[count];
+                Array.Copy(_catalogNames, _fileFrom, names, 0, count);
+
+                int at = _levelIndex - _fileFrom;
+                int picked = GUILayout.SelectionGrid(at, names, 2);
+
+                if (picked != at) ApplyLevel(_fileFrom + picked);
+            }
+
+            if (_fileProblems.Count == 0) return;
+
+            GUILayout.Space(8f);
+            GUILayout.Label($"읽지 못한 파일 {_fileProblems.Count}개");
+
+            _fileScroll = GUILayout.BeginScrollView(_fileScroll, GUILayout.Height(160f));
+
+            for (int i = 0; i < _fileProblems.Count; i++)
+                GUILayout.Label(_fileProblems[i]);
 
             GUILayout.EndScrollView();
         }
 
         void DrawCatalogTab()
         {
-            int picked = GUILayout.SelectionGrid(_levelIndex, _catalogNames, 2);
+            // 파일에서 온 것은 제 탭에서 고른다.
+            var names = new string[_fileFrom];
+            Array.Copy(_catalogNames, names, _fileFrom);
+
+            int picked = GUILayout.SelectionGrid(Mathf.Min(_levelIndex, _fileFrom - 1), names, 2);
             if (picked != _levelIndex) ApplyLevel(picked);
 
             GUILayout.Space(6f);
@@ -348,6 +375,8 @@ namespace PPS.Solver.Viewer
                 _useSearch = search;
                 ApplyLevel(_levelIndex);
             }
+
+            GUILayout.Space(6f);
 
             int devices = _world.Level.Devices == null ? 0 : _world.Level.Devices.Count;
 
@@ -409,6 +438,116 @@ namespace PPS.Solver.Viewer
 
             GUILayout.EndArea();
         }
+
+        static readonly string[] PassNames = { "전부", "1 통로", "2 지렛대", "3 지렛대+통로" };
+
+        static readonly string[] OutcomeNames = { "전부", "클리어", "실패", "정지", "시간초과" };
+
+        static readonly string[] SortNames = { "순서", "잉크", "클리어 타임", "영역" };
+
+        /// <summary>
+        /// 탐색이 굴려 본 판들. 실패한 것까지 골라 재생할 수 있다 —
+        /// 왜 못 풀었는지는 결과 숫자가 아니라 그 판을 봐야 알 수 있다.
+        /// </summary>
+        void DrawAttemptTab()
+        {
+            if (!_searched.TryGetValue(_stage.StageId, out SolveReport report) || report.Log == null)
+            {
+                GUILayout.Label("탐색을 거치지 않은 스테이지다.");
+                GUILayout.Label("카탈로그 탭에서 '탐색으로 풀기'를 켠 뒤 레벨을 고른다.");
+                return;
+            }
+
+            GUILayout.Label($"{report}");
+
+            int pass = GUILayout.Toolbar(_attemptPass, PassNames);
+            int outcome = GUILayout.Toolbar(_attemptOutcome, OutcomeNames);
+
+            GUILayout.BeginHorizontal();
+            GUILayout.Label("정렬", GUILayout.Width(34f));
+            int sort = GUILayout.Toolbar(_attemptSort, SortNames);
+            GUILayout.EndHorizontal();
+
+            if (pass != _attemptPass || outcome != _attemptOutcome || sort != _attemptSort)
+            {
+                _attemptPass = pass;
+                _attemptOutcome = outcome;
+                _attemptSort = sort;
+                RefreshAttemptView();
+            }
+
+            if (GUILayout.Button(_attemptAt < 0 ? "▶ 결과 보는 중" : "결과로 돌아가기"))
+                ApplyAttempt(-1);
+
+            GUILayout.Label($"{_attemptView.Count} / {report.Log.Count} 개");
+
+            _attemptScroll = GUILayout.BeginScrollView(_attemptScroll, GUILayout.Height(360f));
+
+            for (int v = 0; v < _attemptView.Count; v++)
+            {
+                int i = _attemptView[v];
+                Attempt attempt = report.Log[i];
+
+                // 목표에 닿은 판은 색으로 구분한다. 목록이 길어 눈으로 훑게 된다.
+                Color was = GUI.backgroundColor;
+                GUI.backgroundColor = attempt.Cleared
+                    ? new Color32(0xB8, 0xD4, 0x8A, 0xFF)
+                    : i == _attemptAt
+                        ? new Color32(0x7A, 0xC7, 0xC7, 0xFF)
+                        : was;
+
+                if (GUILayout.Button($"#{i}  {attempt}")) ApplyAttempt(i);
+
+                GUI.backgroundColor = was;
+            }
+
+            GUILayout.EndScrollView();
+        }
+
+        /// <summary>
+        /// 거르고 줄 세운다. 필터나 정렬이 바뀔 때만 부른다.
+        /// 클리어 타임 정렬은 닿은 판을 앞에 모은다 —
+        /// 못 닿은 판의 끝난 스텝은 시간이 아니라 포기한 자리다.
+        /// </summary>
+        void RefreshAttemptView()
+        {
+            _attemptView.Clear();
+
+            if (!_searched.TryGetValue(_stage.StageId, out SolveReport report) || report.Log == null)
+                return;
+
+            List<Attempt> log = report.Log;
+
+            for (int i = 0; i < log.Count; i++)
+            {
+                if (_attemptPass != 0 && (int)log[i].Pass != _attemptPass) continue;
+                if (_attemptOutcome != 0 && (int)log[i].Outcome != _attemptOutcome - 1) continue;
+
+                _attemptView.Add(i);
+            }
+
+            switch (_attemptSort)
+            {
+                case 1:
+                    _attemptView.Sort((x, y) => log[x].Ink.CompareTo(log[y].Ink));
+                    break;
+
+                case 2:
+                    _attemptView.Sort((x, y) =>
+                    {
+                        int by = log[y].Cleared.CompareTo(log[x].Cleared);
+                        return by != 0 ? by : log[x].EndStep.CompareTo(log[y].EndStep);
+                    });
+                    break;
+
+                case 3:
+                    _attemptView.Sort((x, y) => Size(log[x].Area).CompareTo(Size(log[y].Area)));
+                    break;
+            }
+        }
+
+        /// 그림이 차지한 넓이. 한 줄짜리 그림은 넓이가 0 이라 둘레로 잰다.
+        static float Size(Rect area) => area.width + area.height;
 
         void DrawPresetTab()
         {
@@ -583,8 +722,9 @@ namespace PPS.Solver.Viewer
                 + $"낙차 {lever.Drop:F2}");
 
             GUILayout.Label(
-                $"공 팔 {(lever.BallAt - lever.FulcrumAt) * lever.Length:F2}   "
-                + $"추 팔 {(lever.FulcrumAt - Lever.WeightAt) * lever.Length:F2}   "
+                $"공 팔 {lever.BallArm:F2}   "
+                + $"추 팔 {lever.WeightArm:F2}   "
+                + $"추 {(lever.WeightLeft ? "왼쪽" : "오른쪽")}   "
                 + $"필요 여유 {lever.RequiredHeadroom:F2}");
         }
 
@@ -960,6 +1100,49 @@ namespace PPS.Solver.Viewer
         /// 장치가 없으면 시드는 아무 값이나 같다.
         /// </summary>
         /// <summary>
+        /// Levels 폴더의 json 을 목록 뒤에 붙인다.
+        /// 못 읽은 것은 항목으로 만들지 않고 이유만 모아 둔다 —
+        /// 고를 수 있게 두면 눌렀을 때 빈 판이 뜬다.
+        /// </summary>
+        void AddLevelFiles(List<Entry> entries)
+        {
+            _fileFrom = entries.Count;
+            _fileProblems.Clear();
+
+            List<LevelFiles.Entry> files = LevelFiles.LoadAll();
+
+            for (int i = 0; i < files.Count; i++)
+            {
+                LevelFiles.Entry file = files[i];
+
+                if (!file.Usable)
+                {
+                    _fileProblems.Add($"{file.Name} — {file.Problem}");
+                    continue;
+                }
+
+                StageData stage = file.Stage;
+
+                entries.Add(new Entry(
+                    file.Name,
+                    () => stage,
+                    () => _useSearch ? Searched(_stage) : null));
+            }
+        }
+
+        /// <summary>
+        /// 목록을 다시 짓는다. 파일이 늘거나 바뀌었을 때 쓴다.
+        /// 고르고 있던 자리는 지킬 수 없으므로 앞으로 되돌린다.
+        /// </summary>
+        void ReloadCatalog()
+        {
+            _catalog = BuildCatalog();
+            _catalogNames = Array.ConvertAll(_catalog, e => e.Name);
+
+            ApplyLevel(Mathf.Clamp(_levelIndex, 0, _catalog.Length - 1));
+        }
+
+        /// <summary>
         /// 레벨 하나. 탐색이 켜져 있으면 세 패스를 거친 그림을,
         /// 꺼져 있으면 SolutionBuilder 가 낸 통로들을 보여준다.
         /// </summary>
@@ -1007,6 +1190,8 @@ namespace PPS.Solver.Viewer
                 Stage("파편 구덩이", TestLevels.FragBombPit, seed: 7),
                 Stage("파편 멀리", TestLevels.FragBombFarAway, seed: 7),
             });
+
+            AddLevelFiles(entries);
 
             return entries.ToArray();
 #else

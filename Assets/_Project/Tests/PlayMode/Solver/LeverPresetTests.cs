@@ -99,7 +99,7 @@ namespace PPS.Solver.Tests
         {
             float[] lengths = { 1f, 2f, 3f, 4f };
             float[] fulcrums = { 0.2f, 0.3f, 0.5f, 0.7f };
-            float[] ballAts = { 0.5f, 0.7f, 0.9f, 1f };
+            float[] ballAts = { 0f, 0.1f, 0.3f, 0.5f, 0.7f, 0.9f, 1f };
             int[] rows = { 4, 10, 20, 34 };
             float[] drops = { 1f, 2f, 4f, 8f };
 
@@ -110,14 +110,31 @@ namespace PPS.Solver.Tests
             for (int b = 0; b < ballAts.Length; b++)
             for (int w = 0; w < rows.Length; w++)
             for (int d = 0; d < drops.Length; d++)
+            foreach (bool weightLeft in WeightSides(ballAts[b]))
             {
                 var lever = new Lever(
-                    Seat, lengths[l], fulcrums[f], ballAts[b], rows[w], drops[d]);
+                    Seat, lengths[l], fulcrums[f], ballAts[b],
+                    rows[w], drops[d], weightLeft);
 
                 if (lever.IsValid) levers.Add(lever);
             }
 
             return levers;
+        }
+
+        /// <summary>
+        /// 이 공 자리에서 추를 어느 끝에 놓아 볼지.
+        /// 추는 공 반대쪽 끝이라야 지렛대가 된다 — 가운데면 양쪽 다 된다.
+        /// </summary>
+        static IEnumerable<bool> WeightSides(float ballAt)
+        {
+            if (ballAt < 0.5f) yield return false;
+            else if (ballAt > 0.5f) yield return true;
+            else
+            {
+                yield return true;
+                yield return false;
+            }
         }
 
         /// <summary>
