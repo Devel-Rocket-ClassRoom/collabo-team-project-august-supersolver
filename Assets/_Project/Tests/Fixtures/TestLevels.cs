@@ -163,8 +163,9 @@ namespace PPS.Core.Tests
                 KillY = -8f,
                 Terrain = new List<StaticSegment>
                 {
-                    // 공이 놓인 발판. 없으면 시작하자마자 떨어진다.
-                    new StaticSegment(new Vector2(-9.5f, 0f), new Vector2(-6.5f, 0f)),
+                    // 공 밑을 비워 둔다. 받쳐 주지 않으면 그대로 떨어지므로
+                    // 무엇이든 놓아야 풀리고, 공 아래가 비어 있어야
+                    // 지렛대 같은 도구가 들어갈 자리가 난다.
 
                     // 기둥 셋. 높이를 엇갈리게 두어 위로 넘는 길과
                     // 아래로 도는 길의 값이 기둥마다 달라진다.
