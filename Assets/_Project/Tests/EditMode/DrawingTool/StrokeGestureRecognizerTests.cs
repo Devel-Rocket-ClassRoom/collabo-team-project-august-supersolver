@@ -26,11 +26,16 @@ namespace PPS.DrawingTool.Tests
 
         StrokeGestureRecognizer _recognizer;
         List<Stroke> _confirmed;
+        List<Vector2> _pivots;
+        DrawTool _tool;
+        float _ink;
         float _offsetDp;
 
         [SetUp]
         public void 인식기를_만든다()
         {
+            _tool = DrawTool.FixedLine;
+            _ink = 100f;
             _offsetDp = 0f;
             Reset();
         }
@@ -38,14 +43,16 @@ namespace PPS.DrawingTool.Tests
         void Reset()
         {
             _confirmed = new List<Stroke>();
+            _pivots = new List<Vector2>();
             _recognizer = new StrokeGestureRecognizer(new StrokeProcessor());
             _recognizer.StrokeConfirmed += _confirmed.Add;
+            _recognizer.PivotRequested += (tool, anchor, radius) => _pivots.Add(anchor);
         }
 
         void Feed(PointerPhase phase, Vector2 world, bool overUI = false, int id = FirstFinger) =>
             _recognizer.Feed(
                 new PointerSample(id, phase, world, overUI),
-                new DrawContext(ToolType.FixedLine, 100f, PixelsPerUnit, Dpi, _offsetDp, Area));
+                new DrawContext(_tool, _ink, PixelsPerUnit, Dpi, _offsetDp, Area));
 
         /// <summary>Down → Move… → 마지막 점에서 Up.</summary>
         void Drag(params Vector2[] path)
@@ -188,6 +195,31 @@ namespace PPS.DrawingTool.Tests
 
             Drag(V(0f, 0f), V(0f, 0.3f), V(0f, 0.6f));
             Assert.AreEqual(1, _confirmed.Count);
+        }
+
+        [Test]
+        public void 잔량이_0_이어도_회전축_탭은_핀을_요청한다()
+        {
+            _tool = DrawTool.PivotSingle;
+            _ink = 0f;
+
+            // 이동 0.02wu 는 탭 임계값(0.08wu) 안이다.
+            Drag(V(1f, 2f), V(1f, 2.02f));
+
+            Assert.AreEqual(1, _pivots.Count, "핀은 잉크를 쓰지 않는다");
+            Assert.AreEqual(0, _confirmed.Count, "핀 도구가 획을 만들었다");
+            Assert.AreEqual(V(1f, 2f), _pivots[0], "앵커는 손가락을 누른 자리다");
+        }
+
+        [Test]
+        public void 회전축_도구로_끌면_핀도_획도_생기지_않는다()
+        {
+            _tool = DrawTool.PivotWorld;
+
+            Drag(V(0f, 0f), V(0f, 0.3f), V(0f, 0.6f));
+
+            Assert.AreEqual(0, _pivots.Count, "탭이 아니라 드래그다");
+            Assert.AreEqual(0, _confirmed.Count, "핀 도구가 획을 만들었다");
         }
 
         [Test]
