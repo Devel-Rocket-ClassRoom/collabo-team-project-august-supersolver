@@ -63,6 +63,20 @@ namespace PPS.Solver.Viewer
         string[] _catalogNames;
         int _levelIndex;
 
+        /// 실측이 남긴 표. 파일이 없으면 null 이고 프리셋 항목도 안 생긴다.
+        List<LeverPreset> _presets;
+
+        /// 프리셋마다 소속 유형. _presets 와 같은 순서다.
+        int[] _clusters;
+        int _clusterCount = 4;
+        int _presetAt;
+
+        /// 지금 펼친 탭. 0 = 카탈로그, 1 = 프리셋.
+        int _tab;
+
+        /// 산점도의 점. 색만 바꿔 가며 쓴다.
+        Texture2D _dot;
+
         /// 실제 두께(월드 단위). FitCamera 가 계산한다.
         float _lineWidth = 0.09f;
 
@@ -70,6 +84,7 @@ namespace PPS.Solver.Viewer
 
         void Start()
         {
+            LoadPresets();
             _catalog = BuildCatalog();
 
             // 픽스처가 없는 빌드. 보여줄 것이 없다.
@@ -103,6 +118,7 @@ namespace PPS.Solver.Viewer
             _world = null;
 
             if (_lineMaterial != null) Destroy(_lineMaterial);
+            if (_dot != null) Destroy(_dot);
         }
 
         void Rebuild()
@@ -143,18 +159,99 @@ namespace PPS.Solver.Viewer
             FitCamera();
         }
 
+        // ── 프리셋 ──
+
+        /// <summary>
+        /// 실측이 남긴 표를 읽고 유형을 나눈다.
+        /// 파일이 없으면 조용히 넘어간다 — 스윕을 아직 안 돌린 것뿐이다.
+        /// </summary>
+        void LoadPresets()
+        {
+            if (!LeverPresetFile.Exists) return;
+
+            _presets = LeverPresetFile.Load().Presets;
+            Recluster();
+        }
+
+        void Recluster()
+            => _clusters = PresetClusters.Assign(_presets, _clusterCount);
+
+        /// 고른 칸의 지렛대를 굴린다.
+        void ApplyPreset(int index)
+        {
+            _presetAt = index;
+            _targetStep = 0;
+            _stepInput = "0";
+            Rebuild();
+            FitCamera();
+        }
+
+        /// 지금 고른 프리셋. 공은 원점에 둔다 — 표가 어긋남만 담고 있다.
+        Lever CurrentLever() => _presets[_presetAt].ToLever(Vector2.zero);
+
         // ── 표시 ──
 
         void OnGUI()
         {
             if (_world == null) return;
 
-            GUILayout.BeginArea(new Rect(10f, 10f, 460f, 610f), GUI.skin.box);
+            DrawMainPanel();
+            DrawPlaybackPanel();
+        }
 
+        /// <summary>
+        /// 하나로 합친 패널. 탭으로 나눈다 —
+        /// 창이 여럿이면 화면을 가려 정작 시뮬이 안 보인다.
+        /// </summary>
+        void DrawMainPanel()
+        {
+            GUILayout.BeginArea(new Rect(10f, 10f, 470f, 600f), GUI.skin.box);
+
+            int tab = GUILayout.Toolbar(_tab, TabNames);
+            if (tab != _tab) _tab = tab;
+
+            GUILayout.Space(6f);
+
+            if (_tab == 0) DrawCatalogTab();
+            else DrawPresetTab();
+
+            GUILayout.EndArea();
+        }
+
+        static readonly string[] TabNames = { "카탈로그", "프리셋" };
+
+        void DrawCatalogTab()
+        {
             int picked = GUILayout.SelectionGrid(_levelIndex, _catalogNames, 2);
             if (picked != _levelIndex) ApplyLevel(picked);
 
             GUILayout.Space(6f);
+
+            int devices = _world.Level.Devices == null ? 0 : _world.Level.Devices.Count;
+
+            // 시드는 읽기 전용이다.
+            // 장치가 없으면 rng 가 소비되지 않아
+            // 시드가 결과에 닿지 못한다.
+            GUILayout.Label(devices == 0
+                ? $"{_stage.StageId}   시드 {_stage.Seed} (장치가 없어 결과에 닿지 않는다)"
+                : $"{_stage.StageId}   시드 {_stage.Seed}   장치 {devices}개 — " +
+                  (_world.AnyPendingWork() ? "대기 중" : "전부 발동 완료"));
+
+            int hazards = CountLiveHazards();
+            if (hazards > 0) GUILayout.Label($"위험 바디 {hazards}개 — 공에 닿으면 Fail");
+
+            DrawTopologyPanel();
+        }
+
+        /// <summary>
+        /// 재생기. 좌하단에 따로 둔다 —
+        /// 탭을 옮겨도 스텝은 계속 만질 수 있어야 한다.
+        /// </summary>
+        void DrawPlaybackPanel()
+        {
+            const float height = 132f;
+            GUILayout.BeginArea(
+                new Rect(10f, Screen.height - height - 10f, 470f, height), GUI.skin.box);
 
             GUILayout.Label($"Step {_world.CurrentStep} / {MaxSteps}" +
                             (_world.IsTerminal ? "   (판정 확정 — 더 진행하지 않는다)" : ""));
@@ -178,22 +275,225 @@ namespace PPS.Solver.Viewer
             // 같은 스텝에서 같으면 재구축이 정확한 것이다.
             GUILayout.Label($"Hash 0x{WorldHasher.Hash(_world):X16}");
 
-            int devices = _world.Level.Devices == null ? 0 : _world.Level.Devices.Count;
-
-            // 시드는 읽기 전용이다.
-            // 장치가 없으면 rng 가 소비되지 않아
-            // 시드가 결과에 닿지 못한다.
-            GUILayout.Label(devices == 0
-                ? $"{_stage.StageId}   시드 {_stage.Seed} (장치가 없어 결과에 닿지 않는다)"
-                : $"{_stage.StageId}   시드 {_stage.Seed}   장치 {devices}개 — " +
-                  (_world.AnyPendingWork() ? "대기 중" : "전부 발동 완료"));
-
-            int hazards = CountLiveHazards();
-            if (hazards > 0) GUILayout.Label($"위험 바디 {hazards}개 — 공에 닿으면 Fail");
-
-            DrawTopologyPanel();
-
             GUILayout.EndArea();
+        }
+
+        void DrawPresetTab()
+        {
+            if (_presets == null || _presets.Count == 0)
+            {
+                GUILayout.Label("프리셋 표가 없다 — LeverPresetTests 를 먼저 돌린다.");
+                GUILayout.Label(LeverPresetFile.RelativePath);
+                return;
+            }
+
+            GUILayout.BeginHorizontal();
+            GUILayout.Label($"유형 {_clusterCount}개", GUILayout.Width(60f));
+            int picked = Mathf.RoundToInt(
+                GUILayout.HorizontalSlider(_clusterCount, 2f, 8f, GUILayout.Width(120f)));
+            if (picked != _clusterCount)
+            {
+                _clusterCount = picked;
+                Recluster();
+            }
+            GUILayout.EndHorizontal();
+
+            DrawPresetScatter();
+            DrawPresetDetail();
+        }
+
+        /// <summary>
+        /// 목표 공간 위의 산점도. 한 점이 (공 자리 → 목표) 한 쌍이다.
+        /// 반투명이라 겹친 자리가 짙게 보이고, 색이 같은 무리끼리
+        /// 어느 방향에 모여 있는지가 그대로 드러난다.
+        /// </summary>
+        void DrawPresetScatter()
+        {
+            Bounds(out Vector2 least, out Vector2 most);
+
+            Rect plot = GUILayoutUtility.GetRect(440f, 300f);
+            plot = new Rect(plot.x + 30f, plot.y + 6f, plot.width - 40f, plot.height - 26f);
+
+            Fill(plot, new Color(0f, 0f, 0f, 0.05f));
+
+            // 가로 속도 0 은 눈금이 아니라 기준선이다.
+            // 앞으로 보내는지 뒤로 넘기는지가 여기서 갈린다.
+            float zero = ToPixel(plot, Vector2.zero, least, most).x;
+            if (plot.xMin <= zero && zero <= plot.xMax)
+                Fill(new Rect(zero, plot.y, 1f, plot.height), new Color(0f, 0f, 0f, 0.25f));
+
+            for (int i = 0; i < _presets.Count; i++)
+            {
+                Vector2 at = ToPixel(plot, _presets[i].LaunchVelocity, least, most);
+
+                bool chosen = i == _presetAt;
+                float size = chosen ? 26f : 18f;
+
+                Color color = ClusterColor(_clusters[i]);
+                color.a = chosen ? 1f : 0.35f;
+
+                GUI.color = color;
+                GUI.DrawTexture(
+                    new Rect(at.x - size * 0.5f, at.y - size * 0.5f, size, size), Dot());
+                GUI.color = Color.white;
+            }
+
+            PickFromScatter(plot, least, most);
+
+            // 축 눈금. 모서리에만 적어 점을 가리지 않는다.
+            var corner = new GUIStyle(GUI.skin.label) { fontSize = 10 };
+            GUI.Label(new Rect(plot.x - 30f, plot.y - 2f, 30f, 16f), $"{most.y:F0}", corner);
+            GUI.Label(new Rect(plot.x - 30f, plot.yMax - 14f, 30f, 16f), $"{least.y:F0}", corner);
+            GUI.Label(new Rect(plot.x, plot.yMax + 2f, 40f, 16f), $"{least.x:F0}", corner);
+            GUI.Label(new Rect(plot.xMax - 20f, plot.yMax + 2f, 40f, 16f), $"{most.x:F0}", corner);
+
+            GUILayout.Label("가로 = 수평 발사 속도, 세로 = 수직 발사 속도. 점을 누르면 굴린다");
+        }
+
+        static Vector2 ToPixel(Rect plot, Vector2 value, Vector2 least, Vector2 most)
+        {
+            float x = Mathf.InverseLerp(least.x, most.x, value.x);
+
+            // 화면은 아래로 갈수록 y 가 커진다. 빠르게 쏘는 쪽이 위에 오도록 뒤집는다.
+            float y = 1f - Mathf.InverseLerp(least.y, most.y, value.y);
+
+            return new Vector2(plot.x + x * plot.width, plot.y + y * plot.height);
+        }
+
+        /// <summary>
+        /// 누른 자리에서 가장 가까운 점을 고른다.
+        /// 점끼리 겹치므로 사각형 판정 대신 거리로 찾는다.
+        /// </summary>
+        void PickFromScatter(Rect plot, Vector2 least, Vector2 most)
+        {
+            Event now = Event.current;
+
+            if (now.type != EventType.MouseDown || !plot.Contains(now.mousePosition)) return;
+
+            int nearest = -1;
+            float closest = float.PositiveInfinity;
+
+            for (int i = 0; i < _presets.Count; i++)
+            {
+                Vector2 at = ToPixel(plot, _presets[i].LaunchVelocity, least, most);
+
+                float gap = Vector2.Distance(at, now.mousePosition);
+                if (gap >= closest) continue;
+
+                closest = gap;
+                nearest = i;
+            }
+
+            if (nearest < 0) return;
+
+            ApplyPreset(nearest);
+            now.Use();
+        }
+
+        static void Fill(Rect rect, Color color)
+        {
+            GUI.color = color;
+            GUI.DrawTexture(rect, Texture2D.whiteTexture);
+            GUI.color = Color.white;
+        }
+
+        /// <summary>
+        /// 가장자리가 부드러운 흰 원. 색은 GUI.color 로 입힌다 —
+        /// 무리 색마다 텍스처를 만들면 색을 바꿀 때마다 다시 만들어야 한다.
+        /// </summary>
+        Texture2D Dot()
+        {
+            if (_dot != null) return _dot;
+
+            const int size = 32;
+            _dot = new Texture2D(size, size, TextureFormat.RGBA32, false)
+            {
+                hideFlags = HideFlags.HideAndDontSave,
+            };
+
+            var center = new Vector2((size - 1) * 0.5f, (size - 1) * 0.5f);
+
+            for (int y = 0; y < size; y++)
+            for (int x = 0; x < size; x++)
+            {
+                float away = Vector2.Distance(new Vector2(x, y), center) / (size * 0.5f);
+                _dot.SetPixel(x, y, new Color(1f, 1f, 1f, Mathf.SmoothStep(1f, 0f, away)));
+            }
+
+            _dot.Apply();
+            return _dot;
+        }
+
+        /// <summary>고른 프리셋의 다섯 축과 유도된 값.</summary>
+        void DrawPresetDetail()
+        {
+            LeverPreset preset = _presets[_presetAt];
+            Lever lever = CurrentLever();
+
+            GUILayout.Space(6f);
+            GUILayout.Label(
+                $"유형 {_clusters[_presetAt]}   "
+                + $"잉크 {preset.Ink:F2}   "
+                + $"발사까지 {preset.LaunchStep}스텝 "
+                + $"({preset.LaunchStep * SimWorld.FixedDt:F2}초)");
+
+            GUILayout.Label(
+                $"발사 자리 ({preset.LaunchOffset.x:F2}, {preset.LaunchOffset.y:F2})   "
+                + $"발사 속도 ({preset.LaunchVelocity.x:F2}, {preset.LaunchVelocity.y:F2})");
+
+            GUILayout.Label(
+                $"판 길이 {lever.Length:F2}   "
+                + $"축 자리 {lever.FulcrumAt:F2}   "
+                + $"공 자리 {lever.BallAt:F2}");
+
+            GUILayout.Label(
+                $"추 {lever.WeightRows}줄 (무게 {lever.Weight.Mass:F2})   "
+                + $"낙차 {lever.Drop:F2}");
+
+            GUILayout.Label(
+                $"공 팔 {(lever.BallAt - lever.FulcrumAt) * lever.Length:F2}   "
+                + $"추 팔 {(lever.FulcrumAt - Lever.WeightAt) * lever.Length:F2}   "
+                + $"필요 여유 {lever.RequiredHeadroom:F2}");
+        }
+
+        /// <summary>
+        /// 발사 속도가 퍼져 있는 범위. 점이 가장자리에 붙지 않도록 조금 넓힌다.
+        /// </summary>
+        void Bounds(out Vector2 least, out Vector2 most)
+        {
+            least = new Vector2(float.PositiveInfinity, float.PositiveInfinity);
+            most = new Vector2(float.NegativeInfinity, float.NegativeInfinity);
+
+            for (int i = 0; i < _presets.Count; i++)
+            {
+                Vector2 v = _presets[i].LaunchVelocity;
+
+                least = Vector2.Min(least, v);
+                most = Vector2.Max(most, v);
+            }
+
+            var margin = new Vector2(
+                Mathf.Max((most.x - least.x) * 0.08f, 0.5f),
+                Mathf.Max((most.y - least.y) * 0.08f, 0.5f));
+
+            least -= margin;
+            most += margin;
+        }
+
+        /// 밝은 배경에서 서로 갈리는 색들. 유형 수만큼 돌려 쓴다.
+        static Color ClusterColor(int cluster)
+        {
+            switch (cluster % 8)
+            {
+                case 0: return new Color32(0x7A, 0xC7, 0xC7, 0xFF);
+                case 1: return new Color32(0xE8, 0xA0, 0x7A, 0xFF);
+                case 2: return new Color32(0xA0, 0xC0, 0xE8, 0xFF);
+                case 3: return new Color32(0xC7, 0xA8, 0xE0, 0xFF);
+                case 4: return new Color32(0xB8, 0xD4, 0x8A, 0xFF);
+                case 5: return new Color32(0xE8, 0xC8, 0x7A, 0xFF);
+                case 6: return new Color32(0xE0, 0x9A, 0xB8, 0xFF);
+                default: return new Color32(0xB0, 0xB0, 0xB0, 0xFF);
+            }
         }
 
         /// <summary>
@@ -553,11 +853,17 @@ namespace PPS.Solver.Viewer
         /// 같아야 눈으로 본 것이 근거가 된다.
         /// 풀이를 안 그리므로 레벨마다 한 줄이다.
         /// </summary>
-        static Entry[] BuildCatalog()
+        Entry[] BuildCatalog()
         {
 #if UNITY_INCLUDE_TESTS
-            // 실측 상위가 앞에 온다. 스윕을 다시 돌리면 이 목록만 갈아 끼운다.
             var entries = new List<Entry>();
+
+            // 표가 있으면 맨 앞에 둔다. 격자에서 고른 칸을 그대로 굴린다.
+            if (_presets != null && _presets.Count > 0)
+                entries.Add(new Entry(
+                    "지렛대 프리셋 (표)",
+                    () => ViewerLevers.Stage(CurrentLever()),
+                    () => ViewerLevers.Build(CurrentLever())));
 
             for (int i = 0; i < ViewerLevers.Top.Length; i++)
                 entries.Add(Probe(ViewerLevers.Top[i]));
