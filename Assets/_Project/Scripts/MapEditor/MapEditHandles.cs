@@ -29,6 +29,12 @@ namespace PPS.MapEditor
         /// </summary>
         const float RotateStep = 15f;
 
+        /// <summary>
+        /// 붙여넣은 것을 원본에서 밀어 놓는 거리.
+        /// 겹쳐 놓으면 어느 쪽이 새것인지 알 수 없다.
+        /// </summary>
+        static readonly Vector2 PasteOffset = new Vector2(0.6f, -0.6f);
+
         [SerializeField] MapEditSession _session;
         [SerializeField] CanvasCameraFitter _fitter;
         [SerializeField] ToolPalette _palette;
@@ -61,6 +67,12 @@ namespace PPS.MapEditor
         /// 놓을 때마다 다시 맞추지 않도록 남겨둔다.
         /// </summary>
         float _placeAngle;
+
+        /// 복사해 둔 것의 종류. None 이면 비어 있다.
+        HandleKind _clipKind = HandleKind.None;
+
+        Vector2 _clipStar;
+        StaticSegment _clipSegment;
 
         void Awake()
         {
@@ -95,6 +107,61 @@ namespace PPS.MapEditor
         /// 상단바 삭제 버튼이 부른다.
         /// 시작·목표는 레벨의 필수 요소라 지우지 않는다.
         /// </summary>
+        /// <summary>
+        /// 상단바 복사 버튼이 부른다.
+        /// 시작·목표는 하나씩만 존재해 복사가 성립하지 않는다.
+        /// </summary>
+        public void CopySelected()
+        {
+            var level = _session.Current.Level;
+
+            if (_selected.Kind == HandleKind.Star)
+            {
+                _clipStar = level.Stars[_selected.Index];
+                _clipKind = HandleKind.Star;
+            }
+            else if (_selected.Kind == HandleKind.Terrain)
+            {
+                _clipSegment = level.Terrain[_selected.Index];
+                _clipKind = HandleKind.Terrain;
+            }
+            else
+            {
+                return;
+            }
+
+            Debug.Log($"[맵 에디터] 복사: {_clipKind}");
+        }
+
+        /// <summary>
+        /// 상단바 붙여넣기 버튼이 부른다.
+        /// 붙인 것을 고른 채로 둬서 바로 옮길 수 있게 한다.
+        /// </summary>
+        public void PasteClipboard()
+        {
+            var level = _session.Current.Level;
+
+            if (_clipKind == HandleKind.Star)
+            {
+                if (level.Stars.Count >= MaxStars)
+                {
+                    Debug.Log($"[맵 에디터] 별은 {MaxStars} 개까지다.");
+                    return;
+                }
+
+                Vector2 shift = ClampDelta(PasteOffset, _clipStar, _clipStar);
+                level.Stars.Add(_clipStar + shift);
+                _selected = new Selection(HandleKind.Star, level.Stars.Count - 1);
+            }
+            else if (_clipKind == HandleKind.Terrain)
+            {
+                Vector2 shift = ClampDelta(PasteOffset, _clipSegment.A, _clipSegment.B);
+                level.Terrain.Add(
+                    new StaticSegment(_clipSegment.A + shift, _clipSegment.B + shift));
+                _selected = new Selection(HandleKind.Terrain, level.Terrain.Count - 1);
+            }
+        }
+
         /// <summary>
         /// 상단바 회전 버튼이 부른다.
         /// 고른 지형이 있으면 그것을, 없으면 다음에 놓을
