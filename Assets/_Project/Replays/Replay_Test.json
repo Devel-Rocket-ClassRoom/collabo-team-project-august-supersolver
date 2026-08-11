@@ -1,0 +1,51 @@
+{
+  "Version": 1,
+  "Stage": {
+    "StageId": "ReplayTest",
+    "Seed": 0,
+    "Level": {
+      "InkLimit": 20.0,
+      "BallStart": {
+        "x": -2.0,
+        "y": 2.0
+      },
+      "GoalPosition": {
+        "x": 2.0,
+        "y": 0.0
+      },
+      "Terrain": [
+        {
+          "A": {
+            "x": -4.0,
+            "y": -1.0
+          },
+          "B": {
+            "x": 4.0,
+            "y": -1.0
+          }
+        }
+      ],
+      "Devices": [],
+      "Stars": [],
+      "KillY": -5.0
+    }
+  },
+  "Solution": {
+    "Strokes": [
+      {
+        "Tool": 0,
+        "Points": [
+          {
+            "x": -1.0,
+            "y": 0.5
+          },
+          {
+            "x": 1.0,
+            "y": 0.5
+          }
+        ]
+      }
+    ],
+    "Pivots": []
+  }
+}
