@@ -4,11 +4,28 @@ using UnityEngine;
 namespace PPS.Solver.Tests
 {
     /// <summary>
-    /// 프리미티브가 공을 얼마나 띄우고 보내는지 재는 자.
+    /// 프리미티브가 공을 어디로 언제 보내는지 재는 자.
     /// 무대는 ProbeStage 가 낸다.
     /// </summary>
     public static class MeasureStage
     {
+        /// <summary>
+        /// 한 판 굴리고 공의 자취를 그대로 돌려준다.
+        /// 매 스텝을 담는다 — 실측이라 지나친 자리가 있으면 안 된다.
+        /// </summary>
+        public static TrajectoryBuffer Trace(
+            LevelData level,
+            Solution solution,
+            BallState start,
+            int maxSteps,
+            out SimResult result)
+        {
+            var buffer = new TrajectoryBuffer(1, maxSteps);
+            result = SimRunner.RunSampled(level, solution, 0, buffer, maxSteps, start);
+
+            return buffer;
+        }
+
         /// <summary>
         /// 한 번 굴려 보고 잰 값.
         /// 높이와 거리를 따로 두는 것은 지렛대가 높이를,
@@ -42,19 +59,14 @@ namespace PPS.Solver.Tests
                 => $"{Outcome} @step {EndStep} (rise {Rise:F4}, run {RunAtApex:F4}, end {End})";
         }
 
-        /// <summary>
-        /// 한 판 굴리고 최고점을 집어낸다.
-        /// 매 스텝을 담는다 — 실측이라 최고점을 건너뛰면 안 된다.
-        /// </summary>
+        /// <summary>한 판 굴리고 최고점을 집어낸다.</summary>
         public static Flight Fly(
             LevelData level,
             Solution solution,
             BallState start,
             int maxSteps = SimWorld.DefaultMaxSteps)
         {
-            var buffer = new TrajectoryBuffer(1, maxSteps);
-            SimResult result = SimRunner.RunSampled(
-                level, solution, 0, buffer, maxSteps, start);
+            TrajectoryBuffer buffer = Trace(level, solution, start, maxSteps, out SimResult result);
 
             if (buffer.Count == 0)
                 return new Flight(result.Outcome, result.EndStep, 0f, 0f, start.Position);
