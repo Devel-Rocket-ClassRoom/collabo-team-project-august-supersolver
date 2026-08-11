@@ -45,6 +45,9 @@ namespace PPS.Tools
         StageData _stage; // 어떤 스테이지(레벨)을 재생할지,
         Solution _solution; // 어떤 풀이(플레이어가 그린 그림)을 재생할지 담기.
 
+        // 재시작과 과거 스텝 이동에 사용할 리플레이 원본 데이터를 보관한다.
+        ReplayData _loadedReplayData;
+
         Entry[] _catalog;
         // Start is called once before the first execution of Update after the MonoBehaviour is created
         void Start()
@@ -72,10 +75,20 @@ namespace PPS.Tools
             // 목표 스템을 0부터 MaxSteps 사이의 값으로 제한한다.
             _targetStep = Mathf.Clamp(_targetStep, 0, MaxSteps);
 
+            // 월드를 복원하는 동안 없어지지 않도록 사용자가 선택한 목표를 보관한다.
+            int requestedStep = _targetStep;
+
             // 현재보다 과거 스텝을 선택하면 월드를 처음부터 다시 만든다.
-            if(_targetStep < _world.CurrentStep)
+            if (_targetStep < _world.CurrentStep)
             {
-                Rebuild();
+                // 불러온 리플레이가 있으면 동일한 StageId, Seed, Solution으로 복원한다.
+                if (_loadedReplayData != null)
+                    RestoreReplayWorld(_loadedReplayData);
+                else
+                    Rebuild();
+
+                // 복원된 월드가 사용자가 선택한 스텝까지 다시 전진하도록 목표를 복구한다.
+                _targetStep = requestedStep;
             }
             
             // --------- 목표 스텝까지 전진 생성 ---------------------------
@@ -149,6 +162,32 @@ namespace PPS.Tools
         {
             // 속도값을 1부터 MaxStepsPerFrame 사이로 제한한다.
             _stepsPerFrame = Mathf.Clamp(stepsPerFrame, 1, MaxStepsPerFrame);
+        }
+
+        // 불러온 리플레이를 0스텝부터 다시 시작한다.
+        // 나중에 재시작 버튼이 이 함수를 호출한다.
+        public void Restart()
+        {
+            // 아직 불러온 리플레이가 없다면 재시작 할 수 없다.
+            if (_loadedReplayData == null)
+                return;
+
+            // 동일한 StageId, Seed, Solution으로 물리 월드를 다시 만든다.
+            RestoreReplayWorld(_loadedReplayData);
+
+            // 자동 재생을 다시 시작한다.
+            Play();
+        }
+
+        // 리플레이에서 이동할 목표 스텝을 설정한다.
+        // 나중에 슬라이더나 스크러버 UI가 이 함수를 호출한다.
+        public void SetTargetStep(int targetStep)
+        {
+            // 입력값을 SimWorld가 허용하는 범위로 제한한다.
+            _targetStep = Mathf.Clamp(targetStep, 0, MaxSteps);
+
+            // 사용자가 선택한 스텝에서 멈춰 볼 수 있도록 자동 재생을 중단한다.
+            _isPlaying = false;
         }
         private void OnDestroy()
         {
@@ -334,6 +373,9 @@ namespace PPS.Tools
             // 파일 읽기나 데이터 검증에 실패했다면 중단한다.
             if (replayData == null)
                 return;
+
+            // 재시작과 과거 스텝 이동에서도 같은 리플레이 데이터를 사용하도록 보관한다.
+            _loadedReplayData = replayData;
 
             // 불러온 데이터로 실제 물리 월드를 다시 만든다.
             RestoreReplayWorld(replayData);
