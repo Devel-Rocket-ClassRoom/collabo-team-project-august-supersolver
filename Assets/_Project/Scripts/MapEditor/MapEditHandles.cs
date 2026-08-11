@@ -22,6 +22,13 @@ namespace PPS.MapEditor
         /// 새로 놓는 지형 도형의 크기.
         const float ShapeSize = 1f;
 
+        /// <summary>
+        /// 한 번에 도는 각도(도).
+        /// 자유 회전은 손가락으로 맞추기 어렵고,
+        /// 45도는 완만한 경사를 못 만든다.
+        /// </summary>
+        const float RotateStep = 15f;
+
         [SerializeField] MapEditSession _session;
         [SerializeField] CanvasCameraFitter _fitter;
         [SerializeField] ToolPalette _palette;
@@ -48,6 +55,12 @@ namespace PPS.MapEditor
 
         /// 드래그 중 직전 손가락 위치. 이동량을 여기서 낸다.
         Vector2 _dragFrom;
+
+        /// <summary>
+        /// 다음에 놓을 도형의 각도(도).
+        /// 놓을 때마다 다시 맞추지 않도록 남겨둔다.
+        /// </summary>
+        float _placeAngle;
 
         void Awake()
         {
@@ -82,6 +95,41 @@ namespace PPS.MapEditor
         /// 상단바 삭제 버튼이 부른다.
         /// 시작·목표는 레벨의 필수 요소라 지우지 않는다.
         /// </summary>
+        /// <summary>
+        /// 상단바 회전 버튼이 부른다.
+        /// 고른 지형이 있으면 그것을, 없으면 다음에 놓을
+        /// 각도를 돌린다. 시작·목표·별은 원이라 안 돈다.
+        /// </summary>
+        public void RotateSelected()
+        {
+            if (_selected.Kind != HandleKind.Terrain)
+            {
+                _placeAngle += RotateStep;
+                Debug.Log($"[맵 에디터] 놓을 각도: {_placeAngle % 360f:F0}도");
+                return;
+            }
+
+            var terrain = _session.Current.Level.Terrain;
+            var segment = terrain[_selected.Index];
+
+            Vector2 center = (segment.A + segment.B) * 0.5f;
+            Vector2 a = Rotate(segment.A - center, RotateStep) + center;
+            Vector2 b = Rotate(segment.B - center, RotateStep) + center;
+
+            // 돌다가 밖으로 나가면 안으로 밀어 넣는다.
+            Vector2 shift = ClampDelta(Vector2.zero, a, b);
+            terrain[_selected.Index] = new StaticSegment(a + shift, b + shift);
+        }
+
+        static Vector2 Rotate(Vector2 v, float degrees)
+        {
+            float rad = degrees * Mathf.Deg2Rad;
+            float cos = Mathf.Cos(rad);
+            float sin = Mathf.Sin(rad);
+
+            return new Vector2(v.x * cos - v.y * sin, v.x * sin + v.y * cos);
+        }
+
         public void DeleteSelected()
         {
             var level = _session.Current.Level;
@@ -192,6 +240,11 @@ namespace PPS.MapEditor
         {
             Vector2[] points = ShapePoints(center, shape);
             if (points == null) return Selection.None;
+
+            // 놓을 때 각도를 먹인다. 놓고 나면 도형이 변으로
+            // 쪼개져 통째로 돌릴 수 없다.
+            for (int i = 0; i < points.Length; i++)
+                points[i] = Rotate(points[i] - center, _placeAngle) + center;
 
             var terrain = _session.Current.Level.Terrain;
             int first = terrain.Count;
