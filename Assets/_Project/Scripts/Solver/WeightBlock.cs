@@ -43,7 +43,11 @@ namespace PPS.Solver
         public float Mass => Length * ColliderFactory.FreeBodyMassPerUnit;
 
         /// 이 상자에 줄을 몇 개까지 넣어야 겹치지 않는지.
-        public int MaxRows => Mathf.Max(1, Mathf.FloorToInt(Size.y / MinRowGap) + 1);
+        public int MaxRows => RowsIn(Size.y);
+
+        /// 높이 height 인 상자가 겹치지 않게 담을 수 있는 줄 수.
+        public static int RowsIn(float height)
+            => Mathf.Max(1, Mathf.FloorToInt(height / MinRowGap) + 1);
 
         /// <summary>
         /// 상자를 왕복하며 접은 한 줄짜리 폴리라인.

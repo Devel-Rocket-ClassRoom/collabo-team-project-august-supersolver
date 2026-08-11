@@ -6,72 +6,104 @@ namespace PPS.Solver
 {
     /// <summary>
     /// 공을 띄우는 지렛대. 판 하나와 추 하나, 그리고 월드 축이다.
-    /// 공은 판의 한쪽 끝에 얹히고, 반대쪽 끝 위에서 추가 떨어진다.
-    /// 축이 월드에 박혀 있어 받침이 미끄러질 여지가 없다 —
-    /// 실측값이 배치마다 흔들리면 표를 쓸 수 없다.
+    /// 판 위의 자리는 전부 길이 대비 비율로 잡는다 — 같은 비율이면
+    /// 크기만 다른 같은 지렛대라, 프리셋을 찾을 때 축이 겹치지 않는다.
+    /// 판은 늘 수평에서 시작하고, 좌우는 Facing 으로만 갈린다.
     /// </summary>
-    public readonly struct Lever
+    public readonly struct Lever : IPrimitive
     {
-        /// 회전 중심. 월드 좌표.
-        public readonly Vector2 Fulcrum;
-
-        /// 축에서 공이 얹히는 끝까지.
-        public readonly float BallArm;
-
-        /// 축에서 추가 떨어지는 끝까지.
-        public readonly float WeightArm;
+        /// 추 상자의 폭. 판 길이 대비다.
+        public const float WeightWidthRatio = 0.2f;
 
         /// <summary>
-        /// 판의 기울기(라디안). 공 쪽이 이 방향이다 —
-        /// 0 이면 공이 오른쪽, π 면 왼쪽이다.
+        /// 추 상자의 중심이 오는 자리. 상자 반폭과 같아 상자가 판 끝에 맞는다.
+        /// 추를 더 안쪽으로 들이면 팔이 짧아지기만 해서 이득이 없다.
         /// </summary>
-        public readonly float Angle;
+        public const float WeightAt = WeightWidthRatio * 0.5f;
 
-        /// 추가 차지하는 자리. 무게와 무관하게 고정이다.
-        public readonly Vector2 WeightSize;
+        /// 공이 얹히는 자리. 월드 좌표다.
+        public readonly Vector2 BallSeat;
+
+        /// 판 전체 길이.
+        public readonly float Length;
+
+        /// 축이 놓이는 자리. 길이 대비 비율이다.
+        public readonly float FulcrumAt;
+
+        /// 공이 얹히는 자리. 길이 대비 비율이다.
+        public readonly float BallAt;
 
         /// 추에 채운 줄 수. 이것이 추의 무게다.
         public readonly int WeightRows;
 
-        /// 추를 판 끝에서 얼마나 위에 놓을지. 낙차이자 타이밍이다.
+        /// 추 상자 바닥이 판에서 얼마나 위에 있는지. 낙차다.
         public readonly float Drop;
 
+        /// 판이 뻗는 쪽.
+        public readonly bool FacingRight;
+
         public Lever(
-            Vector2 fulcrum, float ballArm, float weightArm,
-            float angle, Vector2 weightSize, int weightRows, float drop)
+            Vector2 ballSeat, float length, float fulcrumAt, float ballAt,
+            int weightRows, float drop, bool facingRight = true)
         {
-            Fulcrum = fulcrum;
-            BallArm = ballArm;
-            WeightArm = weightArm;
-            Angle = angle;
-            WeightSize = weightSize;
-            WeightRows = weightRows;
+            BallSeat = ballSeat;
+            Length = length;
+            FulcrumAt = fulcrumAt;
+            BallAt = ballAt;
+            WeightRows = Mathf.Max(1, weightRows);
             Drop = drop;
+            FacingRight = facingRight;
         }
 
-        /// 공 쪽 방향의 단위 벡터.
-        public Vector2 Along => new Vector2(Mathf.Cos(Angle), Mathf.Sin(Angle));
+        /// <summary>
+        /// 말이 되는 배치인가.
+        /// 추와 공이 축을 사이에 두고 갈라져야 지렛대가 된다.
+        /// </summary>
+        public bool IsValid => FulcrumAt > WeightAt && BallAt > FulcrumAt && BallAt <= 1f;
 
-        /// 공이 얹히는 판 끝.
-        public Vector2 BallEnd => Fulcrum + Along * BallArm;
+        /// 판이 뻗는 방향. 늘 수평이다.
+        public Vector2 Along => FacingRight ? Vector2.right : Vector2.left;
 
-        /// 추가 떨어지는 판 끝.
-        public Vector2 WeightEnd => Fulcrum - Along * WeightArm;
+        /// 판의 0 지점. 추가 놓이는 쪽 끝이다.
+        public Vector2 Origin => BallSeat - Vector2.up * LevelData.BallRadius
+                                 - Along * (BallAt * Length);
+
+        public Vector2 PlankEnd => Origin + Along * Length;
+
+        public Vector2 Fulcrum => Origin + Along * (FulcrumAt * Length);
+
+        /// 추가 떨어져 닿을 판 위의 자리.
+        public Vector2 WeightFoot => Origin + Along * (WeightAt * Length);
+
+        public float WeightWidth => WeightWidthRatio * Length;
 
         /// <summary>
-        /// 공을 얹어 둘 자리. 판 끝에 반지름만큼 띄워 올린다.
-        /// 판에 파묻힌 채로 시작하면 밀려나며 튄다.
+        /// 상자 높이. 줄 수가 무게를 정하므로 높이는 그 줄이
+        /// 겹치지 않게 들어갈 최소치다 — 더 키우면 자리만 먹는다.
         /// </summary>
-        public Vector2 BallSeat => BallEnd + Vector2.up * LevelData.BallRadius;
+        public float WeightHeight => (WeightRows - 1) * WeightBlock.MinRowGap;
 
-        /// <summary>
-        /// 떨어뜨릴 추. 상자 아래가 판 끝에서 Drop 만큼 위에 온다 —
-        /// 낙차를 상자 크기와 무관하게 읽으려면 바닥을 기준으로 잡아야 한다.
-        /// </summary>
         public WeightBlock Weight => new WeightBlock(
-            WeightEnd + Vector2.up * (Drop + WeightSize.y * 0.5f),
-            WeightSize,
+            WeightFoot + Vector2.up * (Drop + WeightHeight * 0.5f),
+            new Vector2(WeightWidth, WeightHeight),
             WeightRows);
+
+        /// <summary>
+        /// 이 지렛대를 놓으려면 추 자리 위로 필요한 세로 공간.
+        /// 배치할 때 지형 여유와 견주는 값이다.
+        /// </summary>
+        public float RequiredHeadroom => Drop + WeightHeight;
+
+        /// 판과 추를 그리는 데 드는 잉크. 후보를 볼 순서를 정한다.
+        public float Ink => Length + Weight.Length;
+
+        /// 같은 지렛대를 반대쪽으로 뒤집은 것.
+        public Lever Mirrored => new Lever(
+            BallSeat, Length, FulcrumAt, BallAt, WeightRows, Drop, !FacingRight);
+
+        /// 이 지렛대를 다른 자리에 그대로 옮긴 것.
+        public Lever At(Vector2 ballSeat) => new Lever(
+            ballSeat, Length, FulcrumAt, BallAt, WeightRows, Drop, FacingRight);
 
         /// <summary>
         /// 판·추·축을 솔루션에 붙인다.
@@ -84,11 +116,14 @@ namespace PPS.Solver
 
             solution.Strokes.Add(new Stroke(
                 ToolType.FreeBody,
-                new List<Vector2> { WeightEnd, BallEnd }));
+                new List<Vector2> { Origin, PlankEnd }));
 
             solution.Strokes.Add(Weight.ToStroke());
 
             solution.Pivots.Add(new PivotJoint(plank, PivotJoint.WorldIndex, Fulcrum));
         }
+
+        public override string ToString()
+            => $"L{Length:F2} 축{FulcrumAt:F2} 공{BallAt:F2} {WeightRows}줄 낙차{Drop:F2}";
     }
 }

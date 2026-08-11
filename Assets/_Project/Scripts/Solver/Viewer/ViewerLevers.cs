@@ -1,19 +1,16 @@
+using System.Collections.Generic;
 using PPS.Core;
 using UnityEngine;
 
 namespace PPS.Solver.Viewer
 {
     /// <summary>
-    /// LeverSweepTests 가 1800 조합에서 뽑은, 공을 앞으로 가장 멀리
-    /// 보낸 열 개. 상승순이 아니라 수평 이동순이다 —
-    /// 통로를 따라 보내려면 뒤로 넘기지 않는 쪽이 쓸 조합이다.
-    /// 값은 축에서 나온 원값이다. 로그는 소수 둘째 자리에서 잘려
-    /// 그대로 옮기면 뷰어가 실측과 다른 것을 보여준다.
+    /// 축을 하나씩만 바꿔 늘어놓은 지렛대들.
+    /// 축이 셋뿐이라 상위 몇 개를 고르는 대신 격자를 그대로 걸어 둔다 —
+    /// 나란히 보면 어느 축이 무엇을 바꾸는지가 표보다 빨리 보인다.
     /// </summary>
     public static class ViewerLevers
     {
-        static readonly Vector2 WeightSize = new Vector2(1f, 0.8f);
-
         public readonly struct Sample
         {
             public readonly string Name;
@@ -26,26 +23,33 @@ namespace PPS.Solver.Viewer
             }
         }
 
-        /// 수평 이동 큰 순. 이름의 두 숫자가 실측한 상승과 수평 이동이다.
-        public static readonly Sample[] Top =
-        {
-            Make("1  →2.48 ↑1.24", 2.375f, 3.125f, 0f, 7, 10f),
-            Make("2  →2.17 ↑1.02", 2.375f, 3.125f, 0f, 5, 10f),
-            Make("3  →1.99 ↑2.75", 2.375f, 3.125f, 0f, 7, 8.1f),
-            Make("4  →1.88 ↑2.63", 2.375f, 2.25f, 0.4f, 7, 6.2f),
-            Make("5  →1.76 ↑0.68", 2.375f, 3.125f, 0f, 3, 10f),
-            Make("6  →1.75 ↑2.33", 2.375f, 3.125f, 0f, 5, 8.1f),
-            Make("7  →1.67 ↑2.26", 1.125f, 1.375f, 0.4f, 7, 4.3f),
-            Make("8  →1.63 ↑1.90", 2.375f, 2.25f, 0.4f, 5, 6.2f),
-            Make("9  →1.47 ↑1.75", 1.125f, 1.375f, 0.4f, 5, 4.3f),
-            Make("10 →1.36 ↑0.61", 1.75f, 2.25f, 0f, 7, 4.3f),
-        };
+        public static readonly Sample[] Top = Grid();
 
-        static Sample Make(
-            string name, float ballArm, float weightArm, float angle, int rows, float drop)
-            => new Sample(
-                name,
-                new Lever(Vector2.zero, ballArm, weightArm, angle, WeightSize, rows, drop));
+        /// <summary>
+        /// 판 길이 × 축 자리 × 여유 공간. 이름에 유도된 값도 같이 적는다 —
+        /// 상자 높이와 낙차는 고른 값이 아니라 여유에서 풀려 나온 값이다.
+        /// </summary>
+        static Sample[] Grid()
+        {
+            float[] fulcrums = { 0.3f, 0.7f };
+            int[] rows = { 10, 34 };
+            float[] drops = { 2f, 8f };
+
+            var samples = new List<Sample>();
+
+            for (int f = 0; f < fulcrums.Length; f++)
+            for (int w = 0; w < rows.Length; w++)
+            for (int d = 0; d < drops.Length; d++)
+            {
+                var lever = new Lever(Vector2.zero, 3f, fulcrums[f], 0.9f, rows[w], drops[d]);
+                if (!lever.IsValid) continue;
+
+                samples.Add(new Sample(
+                    $"축{fulcrums[f]:F1} {rows[w]}줄 낙차{drops[d]:F0}", lever));
+            }
+
+            return samples.ToArray();
+        }
 
         public static StageData Stage(in Lever lever)
             => new StageData
