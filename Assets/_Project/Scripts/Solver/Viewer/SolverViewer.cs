@@ -74,8 +74,29 @@ namespace PPS.Solver.Viewer
         /// 지금 펼친 탭. 0 = 카탈로그, 1 = 프리셋.
         int _tab;
 
+        /// <summary>
+        /// 레벨을 세 패스로 풀어 볼지. 끄면 통로만 그려 준다 —
+        /// 통로를 하나씩 넘겨 보려면 탐색이 낸 답 하나로는 안 된다.
+        /// </summary>
+        bool _useSearch = true;
+
+        /// 시도 목록에서 고른 판. -1 이면 답(없으면 가장 가까웠던 것)을 본다.
+        int _attemptAt = -1;
+
+        /// 패스로 거르기. 0 이면 전부.
+        int _attemptPass;
+
+        Vector2 _attemptScroll;
+
         /// 산점도의 점. 색만 바꿔 가며 쓴다.
         Texture2D _dot;
+
+        /// <summary>
+        /// 스테이지별 탐색 결과. 스텝을 되감을 때마다 Rebuild 가 도는데,
+        /// 탐색은 수백 번 굴리는 일이라 그때마다 다시 할 수 없다.
+        /// </summary>
+        readonly Dictionary<string, SolveReport> _searched =
+            new Dictionary<string, SolveReport>();
 
         /// 실제 두께(월드 단위). FitCamera 가 계산한다.
         float _lineWidth = 0.09f;
@@ -129,9 +150,13 @@ namespace PPS.Solver.Viewer
             _stage = entry.MakeStage();
 
             _paths = BallPath.Find(_stage.Level);
-            _solutions = entry.MakeSolution == null
+
+            // 풀이를 직접 주는 항목이라도 지금은 안 낼 수 있다 — 탐색을 끈 경우다.
+            Solution given = entry.MakeSolution?.Invoke();
+
+            _solutions = given == null
                 ? new SolutionBuilder().Build(_stage)
-                : new List<Solution> { entry.MakeSolution() };
+                : new List<Solution> { given };
 
             _index = Mathf.Clamp(_index, 0, Mathf.Max(0, _solutions.Count - 1));
             _solution = _solutions.Count == 0 ? Solution.Empty : _solutions[_index];
@@ -155,6 +180,10 @@ namespace PPS.Solver.Viewer
             _levelIndex = index;
             _targetStep = 0;
             _stepInput = "0";
+
+            // 레벨이 바뀌면 고른 시도는 뜻을 잃는다.
+            _attemptAt = -1;
+
             Rebuild();
             FitCamera();
         }
@@ -189,6 +218,43 @@ namespace PPS.Solver.Viewer
         /// 지금 고른 프리셋. 공은 원점에 둔다 — 표가 어긋남만 담고 있다.
         Lever CurrentLever() => _presets[_presetAt].ToLever(Vector2.zero);
 
+        // ── 탐색 ──
+
+        /// <summary>
+        /// 두 패스를 돌려 나온 그림. 스테이지마다 한 번만 돈다.
+        /// 프리셋이 없으면 통로 패스만으로도 볼 것이 있으므로 그대로 진행한다.
+        /// </summary>
+        Solution Searched(StageData stage)
+        {
+            if (!_searched.TryGetValue(stage.StageId, out SolveReport report))
+            {
+                var search = new SolutionSearch(
+                    LeverPresetFile.Exists
+                        ? LeverPresets.Load()
+                        : new LeverPresets(new List<LeverPreset>()));
+
+                report = search.Solve(stage);
+                _searched[stage.StageId] = report;
+            }
+
+            // 시도 목록에서 고른 것이 있으면 그것이 우선이다.
+            if (_attemptAt >= 0 && report.Log != null && _attemptAt < report.Log.Count)
+                return report.Log[_attemptAt].Solution;
+
+            // 못 풀었으면 가장 가까이 갔던 것을 대신 보여준다.
+            // 빈 화면보다는 어디서 어긋났는지가 보이는 편이 낫다.
+            return report.Solution ?? report.Closest ?? Solution.Empty;
+        }
+
+        /// 고른 시도를 굴린다.
+        void ApplyAttempt(int index)
+        {
+            _attemptAt = index;
+            _targetStep = 0;
+            _stepInput = "0";
+            Rebuild();
+        }
+
         // ── 표시 ──
 
         void OnGUI()
@@ -213,12 +279,61 @@ namespace PPS.Solver.Viewer
             GUILayout.Space(6f);
 
             if (_tab == 0) DrawCatalogTab();
+            else if (_tab == 1) DrawAttemptTab();
             else DrawPresetTab();
 
             GUILayout.EndArea();
         }
 
-        static readonly string[] TabNames = { "카탈로그", "프리셋" };
+        static readonly string[] TabNames = { "카탈로그", "시도", "프리셋" };
+
+        static readonly string[] PassNames = { "전부", "1 통로", "2 지렛대", "3 지렛대+통로" };
+
+        /// <summary>
+        /// 탐색이 굴려 본 판들. 실패한 것까지 골라 재생할 수 있다 —
+        /// 왜 못 풀었는지는 결과 숫자가 아니라 그 판을 봐야 알 수 있다.
+        /// </summary>
+        void DrawAttemptTab()
+        {
+            if (!_searched.TryGetValue(_stage.StageId, out SolveReport report) || report.Log == null)
+            {
+                GUILayout.Label("탐색을 거치지 않은 스테이지다.");
+                GUILayout.Label("카탈로그 탭에서 '탐색으로 풀기'를 켠 뒤 레벨을 고른다.");
+                return;
+            }
+
+            GUILayout.Label($"{report}");
+
+            int pass = GUILayout.Toolbar(_attemptPass, PassNames);
+            if (pass != _attemptPass) _attemptPass = pass;
+
+            if (GUILayout.Button(_attemptAt < 0 ? "▶ 결과 보는 중" : "결과로 돌아가기"))
+                ApplyAttempt(-1);
+
+            GUILayout.Space(4f);
+
+            _attemptScroll = GUILayout.BeginScrollView(_attemptScroll, GUILayout.Height(420f));
+
+            for (int i = 0; i < report.Log.Count; i++)
+            {
+                Attempt attempt = report.Log[i];
+                if (_attemptPass != 0 && (int)attempt.Pass != _attemptPass) continue;
+
+                // 목표에 닿은 판은 색으로 구분한다. 목록이 길어 눈으로 훑게 된다.
+                Color was = GUI.backgroundColor;
+                GUI.backgroundColor = attempt.Outcome == SimOutcome.Clear
+                    ? new Color32(0xB8, 0xD4, 0x8A, 0xFF)
+                    : i == _attemptAt
+                        ? new Color32(0x7A, 0xC7, 0xC7, 0xFF)
+                        : was;
+
+                if (GUILayout.Button($"#{i}  {attempt}")) ApplyAttempt(i);
+
+                GUI.backgroundColor = was;
+            }
+
+            GUILayout.EndScrollView();
+        }
 
         void DrawCatalogTab()
         {
@@ -226,6 +341,13 @@ namespace PPS.Solver.Viewer
             if (picked != _levelIndex) ApplyLevel(picked);
 
             GUILayout.Space(6f);
+
+            bool search = GUILayout.Toggle(_useSearch, " 탐색으로 풀기 (끄면 통로만)");
+            if (search != _useSearch)
+            {
+                _useSearch = search;
+                ApplyLevel(_levelIndex);
+            }
 
             int devices = _world.Level.Devices == null ? 0 : _world.Level.Devices.Count;
 
@@ -239,6 +361,16 @@ namespace PPS.Solver.Viewer
 
             int hazards = CountLiveHazards();
             if (hazards > 0) GUILayout.Label($"위험 바디 {hazards}개 — 공에 닿으면 Fail");
+
+            // 탐색을 거친 스테이지만 결과가 있다. 나머지는 통로를 그대로 쓴다.
+            if (_searched.TryGetValue(_stage.StageId, out SolveReport report))
+            {
+                GUILayout.Label($"탐색 결과 — {report}");
+
+                // 지금 보고 있는 것이 답인지 실패작인지 헷갈리면 안 된다.
+                if (!report.Cleared && report.Closest != null)
+                    GUILayout.Label("화면은 가장 가까이 갔던 시도다 — 답이 아니다");
+            }
 
             DrawTopologyPanel();
         }
@@ -810,9 +942,8 @@ namespace PPS.Solver.Viewer
             public readonly Func<StageData> MakeStage;
 
             /// <summary>
-            /// 풀이를 직접 주는 자리. null 이면 SolutionBuilder 가 낸다.
-            /// 아직 SolutionBuilder 에 붙지 않은 도구를 눈으로 보려면
-            /// 통로를 거치지 않고 넣을 길이 있어야 한다.
+            /// 풀이를 직접 주는 자리. 없거나 null 을 내면 SolutionBuilder 가 낸다.
+            /// 낼 때마다 물어보는 것은 탐색을 껐다 켰다 할 수 있어야 해서다.
             /// </summary>
             public readonly Func<Solution> MakeSolution;
 
@@ -828,24 +959,15 @@ namespace PPS.Solver.Viewer
         /// 레벨 팩토리를 스테이지로 감싼다.
         /// 장치가 없으면 시드는 아무 값이나 같다.
         /// </summary>
-        static Entry Stage(string name, Func<LevelData> makeLevel, int seed = 0)
+        /// <summary>
+        /// 레벨 하나. 탐색이 켜져 있으면 세 패스를 거친 그림을,
+        /// 꺼져 있으면 SolutionBuilder 가 낸 통로들을 보여준다.
+        /// </summary>
+        Entry Stage(string name, Func<LevelData> makeLevel, int seed = 0)
             => new Entry(
                 name,
-                () => new StageData { StageId = name, Seed = seed, Level = makeLevel() });
-
-        /// <summary>
-        /// 도구 하나만 놓고 보는 자리.
-        /// 통로에서 유도된 배치가 아니라 실측값을 그대로 넣는다.
-        /// </summary>
-        static Entry Probe(in ViewerLevers.Sample sample)
-        {
-            Lever lever = sample.Lever;
-
-            return new Entry(
-                sample.Name,
-                () => ViewerLevers.Stage(lever),
-                () => ViewerLevers.Build(lever));
-        }
+                () => new StageData { StageId = name, Seed = seed, Level = makeLevel() },
+                () => _useSearch ? Searched(_stage) : null);
 
         /// <summary>
         /// 레벨은 전부 픽스처 어셈블리에서 온다.
@@ -865,8 +987,9 @@ namespace PPS.Solver.Viewer
                     () => ViewerLevers.Stage(CurrentLever()),
                     () => ViewerLevers.Build(CurrentLever())));
 
-            for (int i = 0; i < ViewerLevers.Top.Length; i++)
-                entries.Add(Probe(ViewerLevers.Top[i]));
+            // 패스를 가르는 최소 레벨들. 테스트가 쓰는 것과 같다.
+            entries.Add(Stage("비탈", SearchLevels.Slope));
+            entries.Add(Stage("오르막", SearchLevels.Uphill));
 
             entries.AddRange(new[]
             {
@@ -879,11 +1002,6 @@ namespace PPS.Solver.Viewer
                 Stage("L001 (JSON 파일)", SampleLevelFile.Load),
                 Stage("L002 전 피처 (JSON)", FeatureLevelFile.LoadLevel),
                 Stage("Ramp", TestLevels.RampToGoal),
-                Stage("Gap", TestLevels.Gap),
-                Stage("FlatRest", TestLevels.FlatRest),
-                Stage("FreeFall", TestLevels.FreeFall),
-                Stage("LongRoll", TestLevels.LongRoll),
-                Stage("PivotSwing", TestLevels.PivotSwing),
 
                 // 시드 7 = FragBombPitStage 의 기본값.
                 Stage("파편 구덩이", TestLevels.FragBombPit, seed: 7),
