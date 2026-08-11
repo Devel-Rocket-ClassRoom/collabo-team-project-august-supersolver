@@ -26,6 +26,9 @@ namespace PPS.Tools
         // 드로잉 툴이 만든 Solution JSON 파일이다.
         [SerializeField] TextAsset _solutionJson;
 
+        // 생성된 물리 월드를 실제 화면에 그릴 컴포넌트다.
+        [SerializeField] ReplayWorldView _worldView;
+
         SimWorld _world;  // 현재 재생할 물리 세계를 담기.
         StageData _stage; // 어떤 스테이지(레벨)을 재생할지,
         Solution _solution; // 어떤 풀이(플레이어가 그린 그림)을 재생할지 담기.
@@ -185,6 +188,9 @@ namespace PPS.Tools
             // 재생 위치와 상태를 초기화한다.
             _targetStep = 0;
             _isPlaying = false;
+
+            // 새로 생성한 물리 월드와 레벨 정보를 화면 표시 컴포넌트에 전달한다.
+            _worldView?.Show(_stage.Level, _world);
         }
         // Inspector에 연결된 두 Json 파일을 읽어 리플레이 월드를 구성한다.
         public void LoadReplayInputs()
@@ -214,6 +220,9 @@ namespace PPS.Tools
         {
             _world?.Dispose();
             _world = null;
+
+            // 파괴된 물리 월드를 더 이상 화면에 그리지 않도록 연결을 해제한다.
+            _worldView?.Clear();
         }
     }
 

@@ -617,6 +617,7 @@ GameObject:
   m_Component:
   - component: {fileID: 913037228}
   - component: {fileID: 913037227}
+  - component: {fileID: 913037229}
   m_Layer: 0
   m_Name: GameObject
   m_TagString: Untagged
@@ -641,6 +642,7 @@ MonoBehaviour:
   _stepsPerFrame: 1
   _stageJson: {fileID: 4900000, guid: 27e188d254392714aa8018a514105894, type: 3}
   _solutionJson: {fileID: 4900000, guid: ac4b968ea926f304f8b3ab2e0a41c7fc, type: 3}
+  _worldView: {fileID: 913037229}
 --- !u!4 &913037228
 Transform:
   m_ObjectHideFlags: 0
@@ -656,6 +658,25 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &913037229
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 913037226}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 866a4b0e5735c1d43bb1b39faad5085c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::PPS.Tools.ReplayWorldView
+  _ballColor: {r: 1, g: 0, b: 0, a: 1}
+  _staticColor: {r: 0, g: 0, b: 0, a: 1}
+  _dynamicColor: {r: 0, g: 0, b: 1, a: 1}
+  _goalColor: {r: 0, g: 1, b: 0, a: 1}
+  _hazardColor: {r: 1, g: 0.4, b: 0, a: 1}
+  _starColor: {r: 1, g: 0.92156863, b: 0.015686275, a: 1}
+  _killLineColor: {r: 1, g: 0, b: 0, a: 1}
 --- !u!1 &1164798464
 GameObject:
   m_ObjectHideFlags: 0
