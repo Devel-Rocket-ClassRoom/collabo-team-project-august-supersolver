@@ -10,15 +10,6 @@ namespace PPS.DrawingTool
     /// </summary>
     public static class PivotPlacement
     {
-        /// <summary>
-        /// 붙을 획을 아직 못 정한 슬롯. 핀을 먼저 놓고
-        /// 나중에 그은 획을 받는 순서를 위해 있다.
-        /// Core 는 이 값을 모른다 — 음수 슬롯을 "붙일 바디
-        /// 없음"으로 보는 `WorldBuilder` 의 규칙에 얹혀 있다.
-        /// 그래서 이 값을 모르는 소비자는 월드 고정으로 읽고,
-        /// 그건 상대가 붙기 전 동작과 같다.
-        /// </summary>
-        public const int Unbound = -2;
 
         /// <summary>
         /// 반경 안의 획을 최근에 그린 순으로 집어 핀을 만든다.
@@ -63,9 +54,9 @@ namespace PPS.DrawingTool
             if (!worldAnchored && a < 0) return false;
 
             pivot = new PivotJoint(
-                a < 0 ? Unbound : a,
+                a < 0 ? PivotJoint.Unbound : a,
                 worldAnchored ? PivotJoint.WorldIndex
-                    : (b < 0 ? Unbound : b),
+                    : (b < 0 ? PivotJoint.Unbound : b),
                 anchor);
             return true;
         }
@@ -90,13 +81,13 @@ namespace PPS.DrawingTool
 
                 // 빈 칸은 획 종류를 안 가린다 —
                 // (자유물체, 고정선) 도 멀쩡한 조인트다.
-                if (pivot.StrokeA == Unbound)
+                if (pivot.StrokeA == PivotJoint.Unbound)
                 {
                     pivots[i] = new PivotJoint(index, pivot.StrokeB, pivot.Anchor);
                     continue;
                 }
 
-                if (pivot.StrokeB == Unbound)
+                if (pivot.StrokeB == PivotJoint.Unbound)
                 {
                     pivots[i] = new PivotJoint(pivot.StrokeA, index, pivot.Anchor);
                     continue;
@@ -117,7 +108,7 @@ namespace PPS.DrawingTool
         /// 동적 바디를 물고 있는가. false 면 데이터에만 있고
         /// 물리에는 조인트가 안 생긴다.
         /// </summary>
-        public static bool HasDynamic(List<Stroke> strokes, in PivotJoint pivot) =>
+        static bool HasDynamic(List<Stroke> strokes, in PivotJoint pivot) =>
             IsDynamic(strokes, pivot.StrokeA) || IsDynamic(strokes, pivot.StrokeB);
 
         static bool IsDynamic(List<Stroke> strokes, int index) =>

@@ -166,7 +166,7 @@ namespace PPS.DrawingTool.Tests
                 solution, V(0f, 0.5f), Radius, worldAnchored: false, out PivotJoint pivot));
 
             Assert.AreEqual(0, pivot.StrokeA);
-            Assert.AreEqual(PivotPlacement.Unbound, pivot.StrokeB, "상대를 월드로 굳히면 안 된다");
+            Assert.AreEqual(PivotJoint.Unbound, pivot.StrokeB, "상대를 월드로 굳히면 안 된다");
         }
 
         [Test]
@@ -177,7 +177,7 @@ namespace PPS.DrawingTool.Tests
             Assert.IsTrue(PivotPlacement.TryResolve(
                 solution, V(0f, 0.5f), Radius, worldAnchored: true, out PivotJoint pivot));
 
-            Assert.AreEqual(PivotPlacement.Unbound, pivot.StrokeA);
+            Assert.AreEqual(PivotJoint.Unbound, pivot.StrokeA);
             Assert.AreEqual(PivotJoint.WorldIndex, pivot.StrokeB);
         }
 

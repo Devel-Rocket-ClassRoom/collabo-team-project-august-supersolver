@@ -115,6 +115,24 @@ namespace PPS.DrawingTool
             line.SetPropertyBlock(_block);
         }
 
+        /// <summary>
+        /// 얼마나 채워졌는가. 월드 슬롯(-1)은 이미 정해진
+        /// 값이라 채워진 것으로 본다 — 월드 고정은 획 하나로
+        /// 완성이다.
+        /// </summary>
+        static Color PivotColor(in PivotJoint pivot)
+        {
+            bool waiting = pivot.StrokeA == PivotJoint.Unbound
+                || pivot.StrokeB == PivotJoint.Unbound;
+
+            if (!waiting) return new Color(0.30f, 0.90f, 0.45f);   // 초록 — 완성
+
+            bool any = pivot.StrokeA >= 0 || pivot.StrokeB >= 0;
+            return any
+                ? new Color(1f, 0.85f, 0.25f)                      // 노랑 — 하나만
+                : new Color(0.75f, 0.78f, 0.85f);                  // 회색 — 아직 없음
+        }
+
         LineRenderer CreateLine(string name)
         {
             var line = new GameObject(name).AddComponent<LineRenderer>();
@@ -142,12 +160,7 @@ namespace PPS.DrawingTool
             {
                 PivotJoint pivot = pivots[i];
 
-                // 물리에 조인트가 실제로 생기는 핀만 진하다.
-                // 흐린 핀은 지나갈 획을 기다리는 중이다.
-                Gizmos.color = PivotPlacement.HasDynamic(solution.Strokes, pivot)
-                    ? new Color(1f, 0.3f, 0.8f)
-                    : new Color(0.45f, 0.45f, 0.5f);
-
+                Gizmos.color = PivotColor(pivot);
                 Gizmos.DrawWireSphere(pivot.Anchor, PivotGizmoRadius);
 
                 // 월드 고정은 테두리를 하나 더 둘러 단독 핀과 가른다.
