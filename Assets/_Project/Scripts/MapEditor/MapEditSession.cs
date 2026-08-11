@@ -16,6 +16,12 @@ namespace PPS.MapEditor
 
         public StageData Current => _stage;
 
+        /// <summary>
+        /// 실행 취소가 예전 상태로 되돌릴 때 쓴다.
+        /// 통째로 갈아끼워야 고른 번호도 함께 풀린다.
+        /// </summary>
+        public void Replace(StageData stage) => _stage = stage;
+
         /// <summary>빈 맵으로 새로 시작한다.</summary>
         public void NewMap()
         {
