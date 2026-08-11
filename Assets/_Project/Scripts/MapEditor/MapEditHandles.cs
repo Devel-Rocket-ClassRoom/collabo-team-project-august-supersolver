@@ -38,6 +38,7 @@ namespace PPS.MapEditor
         [SerializeField] MapEditSession _session;
         [SerializeField] CanvasCameraFitter _fitter;
         [SerializeField] ToolPalette _palette;
+        [SerializeField] MapEditHistory _history;
 
         [SerializeField] int _starTab = 3;
         [SerializeField] int _terrainTab = 1;
@@ -74,6 +75,10 @@ namespace PPS.MapEditor
         Vector2 _clipStar;
         StaticSegment _clipSegment;
 
+        /// 이번 드래그의 스냅샷을 이미 남겼는가.
+        /// 끄는 내내 남기면 되돌리기가 한 픽셀씩 간다.
+        bool _dragRecorded;
+
         void Awake()
         {
             _startHandle = CreateHandle("StartHandle", MapHandleGfx.Circle);
@@ -103,10 +108,6 @@ namespace PPS.MapEditor
             _dragging = false;
         }
 
-        /// <summary>
-        /// 상단바 삭제 버튼이 부른다.
-        /// 시작·목표는 레벨의 필수 요소라 지우지 않는다.
-        /// </summary>
         /// <summary>
         /// 상단바 복사 버튼이 부른다.
         /// 시작·목표는 하나씩만 존재해 복사가 성립하지 않는다.
@@ -141,6 +142,8 @@ namespace PPS.MapEditor
         {
             var level = _session.Current.Level;
 
+            if (_clipKind == HandleKind.None) return;
+
             if (_clipKind == HandleKind.Star)
             {
                 if (level.Stars.Count >= MaxStars)
@@ -149,12 +152,16 @@ namespace PPS.MapEditor
                     return;
                 }
 
+                Record();
+
                 Vector2 shift = ClampDelta(PasteOffset, _clipStar, _clipStar);
                 level.Stars.Add(_clipStar + shift);
                 _selected = new Selection(HandleKind.Star, level.Stars.Count - 1);
             }
             else if (_clipKind == HandleKind.Terrain)
             {
+                Record();
+
                 Vector2 shift = ClampDelta(PasteOffset, _clipSegment.A, _clipSegment.B);
                 level.Terrain.Add(
                     new StaticSegment(_clipSegment.A + shift, _clipSegment.B + shift));
@@ -175,6 +182,8 @@ namespace PPS.MapEditor
                 Debug.Log($"[맵 에디터] 놓을 각도: {_placeAngle % 360f:F0}도");
                 return;
             }
+
+            Record();
 
             var terrain = _session.Current.Level.Terrain;
             var segment = terrain[_selected.Index];
@@ -197,13 +206,20 @@ namespace PPS.MapEditor
             return new Vector2(v.x * cos - v.y * sin, v.x * sin + v.y * cos);
         }
 
+        /// <summary>
+        /// 상단바 삭제 버튼이 부른다.
+        /// 시작·목표는 레벨의 필수 요소라 지우지 않는다.
+        /// </summary>
         public void DeleteSelected()
         {
             var level = _session.Current.Level;
 
+            if (_selected.Kind != HandleKind.Star && _selected.Kind != HandleKind.Terrain) return;
+
+            Record();
+
             if (_selected.Kind == HandleKind.Star) level.Stars.RemoveAt(_selected.Index);
-            else if (_selected.Kind == HandleKind.Terrain) level.Terrain.RemoveAt(_selected.Index);
-            else return;
+            else level.Terrain.RemoveAt(_selected.Index);
 
             _selected = Selection.None;
             _dragging = false;
@@ -223,6 +239,7 @@ namespace PPS.MapEditor
 
                 _dragging = _selected.Kind != HandleKind.None;
                 _dragFrom = world;
+                _dragRecorded = false;
             }
 
             if (pointer.press.wasReleasedThisFrame) _dragging = false;
@@ -235,11 +252,22 @@ namespace PPS.MapEditor
         {
             if (_palette == null) return Selection.None;
 
-            if (_palette.SelectedTab == _starTab) return AddStar(world);
-            if (_palette.SelectedTab == _terrainTab) return AddTerrain(world, _palette.SelectedItem);
+            if (_palette.SelectedTab == _starTab)
+            {
+                Record();
+                return AddStar(world);
+            }
+
+            if (_palette.SelectedTab == _terrainTab)
+            {
+                Record();
+                return AddTerrain(world, _palette.SelectedItem);
+            }
 
             return Selection.None;
         }
+
+        void Record() => _history?.BeginEdit();
 
         /// <summary>
         /// 손가락에 제일 가까운 것 하나만 고른다.
@@ -359,6 +387,12 @@ namespace PPS.MapEditor
         {
             Vector2 delta = world - _dragFrom;
             if (delta == Vector2.zero) return;
+
+            if (!_dragRecorded)
+            {
+                _dragRecorded = true;
+                Record();
+            }
 
             var level = _session.Current.Level;
 
