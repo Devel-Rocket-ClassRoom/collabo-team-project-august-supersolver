@@ -12,5 +12,6 @@ EditorBuildSettings:
     path: Assets/_Project/Scenes/DrawingTool.unity
     guid: a71991063ea7b6240a2a51db5848fe78
   m_configObjects:
+    com.unity.addressableassets: {fileID: 11400000, guid: eab29964b5ebe394d9cae539cedb116f, type: 2}
     com.unity.input.settings.actions: {fileID: -944628639613478452, guid: 052faaac586de48259a63d0c4782560b, type: 3}
   m_UseUCBPForAssetBundles: 0
