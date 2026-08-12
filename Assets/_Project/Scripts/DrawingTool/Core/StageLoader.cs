@@ -13,6 +13,7 @@ namespace PPS.DrawingTool
         [SerializeField] TextAsset _stageJson;
         [SerializeField] CanvasCameraFitter _fitter;
         [SerializeField] DrawInputBehaviour _input;
+        [SerializeField] LevelView _levelView;
 
         /// 읽어 들인 판. 저장 경로가 StageId 를 쓴다.
         public StageData Stage { get; private set; }
@@ -41,6 +42,7 @@ namespace PPS.DrawingTool
             Stage = stage;
             _fitter.SetLevel(stage.Level);
             _input.SetLevel(stage.Level);
+            _levelView.SetLevel(stage.Level);
         }
     }
 }
