@@ -11,29 +11,52 @@ namespace PPS.MapEditor
     {
         StageData _stage = NewStage();
 
+        /// <summary>
+        /// 편집의 원본. 지형 선분은 여기서 구워 낸 결과다.
+        /// </summary>
+        MapShapes _shapes = new MapShapes();
+
         /// 마지막으로 저장·불러온 파일. 없으면 빈 문자열.
         string _path = "";
 
         public StageData Current => _stage;
 
+        public MapShapes Shapes => _shapes;
+
         /// <summary>
         /// 실행 취소가 예전 상태로 되돌릴 때 쓴다.
         /// 통째로 갈아끼워야 고른 번호도 함께 풀린다.
         /// </summary>
-        public void Replace(StageData stage) => _stage = stage;
+        public void Replace(StageData stage, MapShapes shapes)
+        {
+            _stage = stage;
+            _shapes = shapes;
+            Bake();
+        }
+
+        /// <summary>
+        /// 도형을 고친 뒤 부른다.
+        /// 지형은 파생 데이터라 원본이 바뀌면 다시 굽는다.
+        /// </summary>
+        public void Bake() => ShapeBaker.Bake(_shapes, _stage.Level);
 
         /// <summary>빈 맵으로 새로 시작한다.</summary>
         public void NewMap()
         {
             _stage = NewStage();
+            _shapes = new MapShapes { StageId = _stage.StageId };
             _path = "";
+            Bake();
+
             Debug.Log($"[맵 에디터] 새 맵: {_stage.StageId}");
         }
 
         public void Save()
         {
-            MapFile.Save(_stage);
+            Bake();
+            MapFile.Save(_stage, _shapes);
             _path = MapFile.PathOf(_stage.StageId);
+
             Debug.Log($"[맵 에디터] 저장: {_path}");
         }
 
@@ -52,7 +75,10 @@ namespace PPS.MapEditor
             }
 
             _stage = loaded;
+            _shapes = MapFile.LoadShapes(picked, loaded);
             _path = picked;
+            Bake();
+
             Debug.Log($"[맵 에디터] 불러오기: {_stage.StageId}");
 #else
             Debug.LogWarning("[맵 에디터] 불러오기는 에디터에서만 된다.");
@@ -68,6 +94,9 @@ namespace PPS.MapEditor
             if (_path.Length > 0 && MapFile.TryLoad(_path, out var saved))
             {
                 _stage = saved;
+                _shapes = MapFile.LoadShapes(_path, saved);
+                Bake();
+
                 Debug.Log("[맵 에디터] 초기화: 마지막 저장 상태로 되돌림");
                 return;
             }
@@ -75,6 +104,9 @@ namespace PPS.MapEditor
             string stageId = _stage.StageId;
             _stage = NewStage();
             _stage.StageId = stageId;
+            _shapes = new MapShapes { StageId = stageId };
+            Bake();
+
             Debug.Log("[맵 에디터] 초기화: 빈 맵 (저장본 없음)");
         }
 

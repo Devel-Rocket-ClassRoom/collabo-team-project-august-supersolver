@@ -15,5 +15,14 @@ namespace PPS.DrawingTool
 
         /// 이보다 짧은 획은 만들지 않고 롤백한다.
         public const float MinStrokeLength = 0.25f;
+
+        /// <summary>
+        /// 새 획이 이 거리 안을 지나면 붙을 곳 없던 핀이
+        /// 그 획에 걸린다. 탭 반경(dp)과 달리 월드 상수다 —
+        /// 재결합 결과가 Solution 에 저장되므로 기기를 타면
+        /// 같은 그림이 기기마다 다른 판이 된다.
+        /// 값은 획 두께라 "선이 핀을 덮으면 걸린다"가 된다.
+        /// </summary>
+        public const float PivotRebindDistance = 0.12f;
     }
 }
