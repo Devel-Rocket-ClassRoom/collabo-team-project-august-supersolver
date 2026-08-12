@@ -1,34 +1,28 @@
 using System.Collections.Generic;
-using System.IO;
 using NUnit.Framework;
 using UnityEngine;
 
 namespace PPS.Core.Tests
 {
     /// <summary>
-    /// 저장이 그림을 바꾸지 않는가.
-    /// 표기가 한 비트라도 깎이면 저장한 판과
-    /// 솔버가 검증한 판이 다른 판이 된다.
+    /// JSON 왕복이 그림을 바꾸지 않는가. 표기가 한 비트라도
+    /// 깎이면 저장한 판과 솔버가 검증한 판이 다른 판이 된다.
+    /// 그림이 파일로 나가는 길은 이제 ReplayData 하나뿐이다.
     /// </summary>
-    public class SolutionStorageTests
+    public class SolutionJsonTests
     {
-        const string StageId = "T_SolutionStorage";
-
-        [TearDown]
-        public void 남긴_파일을_지운다()
-        {
-            string path = SolutionStorage.PathOf(StageId);
-            if (File.Exists(path)) File.Delete(path);
-        }
-
         [Test]
         public void 임의_좌표_그림이_왕복에서_비트째_보존된다()
         {
-            var original = ArbitrarySolution(20260812);
+            Solution original = ArbitrarySolution(20260812);
 
-            Assert.IsTrue(SolutionStorage.Save(StageId, original), "저장에 실패했다.");
-            Assert.IsTrue(SolutionStorage.TryLoad(StageId, out Solution restored),
-                "저장한 파일을 다시 읽지 못했다.");
+            ReplayData saved = ReplayData.Create(new StageData(), original);
+            Assert.IsNotNull(saved, "리플레이를 만들지 못했다.");
+
+            ReplayData loaded = ReplayData.FromJson(saved.ToJson());
+            Assert.IsNotNull(loaded, "저장한 JSON 을 다시 읽지 못했다.");
+
+            Solution restored = loaded.Solution;
 
             Assert.AreEqual(original.Strokes.Count, restored.Strokes.Count, "획 개수가 다르다.");
             Assert.AreEqual(original.Pivots.Count, restored.Pivots.Count, "핀 개수가 다르다.");
@@ -59,22 +53,6 @@ namespace PPS.Core.Tests
             // 잔량이 이 값 하나로 성립하므로 따로 못 박는다.
             Assert.IsTrue(original.TotalInk().Equals(restored.TotalInk()),
                 $"잉크 총량이 달라졌다: {original.TotalInk():R} → {restored.TotalInk():R}");
-        }
-
-        [Test]
-        public void 없는_판을_읽으면_실패한다()
-        {
-            Assert.IsFalse(SolutionStorage.TryLoad("T_저장한적없는판", out Solution solution));
-            Assert.IsNull(solution);
-        }
-
-        [Test]
-        public void 저장_경로가_사양이_정한_자리다()
-        {
-            string path = SolutionStorage.PathOf("S042");
-
-            StringAssert.StartsWith(Application.persistentDataPath, path);
-            StringAssert.EndsWith(Path.Combine("solutions", "S042.json"), path);
         }
 
         /// <summary>

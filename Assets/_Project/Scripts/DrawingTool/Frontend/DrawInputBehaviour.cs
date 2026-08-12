@@ -45,6 +45,9 @@ namespace PPS.DrawingTool
         /// 확정된 획만 센 잔량. 획을 시작할 때 쓰는 값이다.
         public float RemainingInk => _level.InkLimit - _session.Solution.TotalInk();
 
+        /// <summary>그리던 획을 버린다. 시뮬레이션 진입이 부른다.</summary>
+        public void CancelStroke() => _recognizer.Abort();
+
         /// <summary>
         /// 잉크 상한이 나오는 판을 물린다. 획을 그린 뒤에
         /// 바뀌면 잔량이 음수가 되므로 레벨을 붙일 때

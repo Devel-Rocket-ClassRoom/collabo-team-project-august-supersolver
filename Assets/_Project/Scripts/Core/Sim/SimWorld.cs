@@ -26,6 +26,7 @@ namespace PPS.Core
         readonly System.Random _rng;
         readonly List<IStepLogic> _logics;
         readonly List<Rigidbody2D> _bodies;
+        readonly List<Rigidbody2D> _strokeBodies;
         readonly List<Collider2D> _hazards;
 
         bool _disposed;
@@ -48,6 +49,14 @@ namespace PPS.Core
         /// 이 순서가 곧 해시 순서다.
         /// </summary>
         public IReadOnlyList<Rigidbody2D> Bodies => _bodies;
+
+        /// <summary>
+        /// 그림의 획이 된 바디. 인덱스가 Solution.Strokes 와
+        /// 1:1 이라 무효 스트로크 자리에는 null 이 있다.
+        /// 화면이 획을 따라 그리는 데 쓴다 — Bodies 에서 세면
+        /// 장치가 도중에 덧붙이는 파편에 자리가 밀린다.
+        /// </summary>
+        public IReadOnlyList<Rigidbody2D> StrokeBodies => _strokeBodies;
 
         /// <summary>
         /// 닿으면 실패하는 콜라이더.
@@ -96,6 +105,7 @@ namespace PPS.Core
             Rigidbody2D ball,
             Collider2D ballCollider,
             List<Rigidbody2D> bodies,
+            List<Rigidbody2D> strokeBodies,
             List<Collider2D> hazards,
             List<IStepLogic> logics,
             Judge judge,
@@ -105,6 +115,7 @@ namespace PPS.Core
             _physics = physics;
             _rng = new System.Random(seed);
             _bodies = bodies;
+            _strokeBodies = strokeBodies;
             _hazards = hazards;
             _logics = logics;
 

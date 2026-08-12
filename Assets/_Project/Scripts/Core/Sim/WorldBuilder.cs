@@ -84,14 +84,18 @@ namespace PPS.Core
             }
 
             // 5. 회전축 — 스트로크가 전부 선 뒤에 연결한다.
+            //    상대를 기다리는 핀은 물리에 없다.
             for (int i = 0; i < solution.Pivots.Count; i++)
+            {
+                if (!solution.Pivots[i].IsComplete) continue;
                 CreatePivot(solution.Pivots[i], strokeBodies);
+            }
 
             var judge = new Judge();
             var world = new SimWorld(
                 scene, physics, level, seed,
                 ball, ball.GetComponent<Collider2D>(),
-                bodies, hazards, logics, judge, events);
+                bodies, strokeBodies, hazards, logics, judge, events);
             return world;
         }
 
