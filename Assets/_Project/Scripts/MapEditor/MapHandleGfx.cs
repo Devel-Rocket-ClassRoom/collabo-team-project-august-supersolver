@@ -14,6 +14,31 @@ namespace PPS.MapEditor
         public const float LineWidth = 0.12f;
 
         static Sprite _square;
+        static Sprite _circle;
+
+        /// <summary>
+        /// 편집 핸들용 원. 버텍스와 범위 표시가 쓴다.
+        /// 사각형과 같은 이유로 코드에 둔다 — 편집 중에만
+        /// 보이는 것이라 아틀라스가 비면 편집이 막힌다.
+        /// </summary>
+        public static Sprite Circle => _circle != null ? _circle : _circle = MakeCircle();
+
+        static Sprite MakeCircle()
+        {
+            const int size = 64;
+            var texture = new Texture2D(size, size, TextureFormat.RGBA32, false);
+            float center = (size - 1) * 0.5f;
+
+            for (int y = 0; y < size; y++)
+            for (int x = 0; x < size; x++)
+            {
+                float dist = Vector2.Distance(new Vector2(x, y), new Vector2(center, center));
+                texture.SetPixel(x, y, dist <= center ? Color.white : Color.clear);
+            }
+
+            texture.Apply();
+            return Sprite.Create(texture, new Rect(0, 0, size, size), Vector2.one * 0.5f, size);
+        }
 
         /// <summary>
         /// 선을 늘려 그리는 흰 사각형.

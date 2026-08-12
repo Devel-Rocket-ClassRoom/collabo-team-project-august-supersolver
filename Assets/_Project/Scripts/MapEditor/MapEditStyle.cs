@@ -21,9 +21,13 @@ namespace PPS.MapEditor
         [System.Serializable]
         public sealed class Shapes
         {
-            /// 공·목표처럼 둥근 것. 크기는 코드가 정한다.
+            /// 파편. 작고 여럿이라 그림 하나로 돌려 쓴다.
             public Sprite Dot;
 
+            /// 굴러가는 공. 시작 지점 표시도 같은 그림이다.
+            public Sprite Ball;
+
+            public Sprite Goal;
             public Sprite Star;
             public Sprite Bomb;
             public Sprite FragBomb;
@@ -33,26 +37,23 @@ namespace PPS.MapEditor
 
         public Shapes Sprites = new Shapes();
 
-        [Header("레벨")]
-        public Color Start = new Color32(0xC0, 0x14, 0x3C, 0xFF);
-        public Color Goal = new Color32(0x0E, 0x7A, 0x3C, 0xFF);
-        public Color Star = new Color32(0xE8, 0x9A, 0x1C, 0xFF);
+        /// <summary>
+        /// 덧칠하지 않는다. 아틀라스 그림의 제 색이 나온다.
+        /// 오브젝트는 그림으로 구분한다 — 색은 편집 중에만 쓴다.
+        /// </summary>
+        public static readonly Color Plain = Color.white;
+
+        [Header("편집 가시성 — 편집 중에만 보이는 것들")]
+        /// 지형 선분. 코드가 만든 흰 사각형이라 색이 있어야 한다.
         public Color Terrain = new Color32(0x23, 0x25, 0x2B, 0xFF);
 
-        [Header("장치")]
-        public Color Bomb = new Color32(0x3A, 0x3F, 0x4B, 0xFF);
-        public Color FragBomb = new Color32(0x8A, 0x2B, 0x2B, 0xFF);
-        public Color Spike = new Color32(0x6B, 0x1F, 0x1F, 0xFF);
-        public Color Wind = new Color32(0x2E, 0x86, 0xA8, 0xFF);
-
-        /// 고른 장치가 미치는 범위. 겹쳐 보이게 반투명이다.
-        public Color Reach = new Color32(0xFF, 0x6B, 0x2C, 0x30);
-
-        [Header("편집 핸들")]
         public Color Selected = Color.white;
         public Color Vertex = new Color32(0x3D, 0x8B, 0xFF, 0xFF);
         public Color Bounds = new Color32(0x9A, 0x9A, 0x9A, 0x99);
         public Color Scale = new Color32(0xFF, 0x6B, 0x2C, 0xFF);
+
+        /// 고른 장치가 미치는 범위. 겹쳐 보이게 반투명이다.
+        public Color Reach = new Color32(0xFF, 0x6B, 0x2C, 0x30);
 
         /// 삽입 모드에서 고른 도형의 색. 누르기 전에 알린다.
         public Color Insert = new Color32(0x3D, 0x8B, 0xFF, 0xFF);
@@ -65,17 +66,6 @@ namespace PPS.MapEditor
                 case DeviceType.Spike: return Sprites.Spike;
                 case DeviceType.Wind: return Sprites.Wind;
                 default: return Sprites.Bomb;
-            }
-        }
-
-        public Color ColorOf(DeviceType type)
-        {
-            switch (type)
-            {
-                case DeviceType.FragBomb: return FragBomb;
-                case DeviceType.Spike: return Spike;
-                case DeviceType.Wind: return Wind;
-                default: return Bomb;
             }
         }
 

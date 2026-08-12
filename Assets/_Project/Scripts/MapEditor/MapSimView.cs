@@ -24,8 +24,8 @@ namespace PPS.MapEditor
 
         void Awake()
         {
-            _ball = Create("SimBall", _style.Sprites.Dot);
-            _goal = Create("SimGoal", _style.Sprites.Dot);
+            _ball = Create("SimBall", _style.Sprites.Ball);
+            _goal = Create("SimGoal", _style.Sprites.Goal);
         }
 
         public void OnDraw(SimWorld world)
@@ -37,8 +37,8 @@ namespace PPS.MapEditor
             _ball.gameObject.SetActive(true);
             _goal.gameObject.SetActive(true);
 
-            MapHandleGfx.PlaceDot(_ball, world.Ball.position, LevelData.BallRadius, _style.Start);
-            MapHandleGfx.PlaceDot(_goal, level.GoalPosition, LevelData.GoalRadius, _style.Goal);
+            MapHandleGfx.PlaceDot(_ball, world.Ball.position, LevelData.BallRadius, MapEditStyle.Plain);
+            MapHandleGfx.PlaceDot(_goal, level.GoalPosition, LevelData.GoalRadius, MapEditStyle.Plain);
 
             DrawTerrain(level);
             DrawStars(level);
@@ -71,7 +71,7 @@ namespace PPS.MapEditor
                 if (!used) continue;
 
                 MapHandleGfx.PlaceDot(_starHandles[i], level.Stars[i],
-                    MapEditStyle.StarRadius, _style.Star);
+                    MapEditStyle.StarRadius, MapEditStyle.Plain);
             }
         }
 
@@ -112,7 +112,7 @@ namespace PPS.MapEditor
 
                 MapHandleGfx.PlaceDot(_devices[i],
                     body != null ? body.position : data.Position,
-                    MapEditStyle.RadiusOf(data), _style.ColorOf(data.Type),
+                    MapEditStyle.RadiusOf(data), MapEditStyle.Plain,
                     MapEditStyle.AngleOf(data));
             }
         }
@@ -134,7 +134,7 @@ namespace PPS.MapEditor
                 if (!used) continue;
 
                 MapHandleGfx.PlaceDot(_fragments[i], hazards[i].transform.position,
-                    FragBombDevice.FragmentRadius, _style.FragBomb);
+                    FragBombDevice.FragmentRadius, MapEditStyle.Plain);
             }
         }
 

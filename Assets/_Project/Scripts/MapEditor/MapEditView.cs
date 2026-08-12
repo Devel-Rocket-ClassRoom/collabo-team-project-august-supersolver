@@ -46,10 +46,10 @@ namespace PPS.MapEditor
 
         void Awake()
         {
-            _startHandle = Create("StartHandle", _style.Sprites.Dot);
-            _goalHandle = Create("GoalHandle", _style.Sprites.Dot);
+            _startHandle = Create("StartHandle", _style.Sprites.Ball);
+            _goalHandle = Create("GoalHandle", _style.Sprites.Goal);
             _scaleHandle = Create("ScaleHandle", MapHandleGfx.Square);
-            _reachHandle = Create("ReachHandle", _style.Sprites.Dot);
+            _reachHandle = Create("ReachHandle", MapHandleGfx.Circle);
 
             for (int i = 0; i < _boundsHandles.Length; i++)
                 _boundsHandles[i] = Create($"BoundsHandle_{i}", MapHandleGfx.Square);
@@ -68,9 +68,9 @@ namespace PPS.MapEditor
             _goalHandle.gameObject.SetActive(true);
 
             MapHandleGfx.PlaceDot(_startHandle, model.Level.BallStart, LevelData.BallRadius,
-                Tint(_style.Start, MapHandleKind.Start, 0));
+                Tint(MapEditStyle.Plain, MapHandleKind.Start, 0));
             MapHandleGfx.PlaceDot(_goalHandle, model.Level.GoalPosition, LevelData.GoalRadius,
-                Tint(_style.Goal, MapHandleKind.Goal, 0));
+                Tint(MapEditStyle.Plain, MapHandleKind.Goal, 0));
 
             DrawStars();
             DrawDevices();
@@ -92,7 +92,7 @@ namespace PPS.MapEditor
                 if (!used) continue;
 
                 MapHandleGfx.PlaceDot(_starHandles[i], stars[i], MapEditStyle.StarRadius,
-                    Tint(_style.Star, MapHandleKind.Star, i));
+                    Tint(MapEditStyle.Plain, MapHandleKind.Star, i));
             }
         }
 
@@ -116,7 +116,7 @@ namespace PPS.MapEditor
 
                 MapHandleGfx.PlaceDot(_deviceHandles[i], devices[i].Position,
                     MapEditStyle.RadiusOf(devices[i]),
-                    Tint(_style.ColorOf(devices[i].Type), MapHandleKind.Device, i),
+                    Tint(MapEditStyle.Plain, MapHandleKind.Device, i),
                     MapEditStyle.AngleOf(devices[i]));
             }
 
@@ -199,7 +199,7 @@ namespace PPS.MapEditor
             // 크기 핸들은 사각형이라 버텍스와 한눈에 구분된다.
             MapHandleGfx.PlaceDot(_scaleHandle, ScaleHandleAt(shape), radius, _style.Scale);
 
-            Grow(_vertexHandles, shape.Points.Count, "VertexHandle", _style.Sprites.Dot);
+            Grow(_vertexHandles, shape.Points.Count, "VertexHandle", MapHandleGfx.Circle);
 
             for (int i = 0; i < _vertexHandles.Count; i++)
             {
@@ -233,8 +233,11 @@ namespace PPS.MapEditor
         }
 
         /// <summary>
-        /// 고른 것을 밝힌다. 삽입 모드일 때는 색을 한 번 더
-        /// 바꿔, 누르기 전에 무엇이 일어날지 알린다.
+        /// 고른 것만 색을 입힌다. 안 고른 것은 넘겨받은 색
+        /// 그대로다 — 그림이 있는 것은 제 색, 코드로 그리는
+        /// 지형은 스타일 색이 온다.
+        /// 삽입 모드일 때는 색을 한 번 더 바꿔,
+        /// 누르기 전에 무엇이 일어날지 알린다.
         /// </summary>
         Color Tint(Color normal, MapHandleKind kind, int index)
         {
