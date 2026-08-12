@@ -11,8 +11,9 @@ using DeviceType = PPS.Core.DeviceType;
 namespace PPS.MapEditor
 {
     /// <summary>
-    /// 시작·목표·별·지형을 화면에 띄우고 끌어서 옮긴다.
+    /// 맵을 고친다 — 집고, 놓고, 옮기고, 지운다.
     /// 편집 결과는 곧바로 레벨 데이터에 들어간다.
+    /// 그리는 일은 하지 않고 View 에 모델을 건넨다.
     /// </summary>
     public sealed class MapEditHandles : MonoBehaviour
     {
@@ -56,37 +57,9 @@ namespace PPS.MapEditor
         [SerializeField] int _terrainTab = 1;
         [SerializeField] int _deviceTab = 2;
 
-        [SerializeField] Color _startColor = new Color32(0xC0, 0x14, 0x3C, 0xFF);
-        [SerializeField] Color _goalColor = new Color32(0x0E, 0x7A, 0x3C, 0xFF);
-        [SerializeField] Color _starColor = new Color32(0xE8, 0x9A, 0x1C, 0xFF);
-        [SerializeField] Color _terrainColor = new Color32(0x23, 0x25, 0x2B, 0xFF);
-        [SerializeField] Color _bombColor = new Color32(0x3A, 0x3F, 0x4B, 0xFF);
-        [SerializeField] Color _fragColor = new Color32(0x8A, 0x2B, 0x2B, 0xFF);
-        [SerializeField] Color _spikeColor = new Color32(0x6B, 0x1F, 0x1F, 0xFF);
-        [SerializeField] Color _windColor = new Color32(0x2E, 0x86, 0xA8, 0xFF);
-        [SerializeField] Color _blastColor = new Color32(0xFF, 0x6B, 0x2C, 0x30);
-        [SerializeField] Color _selectedColor = Color.white;
-        [SerializeField] Color _vertexColor = new Color32(0x3D, 0x8B, 0xFF, 0xFF);
-        [SerializeField] Color _boundsColor = new Color32(0x9A, 0x9A, 0x9A, 0x99);
-        [SerializeField] Color _scaleColor = new Color32(0xFF, 0x6B, 0x2C, 0xFF);
-        [SerializeField] Color _insertColor = new Color32(0x3D, 0x8B, 0xFF, 0xFF);
+        [SerializeField] MapEditView _view;
 
-        SpriteRenderer _startHandle;
-        SpriteRenderer _goalHandle;
-        SpriteRenderer _scaleHandle;
-        SpriteRenderer _blastHandle;
-
-        /// 크기 조절의 기준이 되는 테두리 네 변.
-        readonly SpriteRenderer[] _boundsHandles = new SpriteRenderer[4];
-
-        /// 테두리를 그리는 임시 버퍼.
-        readonly Vector2[] _corners = new Vector2[4];
-        readonly List<SpriteRenderer> _vertexHandles = new List<SpriteRenderer>();
-        readonly List<SpriteRenderer> _starHandles = new List<SpriteRenderer>();
-        readonly List<SpriteRenderer> _deviceHandles = new List<SpriteRenderer>();
-        readonly List<SpriteRenderer> _terrainHandles = new List<SpriteRenderer>();
-
-        Selection _selected = Selection.None;
+        MapSelection _selected = MapSelection.None;
         bool _dragging;
 
         /// <summary>
@@ -124,7 +97,7 @@ namespace PPS.MapEditor
         float _placeAngle;
 
         /// 복사해 둔 것의 종류. None 이면 비어 있다.
-        HandleKind _clipKind = HandleKind.None;
+        MapHandleKind _clipKind = MapHandleKind.None;
 
         Vector2 _clipStar;
         ShapeData _clipShape;
@@ -138,15 +111,14 @@ namespace PPS.MapEditor
         /// 끄는 내내 남기면 되돌리기가 한 픽셀씩 간다.
         bool _dragRecorded;
 
-        void Awake()
+        /// <summary>
+        /// 테스트가 시작되면 이 오브젝트가 꺼진다.
+        /// 그리는 쪽은 다른 오브젝트라 같이 안 꺼진다 —
+        /// 안 감추면 시작 지점에 공이 하나 더 남는다.
+        /// </summary>
+        void OnDisable()
         {
-            _startHandle = CreateHandle("StartHandle", MapHandleGfx.Circle);
-            _goalHandle = CreateHandle("GoalHandle", MapHandleGfx.Circle);
-            _scaleHandle = CreateHandle("ScaleHandle", MapHandleGfx.Square);
-            _blastHandle = CreateHandle("BlastHandle", MapHandleGfx.Circle);
-
-            for (int i = 0; i < _boundsHandles.Length; i++)
-                _boundsHandles[i] = CreateHandle($"BoundsHandle_{i}", MapHandleGfx.Square);
+            if (_view != null) _view.HideAll();
         }
 
         void Update()
@@ -170,7 +142,7 @@ namespace PPS.MapEditor
             if (!swapped && InRange(_selected)) return;
 
             _lastStage = _session.Current;
-            _selected = Selection.None;
+            _selected = MapSelection.None;
             _dragging = false;
             _grab = GrabKind.None;
             _editMode = false;
@@ -182,17 +154,17 @@ namespace PPS.MapEditor
         /// 고른 번호가 아직 있는 것을 가리키는가.
         /// 상단바 버튼은 아무 때나 눌리므로 여기서 한 번에 막는다.
         /// </summary>
-        bool InRange(Selection selection)
+        bool InRange(MapSelection selection)
         {
             var level = _session.Current.Level;
 
             switch (selection.Kind)
             {
-                case HandleKind.Star:
+                case MapHandleKind.Star:
                     return selection.Index < level.Stars.Count;
-                case HandleKind.Device:
+                case MapHandleKind.Device:
                     return selection.Index < level.Devices.Count;
-                case HandleKind.Terrain:
+                case MapHandleKind.Terrain:
                     return selection.Index < _session.Shapes.Shapes.Count;
                 default:
                     return true;
@@ -205,7 +177,7 @@ namespace PPS.MapEditor
         /// </summary>
         public void ToggleEditMode()
         {
-            if (_selected.Kind != HandleKind.Terrain)
+            if (_selected.Kind != MapHandleKind.Terrain)
             {
                 _editMode = false;
                 _insertMode = false;
@@ -228,7 +200,7 @@ namespace PPS.MapEditor
         /// </summary>
         public void ToggleInsertMode()
         {
-            if (!_editMode || _selected.Kind != HandleKind.Terrain)
+            if (!_editMode || _selected.Kind != MapHandleKind.Terrain)
             {
                 _insertMode = false;
                 return;
@@ -248,20 +220,20 @@ namespace PPS.MapEditor
 
             if (!InRange(_selected)) return;
 
-            if (_selected.Kind == HandleKind.Star)
+            if (_selected.Kind == MapHandleKind.Star)
             {
                 _clipStar = level.Stars[_selected.Index];
-                _clipKind = HandleKind.Star;
+                _clipKind = MapHandleKind.Star;
             }
-            else if (_selected.Kind == HandleKind.Terrain)
+            else if (_selected.Kind == MapHandleKind.Terrain)
             {
                 _clipShape = _session.Shapes.Shapes[_selected.Index].Clone();
-                _clipKind = HandleKind.Terrain;
+                _clipKind = MapHandleKind.Terrain;
             }
-            else if (_selected.Kind == HandleKind.Device)
+            else if (_selected.Kind == MapHandleKind.Device)
             {
                 _clipDevice = level.Devices[_selected.Index];
-                _clipKind = HandleKind.Device;
+                _clipKind = MapHandleKind.Device;
             }
             else
             {
@@ -279,9 +251,9 @@ namespace PPS.MapEditor
         {
             var level = _session.Current.Level;
 
-            if (_clipKind == HandleKind.None) return;
+            if (_clipKind == MapHandleKind.None) return;
 
-            if (_clipKind == HandleKind.Star)
+            if (_clipKind == MapHandleKind.Star)
             {
                 if (level.Stars.Count >= MaxStars)
                 {
@@ -293,9 +265,9 @@ namespace PPS.MapEditor
 
                 Vector2 shift = ClampDelta(PasteOffset, _clipStar, _clipStar);
                 level.Stars.Add(_clipStar + shift);
-                _selected = new Selection(HandleKind.Star, level.Stars.Count - 1);
+                _selected = new MapSelection(MapHandleKind.Star, level.Stars.Count - 1);
             }
-            else if (_clipKind == HandleKind.Device)
+            else if (_clipKind == MapHandleKind.Device)
             {
                 Record();
 
@@ -303,9 +275,9 @@ namespace PPS.MapEditor
                 copy.Position += ClampDelta(PasteOffset, copy.Position, copy.Position);
 
                 level.Devices.Add(copy);
-                _selected = new Selection(HandleKind.Device, level.Devices.Count - 1);
+                _selected = new MapSelection(MapHandleKind.Device, level.Devices.Count - 1);
             }
-            else if (_clipKind == HandleKind.Terrain)
+            else if (_clipKind == MapHandleKind.Terrain)
             {
                 Record();
 
@@ -317,7 +289,7 @@ namespace PPS.MapEditor
                 shapes.Add(copy);
                 _session.Bake();
 
-                _selected = new Selection(HandleKind.Terrain, shapes.Count - 1);
+                _selected = new MapSelection(MapHandleKind.Terrain, shapes.Count - 1);
             }
         }
 
@@ -339,7 +311,7 @@ namespace PPS.MapEditor
                 return;
             }
 
-            if (_selected.Kind != HandleKind.Terrain || !InRange(_selected))
+            if (_selected.Kind != MapHandleKind.Terrain || !InRange(_selected))
             {
                 _placeAngle += RotateStep;
                 Debug.Log($"[맵 에디터] 놓을 각도: {_placeAngle % 360f:F0}도");
@@ -369,9 +341,9 @@ namespace PPS.MapEditor
         /// 고른 것이 방향을 가진 장치인가.
         /// 폭탄·가시는 돌려도 달라지는 것이 없다.
         /// </summary>
-        bool HasAngle(Selection selection)
+        bool HasAngle(MapSelection selection)
         {
-            if (selection.Kind != HandleKind.Device) return false;
+            if (selection.Kind != MapHandleKind.Device) return false;
 
             return _session.Current.Level.Devices[selection.Index].Type == DeviceType.Wind;
         }
@@ -396,7 +368,7 @@ namespace PPS.MapEditor
                 return;
             }
 
-            if (_selected.Kind != HandleKind.Terrain || !InRange(_selected))
+            if (_selected.Kind != MapHandleKind.Terrain || !InRange(_selected))
             {
                 _placeAngle = 180f - _placeAngle;
                 Debug.Log($"[맵 에디터] 놓을 각도: {_placeAngle % 360f:F0}도");
@@ -437,19 +409,19 @@ namespace PPS.MapEditor
         {
             var level = _session.Current.Level;
 
-            if (_selected.Kind != HandleKind.Star
-                && _selected.Kind != HandleKind.Terrain
-                && _selected.Kind != HandleKind.Device) return;
+            if (_selected.Kind != MapHandleKind.Star
+                && _selected.Kind != MapHandleKind.Terrain
+                && _selected.Kind != MapHandleKind.Device) return;
 
             if (!InRange(_selected)) return;
 
             Record();
 
-            if (_selected.Kind == HandleKind.Star)
+            if (_selected.Kind == MapHandleKind.Star)
             {
                 level.Stars.RemoveAt(_selected.Index);
             }
-            else if (_selected.Kind == HandleKind.Device)
+            else if (_selected.Kind == MapHandleKind.Device)
             {
                 level.Devices.RemoveAt(_selected.Index);
             }
@@ -460,7 +432,7 @@ namespace PPS.MapEditor
                 _session.Bake();
             }
 
-            _selected = Selection.None;
+            _selected = MapSelection.None;
             _dragging = false;
         }
 
@@ -490,7 +462,7 @@ namespace PPS.MapEditor
 
                 if (!insertMode && _grab == GrabKind.None)
                 {
-                    Selection hit = Pick(world);
+                    MapSelection hit = Pick(world);
 
                     // 다른 도형을 고르면 편집 모드에서 빠진다.
                     if (hit.Kind != _selected.Kind || hit.Index != _selected.Index)
@@ -501,9 +473,9 @@ namespace PPS.MapEditor
                     }
 
                     _selected = hit;
-                    if (_selected.Kind == HandleKind.None) _selected = Place(world);
+                    if (_selected.Kind == MapHandleKind.None) _selected = Place(world);
 
-                    _grab = _selected.Kind == HandleKind.None ? GrabKind.None : GrabKind.Object;
+                    _grab = _selected.Kind == MapHandleKind.None ? GrabKind.None : GrabKind.Object;
                 }
 
                 _dragging = _grab != GrabKind.None;
@@ -525,7 +497,7 @@ namespace PPS.MapEditor
 
         /// 지금 누르면 버텍스가 꽂히는가.
         bool InsertReady() =>
-            _insertMode && _editMode && _selected.Kind == HandleKind.Terrain;
+            _insertMode && _editMode && _selected.Kind == MapHandleKind.Terrain;
 
         /// <summary>
         /// 편집 중인 선 위에 새 버텍스를 넣는다.
@@ -534,7 +506,7 @@ namespace PPS.MapEditor
         /// <returns>넣었으면 true. 이어서 그 점이 끌린다.</returns>
         bool InsertVertexAt(Vector2 world)
         {
-            if (!_editMode || _selected.Kind != HandleKind.Terrain) return false;
+            if (!_editMode || _selected.Kind != MapHandleKind.Terrain) return false;
 
             var shapes = _session.Shapes.Shapes;
             if (_selected.Index < 0 || _selected.Index >= shapes.Count) return false;
@@ -571,9 +543,9 @@ namespace PPS.MapEditor
         }
 
         /// <summary>빈 곳을 눌렀을 때 도구에 맞춰 새로 놓는다.</summary>
-        Selection Place(Vector2 world)
+        MapSelection Place(Vector2 world)
         {
-            if (_palette == null) return Selection.None;
+            if (_palette == null) return MapSelection.None;
 
             if (_palette.SelectedTab == _terrainTab)
             {
@@ -587,7 +559,7 @@ namespace PPS.MapEditor
                 return AddDeviceItem(world, _palette.SelectedItem);
             }
 
-            return Selection.None;
+            return MapSelection.None;
         }
 
         /// <summary>
@@ -596,7 +568,7 @@ namespace PPS.MapEditor
         /// 코어가 장치가 아니라 수집 목표로 다룬다.
         /// 세기·지연은 기본값으로 둔다. 값을 고치는 UI 는 아직 없다.
         /// </summary>
-        Selection AddDeviceItem(Vector2 world, int kind)
+        MapSelection AddDeviceItem(Vector2 world, int kind)
         {
             var devices = _session.Current.Level.Devices;
 
@@ -661,10 +633,10 @@ namespace PPS.MapEditor
                     break;
 
                 default:
-                    return Selection.None;
+                    return MapSelection.None;
             }
 
-            return new Selection(HandleKind.Device, devices.Count - 1);
+            return new MapSelection(MapHandleKind.Device, devices.Count - 1);
         }
 
         void Record() => _history?.BeginEdit();
@@ -676,12 +648,12 @@ namespace PPS.MapEditor
         /// </summary>
         GrabKind PickEditHandle(Vector2 world)
         {
-            if (!_editMode || _selected.Kind != HandleKind.Terrain) return GrabKind.None;
+            if (!_editMode || _selected.Kind != MapHandleKind.Terrain) return GrabKind.None;
 
             ShapeData shape = _session.Shapes.Shapes[_selected.Index];
             float reach = HandleRadius();
 
-            if (Vector2.Distance(world, ScaleHandleAt(shape)) <= reach) return GrabKind.Scale;
+            if (Vector2.Distance(world, MapEditView.ScaleHandleAt(shape)) <= reach) return GrabKind.Scale;
 
             for (int i = 0; i < shape.Points.Count; i++)
             {
@@ -695,29 +667,6 @@ namespace PPS.MapEditor
             return GrabKind.None;
         }
 
-        /// <summary>
-        /// 크기 핸들 자리. 테두리의 오른쪽 위 모서리다 —
-        /// 허공에 뜬 점이 아니라 무엇을 잡는지 보인다.
-        /// </summary>
-        static Vector2 ScaleHandleAt(ShapeData shape) => shape.Bounds().max;
-
-        /// <summary>
-        /// 크기 조절의 기준 테두리.
-        /// 도형보다 얇게 그려 지형과 헷갈리지 않는다.
-        /// </summary>
-        void DrawBounds(Rect bounds)
-        {
-            _corners[0] = new Vector2(bounds.xMin, bounds.yMin);
-            _corners[1] = new Vector2(bounds.xMax, bounds.yMin);
-            _corners[2] = new Vector2(bounds.xMax, bounds.yMax);
-            _corners[3] = new Vector2(bounds.xMin, bounds.yMax);
-
-            for (int i = 0; i < _boundsHandles.Length; i++)
-                MapHandleGfx.PlaceLine(_boundsHandles[i],
-                    new StaticSegment(_corners[i], _corners[(i + 1) % _corners.Length]),
-                    _boundsColor, MapHandleGfx.LineWidth * 0.25f);
-        }
-
         /// 핸들의 화면상 크기는 기기와 무관해야 한다.
         float HandleRadius() => PickRadiusWorld() * 0.5f;
 
@@ -725,37 +674,37 @@ namespace PPS.MapEditor
         /// 손가락에 제일 가까운 것 하나만 고른다.
         /// 겹쳐 있을 때 둘 다 잡히면 엉뚱한 게 끌린다.
         /// </summary>
-        Selection Pick(Vector2 world)
+        MapSelection Pick(Vector2 world)
         {
             var level = _session.Current.Level;
 
-            var best = Selection.None;
+            var best = MapSelection.None;
             float bestDist = PickRadiusWorld();
 
             Closer(ref best, ref bestDist, Vector2.Distance(world, level.BallStart),
-                new Selection(HandleKind.Start, 0));
+                new MapSelection(MapHandleKind.Start, 0));
             Closer(ref best, ref bestDist, Vector2.Distance(world, level.GoalPosition),
-                new Selection(HandleKind.Goal, 0));
+                new MapSelection(MapHandleKind.Goal, 0));
 
             for (int i = 0; i < level.Stars.Count; i++)
                 Closer(ref best, ref bestDist, Vector2.Distance(world, level.Stars[i]),
-                    new Selection(HandleKind.Star, i));
+                    new MapSelection(MapHandleKind.Star, i));
 
             for (int i = 0; i < level.Devices.Count; i++)
                 Closer(ref best, ref bestDist, Vector2.Distance(world, level.Devices[i].Position),
-                    new Selection(HandleKind.Device, i));
+                    new MapSelection(MapHandleKind.Device, i));
 
             // 도형은 점이 아니라 선이라 선까지의 거리로 잰다.
             // 변 하나만 눌러도 도형 전체가 잡혀야 한다.
             var shapes = _session.Shapes.Shapes;
             for (int i = 0; i < shapes.Count; i++)
                 Closer(ref best, ref bestDist, DistanceToShape(world, shapes[i]),
-                    new Selection(HandleKind.Terrain, i));
+                    new MapSelection(MapHandleKind.Terrain, i));
 
             return best;
         }
 
-        static void Closer(ref Selection best, ref float bestDist, float dist, Selection selection)
+        static void Closer(ref MapSelection best, ref float bestDist, float dist, MapSelection selection)
         {
             if (dist > bestDist) return;
 
@@ -789,13 +738,13 @@ namespace PPS.MapEditor
             return Vector2.Distance(point, a + ab * t);
         }
 
-        Selection AddStar(Vector2 world)
+        MapSelection AddStar(Vector2 world)
         {
             var stars = _session.Current.Level.Stars;
-            if (stars.Count >= MaxStars) return Selection.None;
+            if (stars.Count >= MaxStars) return MapSelection.None;
 
             stars.Add(world);
-            return new Selection(HandleKind.Star, stars.Count - 1);
+            return new MapSelection(MapHandleKind.Star, stars.Count - 1);
         }
 
         /// <summary>
@@ -803,10 +752,10 @@ namespace PPS.MapEditor
         /// 연결 순서를 들고 있어야 나중에 변 하나를 눌러도
         /// 도형 전체를 집을 수 있다.
         /// </summary>
-        Selection AddTerrain(Vector2 center, int kind)
+        MapSelection AddTerrain(Vector2 center, int kind)
         {
             ShapeData shape = MakeShape(center, kind);
-            if (shape == null) return Selection.None;
+            if (shape == null) return MapSelection.None;
 
             // 놓을 때 각도를 먹인다.
             for (int i = 0; i < shape.Points.Count; i++)
@@ -816,7 +765,7 @@ namespace PPS.MapEditor
             shapes.Add(shape);
             _session.Bake();
 
-            return new Selection(HandleKind.Terrain, shapes.Count - 1);
+            return new MapSelection(MapHandleKind.Terrain, shapes.Count - 1);
         }
 
         static ShapeData MakeShape(Vector2 c, int kind)
@@ -887,22 +836,22 @@ namespace PPS.MapEditor
 
             switch (_selected.Kind)
             {
-                case HandleKind.Start:
+                case MapHandleKind.Start:
                     level.BallStart = MovePoint(level.BallStart, ref delta);
                     break;
-                case HandleKind.Goal:
+                case MapHandleKind.Goal:
                     level.GoalPosition = MovePoint(level.GoalPosition, ref delta);
                     break;
-                case HandleKind.Star:
+                case MapHandleKind.Star:
                     level.Stars[_selected.Index] = MovePoint(level.Stars[_selected.Index], ref delta);
                     break;
-                case HandleKind.Device:
+                case MapHandleKind.Device:
                     // 구조체라 꺼내 고치고 도로 넣는다.
                     DeviceData device = level.Devices[_selected.Index];
                     device.Position = MovePoint(device.Position, ref delta);
                     level.Devices[_selected.Index] = device;
                     break;
-                case HandleKind.Terrain:
+                case MapHandleKind.Terrain:
                     ShapeData shape = _session.Shapes.Shapes[_selected.Index];
                     Rect bounds = shape.Bounds();
                     delta = ClampDelta(delta, bounds.min, bounds.max);
@@ -976,214 +925,17 @@ namespace PPS.MapEditor
                 Mathf.Clamp(delta.y, area.yMin - minY, area.yMax - maxY));
         }
 
+        /// <summary>
+        /// 이번 프레임에 그릴 것을 모아 View 에 건넨다.
+        /// 그리는 방법은 여기서 알지 않는다.
+        /// </summary>
         void Redraw()
         {
-            var level = _session.Current.Level;
+            if (_view == null) return;
 
-            MapHandleGfx.PlaceDot(_startHandle, level.BallStart, LevelData.BallRadius,
-                Tint(_startColor, HandleKind.Start, 0));
-            MapHandleGfx.PlaceDot(_goalHandle, level.GoalPosition, LevelData.GoalRadius,
-                Tint(_goalColor, HandleKind.Goal, 0));
-
-            // 개수가 변한다. 남는 핸들은 끄고 다시 쓴다.
-            Grow(_starHandles, level.Stars.Count, "StarHandle", MapHandleGfx.Star);
-            for (int i = 0; i < _starHandles.Count; i++)
-            {
-                bool used = i < level.Stars.Count;
-                _starHandles[i].gameObject.SetActive(used);
-                if (used)
-                    MapHandleGfx.PlaceDot(_starHandles[i], level.Stars[i],
-                        LevelData.StarCaptureRadius / MapHandleGfx.StarSpan,
-                        Tint(_starColor, HandleKind.Star, i));
-            }
-
-            DrawDevices();
-            DrawShapes();
-            DrawEditHandles();
-        }
-
-        /// <summary>
-        /// 장치를 종류에 맞는 모양으로 그린다.
-        /// 폭발 반경은 고른 것만 — 늘 그리면 원이 겹쳐 어지럽다.
-        /// </summary>
-        void DrawDevices()
-        {
-            var devices = _session.Current.Level.Devices;
-
-            Grow(_deviceHandles, devices.Count, "DeviceHandle", MapHandleGfx.Bomb);
-
-            for (int i = 0; i < _deviceHandles.Count; i++)
-            {
-                bool used = i < devices.Count;
-                _deviceHandles[i].gameObject.SetActive(used);
-                if (!used) continue;
-
-                _deviceHandles[i].sprite = DeviceSprite(devices[i].Type);
-
-                MapHandleGfx.PlaceDot(_deviceHandles[i], devices[i].Position,
-                    DeviceDrawRadius(devices[i]),
-                    Tint(DeviceColor(devices[i].Type), HandleKind.Device, i),
-                    devices[i].Type == DeviceType.Wind ? devices[i].Angle : 0f);
-            }
-
-            DrawBlastRadius(devices);
-        }
-
-        static Sprite DeviceSprite(DeviceType type)
-        {
-            switch (type)
-            {
-                case DeviceType.FragBomb: return MapHandleGfx.FragBomb;
-                case DeviceType.Spike: return MapHandleGfx.Spike;
-                case DeviceType.Wind: return MapHandleGfx.Wind;
-                default: return MapHandleGfx.Bomb;
-            }
-        }
-
-        Color DeviceColor(DeviceType type)
-        {
-            switch (type)
-            {
-                case DeviceType.FragBomb: return _fragColor;
-                case DeviceType.Spike: return _spikeColor;
-                case DeviceType.Wind: return _windColor;
-                default: return _bombColor;
-            }
-        }
-
-        /// <summary>
-        /// 화면에 그릴 반지름. 몸통이 스프라이트를 꽉 채우지
-        /// 않으므로 그 비율만큼 되돌려 키운다.
-        /// </summary>
-        static float DeviceDrawRadius(in DeviceData device)
-        {
-            switch (device.Type)
-            {
-                case DeviceType.FragBomb:
-                    return BombDevice.BodyRadius / MapHandleGfx.FragBombBodySpan;
-
-                case DeviceType.Spike:
-                    return Mathf.Max(device.Radius, SpikeDevice.MinRadius)
-                        / MapHandleGfx.SpikeBodySpan;
-
-                // 바람은 화살표라 몸 크기가 없다. 구역 안에
-                // 들어갈 만한 크기로 그린다.
-                case DeviceType.Wind:
-                    return Mathf.Max(device.Radius * 0.5f, 0.3f);
-
-                default:
-                    return BombDevice.BodyRadius / MapHandleGfx.BombBodySpan;
-            }
-        }
-
-        /// <summary>
-        /// 고른 장치가 미치는 범위. 가시는 몸이 곧 범위라
-        /// 겹쳐 그리면 뜻이 없다.
-        /// </summary>
-        void DrawBlastRadius(List<DeviceData> devices)
-        {
-            bool on = _selected.Kind == HandleKind.Device
-                && _selected.Index < devices.Count
-                && devices[_selected.Index].Type != DeviceType.Spike
-                && devices[_selected.Index].Radius > 0f;
-
-            _blastHandle.gameObject.SetActive(on);
-            if (!on) return;
-
-            DeviceData device = devices[_selected.Index];
-            MapHandleGfx.PlaceDot(_blastHandle, device.Position, device.Radius, _blastColor);
-        }
-
-        /// <summary>
-        /// 편집 모드에서만 버텍스·중심·크기 핸들을 띄운다.
-        /// 표시일 뿐이라 물리 데이터에 닿지 않는다.
-        /// </summary>
-        void DrawEditHandles()
-        {
-            bool on = _editMode && _selected.Kind == HandleKind.Terrain;
-
-            _scaleHandle.gameObject.SetActive(on);
-            for (int i = 0; i < _boundsHandles.Length; i++)
-                _boundsHandles[i].gameObject.SetActive(on);
-
-            if (!on)
-            {
-                for (int i = 0; i < _vertexHandles.Count; i++)
-                    _vertexHandles[i].gameObject.SetActive(false);
-                return;
-            }
-
-            ShapeData shape = _session.Shapes.Shapes[_selected.Index];
-            float radius = HandleRadius();
-
-            DrawBounds(shape.Bounds());
-
-            // 크기 핸들은 사각형이라 버텍스와 한눈에 구분된다.
-            MapHandleGfx.PlaceDot(_scaleHandle, ScaleHandleAt(shape), radius, _scaleColor);
-
-            Grow(_vertexHandles, shape.Points.Count, "VertexHandle", MapHandleGfx.Circle);
-
-            for (int i = 0; i < _vertexHandles.Count; i++)
-            {
-                bool used = i < shape.Points.Count;
-                _vertexHandles[i].gameObject.SetActive(used);
-                if (!used) continue;
-
-                // 마지막으로 고른 점은 크고 밝게.
-                bool active = _activeVertex == i;
-                MapHandleGfx.PlaceDot(_vertexHandles[i], shape.Points[i],
-                    active ? radius : radius * 0.7f,
-                    active ? _selectedColor : _vertexColor);
-            }
-        }
-
-        /// <summary>
-        /// 도형마다 색을 정하고 그 도형의 선분을 그린다.
-        /// 구운 지형을 그대로 그리면 어느 선분이 어느
-        /// 도형의 것인지 알 수 없어 선택 표시가 안 된다.
-        /// </summary>
-        void DrawShapes()
-        {
-            var shapes = _session.Shapes.Shapes;
-
-            Grow(_terrainHandles, _session.Current.Level.Terrain.Count,
-                "TerrainHandle", MapHandleGfx.Square);
-
-            int handle = 0;
-
-            for (int i = 0; i < shapes.Count; i++)
-            {
-                Color color = Tint(_terrainColor, HandleKind.Terrain, i);
-
-                _scratch.Clear();
-                ShapeBaker.Append(shapes[i], _scratch);
-
-                for (int s = 0; s < _scratch.Count && handle < _terrainHandles.Count; s++, handle++)
-                {
-                    _terrainHandles[handle].gameObject.SetActive(true);
-                    MapHandleGfx.PlaceLine(_terrainHandles[handle], _scratch[s], color);
-                }
-            }
-
-            for (int i = handle; i < _terrainHandles.Count; i++)
-                _terrainHandles[i].gameObject.SetActive(false);
-        }
-
-        void Grow(List<SpriteRenderer> handles, int need, string name, Sprite sprite)
-        {
-            while (handles.Count < need)
-                handles.Add(CreateHandle($"{name}_{handles.Count}", sprite));
-        }
-
-        /// <summary>
-        /// 고른 것을 밝힌다. 삽입 모드일 때는 색을 한 번 더
-        /// 바꿔, 누르기 전에 무엇이 일어날지 알린다.
-        /// </summary>
-        Color Tint(Color normal, HandleKind kind, int index)
-        {
-            if (_selected.Kind != kind || _selected.Index != index) return normal;
-
-            return kind == HandleKind.Terrain && InsertReady() ? _insertColor : _selectedColor;
+            _view.OnDraw(new MapDrawModel(
+                _session.Current.Level, _session.Shapes, _selected,
+                _editMode, InsertReady(), _activeVertex, HandleRadius()));
         }
 
         float PickRadiusWorld()
@@ -1195,9 +947,6 @@ namespace PPS.MapEditor
         /// 도구 버튼을 눌렀는데 맵이 반응하면 안 된다.
         static bool OverUI() =>
             EventSystem.current != null && EventSystem.current.IsPointerOverGameObject();
-
-        SpriteRenderer CreateHandle(string name, Sprite sprite) =>
-            MapHandleGfx.Create(transform, name, sprite);
 
         /// <summary>
         /// 이번 드래그가 움직이는 대상.
@@ -1211,32 +960,5 @@ namespace PPS.MapEditor
             Scale,
         }
 
-        enum HandleKind
-        {
-            None,
-            Start,
-            Goal,
-            Star,
-            Terrain,
-            Device,
-        }
-
-        /// <summary>
-        /// 고른 대상. 별과 지형은 개수가 변해서
-        /// 종류만으로는 특정할 수 없다.
-        /// </summary>
-        readonly struct Selection
-        {
-            public readonly HandleKind Kind;
-            public readonly int Index;
-
-            public Selection(HandleKind kind, int index)
-            {
-                Kind = kind;
-                Index = index;
-            }
-
-            public static Selection None => new Selection(HandleKind.None, -1);
-        }
     }
 }

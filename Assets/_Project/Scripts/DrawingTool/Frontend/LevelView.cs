@@ -51,6 +51,13 @@ namespace PPS.DrawingTool
         /// 지어 둔 것 전부. 레벨이 바뀌면 통째로 버린다.
         readonly List<GameObject> _parts = new List<GameObject>();
 
+        /// 시뮬 중 움직이는 것은 공 하나다. 나머지 지오메트리는
+        /// 정적이라 다시 세울 일이 없다.
+        Transform _ball;
+
+        /// 재시도가 공을 되돌릴 출발점의 출처.
+        LevelData _level;
+
         /// <summary>
         /// 레벨이 정해지면 화면도 정해진다. 영역은
         /// 카메라가 맞추는 것과 같은 함수에서 나온다 —
@@ -59,6 +66,8 @@ namespace PPS.DrawingTool
         public void SetLevel(LevelData level)
         {
             Clear();
+
+            _level = level;
             if (level == null) return;
 
             Rect area = LevelDataArea.Calculate(level);
@@ -86,8 +95,23 @@ namespace PPS.DrawingTool
                 AddDot($"Star_{i}", level.Stars[i], LevelData.StarCaptureRadius * 2f,
                     ShapeSprites.Disc, StarColor, RenderOrder.Star);
 
-            AddDot("Ball", level.BallStart, LevelData.BallRadius * 2f,
+            _ball = AddDot("Ball", level.BallStart, LevelData.BallRadius * 2f,
                 ShapeSprites.Disc, BallColor, RenderOrder.Ball);
+        }
+
+        /// <summary>
+        /// 시뮬 중 공을 옮긴다. 물리 오브젝트에는 렌더러가
+        /// 없어 화면 쪽 공이 바디를 따라가야 한다.
+        /// </summary>
+        public void MoveBall(Vector2 position)
+        {
+            if (_ball != null) _ball.position = position;
+        }
+
+        /// <summary>재시도가 부른다. 공만 출발점으로 되돌린다.</summary>
+        public void ResetBall()
+        {
+            if (_level != null) MoveBall(_level.BallStart);
         }
 
         void AddSegment(in StaticSegment segment, int index)
@@ -122,13 +146,14 @@ namespace PPS.DrawingTool
             part.localScale = new Vector3(size.x, size.y, 1f);
         }
 
-        void AddDot(string name, Vector2 center, float diameter, Sprite sprite,
+        Transform AddDot(string name, Vector2 center, float diameter, Sprite sprite,
             Color color, int order)
         {
             Transform part = Add(name, sprite, color, order);
 
             part.position = center;
             part.localScale = Vector3.one * diameter;
+            return part;
         }
 
         /// 스프라이트가 1wu 라 스케일이 곧 월드 크기다.
@@ -161,6 +186,7 @@ namespace PPS.DrawingTool
             }
 
             _parts.Clear();
+            _ball = null;
         }
 
         static Color Fade(Color color, float alpha) =>

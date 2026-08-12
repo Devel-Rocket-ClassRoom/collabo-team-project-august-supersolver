@@ -46,6 +46,9 @@ namespace PPS.Core
             // 장치가 도중에 파편을 덧붙이므로 살아 있는 참조로 넘긴다.
             var hazards = new List<Collider2D>();
 
+            // 장치보다 먼저 만든다. 장치가 들고 가야 한다.
+            var events = new SimEvents();
+
             // 1. 공 — 항상 인덱스 0. 해시를 읽을 기준점.
             //    속도는 바디가 생긴 뒤에만 줄 수 있고,
             //    Judge 가 초기 상태를 재기 전이어야 한다.
@@ -67,7 +70,7 @@ namespace PPS.Core
             if (level.Devices != null)
             {
                 for (int i = 0; i < level.Devices.Count; i++)
-                    logics.Add(DeviceFactory.Create(level.Devices[i], i, scene, bodies, hazards));
+                    logics.Add(DeviceFactory.Create(level.Devices[i], i, scene, bodies, hazards, events));
             }
 
             // 4. 스트로크 — 솔루션 리스트 순서.
@@ -81,14 +84,18 @@ namespace PPS.Core
             }
 
             // 5. 회전축 — 스트로크가 전부 선 뒤에 연결한다.
+            //    상대를 기다리는 핀은 물리에 없다.
             for (int i = 0; i < solution.Pivots.Count; i++)
+            {
+                if (!solution.Pivots[i].IsComplete) continue;
                 CreatePivot(solution.Pivots[i], strokeBodies);
+            }
 
             var judge = new Judge();
             var world = new SimWorld(
                 scene, physics, level, seed,
                 ball, ball.GetComponent<Collider2D>(),
-                bodies, hazards, logics, judge);
+                bodies, strokeBodies, hazards, logics, judge, events);
             return world;
         }
 

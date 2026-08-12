@@ -142,6 +142,13 @@ namespace PPS.DrawingTool
             PivotRequested?.Invoke(_context.Tool, Adjust(_downWorld), radius);
         }
 
+        /// <summary>
+        /// 그리던 것을 버린다. 획 진행 중에 두 번째 손가락으로
+        /// 플레이를 누르면 버튼은 눌리고 인식기만 남는다 —
+        /// 확정하지 않는 이유는 터치 Canceled 와 같다.
+        /// </summary>
+        public void Abort() => Release();
+
         void Release()
         {
             _pointerId = NoPointer;

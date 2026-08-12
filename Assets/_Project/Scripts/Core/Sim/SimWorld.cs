@@ -26,12 +26,16 @@ namespace PPS.Core
         readonly System.Random _rng;
         readonly List<IStepLogic> _logics;
         readonly List<Rigidbody2D> _bodies;
+        readonly List<Rigidbody2D> _strokeBodies;
         readonly List<Collider2D> _hazards;
 
         bool _disposed;
 
         public LevelData Level { get; }
         public Judge Judge { get; }
+
+        /// 표시 쪽이 구독한다. 시뮬레이션은 읽지 않는다.
+        public SimEvents Events { get; }
         public Rigidbody2D Ball { get; }
         public int Seed { get; }
 
@@ -47,11 +51,49 @@ namespace PPS.Core
         public IReadOnlyList<Rigidbody2D> Bodies => _bodies;
 
         /// <summary>
+        /// 그림의 획이 된 바디. 인덱스가 Solution.Strokes 와
+        /// 1:1 이라 무효 스트로크 자리에는 null 이 있다.
+        /// 화면이 획을 따라 그리는 데 쓴다 — Bodies 에서 세면
+        /// 장치가 도중에 덧붙이는 파편에 자리가 밀린다.
+        /// </summary>
+        public IReadOnlyList<Rigidbody2D> StrokeBodies => _strokeBodies;
+
+        /// <summary>
         /// 닿으면 실패하는 콜라이더.
         /// 장치가 도중에 뒤에 덧붙일 수 있다.
         /// 파괴되면 null 로 남으니 검사할 것.
         /// </summary>
         public IReadOnlyList<Collider2D> Hazards => _hazards;
+
+        /// <summary>
+        /// 장치의 데이터와 살아 있는 바디를 함께 준다.
+        /// 바깥에서 장치를 볼 때는 Bodies 를 직접 뒤지지 말고
+        /// 이것을 쓴다 — 바디 등록 순서를 아는 곳을
+        /// 여기 하나로 모은다.
+        /// </summary>
+        /// <returns>
+        /// body 는 바람처럼 바디가 없거나 이미 터졌으면 null.
+        /// </returns>
+        public (DeviceData data, Rigidbody2D body) GetDevice(int index)
+        {
+            var devices = Level.Devices;
+
+            if (index < 0 || index >= devices.Count)
+                throw new ArgumentOutOfRangeException(
+                    nameof(index), $"장치 {index} 는 없다. 레벨에 {devices.Count} 개뿐이다.");
+
+            // 바디 순서는 공 하나 → 지형 → 장치다.
+            int at = 1 + Level.Terrain.Count;
+
+            // 바디를 만든 장치만 자리를 하나 쓴다.
+            for (int i = 0; i < index; i++)
+                if (DeviceFactory.MakesBody(devices[i].Type)) at++;
+
+            bool hasBody = DeviceFactory.MakesBody(devices[index].Type);
+            Rigidbody2D body = hasBody && at < _bodies.Count ? _bodies[at] : null;
+
+            return (devices[index], body);
+        }
 
         public bool IsTerminal => Judge.Cleared || Judge.Failed || Judge.Stalled;
 
@@ -63,14 +105,17 @@ namespace PPS.Core
             Rigidbody2D ball,
             Collider2D ballCollider,
             List<Rigidbody2D> bodies,
+            List<Rigidbody2D> strokeBodies,
             List<Collider2D> hazards,
             List<IStepLogic> logics,
-            Judge judge)
+            Judge judge,
+            SimEvents events)
         {
             _scene = scene;
             _physics = physics;
             _rng = new System.Random(seed);
             _bodies = bodies;
+            _strokeBodies = strokeBodies;
             _hazards = hazards;
             _logics = logics;
 
@@ -79,6 +124,9 @@ namespace PPS.Core
             Ball = ball;
             BallCollider = ballCollider;
             Judge = judge;
+
+            // 판정보다 먼저 세운다. 0 스텝에 먹는 별도 알려야 한다.
+            Events = events;
 
             // 첫 Step 이전의 초기 상태도 계측 대상이다.
             Judge.Initialize(this);

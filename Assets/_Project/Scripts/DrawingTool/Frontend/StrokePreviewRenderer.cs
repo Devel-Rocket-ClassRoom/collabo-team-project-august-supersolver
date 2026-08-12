@@ -38,6 +38,10 @@ namespace PPS.DrawingTool
         /// 확정 획의 선. 재구축 때 통째로 버린다.
         readonly List<LineRenderer> _lines = new List<LineRenderer>();
 
+        /// 인덱스가 Solution.Strokes 와 같다.
+        /// 시뮬 중에는 SimStageView 가 바디에 얹는다.
+        public IReadOnlyList<LineRenderer> Lines => _lines;
+
         void Awake()
         {
             _preview = CreateLine("Preview");
@@ -77,8 +81,9 @@ namespace PPS.DrawingTool
         /// Solution 을 기준으로 다시 그린다. 덧붙이기만 하면
         /// 되돌리기·초기화로 사라진 획이 화면에 남는다.
         /// Destroy 는 렌더 전에 반영돼 겹쳐 보이는 프레임이 없다.
+        /// 재시도도 이 길로 획을 그리기 때 자리로 되돌린다.
         /// </summary>
-        void Rebuild()
+        public void Rebuild()
         {
             for (int i = 0; i < _lines.Count; i++)
                 Destroy(_lines[i].gameObject);

@@ -37,6 +37,11 @@ namespace PPS.Core
         readonly List<Collider2D> _hazards;
         readonly List<Rigidbody2D> _fragments = new List<Rigidbody2D>(FragmentCount);
 
+        readonly SimEvents _events;
+
+        /// 레벨의 장치 번호. 알릴 때 누구인지 밝힌다.
+        readonly int _index;
+
         Rigidbody2D _body;
 
         /// 아직 안 뽑았으면 -1. 첫 Tick 에서 정한다.
@@ -68,7 +73,9 @@ namespace PPS.Core
             Scene scene,
             string name,
             List<Rigidbody2D> bodies,
-            List<Collider2D> hazards)
+            List<Collider2D> hazards,
+            SimEvents events,
+            int index)
         {
             _data = data;
             _body = body;
@@ -76,6 +83,8 @@ namespace PPS.Core
             _name = name;
             _bodies = bodies;
             _hazards = hazards;
+            _events = events;
+            _index = index;
         }
 
         /// <summary>
@@ -136,6 +145,9 @@ namespace PPS.Core
                 _hazards.Add(fragment.GetComponent<Collider2D>());
                 _fragments.Add(fragment);
             }
+
+            // 파편을 다 뿌린 뒤, 몸을 지우기 전에 알린다.
+            _events?.RaiseDeviceFired(_index);
 
             DestroyBody();
         }

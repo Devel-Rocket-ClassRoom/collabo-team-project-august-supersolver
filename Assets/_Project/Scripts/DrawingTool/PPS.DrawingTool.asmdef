@@ -3,6 +3,7 @@
     "rootNamespace": "PPS.DrawingTool",
     "references": [
         "PPS.Core",
+        "PPS.Game",
         "Unity.InputSystem",
         "UnityEngine.UI",
         "Unity.TextMeshPro"
