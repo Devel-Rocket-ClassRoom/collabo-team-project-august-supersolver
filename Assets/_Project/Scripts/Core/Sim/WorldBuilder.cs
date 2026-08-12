@@ -95,7 +95,7 @@ namespace PPS.Core
             var world = new SimWorld(
                 scene, physics, level, seed,
                 ball, ball.GetComponent<Collider2D>(),
-                bodies, strokeBodies, hazards, logics, judge);
+                bodies, strokeBodies, hazards, logics, judge, events);
             return world;
         }
 
