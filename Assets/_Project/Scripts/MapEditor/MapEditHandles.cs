@@ -328,6 +328,17 @@ namespace PPS.MapEditor
         /// </summary>
         public void RotateSelected()
         {
+            if (InRange(_selected) && HasAngle(_selected))
+            {
+                Record();
+
+                var devices = _session.Current.Level.Devices;
+                DeviceData device = devices[_selected.Index];
+                device.Angle += RotateStep;
+                devices[_selected.Index] = device;
+                return;
+            }
+
             if (_selected.Kind != HandleKind.Terrain || !InRange(_selected))
             {
                 _placeAngle += RotateStep;
@@ -349,6 +360,61 @@ namespace PPS.MapEditor
                 // 돌다가 밖으로 나가면 안으로 밀어 넣는다.
                 Rect bounds = shape.Bounds();
                 shape.Move(ClampDelta(Vector2.zero, bounds.min, bounds.max));
+            }
+
+            _session.Bake();
+        }
+
+        /// <summary>
+        /// 고른 것이 방향을 가진 장치인가.
+        /// 폭탄·가시는 돌려도 달라지는 것이 없다.
+        /// </summary>
+        bool HasAngle(Selection selection)
+        {
+            if (selection.Kind != HandleKind.Device) return false;
+
+            return _session.Current.Level.Devices[selection.Index].Type == DeviceType.Wind;
+        }
+
+        /// <summary>
+        /// 상단바 좌우대칭 버튼이 부른다.
+        /// 고른 것의 중심을 축으로 뒤집는다 — 맵 전체가 아니라
+        /// 하나만 뒤집어야 다른 배치가 흐트러지지 않는다.
+        /// </summary>
+        public void MirrorSelected()
+        {
+            if (InRange(_selected) && HasAngle(_selected))
+            {
+                Record();
+
+                var devices = _session.Current.Level.Devices;
+                DeviceData device = devices[_selected.Index];
+
+                // 좌우를 뒤집으면 오른쪽 성분만 부호가 바뀐다.
+                device.Angle = 180f - device.Angle;
+                devices[_selected.Index] = device;
+                return;
+            }
+
+            if (_selected.Kind != HandleKind.Terrain || !InRange(_selected))
+            {
+                _placeAngle = 180f - _placeAngle;
+                Debug.Log($"[맵 에디터] 놓을 각도: {_placeAngle % 360f:F0}도");
+                return;
+            }
+
+            ShapeData shape = _session.Shapes.Shapes[_selected.Index];
+
+            // 원은 뒤집어도 같은 모양이다.
+            if (shape.Kind == ShapeKind.Circle) return;
+
+            Record();
+
+            float axis = shape.Center().x;
+            for (int i = 0; i < shape.Points.Count; i++)
+            {
+                Vector2 point = shape.Points[i];
+                shape.Points[i] = new Vector2(axis * 2f - point.x, point.y);
             }
 
             _session.Bake();
@@ -544,8 +610,11 @@ namespace PPS.MapEditor
                     {
                         Type = DeviceType.Bomb,
                         Position = world,
-                        Radius = 3f,
-                        Power = 5f,
+
+                        // 좁고 세게. 넓고 약하면 어디에 놓아도
+                        // 비슷하게 밀려 배치가 퍼즐이 되지 않는다.
+                        Radius = 2f,
+                        Power = 11f,
                         DelaySteps = 30,
 
                         // 흔들림은 0 이다. 값이 있으면 발동 시점이
@@ -917,14 +986,15 @@ namespace PPS.MapEditor
                 Tint(_goalColor, HandleKind.Goal, 0));
 
             // 개수가 변한다. 남는 핸들은 끄고 다시 쓴다.
-            Grow(_starHandles, level.Stars.Count, "StarHandle", MapHandleGfx.Circle);
+            Grow(_starHandles, level.Stars.Count, "StarHandle", MapHandleGfx.Star);
             for (int i = 0; i < _starHandles.Count; i++)
             {
                 bool used = i < level.Stars.Count;
                 _starHandles[i].gameObject.SetActive(used);
                 if (used)
                     MapHandleGfx.PlaceDot(_starHandles[i], level.Stars[i],
-                        LevelData.StarCaptureRadius, Tint(_starColor, HandleKind.Star, i));
+                        LevelData.StarCaptureRadius / MapHandleGfx.StarSpan,
+                        Tint(_starColor, HandleKind.Star, i));
             }
 
             DrawDevices();

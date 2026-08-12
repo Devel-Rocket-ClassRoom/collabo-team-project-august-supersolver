@@ -27,6 +27,10 @@ namespace PPS.MapEditor
         [SerializeField] Color _fragColor = new Color32(0x8A, 0x2B, 0x2B, 0xFF);
         [SerializeField] Color _spikeColor = new Color32(0x6B, 0x1F, 0x1F, 0xFF);
         [SerializeField] Color _windColor = new Color32(0x2E, 0x86, 0xA8, 0xFF);
+        [SerializeField] Color _burstColor = new Color32(0xFF, 0x8C, 0x2A, 0xFF);
+
+        /// 불꽃이 남는 길이. 60 스텝이 1 초다.
+        const int BurstSteps = 18;
 
         SpriteRenderer _ball;
         SpriteRenderer _goal;
@@ -34,6 +38,13 @@ namespace PPS.MapEditor
         readonly List<SpriteRenderer> _terrain = new List<SpriteRenderer>();
         readonly List<SpriteRenderer> _devices = new List<SpriteRenderer>();
         readonly List<SpriteRenderer> _fragments = new List<SpriteRenderer>();
+        readonly List<SpriteRenderer> _bursts = new List<SpriteRenderer>();
+
+        /// 직전 프레임에 바디가 있었는가. 사라지는 순간이 폭발이다.
+        bool[] _deviceAlive;
+
+        /// 터진 스텝. 아직 안 터졌으면 -1.
+        int[] _burstStep;
 
         bool _running;
 
@@ -127,17 +138,19 @@ namespace PPS.MapEditor
                 if (used) MapHandleGfx.PlaceLine(_terrain[i], level.Terrain[i], _terrainColor);
             }
 
-            Grow(_stars, level.Stars.Count, "TestStar", MapHandleGfx.Circle);
+            Grow(_stars, level.Stars.Count, "TestStar", MapHandleGfx.Star);
             for (int i = 0; i < _stars.Count; i++)
             {
-                bool used = i < level.Stars.Count;
+                // 먹은 별은 지운다. 남아 있으면 먹었는지 알 수 없다.
+                bool used = i < level.Stars.Count && !world.Judge.IsCollected(i);
                 _stars[i].gameObject.SetActive(used);
                 if (used)
-                    MapHandleGfx.PlaceDot(
-                        _stars[i], level.Stars[i], LevelData.StarCaptureRadius, _starColor);
+                    MapHandleGfx.PlaceDot(_stars[i], level.Stars[i],
+                        LevelData.StarCaptureRadius / MapHandleGfx.StarSpan, _starColor);
             }
 
             DrawDevices(world, level);
+            DrawBursts(world, level);
             DrawFragments(world);
         }
 
@@ -152,6 +165,7 @@ namespace PPS.MapEditor
             // 바디 순서는 공 하나 → 지형 → 장치다.
             int at = 1 + level.Terrain.Count;
 
+            EnsureBurstState(level.Devices.Count);
             Grow(_devices, level.Devices.Count, "TestDevice", MapHandleGfx.Bomb);
 
             for (int i = 0; i < _devices.Count; i++)
@@ -173,6 +187,13 @@ namespace PPS.MapEditor
                 if (hasBody) at++;
 
                 bool used = !hasBody || body != null;
+
+                // 있던 바디가 사라진 프레임이 터진 순간이다.
+                // 코어에 발동 시점을 묻지 않아도 여기서 알 수 있다.
+                if (hasBody && _deviceAlive[i] && body == null)
+                    _burstStep[i] = world.CurrentStep;
+
+                _deviceAlive[i] = used;
                 _devices[i].gameObject.SetActive(used);
                 if (!used) continue;
 
@@ -182,6 +203,49 @@ namespace PPS.MapEditor
                     body != null ? body.position : data.Position,
                     DeviceDrawRadius(data), DeviceColor(data.Type),
                     data.Type == DeviceType.Wind ? data.Angle : 0f);
+            }
+        }
+
+        void EnsureBurstState(int count)
+        {
+            if (_deviceAlive != null && _deviceAlive.Length == count) return;
+
+            _deviceAlive = new bool[count];
+            _burstStep = new int[count];
+
+            for (int i = 0; i < count; i++) _burstStep[i] = -1;
+        }
+
+        /// <summary>
+        /// 터진 자리에 잠깐 남는 불꽃.
+        /// 몸 크기에서 폭발 반경까지 커지며 옅어진다 —
+        /// 어디까지 밀렸는지가 눈에 남아야 한다.
+        /// </summary>
+        void DrawBursts(SimWorld world, LevelData level)
+        {
+            Grow(_bursts, level.Devices.Count, "TestBurst", MapHandleGfx.Burst);
+
+            for (int i = 0; i < _bursts.Count; i++)
+            {
+                int since = i < level.Devices.Count && _burstStep[i] >= 0
+                    ? world.CurrentStep - _burstStep[i]
+                    : int.MaxValue;
+
+                bool used = since >= 0 && since < BurstSteps;
+                _bursts[i].gameObject.SetActive(used);
+                if (!used) continue;
+
+                DeviceData data = level.Devices[i];
+                float t = (float)since / BurstSteps;
+
+                // 파편 폭탄은 반경이 0 이라 파편이 퍼지는 만큼만 잡는다.
+                float reach = Mathf.Max(data.Radius, 0.9f);
+
+                Color color = _burstColor;
+                color.a *= 1f - t;
+
+                MapHandleGfx.PlaceDot(_bursts[i], data.Position,
+                    Mathf.Lerp(BombDevice.BodyRadius, reach, t), color);
             }
         }
 
@@ -265,6 +329,10 @@ namespace PPS.MapEditor
             for (int i = 0; i < _terrain.Count; i++) _terrain[i].gameObject.SetActive(false);
             for (int i = 0; i < _devices.Count; i++) _devices[i].gameObject.SetActive(false);
             for (int i = 0; i < _fragments.Count; i++) _fragments[i].gameObject.SetActive(false);
+            for (int i = 0; i < _bursts.Count; i++) _bursts[i].gameObject.SetActive(false);
+
+            // 다음 테스트에서 예전 폭발이 되살아나면 안 된다.
+            _deviceAlive = null;
         }
 
         void OnDestroy()

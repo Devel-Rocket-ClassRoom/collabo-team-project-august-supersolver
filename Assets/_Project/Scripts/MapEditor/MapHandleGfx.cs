@@ -26,12 +26,17 @@ namespace PPS.MapEditor
         /// 가시 끝까지가 콜라이더 반지름이다.
         public const float SpikeBodySpan = 0.97f;
 
+        /// 별 끝까지가 먹는 반지름이다.
+        public const float StarSpan = 0.97f;
+
         static Sprite _circle;
         static Sprite _square;
         static Sprite _bomb;
         static Sprite _fragBomb;
         static Sprite _spike;
         static Sprite _wind;
+        static Sprite _star;
+        static Sprite _burst;
 
         public static Sprite Circle => _circle != null ? _circle : _circle = MakeCircle();
 
@@ -45,6 +50,10 @@ namespace PPS.MapEditor
         public static Sprite Spike => _spike != null ? _spike : _spike = MakeSpike();
 
         public static Sprite Wind => _wind != null ? _wind : _wind = MakeWind();
+
+        public static Sprite Star => _star != null ? _star : _star = MakeStar();
+
+        public static Sprite Burst => _burst != null ? _burst : _burst = MakeBurst();
 
         public static SpriteRenderer Create(Transform parent, string name, Sprite sprite)
         {
@@ -237,6 +246,90 @@ namespace PPS.MapEditor
 
             texture.Apply();
             return Sprite.Create(texture, new Rect(0, 0, size, size), Vector2.one * 0.5f, size);
+        }
+
+        /// <summary>
+        /// 뾰족한 끝 다섯. 끝이 먹는 반지름에 닿아야
+        /// 보이는 크기와 실제로 먹는 범위가 맞는다.
+        /// </summary>
+        static Sprite MakeStar()
+        {
+            const int size = 64;
+            const int points = 5;
+
+            var texture = new Texture2D(size, size, TextureFormat.RGBA32, false);
+            var center = new Vector2(31.5f, 31.5f);
+
+            // 바깥 끝과 안쪽 골이 번갈아 온다.
+            var corners = new Vector2[points * 2];
+            for (int i = 0; i < corners.Length; i++)
+            {
+                float angle = Mathf.PI * 0.5f + Mathf.PI * i / points;
+                float radius = i % 2 == 0 ? 31f : 13f;
+
+                corners[i] = center + new Vector2(
+                    Mathf.Cos(angle) * radius, Mathf.Sin(angle) * radius);
+            }
+
+            for (int y = 0; y < size; y++)
+            for (int x = 0; x < size; x++)
+                texture.SetPixel(x, y,
+                    Inside(corners, new Vector2(x, y)) ? Color.white : Color.clear);
+
+            texture.Apply();
+            return Sprite.Create(texture, new Rect(0, 0, size, size), Vector2.one * 0.5f, size);
+        }
+
+        /// <summary>
+        /// 터지는 순간의 불꽃. 끝이 많고 얕아서
+        /// 별과 헷갈리지 않는다.
+        /// </summary>
+        static Sprite MakeBurst()
+        {
+            const int size = 64;
+            const int points = 12;
+
+            var texture = new Texture2D(size, size, TextureFormat.RGBA32, false);
+            var center = new Vector2(31.5f, 31.5f);
+
+            var corners = new Vector2[points * 2];
+            for (int i = 0; i < corners.Length; i++)
+            {
+                float angle = Mathf.PI * i / points;
+                float radius = i % 2 == 0 ? 31f : 19f;
+
+                corners[i] = center + new Vector2(
+                    Mathf.Cos(angle) * radius, Mathf.Sin(angle) * radius);
+            }
+
+            for (int y = 0; y < size; y++)
+            for (int x = 0; x < size; x++)
+                texture.SetPixel(x, y,
+                    Inside(corners, new Vector2(x, y)) ? Color.white : Color.clear);
+
+            texture.Apply();
+            return Sprite.Create(texture, new Rect(0, 0, size, size), Vector2.one * 0.5f, size);
+        }
+
+        /// <summary>
+        /// 오목한 도형이라 반지름 비교로는 안 된다.
+        /// 오른쪽으로 반직선을 쏴 변을 몇 번 지나는지 센다.
+        /// </summary>
+        static bool Inside(Vector2[] corners, Vector2 point)
+        {
+            bool inside = false;
+
+            for (int i = 0, j = corners.Length - 1; i < corners.Length; j = i++)
+            {
+                if (corners[i].y > point.y == corners[j].y > point.y) continue;
+
+                float cross = (corners[j].x - corners[i].x) * (point.y - corners[i].y)
+                    / (corners[j].y - corners[i].y) + corners[i].x;
+
+                if (point.x < cross) inside = !inside;
+            }
+
+            return inside;
         }
 
         static float DistanceToSegment(Vector2 point, Vector2 a, Vector2 b)
