@@ -15,6 +15,12 @@ namespace PPS.Core
 
         /// 터져서 파편을 뿌린다. 닿으면 실패.
         FragBomb = 1,
+
+        /// 붙박이 장애물. 닿으면 실패.
+        Spike = 2,
+
+        /// 범위 안의 동적 바디를 한 방향으로 민다.
+        Wind = 3,
     }
 
     /// <summary>
@@ -41,5 +47,11 @@ namespace PPS.Core
         /// rng 로 뽑는 추가 지연의 상한.
         /// 0 이면 시드와 무관하게 발동한다.
         public int JitterSteps;
+
+        /// <summary>
+        /// 미는 방향(도). 0 이 오른쪽이다.
+        /// 바람만 쓴다 — 나머지 장치는 방향이 없다.
+        /// </summary>
+        public float Angle;
     }
 }
