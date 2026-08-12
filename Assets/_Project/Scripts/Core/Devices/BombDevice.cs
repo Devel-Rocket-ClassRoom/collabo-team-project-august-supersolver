@@ -46,11 +46,20 @@ namespace PPS.Core
             return body;
         }
 
-        public BombDevice(in DeviceData data, Rigidbody2D body, IReadOnlyList<Rigidbody2D> bodies)
+        readonly SimEvents _events;
+
+        /// 레벨의 장치 번호. 알릴 때 누구인지 밝힌다.
+        readonly int _index;
+
+        public BombDevice(
+            in DeviceData data, Rigidbody2D body, IReadOnlyList<Rigidbody2D> bodies,
+            SimEvents events, int index)
         {
             _data = data;
             _body = body;
             _bodies = bodies;
+            _events = events;
+            _index = index;
         }
 
         /// 아직 안 터졌으면 Stalled 를 미루게 한다.
@@ -108,6 +117,11 @@ namespace PPS.Core
                 // 그걸 고치면 세기가 함께 흔들린다.
                 body.linearVelocity += direction * (_data.Power * falloff);
             }
+
+            // 미는 것을 다 끝낸 뒤, 몸을 지우기 전에 알린다.
+            // 결과는 이미 확정돼 있고, 구독자는 아직 살아 있는
+            // 바디에서 터진 자리를 읽을 수 있다.
+            _events?.RaiseDeviceFired(_index);
 
             DestroyBody();
         }

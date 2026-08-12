@@ -22,12 +22,14 @@ namespace PPS.Core
         /// <param name="scene">장치는 바디를 만들어도 된다.</param>
         /// <param name="bodies">만든 바디를 생성 순서대로 넣는다.</param>
         /// <param name="hazards">닿으면 실패하는 콜라이더 목록.</param>
+        /// <param name="events">터졌음을 알릴 통로. 표시 전용이다.</param>
         public static IStepLogic Create(
             in DeviceData data,
             int index,
             Scene scene,
             List<Rigidbody2D> bodies,
-            List<Collider2D> hazards)
+            List<Collider2D> hazards,
+            SimEvents events)
         {
             string name = $"Device_{index}";
 
@@ -40,7 +42,7 @@ namespace PPS.Core
                     var body = BombDevice.CreateBody(scene, data, name);
                     bodies.Add(body);
 
-                    return new BombDevice(data, body, bodies);
+                    return new BombDevice(data, body, bodies, events, index);
                 }
 
                 case DeviceType.FragBomb:
@@ -49,7 +51,8 @@ namespace PPS.Core
                     var body = FragBombDevice.CreateBody(scene, data, name);
                     bodies.Add(body);
 
-                    return new FragBombDevice(data, body, scene, name, bodies, hazards);
+                    return new FragBombDevice(
+                        data, body, scene, name, bodies, hazards, events, index);
                 }
 
                 case DeviceType.Spike:
