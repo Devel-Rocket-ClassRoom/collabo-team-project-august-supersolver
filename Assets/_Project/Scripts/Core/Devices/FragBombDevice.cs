@@ -19,9 +19,13 @@ namespace PPS.Core
         /// 레벨마다 바꿀 이유가 생기면 데이터로 올린다.
         public const int FragmentCount = 5;
 
-        /// 파편 수명. 없으면 Stalled 가 안 나
-        /// 실패 시도마다 상한까지 태운다.
-        public const int LifeSteps = 60;
+        /// <summary>
+        /// 파편 수명. 60 스텝이 1 초다.
+        /// 상한(DefaultMaxSteps 1800)에 비하면 여전히 짧아야 한다 —
+        /// 파편이 굴러다니는 동안은 Stalled 가 나지 않아
+        /// 실패 시도마다 그만큼 시뮬레이션을 더 태운다.
+        /// </summary>
+        public const int LifeSteps = 300;
 
         /// 완전 균등이면 기계적으로 보인다.
         const float SpreadJitter = 0.35f;

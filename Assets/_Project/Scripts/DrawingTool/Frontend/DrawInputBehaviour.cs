@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using PPS.Core;
 using UnityEngine;
@@ -23,6 +22,7 @@ namespace PPS.DrawingTool
 
         [SerializeField] CanvasCameraFitter _fitter;
         [SerializeField] ToolSelection _tools;
+        [SerializeField] DrawingSession _session;
 
         /// 잉크 상한이 나오는 판. 상한을 float 로 복사해
         /// 두면 원본과 갈라질 자리가 생겨 판을 통째로 든다.
@@ -30,7 +30,6 @@ namespace PPS.DrawingTool
         LevelData _level = new LevelData();
 
         readonly StrokeGestureRecognizer _recognizer = new StrokeGestureRecognizer(new StrokeProcessor());
-        readonly Solution _solution = new Solution();
         readonly List<RaycastResult> _hits = new List<RaycastResult>();
 
         /// 손가락별로 마지막까지 읽은 샘플 시각.
@@ -39,18 +38,12 @@ namespace PPS.DrawingTool
 
         PointerEventData _probe;
 
-        /// 지금까지 확정된 그림. 스냅샷 Undo 가 이 위에 얹힌다.
-        public Solution Solution => _solution;
-
-        /// 확정된 획. 렌더러가 듣는다.
-        public event Action<Stroke> StrokeConfirmed;
-
         public bool IsDrawing => _recognizer.IsDrawing;
 
         public IReadOnlyList<Vector2> PreviewPoints => _recognizer.PreviewPoints;
 
         /// 확정된 획만 센 잔량. 획을 시작할 때 쓰는 값이다.
-        public float RemainingInk => _level.InkLimit - _solution.TotalInk();
+        public float RemainingInk => _level.InkLimit - _session.Solution.TotalInk();
 
         /// <summary>
         /// 잉크 상한이 나오는 판을 물린다. 획을 그린 뒤에
@@ -68,19 +61,28 @@ namespace PPS.DrawingTool
         {
             // 안 부르면 activeTouches 가 항상 비어 있다.
             EnhancedTouchSupport.Enable();
-            _recognizer.StrokeConfirmed += Append;
+            _recognizer.StrokeConfirmed += _session.AddStroke;
+            _recognizer.PivotRequested += PlacePivot;
         }
 
         void OnDisable()
         {
-            _recognizer.StrokeConfirmed -= Append;
+            _recognizer.StrokeConfirmed -= _session.AddStroke;
+            _recognizer.PivotRequested -= PlacePivot;
             EnhancedTouchSupport.Disable();
         }
 
-        void Append(Stroke stroke)
+        /// <summary>
+        /// 어느 획에 걸리는지는 Solution 을 아는 여기서 푼다.
+        /// 도구는 인식기가 Down 에서 잡아둔 값이다 — 그리는
+        /// 도중에 툴바를 눌러 바꿔도 시작할 때 고른 게 이긴다.
+        /// </summary>
+        void PlacePivot(DrawTool tool, Vector2 anchor, float radius)
         {
-            _solution.Strokes.Add(stroke);
-            StrokeConfirmed?.Invoke(stroke);
+            if (PivotPlacement.TryResolve(
+                    _session.Solution, anchor, radius,
+                    tool == DrawTool.PivotWorld, out PivotJoint pivot))
+                _session.AddPivot(pivot);
         }
 
         void Update()
