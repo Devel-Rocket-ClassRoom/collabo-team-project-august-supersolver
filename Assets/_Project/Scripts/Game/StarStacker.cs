@@ -1,7 +1,7 @@
 using PPS.Core;
 using UnityEngine;
 
-namespace PPS.MapEditor
+namespace PPS.Game
 {
     /// <summary>
     /// 먹은 별을 쌓는다. 획득을 판정하지 않는다 —
@@ -63,7 +63,7 @@ namespace PPS.MapEditor
             _collected[index] = true;
             Count++;
 
-            Debug.Log($"[맵 에디터] 별 {Count} / {_collected.Length}");
+            Debug.Log($"[시뮬] 별 {Count} / {_collected.Length}");
         }
     }
 }

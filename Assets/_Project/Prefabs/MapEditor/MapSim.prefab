@@ -127,7 +127,7 @@ MonoBehaviour:
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 7e67257cc3344d84ebb9645dfdd5352a, type: 3}
   m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::PPS.MapEditor.StarStacker
+  m_EditorClassIdentifier: PPS.Game::PPS.Game.StarStacker
 --- !u!1 &7297266330538902165
 GameObject:
   m_ObjectHideFlags: 0
@@ -171,7 +171,7 @@ MonoBehaviour:
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 9951c7c2a84e6fa4c8d98f1246c864d0, type: 3}
   m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::PPS.Game.GameSimDriver
+  m_EditorClassIdentifier: PPS.Game::PPS.Game.GameSimDriver
 --- !u!1 &8189311347864053128
 GameObject:
   m_ObjectHideFlags: 0
@@ -215,6 +215,6 @@ MonoBehaviour:
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 58a98717666842740bcb8f16e3ef5bd4, type: 3}
   m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::PPS.MapEditor.MapSimView
-  _style: {fileID: 11400000, guid: 59d72269ab1cff14b987d2aa4dd75eb9, type: 2}
+  m_EditorClassIdentifier: PPS.Game::PPS.Game.MapSimView
+  _style: {fileID: 11400000, guid: 24aff3ded2f74d2389273c9c64cc0bff, type: 2}
   _stars: {fileID: 4656150807511862961}
