@@ -25,6 +25,13 @@ namespace PPS.Core
         /// 별마다 수집 여부. 인덱스는 레벨 순서.
         bool[] _collected;
 
+        /// <summary>
+        /// 그 별을 먹었는가. 화면이 먹은 별을 지울 때 쓴다.
+        /// 판정에는 개수만 쓰이지만 표시에는 어느 것인지가 필요하다.
+        /// </summary>
+        public bool IsCollected(int index) =>
+            _collected != null && index >= 0 && index < _collected.Length && _collected[index];
+
         internal void Initialize(SimWorld world)
         {
             var stars = world.Level.Stars;
