@@ -18,7 +18,8 @@ MonoBehaviour:
   - m_GUID: 27e188d254392714aa8018a514105894
     m_Address: S000
     m_ReadOnly: 0
-    m_SerializedLabels: []
+    m_SerializedLabels:
+    - Korea
     FlaggedDuringContentUpdateRestriction: 0
   m_ReadOnly: 0
   m_Settings: {fileID: 11400000, guid: 159a3736949ee3944bc0e79342432c75, type: 2}

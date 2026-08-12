@@ -103,6 +103,8 @@ MonoBehaviour:
   m_LabelTable:
     m_LabelNames:
     - default
+    - Korea
+    - Japan
   m_SchemaTemplates: []
   m_GroupTemplateObjects:
   - {fileID: 11400000, guid: ff463e8ace9ccfd4a97c3bf96c9f2dee, type: 2}
