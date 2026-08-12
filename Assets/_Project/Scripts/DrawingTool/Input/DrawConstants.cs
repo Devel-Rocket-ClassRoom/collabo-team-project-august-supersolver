@@ -21,8 +21,9 @@ namespace PPS.DrawingTool
         /// 그 획에 걸린다. 탭 반경(dp)과 달리 월드 상수다 —
         /// 재결합 결과가 Solution 에 저장되므로 기기를 타면
         /// 같은 그림이 기기마다 다른 판이 된다.
-        /// 값은 획 두께라 "선이 핀을 덮으면 걸린다"가 된다.
+        /// 탭 반경보다 넓어야 한다 — 좁으면 핀을 찍을 수 있던
+        /// 자리에 그은 획을 그 핀이 못 받는다.
         /// </summary>
-        public const float PivotRebindDistance = 0.12f;
+        public const float PivotRebindDistance = 0.25f;
     }
 }
