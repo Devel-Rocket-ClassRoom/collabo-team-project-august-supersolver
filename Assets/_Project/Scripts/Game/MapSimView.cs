@@ -2,7 +2,7 @@ using System.Collections.Generic;
 using PPS.Core;
 using UnityEngine;
 
-namespace PPS.MapEditor
+namespace PPS.Game
 {
     /// <summary>
     /// 돌아가는 시뮬레이션을 그린다. 월드를 읽기만 한다.
@@ -11,7 +11,7 @@ namespace PPS.MapEditor
     /// </summary>
     public sealed class MapSimView : MonoBehaviour
     {
-        [SerializeField] MapEditStyle _style;
+        [SerializeField] SimStyle _style;
         [SerializeField] StarStacker _stars;
 
         SpriteRenderer _ball;
@@ -37,8 +37,8 @@ namespace PPS.MapEditor
             _ball.gameObject.SetActive(true);
             _goal.gameObject.SetActive(true);
 
-            MapHandleGfx.PlaceDot(_ball, world.Ball.position, LevelData.BallRadius, MapEditStyle.Plain);
-            MapHandleGfx.PlaceDot(_goal, level.GoalPosition, LevelData.GoalRadius, MapEditStyle.Plain);
+            MapHandleGfx.PlaceDot(_ball, world.Ball.position, LevelData.BallRadius, SimStyle.Plain);
+            MapHandleGfx.PlaceDot(_goal, level.GoalPosition, LevelData.GoalRadius, SimStyle.Plain);
 
             DrawTerrain(level);
             DrawStars(level);
@@ -71,7 +71,7 @@ namespace PPS.MapEditor
                 if (!used) continue;
 
                 MapHandleGfx.PlaceDot(_starHandles[i], level.Stars[i],
-                    MapEditStyle.StarRadius, MapEditStyle.Plain);
+                    LevelData.StarCaptureRadius, SimStyle.Plain);
             }
         }
 
@@ -105,8 +105,8 @@ namespace PPS.MapEditor
 
                 MapHandleGfx.PlaceDot(_devices[i],
                     body != null ? body.position : data.Position,
-                    MapEditStyle.RadiusOf(data), MapEditStyle.Plain,
-                    MapEditStyle.AngleOf(data));
+                    SimStyle.RadiusOf(data), SimStyle.Plain,
+                    SimStyle.AngleOf(data));
             }
         }
 
@@ -127,7 +127,7 @@ namespace PPS.MapEditor
                 if (!used) continue;
 
                 MapHandleGfx.PlaceDot(_fragments[i], hazards[i].transform.position,
-                    FragBombDevice.FragmentRadius, MapEditStyle.Plain);
+                    FragBombDevice.FragmentRadius, SimStyle.Plain);
             }
         }
 

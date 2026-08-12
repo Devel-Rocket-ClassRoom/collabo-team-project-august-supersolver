@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using PPS.Core;
+using PPS.Game;
 using UnityEngine;
 
 namespace PPS.MapEditor
@@ -46,8 +47,8 @@ namespace PPS.MapEditor
 
         void Awake()
         {
-            _startHandle = Create("StartHandle", _style.Sprites.Ball);
-            _goalHandle = Create("GoalHandle", _style.Sprites.Goal);
+            _startHandle = Create("StartHandle", _style.Sim.Sprites.Ball);
+            _goalHandle = Create("GoalHandle", _style.Sim.Sprites.Goal);
             _scaleHandle = Create("ScaleHandle", MapHandleGfx.Square);
             _reachHandle = Create("ReachHandle", MapHandleGfx.Circle);
 
@@ -68,9 +69,9 @@ namespace PPS.MapEditor
             _goalHandle.gameObject.SetActive(true);
 
             MapHandleGfx.PlaceDot(_startHandle, model.Level.BallStart, LevelData.BallRadius,
-                Tint(MapEditStyle.Plain, MapHandleKind.Start, 0));
+                Tint(SimStyle.Plain, MapHandleKind.Start, 0));
             MapHandleGfx.PlaceDot(_goalHandle, model.Level.GoalPosition, LevelData.GoalRadius,
-                Tint(MapEditStyle.Plain, MapHandleKind.Goal, 0));
+                Tint(SimStyle.Plain, MapHandleKind.Goal, 0));
 
             DrawStars();
             DrawDevices();
@@ -83,7 +84,7 @@ namespace PPS.MapEditor
             var stars = _model.Level.Stars;
 
             // 개수가 변한다. 남는 핸들은 끄고 다시 쓴다.
-            Grow(_starHandles, stars.Count, "StarHandle", _style.Sprites.Star);
+            Grow(_starHandles, stars.Count, "StarHandle", _style.Sim.Sprites.Star);
 
             for (int i = 0; i < _starHandles.Count; i++)
             {
@@ -91,8 +92,8 @@ namespace PPS.MapEditor
                 _starHandles[i].gameObject.SetActive(used);
                 if (!used) continue;
 
-                MapHandleGfx.PlaceDot(_starHandles[i], stars[i], MapEditStyle.StarRadius,
-                    Tint(MapEditStyle.Plain, MapHandleKind.Star, i));
+                MapHandleGfx.PlaceDot(_starHandles[i], stars[i], LevelData.StarCaptureRadius,
+                    Tint(SimStyle.Plain, MapHandleKind.Star, i));
             }
         }
 
@@ -104,7 +105,7 @@ namespace PPS.MapEditor
         {
             var devices = _model.Level.Devices;
 
-            Grow(_deviceHandles, devices.Count, "DeviceHandle", _style.Sprites.Bomb);
+            Grow(_deviceHandles, devices.Count, "DeviceHandle", _style.Sim.Sprites.Bomb);
 
             for (int i = 0; i < _deviceHandles.Count; i++)
             {
@@ -112,12 +113,12 @@ namespace PPS.MapEditor
                 _deviceHandles[i].gameObject.SetActive(used);
                 if (!used) continue;
 
-                _deviceHandles[i].sprite = _style.SpriteOf(devices[i].Type);
+                _deviceHandles[i].sprite = _style.Sim.SpriteOf(devices[i].Type);
 
                 MapHandleGfx.PlaceDot(_deviceHandles[i], devices[i].Position,
-                    MapEditStyle.RadiusOf(devices[i]),
-                    Tint(MapEditStyle.Plain, MapHandleKind.Device, i),
-                    MapEditStyle.AngleOf(devices[i]));
+                    SimStyle.RadiusOf(devices[i]),
+                    Tint(SimStyle.Plain, MapHandleKind.Device, i),
+                    SimStyle.AngleOf(devices[i]));
             }
 
             DrawReach(devices);
@@ -152,7 +153,7 @@ namespace PPS.MapEditor
 
             for (int i = 0; i < shapes.Count; i++)
             {
-                Color color = Tint(_style.Terrain, MapHandleKind.Terrain, i);
+                Color color = Tint(_style.Sim.Terrain, MapHandleKind.Terrain, i);
 
                 _scratch.Clear();
                 ShapeBaker.Append(shapes[i], _scratch);
