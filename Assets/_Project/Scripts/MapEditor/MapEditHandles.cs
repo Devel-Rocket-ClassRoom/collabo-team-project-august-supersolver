@@ -5,6 +5,9 @@ using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.InputSystem;
 
+// UnityEngine 에도 같은 이름이 있다(SystemInfo.deviceType).
+using DeviceType = PPS.Core.DeviceType;
+
 namespace PPS.MapEditor
 {
     /// <summary>
@@ -49,13 +52,19 @@ namespace PPS.MapEditor
         [SerializeField] ToolPalette _palette;
         [SerializeField] MapEditHistory _history;
 
-        [SerializeField] int _starTab = 3;
+        /// 탭 번호. 씬의 탭 순서와 맞춰야 한다.
         [SerializeField] int _terrainTab = 1;
+        [SerializeField] int _deviceTab = 2;
 
         [SerializeField] Color _startColor = new Color32(0xC0, 0x14, 0x3C, 0xFF);
         [SerializeField] Color _goalColor = new Color32(0x0E, 0x7A, 0x3C, 0xFF);
         [SerializeField] Color _starColor = new Color32(0xE8, 0x9A, 0x1C, 0xFF);
         [SerializeField] Color _terrainColor = new Color32(0x23, 0x25, 0x2B, 0xFF);
+        [SerializeField] Color _bombColor = new Color32(0x3A, 0x3F, 0x4B, 0xFF);
+        [SerializeField] Color _fragColor = new Color32(0x8A, 0x2B, 0x2B, 0xFF);
+        [SerializeField] Color _spikeColor = new Color32(0x6B, 0x1F, 0x1F, 0xFF);
+        [SerializeField] Color _windColor = new Color32(0x2E, 0x86, 0xA8, 0xFF);
+        [SerializeField] Color _blastColor = new Color32(0xFF, 0x6B, 0x2C, 0x30);
         [SerializeField] Color _selectedColor = Color.white;
         [SerializeField] Color _vertexColor = new Color32(0x3D, 0x8B, 0xFF, 0xFF);
         [SerializeField] Color _boundsColor = new Color32(0x9A, 0x9A, 0x9A, 0x99);
@@ -65,6 +74,7 @@ namespace PPS.MapEditor
         SpriteRenderer _startHandle;
         SpriteRenderer _goalHandle;
         SpriteRenderer _scaleHandle;
+        SpriteRenderer _blastHandle;
 
         /// 크기 조절의 기준이 되는 테두리 네 변.
         readonly SpriteRenderer[] _boundsHandles = new SpriteRenderer[4];
@@ -73,6 +83,7 @@ namespace PPS.MapEditor
         readonly Vector2[] _corners = new Vector2[4];
         readonly List<SpriteRenderer> _vertexHandles = new List<SpriteRenderer>();
         readonly List<SpriteRenderer> _starHandles = new List<SpriteRenderer>();
+        readonly List<SpriteRenderer> _deviceHandles = new List<SpriteRenderer>();
         readonly List<SpriteRenderer> _terrainHandles = new List<SpriteRenderer>();
 
         Selection _selected = Selection.None;
@@ -117,6 +128,7 @@ namespace PPS.MapEditor
 
         Vector2 _clipStar;
         ShapeData _clipShape;
+        DeviceData _clipDevice;
 
         /// 도형을 선분으로 굽는 임시 버퍼.
         /// 매번 새로 만들면 프레임마다 할당이 생긴다.
@@ -131,6 +143,7 @@ namespace PPS.MapEditor
             _startHandle = CreateHandle("StartHandle", MapHandleGfx.Circle);
             _goalHandle = CreateHandle("GoalHandle", MapHandleGfx.Circle);
             _scaleHandle = CreateHandle("ScaleHandle", MapHandleGfx.Square);
+            _blastHandle = CreateHandle("BlastHandle", MapHandleGfx.Circle);
 
             for (int i = 0; i < _boundsHandles.Length; i++)
                 _boundsHandles[i] = CreateHandle($"BoundsHandle_{i}", MapHandleGfx.Square);
@@ -149,17 +162,41 @@ namespace PPS.MapEditor
         /// 새 맵·불러오기·초기화는 스테이지를 통째로
         /// 갈아끼운다. 고른 번호는 예전 맵 기준이라
         /// 그대로 두면 없는 것을 지우려 든다.
+        /// 목록만 짧아지는 경우도 있어 번호까지 함께 본다.
         /// </summary>
         void DropStaleSelection()
         {
-            if (ReferenceEquals(_lastStage, _session.Current)) return;
+            bool swapped = !ReferenceEquals(_lastStage, _session.Current);
+            if (!swapped && InRange(_selected)) return;
 
             _lastStage = _session.Current;
             _selected = Selection.None;
             _dragging = false;
+            _grab = GrabKind.None;
             _editMode = false;
             _insertMode = false;
             _activeVertex = -1;
+        }
+
+        /// <summary>
+        /// 고른 번호가 아직 있는 것을 가리키는가.
+        /// 상단바 버튼은 아무 때나 눌리므로 여기서 한 번에 막는다.
+        /// </summary>
+        bool InRange(Selection selection)
+        {
+            var level = _session.Current.Level;
+
+            switch (selection.Kind)
+            {
+                case HandleKind.Star:
+                    return selection.Index < level.Stars.Count;
+                case HandleKind.Device:
+                    return selection.Index < level.Devices.Count;
+                case HandleKind.Terrain:
+                    return selection.Index < _session.Shapes.Shapes.Count;
+                default:
+                    return true;
+            }
         }
 
         /// <summary>
@@ -209,6 +246,8 @@ namespace PPS.MapEditor
         {
             var level = _session.Current.Level;
 
+            if (!InRange(_selected)) return;
+
             if (_selected.Kind == HandleKind.Star)
             {
                 _clipStar = level.Stars[_selected.Index];
@@ -218,6 +257,11 @@ namespace PPS.MapEditor
             {
                 _clipShape = _session.Shapes.Shapes[_selected.Index].Clone();
                 _clipKind = HandleKind.Terrain;
+            }
+            else if (_selected.Kind == HandleKind.Device)
+            {
+                _clipDevice = level.Devices[_selected.Index];
+                _clipKind = HandleKind.Device;
             }
             else
             {
@@ -251,6 +295,16 @@ namespace PPS.MapEditor
                 level.Stars.Add(_clipStar + shift);
                 _selected = new Selection(HandleKind.Star, level.Stars.Count - 1);
             }
+            else if (_clipKind == HandleKind.Device)
+            {
+                Record();
+
+                DeviceData copy = _clipDevice;
+                copy.Position += ClampDelta(PasteOffset, copy.Position, copy.Position);
+
+                level.Devices.Add(copy);
+                _selected = new Selection(HandleKind.Device, level.Devices.Count - 1);
+            }
             else if (_clipKind == HandleKind.Terrain)
             {
                 Record();
@@ -274,7 +328,7 @@ namespace PPS.MapEditor
         /// </summary>
         public void RotateSelected()
         {
-            if (_selected.Kind != HandleKind.Terrain)
+            if (_selected.Kind != HandleKind.Terrain || !InRange(_selected))
             {
                 _placeAngle += RotateStep;
                 Debug.Log($"[맵 에디터] 놓을 각도: {_placeAngle % 360f:F0}도");
@@ -317,13 +371,21 @@ namespace PPS.MapEditor
         {
             var level = _session.Current.Level;
 
-            if (_selected.Kind != HandleKind.Star && _selected.Kind != HandleKind.Terrain) return;
+            if (_selected.Kind != HandleKind.Star
+                && _selected.Kind != HandleKind.Terrain
+                && _selected.Kind != HandleKind.Device) return;
+
+            if (!InRange(_selected)) return;
 
             Record();
 
             if (_selected.Kind == HandleKind.Star)
             {
                 level.Stars.RemoveAt(_selected.Index);
+            }
+            else if (_selected.Kind == HandleKind.Device)
+            {
+                level.Devices.RemoveAt(_selected.Index);
             }
             else
             {
@@ -447,19 +509,93 @@ namespace PPS.MapEditor
         {
             if (_palette == null) return Selection.None;
 
-            if (_palette.SelectedTab == _starTab)
-            {
-                Record();
-                return AddStar(world);
-            }
-
             if (_palette.SelectedTab == _terrainTab)
             {
                 Record();
                 return AddTerrain(world, _palette.SelectedItem);
             }
 
+            if (_palette.SelectedTab == _deviceTab)
+            {
+                Record();
+                return AddDeviceItem(world, _palette.SelectedItem);
+            }
+
             return Selection.None;
+        }
+
+        /// <summary>
+        /// 장치 탭의 항목 하나를 놓는다.
+        /// 별은 같은 탭에 있지만 레벨의 별도 목록에 들어간다 —
+        /// 코어가 장치가 아니라 수집 목표로 다룬다.
+        /// 세기·지연은 기본값으로 둔다. 값을 고치는 UI 는 아직 없다.
+        /// </summary>
+        Selection AddDeviceItem(Vector2 world, int kind)
+        {
+            var devices = _session.Current.Level.Devices;
+
+            switch (kind)
+            {
+                case 0: // 별
+                    return AddStar(world);
+
+                case 1: // 폭탄
+                    devices.Add(new DeviceData
+                    {
+                        Type = DeviceType.Bomb,
+                        Position = world,
+                        Radius = 3f,
+                        Power = 5f,
+                        DelaySteps = 30,
+
+                        // 흔들림은 0 이다. 값이 있으면 발동 시점이
+                        // 시드에 따라 달라져 레벨을 읽기 어렵다.
+                        JitterSteps = 0,
+                    });
+                    break;
+
+                case 3: // 가시
+                    devices.Add(new DeviceData
+                    {
+                        Type = DeviceType.Spike,
+                        Position = world,
+                        Radius = 0.3f,
+                    });
+                    break;
+
+                case 4: // 바람 구역
+                    devices.Add(new DeviceData
+                    {
+                        Type = DeviceType.Wind,
+                        Position = world,
+                        Radius = 2f,
+
+                        // 가속도(m/s²). 중력의 절반쯤이라
+                        // 공을 띄우지는 못하고 궤도만 휜다.
+                        Power = 5f,
+                        Angle = _placeAngle,
+                    });
+                    break;
+
+                case 2: // 파편 폭탄
+                    devices.Add(new DeviceData
+                    {
+                        Type = DeviceType.FragBomb,
+
+                        // 반경 0 이다. 파편만 뿌리고 밀어내지 않는다.
+                        Position = world,
+                        Radius = 0f,
+                        Power = 6f,
+                        DelaySteps = 30,
+                        JitterSteps = 0,
+                    });
+                    break;
+
+                default:
+                    return Selection.None;
+            }
+
+            return new Selection(HandleKind.Device, devices.Count - 1);
         }
 
         void Record() => _history?.BeginEdit();
@@ -535,6 +671,10 @@ namespace PPS.MapEditor
             for (int i = 0; i < level.Stars.Count; i++)
                 Closer(ref best, ref bestDist, Vector2.Distance(world, level.Stars[i]),
                     new Selection(HandleKind.Star, i));
+
+            for (int i = 0; i < level.Devices.Count; i++)
+                Closer(ref best, ref bestDist, Vector2.Distance(world, level.Devices[i].Position),
+                    new Selection(HandleKind.Device, i));
 
             // 도형은 점이 아니라 선이라 선까지의 거리로 잰다.
             // 변 하나만 눌러도 도형 전체가 잡혀야 한다.
@@ -687,6 +827,12 @@ namespace PPS.MapEditor
                 case HandleKind.Star:
                     level.Stars[_selected.Index] = MovePoint(level.Stars[_selected.Index], ref delta);
                     break;
+                case HandleKind.Device:
+                    // 구조체라 꺼내 고치고 도로 넣는다.
+                    DeviceData device = level.Devices[_selected.Index];
+                    device.Position = MovePoint(device.Position, ref delta);
+                    level.Devices[_selected.Index] = device;
+                    break;
                 case HandleKind.Terrain:
                     ShapeData shape = _session.Shapes.Shapes[_selected.Index];
                     Rect bounds = shape.Bounds();
@@ -781,8 +927,101 @@ namespace PPS.MapEditor
                         LevelData.StarCaptureRadius, Tint(_starColor, HandleKind.Star, i));
             }
 
+            DrawDevices();
             DrawShapes();
             DrawEditHandles();
+        }
+
+        /// <summary>
+        /// 장치를 종류에 맞는 모양으로 그린다.
+        /// 폭발 반경은 고른 것만 — 늘 그리면 원이 겹쳐 어지럽다.
+        /// </summary>
+        void DrawDevices()
+        {
+            var devices = _session.Current.Level.Devices;
+
+            Grow(_deviceHandles, devices.Count, "DeviceHandle", MapHandleGfx.Bomb);
+
+            for (int i = 0; i < _deviceHandles.Count; i++)
+            {
+                bool used = i < devices.Count;
+                _deviceHandles[i].gameObject.SetActive(used);
+                if (!used) continue;
+
+                _deviceHandles[i].sprite = DeviceSprite(devices[i].Type);
+
+                MapHandleGfx.PlaceDot(_deviceHandles[i], devices[i].Position,
+                    DeviceDrawRadius(devices[i]),
+                    Tint(DeviceColor(devices[i].Type), HandleKind.Device, i),
+                    devices[i].Type == DeviceType.Wind ? devices[i].Angle : 0f);
+            }
+
+            DrawBlastRadius(devices);
+        }
+
+        static Sprite DeviceSprite(DeviceType type)
+        {
+            switch (type)
+            {
+                case DeviceType.FragBomb: return MapHandleGfx.FragBomb;
+                case DeviceType.Spike: return MapHandleGfx.Spike;
+                case DeviceType.Wind: return MapHandleGfx.Wind;
+                default: return MapHandleGfx.Bomb;
+            }
+        }
+
+        Color DeviceColor(DeviceType type)
+        {
+            switch (type)
+            {
+                case DeviceType.FragBomb: return _fragColor;
+                case DeviceType.Spike: return _spikeColor;
+                case DeviceType.Wind: return _windColor;
+                default: return _bombColor;
+            }
+        }
+
+        /// <summary>
+        /// 화면에 그릴 반지름. 몸통이 스프라이트를 꽉 채우지
+        /// 않으므로 그 비율만큼 되돌려 키운다.
+        /// </summary>
+        static float DeviceDrawRadius(in DeviceData device)
+        {
+            switch (device.Type)
+            {
+                case DeviceType.FragBomb:
+                    return BombDevice.BodyRadius / MapHandleGfx.FragBombBodySpan;
+
+                case DeviceType.Spike:
+                    return Mathf.Max(device.Radius, SpikeDevice.MinRadius)
+                        / MapHandleGfx.SpikeBodySpan;
+
+                // 바람은 화살표라 몸 크기가 없다. 구역 안에
+                // 들어갈 만한 크기로 그린다.
+                case DeviceType.Wind:
+                    return Mathf.Max(device.Radius * 0.5f, 0.3f);
+
+                default:
+                    return BombDevice.BodyRadius / MapHandleGfx.BombBodySpan;
+            }
+        }
+
+        /// <summary>
+        /// 고른 장치가 미치는 범위. 가시는 몸이 곧 범위라
+        /// 겹쳐 그리면 뜻이 없다.
+        /// </summary>
+        void DrawBlastRadius(List<DeviceData> devices)
+        {
+            bool on = _selected.Kind == HandleKind.Device
+                && _selected.Index < devices.Count
+                && devices[_selected.Index].Type != DeviceType.Spike
+                && devices[_selected.Index].Radius > 0f;
+
+            _blastHandle.gameObject.SetActive(on);
+            if (!on) return;
+
+            DeviceData device = devices[_selected.Index];
+            MapHandleGfx.PlaceDot(_blastHandle, device.Position, device.Radius, _blastColor);
         }
 
         /// <summary>
@@ -909,6 +1148,7 @@ namespace PPS.MapEditor
             Goal,
             Star,
             Terrain,
+            Device,
         }
 
         /// <summary>
