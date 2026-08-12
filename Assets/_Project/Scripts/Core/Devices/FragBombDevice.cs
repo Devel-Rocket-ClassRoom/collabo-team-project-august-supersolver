@@ -146,10 +146,10 @@ namespace PPS.Core
                 _fragments.Add(fragment);
             }
 
-            DestroyBody();
+            // 파편을 다 뿌린 뒤, 몸을 지우기 전에 알린다.
+            _events?.RaiseDeviceFired(_index);
 
-            // 파편을 다 뿌린 뒤 알린다.
-            _events?.RaiseDeviceFired(_index, _data.Position);
+            DestroyBody();
         }
 
         static Rigidbody2D CreateFragment(Scene scene, Vector2 position, string name)

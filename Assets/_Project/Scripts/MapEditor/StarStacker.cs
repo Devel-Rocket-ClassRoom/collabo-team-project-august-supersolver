@@ -56,7 +56,7 @@ namespace PPS.MapEditor
 
         void OnDestroy() => Detach();
 
-        void OnStarCollected(int index, Vector2 at)
+        void OnStarCollected(int index)
         {
             if (index < 0 || index >= _collected.Length || _collected[index]) return;
 

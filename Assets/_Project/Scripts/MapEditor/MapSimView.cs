@@ -83,9 +83,6 @@ namespace PPS.MapEditor
         /// </summary>
         void DrawDevices(SimWorld world, LevelData level)
         {
-            // 바디 순서는 공 하나 → 지형 → 장치다.
-            int at = 1 + level.Terrain.Count;
-
             Grow(_devices, level.Devices.Count, "SimDevice", _style.Sprites.Bomb);
 
             for (int i = 0; i < _devices.Count; i++)
@@ -96,15 +93,11 @@ namespace PPS.MapEditor
                     continue;
                 }
 
-                DeviceData data = level.Devices[i];
-                bool hasBody = DeviceFactory.MakesBody(data.Type);
+                (DeviceData data, Rigidbody2D body) = world.GetDevice(i);
 
-                Rigidbody2D body = hasBody && at < world.Bodies.Count ? world.Bodies[at] : null;
+                // 바디를 가질 장치인데 없으면 이미 터진 것이다.
+                bool used = body != null || !DeviceFactory.MakesBody(data.Type);
 
-                // 바디를 만든 장치만 자리를 하나 쓴다.
-                if (hasBody) at++;
-
-                bool used = !hasBody || body != null;
                 _devices[i].gameObject.SetActive(used);
                 if (!used) continue;
 

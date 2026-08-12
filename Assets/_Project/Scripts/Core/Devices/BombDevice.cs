@@ -118,11 +118,12 @@ namespace PPS.Core
                 body.linearVelocity += direction * (_data.Power * falloff);
             }
 
-            DestroyBody();
+            // 미는 것을 다 끝낸 뒤, 몸을 지우기 전에 알린다.
+            // 결과는 이미 확정돼 있고, 구독자는 아직 살아 있는
+            // 바디에서 터진 자리를 읽을 수 있다.
+            _events?.RaiseDeviceFired(_index);
 
-            // 미는 것을 다 끝낸 뒤 알린다.
-            // 구독자가 무엇을 보든 결과는 이미 확정돼 있다.
-            _events?.RaiseDeviceFired(_index, _data.Position);
+            DestroyBody();
         }
 
         /// <summary>

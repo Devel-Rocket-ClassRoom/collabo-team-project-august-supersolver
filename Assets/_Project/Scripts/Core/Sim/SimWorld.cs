@@ -56,6 +56,36 @@ namespace PPS.Core
         /// </summary>
         public IReadOnlyList<Collider2D> Hazards => _hazards;
 
+        /// <summary>
+        /// 장치의 데이터와 살아 있는 바디를 함께 준다.
+        /// 바깥에서 장치를 볼 때는 Bodies 를 직접 뒤지지 말고
+        /// 이것을 쓴다 — 바디 등록 순서를 아는 곳을
+        /// 여기 하나로 모은다.
+        /// </summary>
+        /// <returns>
+        /// body 는 바람처럼 바디가 없거나 이미 터졌으면 null.
+        /// </returns>
+        public (DeviceData data, Rigidbody2D body) GetDevice(int index)
+        {
+            var devices = Level.Devices;
+
+            if (index < 0 || index >= devices.Count)
+                throw new ArgumentOutOfRangeException(
+                    nameof(index), $"장치 {index} 는 없다. 레벨에 {devices.Count} 개뿐이다.");
+
+            // 바디 순서는 공 하나 → 지형 → 장치다.
+            int at = 1 + Level.Terrain.Count;
+
+            // 바디를 만든 장치만 자리를 하나 쓴다.
+            for (int i = 0; i < index; i++)
+                if (DeviceFactory.MakesBody(devices[i].Type)) at++;
+
+            bool hasBody = DeviceFactory.MakesBody(devices[index].Type);
+            Rigidbody2D body = hasBody && at < _bodies.Count ? _bodies[at] : null;
+
+            return (devices[index], body);
+        }
+
         public bool IsTerminal => Judge.Cleared || Judge.Failed || Judge.Stalled;
 
         internal SimWorld(

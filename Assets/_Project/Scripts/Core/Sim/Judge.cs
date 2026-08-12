@@ -127,7 +127,7 @@ namespace PPS.Core
                 Stars++;
 
                 // 판정을 끝낸 뒤 알린다. 세는 것이 먼저다.
-                world.Events?.RaiseStarCollected(i, stars[i]);
+                world.Events?.RaiseStarCollected(i);
             }
         }
 
