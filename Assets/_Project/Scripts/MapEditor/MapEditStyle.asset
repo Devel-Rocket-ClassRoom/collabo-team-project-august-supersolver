@@ -1,0 +1,35 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b100d6d6ffcbcfa4b847d63c97d47240, type: 3}
+  m_Name: MapEditStyle
+  m_EditorClassIdentifier: Assembly-CSharp::PPS.MapEditor.MapEditStyle
+  Sprites:
+    Dot: {fileID: -2003601947, guid: a829e51a37e0dc148b87a468c29520fa, type: 3}
+    Star: {fileID: -1095445131, guid: a829e51a37e0dc148b87a468c29520fa, type: 3}
+    Bomb: {fileID: -1892451399, guid: a829e51a37e0dc148b87a468c29520fa, type: 3}
+    FragBomb: {fileID: -1292404710, guid: a829e51a37e0dc148b87a468c29520fa, type: 3}
+    Spike: {fileID: 1380786320, guid: a829e51a37e0dc148b87a468c29520fa, type: 3}
+    Wind: {fileID: 1407274763, guid: a829e51a37e0dc148b87a468c29520fa, type: 3}
+  Start: {r: 0.7529412, g: 0.078431375, b: 0.23529412, a: 1}
+  Goal: {r: 0.05490196, g: 0.47843137, b: 0.23529412, a: 1}
+  Star: {r: 0.9098039, g: 0.6039216, b: 0.10980392, a: 1}
+  Terrain: {r: 0.13725491, g: 0.14509805, b: 0.16862746, a: 1}
+  Bomb: {r: 0.22745098, g: 0.24705882, b: 0.29411766, a: 1}
+  FragBomb: {r: 0.5411765, g: 0.16862746, b: 0.16862746, a: 1}
+  Spike: {r: 0.41960785, g: 0.12156863, b: 0.12156863, a: 1}
+  Wind: {r: 0.18039216, g: 0.5254902, b: 0.65882355, a: 1}
+  Reach: {r: 1, g: 0.41960785, b: 0.17254902, a: 0.1882353}
+  Selected: {r: 1, g: 1, b: 1, a: 1}
+  Vertex: {r: 0.23921569, g: 0.54509807, b: 1, a: 1}
+  Bounds: {r: 0.6039216, g: 0.6039216, b: 0.6039216, a: 0.6}
+  Scale: {r: 1, g: 0.41960785, b: 0.17254902, a: 1}
+  Insert: {r: 0.23921569, g: 0.54509807, b: 1, a: 1}

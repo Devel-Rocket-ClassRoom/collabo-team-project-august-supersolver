@@ -32,6 +32,9 @@ namespace PPS.Core
 
         public LevelData Level { get; }
         public Judge Judge { get; }
+
+        /// 표시 쪽이 구독한다. 시뮬레이션은 읽지 않는다.
+        public SimEvents Events { get; }
         public Rigidbody2D Ball { get; }
         public int Seed { get; }
 
@@ -65,7 +68,8 @@ namespace PPS.Core
             List<Rigidbody2D> bodies,
             List<Collider2D> hazards,
             List<IStepLogic> logics,
-            Judge judge)
+            Judge judge,
+            SimEvents events)
         {
             _scene = scene;
             _physics = physics;
@@ -79,6 +83,9 @@ namespace PPS.Core
             Ball = ball;
             BallCollider = ballCollider;
             Judge = judge;
+
+            // 판정보다 먼저 세운다. 0 스텝에 먹는 별도 알려야 한다.
+            Events = events;
 
             // 첫 Step 이전의 초기 상태도 계측 대상이다.
             Judge.Initialize(this);
