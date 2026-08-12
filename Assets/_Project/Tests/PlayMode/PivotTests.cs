@@ -49,6 +49,29 @@ namespace PPS.Core.Tests
         }
 
         [Test]
+        public void 미결합_핀은_자유물체를_붙잡지_않는다()
+        {
+            // (자유물체, Unbound) 만 PickHost 를 통과해 connectedBody
+            // 가 null 인 조인트가 생겼다 — 상대를 기다리는 핀이
+            // 회전축 노릇도 못 하면서 막대를 허공에 세웠다.
+            var waiting = TestLevels.PivotSolution().Clone();
+            waiting.Pivots.Clear();
+            waiting.Pivots.Add(
+                new PivotJoint(1, PivotJoint.Unbound, TestLevels.PivotOnFixedLine));
+
+            using (var world = WorldBuilder.Build(TestLevels.PivotSwing(), waiting, 0))
+            {
+                var bar = FindStroke(world, 1);
+                float start = bar.position.y;
+
+                for (int i = 0; i < Steps; i++) world.Step();
+
+                Assert.Less(bar.position.y, start - 1f,
+                    "상대를 기다리는 핀이 막대를 붙잡고 있다.");
+            }
+        }
+
+        [Test]
         public void 회전축은_해시_궤적을_바꾼다()
         {
             // 조인트 생성이 조용히 실패하면 두 궤적이 같아진다.

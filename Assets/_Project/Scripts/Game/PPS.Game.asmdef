@@ -1,12 +1,8 @@
 {
-    "name": "PPS.DrawingTool",
-    "rootNamespace": "PPS.DrawingTool",
+    "name": "PPS.Game",
+    "rootNamespace": "PPS.Game",
     "references": [
-        "PPS.Core",
-        "PPS.Game",
-        "Unity.InputSystem",
-        "UnityEngine.UI",
-        "Unity.TextMeshPro"
+        "PPS.Core"
     ],
     "includePlatforms": [],
     "excludePlatforms": [],

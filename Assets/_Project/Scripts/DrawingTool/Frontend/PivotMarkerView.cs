@@ -42,6 +42,10 @@ namespace PPS.DrawingTool
         /// 핀 하나당 뿌리 하나. 크기는 뿌리가 진다.
         readonly List<Transform> _markers = new List<Transform>();
 
+        /// 인덱스가 Solution.Pivots 와 같다.
+        /// 시뮬 중에는 SimStageView 가 host 바디에 얹는다.
+        public IReadOnlyList<Transform> Markers => _markers;
+
         void OnEnable()
         {
             _session.Changed += Refresh;
@@ -70,8 +74,7 @@ namespace PPS.DrawingTool
         /// </summary>
         public static PivotFill FillOf(in PivotJoint pivot)
         {
-            if (pivot.StrokeA != PivotJoint.Unbound && pivot.StrokeB != PivotJoint.Unbound)
-                return PivotFill.Bound;
+            if (pivot.IsComplete) return PivotFill.Bound;
 
             return pivot.StrokeA >= 0 || pivot.StrokeB >= 0
                 ? PivotFill.Waiting
@@ -92,7 +95,8 @@ namespace PPS.DrawingTool
                 _markers[i].localScale = Vector3.one * diameter;
         }
 
-        void Refresh() => Show(_session.Solution);
+        /// <summary>재시도가 마커를 그리기 때 자리로 되돌릴 때도 쓴다.</summary>
+        public void Refresh() => Show(_session.Solution);
 
         void Add(in PivotJoint pivot, int index)
         {

@@ -223,6 +223,24 @@ namespace PPS.DrawingTool.Tests
         }
 
         [Test]
+        public void 그리는_중_Abort_하면_획이_확정되지_않는다()
+        {
+            // 획을 그리는 중에 두 번째 손가락이 플레이를 누른다.
+            // 인식기는 그 Down 을 무시하지만 버튼은 눌린다.
+            Feed(PointerPhase.Down, V(0f, 0f));
+            Feed(PointerPhase.Move, V(0f, 0.5f));
+            Feed(PointerPhase.Move, V(0f, 1f));
+
+            _recognizer.Abort();
+
+            Assert.IsFalse(_recognizer.IsDrawing, "프리뷰가 화면에 남는다");
+
+            // 손을 떼도 되살아나면 안 된다.
+            Feed(PointerPhase.Up, V(0f, 1.5f));
+            Assert.AreEqual(0, _confirmed.Count, "버린 획이 확정됐다");
+        }
+
+        [Test]
         public void 마우스와_터치는_offset_만큼만_다르다()
         {
             var path = new[] { V(0f, 0f), V(0f, 0.2f), V(0.2f, 0.4f), V(0.4f, 0.4f), V(0.4f, 0.1f) };
