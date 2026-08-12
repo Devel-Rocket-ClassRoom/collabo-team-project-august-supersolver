@@ -10,6 +10,7 @@ GameObject:
   m_Component:
   - component: {fileID: 2017518618831898060}
   - component: {fileID: 1952157738246664327}
+  - component: {fileID: 8310677694997151174}
   m_Layer: 5
   m_Name: Row_RL
   m_TagString: Untagged
@@ -45,6 +46,22 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2716992973676902380}
   m_CullTransparentMesh: 1
+--- !u!114 &8310677694997151174
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2716992973676902380}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9196b97071c7dbf41aaf9829e97a18ce, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::StageSelectRow
+  buttons:
+  - {fileID: 6261506622926324870}
+  - {fileID: 4937888153373971401}
+  - {fileID: 4012480808628678288}
 --- !u!1 &6048914929656997763
 GameObject:
   m_ObjectHideFlags: 0
@@ -256,6 +273,17 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 57566b3ae7d8da24a85a083b007f772f, type: 3}
+--- !u!114 &4012480808628678288 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 384512281283910969, guid: 57566b3ae7d8da24a85a083b007f772f, type: 3}
+  m_PrefabInstance: {fileID: 3673035040487486377}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: af3af2006d8dc7847bbfb4ffb5b6317f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::StageButton
 --- !u!224 &7508181127757264649 stripped
 RectTransform:
   m_CorrespondingSourceObject: {fileID: 6542418661566760096, guid: 57566b3ae7d8da24a85a083b007f772f, type: 3}
@@ -363,6 +391,17 @@ RectTransform:
   m_CorrespondingSourceObject: {fileID: 6542418661566760096, guid: 57566b3ae7d8da24a85a083b007f772f, type: 3}
   m_PrefabInstance: {fileID: 4742546580874514160}
   m_PrefabAsset: {fileID: 0}
+--- !u!114 &4937888153373971401 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 384512281283910969, guid: 57566b3ae7d8da24a85a083b007f772f, type: 3}
+  m_PrefabInstance: {fileID: 4742546580874514160}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: af3af2006d8dc7847bbfb4ffb5b6317f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::StageButton
 --- !u!1001 &6031262151173495231
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -465,3 +504,14 @@ RectTransform:
   m_CorrespondingSourceObject: {fileID: 6542418661566760096, guid: 57566b3ae7d8da24a85a083b007f772f, type: 3}
   m_PrefabInstance: {fileID: 6031262151173495231}
   m_PrefabAsset: {fileID: 0}
+--- !u!114 &6261506622926324870 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 384512281283910969, guid: 57566b3ae7d8da24a85a083b007f772f, type: 3}
+  m_PrefabInstance: {fileID: 6031262151173495231}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: af3af2006d8dc7847bbfb4ffb5b6317f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::StageButton
