@@ -1,12 +1,12 @@
 using PPS.Core;
 using UnityEngine;
 
-namespace PPS.MapEditor
+namespace PPS.Game
 {
     /// <summary>
     /// 스프라이트 하나를 세계 좌표에 놓는다.
     /// 무엇을 그릴지는 모르고 어떻게 놓을지만 안다 —
-    /// 모양은 MapEditStyle 이 들고 있다.
+    /// 모양은 SimStyle 이 들고 있다.
     /// </summary>
     public static class MapHandleGfx
     {
