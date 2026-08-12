@@ -108,6 +108,15 @@ namespace PPS.DrawingTool
         public Vector2 ScreenToWorld(Vector2 screenPixels) =>
             _frame.Position + (screenPixels - _appliedScreen * 0.5f) / _frame.PixelsPerUnit;
 
+        /// <summary>
+        /// dp 를 월드 길이로 옮긴다. 환산 계수의 주인이
+        /// 여기라 화면 크기를 따라가는 표시는 이 길을
+        /// 쓴다 — 그리기 판정과 같은 값이 나와야
+        /// 보이는 크기와 누를 수 있는 크기가 같다.
+        /// </summary>
+        public float DpToWorld(float dp) =>
+            new DeviceUnits(Screen.dpi).ToPixels(dp) / _frame.PixelsPerUnit;
+
         public bool IsInsidePlayArea(Vector2 world) => PlayArea.Contains(world);
 
         public Vector2 ClampToPlayArea(Vector2 world)
