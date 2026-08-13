@@ -20,6 +20,12 @@ namespace PPS.MapEditor
         /// 고른 장치가 미치는 범위.
         SpriteRenderer _reachHandle;
 
+        /// 지우개가 닿는 범위.
+        SpriteRenderer _eraserHandle;
+
+        /// 긋는 중인 선. 확정 전이라 도형 목록에 없다.
+        readonly List<SpriteRenderer> _strokeHandles = new List<SpriteRenderer>();
+
         /// 크기 조절의 기준이 되는 테두리 네 변.
         readonly SpriteRenderer[] _boundsHandles = new SpriteRenderer[4];
 
@@ -51,6 +57,7 @@ namespace PPS.MapEditor
             _goalHandle = Create("GoalHandle", _style.Sim.Sprites.Goal);
             _scaleHandle = Create("ScaleHandle", MapHandleGfx.Square);
             _reachHandle = Create("ReachHandle", MapHandleGfx.Circle);
+            _eraserHandle = Create("EraserHandle", MapHandleGfx.Circle);
 
             for (int i = 0; i < _boundsHandles.Length; i++)
                 _boundsHandles[i] = Create($"BoundsHandle_{i}", MapHandleGfx.Square);
@@ -77,6 +84,45 @@ namespace PPS.MapEditor
             DrawDevices();
             DrawShapes();
             DrawEditHandles();
+            DrawStroke();
+            DrawEraser();
+        }
+
+        /// <summary>
+        /// 손이 닿아 있는 동안의 선.
+        /// 확정되면 도형이 되어 지형 쪽에서 그려진다.
+        /// </summary>
+        void DrawStroke()
+        {
+            var points = _model.Stroke;
+            int need = points != null && points.Count >= 2 ? points.Count - 1 : 0;
+
+            Grow(_strokeHandles, need, "StrokeHandle", MapHandleGfx.Square);
+
+            for (int i = 0; i < _strokeHandles.Count; i++)
+            {
+                bool used = i < need;
+                _strokeHandles[i].gameObject.SetActive(used);
+                if (!used) continue;
+
+                MapHandleGfx.PlaceLine(_strokeHandles[i],
+                    new StaticSegment(points[i], points[i + 1]), _style.Selected);
+            }
+        }
+
+        /// <summary>
+        /// 지우개가 닿는 범위. 어디까지 지워지는지
+        /// 보이지 않으면 손가락이 가린 곳을 짐작해야 한다.
+        /// </summary>
+        void DrawEraser()
+        {
+            bool on = _model.EraserRadius > 0f;
+
+            _eraserHandle.gameObject.SetActive(on);
+            if (!on) return;
+
+            MapHandleGfx.PlaceDot(
+                _eraserHandle, _model.EraserAt, _model.EraserRadius, _style.Reach);
         }
 
         void DrawStars()
@@ -259,6 +305,7 @@ namespace PPS.MapEditor
             _goalHandle.gameObject.SetActive(false);
             _scaleHandle.gameObject.SetActive(false);
             _reachHandle.gameObject.SetActive(false);
+            _eraserHandle.gameObject.SetActive(false);
 
             for (int i = 0; i < _boundsHandles.Length; i++)
                 _boundsHandles[i].gameObject.SetActive(false);
@@ -267,6 +314,7 @@ namespace PPS.MapEditor
             Hide(_starHandles);
             Hide(_deviceHandles);
             Hide(_terrainHandles);
+            Hide(_strokeHandles);
         }
 
         static void Hide(List<SpriteRenderer> handles)
