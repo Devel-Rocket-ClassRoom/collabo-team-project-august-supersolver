@@ -18,7 +18,7 @@ public class AddressableLoader : MonoBehaviour, IResourceLoader
     {
         ServiceLocator.Register<IResourceLoader>(this);
     }
-    public async UniTask<IResourceHandle> LoadAsync(string key)
+    public async UniTask<IResourceHandle> LoadAsync(string key) // 라벨이다. 
     {
         BeforeLoad?.Invoke();
         var operation = Addressables.LoadAssetsAsync<UnityEngine.Object>(key, null);

@@ -9,9 +9,9 @@ public class StageButton : MonoBehaviour
     [SerializeField] TextMeshProUGUI stageNumText;
     int stageIdx = -1;
 
-    public void OnUpdate(int stageIdx, int maxIdx)
+    public void OnUpdate(int stageIdx, int maxStageIdx)
     {
-        if(stageIdx < 0 || stageIdx >= maxIdx)
+        if(stageIdx < 0 || stageIdx >= maxStageIdx)
         {
             stageNumText.text = "no";
             this.stageIdx = -1;
@@ -21,16 +21,13 @@ public class StageButton : MonoBehaviour
         stageNumText.text = (stageIdx + 1).ToString();
     }
     
-    public async void OnClicked()
+    public void OnClicked()
     {
         if (StageContext.Instance == null) return;
         if (stageIdx == -1) return;
         if (locked) return;
 
-        locked = true;
-        Debug.Log("로딩시작");
-        await StageContext.Instance.LoadStageAsync(stageIdx);
-        Debug.Log("로딩끝" + StageContext.Instance.Stages[stageIdx].StageId); // 스테이지 20개 없으면 에러남. 
-        locked = false;
+        var stage = ThemeRepository.Instance.ThemeData.Stages[stageIdx];
+        StageContext.Instance.LastSelectedStage = stage;
     }
 }

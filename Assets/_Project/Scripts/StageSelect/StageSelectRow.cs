@@ -12,11 +12,11 @@ public class StageSelectRow : MonoBehaviour
         if(buttons.Length != 3)
             Array.Resize<StageButton>(ref buttons, StagePerRow);
     }
-    public void OnUpdate(int startIdx, int maxIdx)
+    public void OnUpdate(int startIdx, int maxStageIdx)
     {
         for(int i = 0; i < StagePerRow; i++)
         {
-            buttons[i].OnUpdate(startIdx + i, maxIdx);
+            buttons[i].OnUpdate(startIdx + i, maxStageIdx);
         }
     }
 }
