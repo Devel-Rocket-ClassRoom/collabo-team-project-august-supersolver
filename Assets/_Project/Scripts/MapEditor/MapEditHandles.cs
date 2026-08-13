@@ -26,6 +26,21 @@ namespace PPS.MapEditor
         /// 새로 놓는 지형 도형의 크기.
         const float ShapeSize = 1f;
 
+        /// <summary>
+        /// 지우개가 한 번에 지우는 반지름(dp).
+        /// 집는 반경보다 커야 지운 자리가 손가락에 가려지지 않는다.
+        /// </summary>
+        const float EraserRadiusDp = 32f;
+
+        /// <summary>
+        /// 드로잉 탭의 항목 번호. 씬의 항목 순서와 맞춘다.
+        /// 나머지 항목은 그리지 않고 집기만 한다 — 펜을 든
+        /// 채로는 누를 때마다 선이 그어져 이미 그은 선을
+        /// 집을 수가 없다.
+        /// </summary>
+        const int PenItem = 0;
+        const int EraserItem = 1;
+
         /// 도형이 점으로 뭉개지지 않는 최소 크기.
         const float MinShapeSize = 0.1f;
 
@@ -54,6 +69,7 @@ namespace PPS.MapEditor
         [SerializeField] MapEditHistory _history;
 
         /// 탭 번호. 씬의 탭 순서와 맞춰야 한다.
+        [SerializeField] int _drawTab = 0;
         [SerializeField] int _terrainTab = 1;
         [SerializeField] int _deviceTab = 2;
 
@@ -110,6 +126,27 @@ namespace PPS.MapEditor
         /// 이번 드래그의 스냅샷을 이미 남겼는가.
         /// 끄는 내내 남기면 되돌리기가 한 픽셀씩 간다.
         bool _dragRecorded;
+
+        /// <summary>
+        /// 긋는 중인 선. 그리기 도구의 것을 그대로 쓴다 —
+        /// 점 밀도 규칙이 갈라지면 같은 손짓이 두 화면에서
+        /// 다른 선이 된다. 맵 편집에는 잉크 상한이 없다.
+        /// </summary>
+        readonly StrokeBuilder _stroke = new StrokeBuilder();
+
+        readonly StrokeProcessor _strokeProcessor = new StrokeProcessor();
+
+        /// 펜으로 긋는 중인가.
+        bool _drawing;
+
+        /// 지우개를 끄는 중인가.
+        bool _erasing;
+
+        /// 이번 지우기의 스냅샷을 이미 남겼는가.
+        bool _eraseRecorded;
+
+        /// 지우개를 그릴 자리.
+        Vector2 _eraseAt;
 
         /// <summary>
         /// 테스트가 시작되면 이 오브젝트가 꺼진다.
@@ -443,6 +480,8 @@ namespace PPS.MapEditor
 
             Vector2 world = _fitter.ScreenToWorld(pointer.position.ReadValue());
 
+            if (HandleDrawInput(pointer, world)) return;
+
             if (pointer.press.wasPressedThisFrame && !OverUI())
             {
                 _grab = GrabKind.None;
@@ -494,6 +533,128 @@ namespace PPS.MapEditor
 
             if (_dragging && pointer.press.isPressed) Drag(world);
         }
+
+        /// <summary>
+        /// 드로잉 탭의 펜과 지우개를 다룬다.
+        /// 그은 선은 다른 도형과 같은 폴리라인이라
+        /// 대칭·버텍스·회전·복사·저장이 그대로 걸린다.
+        /// 선택 항목일 때는 입력을 넘겨 집기 경로로 보낸다.
+        /// </summary>
+        /// <returns>입력을 가져갔으면 true.</returns>
+        bool HandleDrawInput(Pointer pointer, Vector2 world)
+        {
+            bool draws = _palette != null
+                && _palette.SelectedTab == _drawTab
+                && (_palette.SelectedItem == PenItem || _palette.SelectedItem == EraserItem);
+
+            if (!draws)
+            {
+                _drawing = false;
+                _erasing = false;
+                return false;
+            }
+
+            bool pen = _palette.SelectedItem == PenItem;
+
+            if (pointer.press.wasPressedThisFrame)
+            {
+                if (OverUI()) return true;
+
+                if (pen)
+                {
+                    _drawing = true;
+                    _stroke.Begin(float.MaxValue);
+                    _stroke.AddPoint(ClampPoint(world));
+                }
+                else
+                {
+                    _erasing = true;
+                    _eraseRecorded = false;
+                    EraseAt(world);
+                }
+
+                return true;
+            }
+
+            if (pointer.press.wasReleasedThisFrame)
+            {
+                if (_drawing) CommitStroke();
+
+                _drawing = false;
+                _erasing = false;
+                return true;
+            }
+
+            if (pointer.press.isPressed)
+            {
+                if (_drawing) _stroke.AddPoint(ClampPoint(world));
+                else if (_erasing) EraseAt(world);
+            }
+
+            return true;
+        }
+
+        /// <summary>
+        /// 그은 선을 도형 하나로 만든다.
+        /// 점으로 뭉갠 획은 버린다 — 화면을 스치기만 해도
+        /// 선이 남으면 지우개를 계속 들어야 한다.
+        /// </summary>
+        void CommitStroke()
+        {
+            Stroke stroke = _strokeProcessor.Process(ToolType.FixedLine, _stroke.Points);
+            if (!stroke.IsValid) return;
+
+            Record();
+
+            var shapes = _session.Shapes.Shapes;
+            shapes.Add(new ShapeData
+            {
+                Kind = ShapeKind.Polyline,
+                Points = stroke.Points,
+            });
+            _session.Bake();
+
+            // 그리자마자 대칭·회전을 걸 수 있게 고른 채로 둔다.
+            _selected = new MapSelection(MapHandleKind.Terrain, shapes.Count - 1);
+            _editMode = false;
+            _insertMode = false;
+            _activeVertex = -1;
+        }
+
+        /// <summary>
+        /// 지우개가 닿은 만큼 그은 선을 덜어낸다.
+        /// 놓은 도형은 건드리지 않는다 — 통째로 지우는
+        /// 삭제 버튼이 따로 있다.
+        /// </summary>
+        void EraseAt(Vector2 world)
+        {
+            _eraseAt = world;
+
+            float radius = EraserRadiusWorld();
+            var shapes = _session.Shapes.Shapes;
+
+            if (!ShapeEraser.Hits(shapes, world, radius)) return;
+
+            // 한 번 끄는 동안은 스냅샷 하나다. 프레임마다
+            // 남기면 되돌리기가 지운 자국을 한 점씩 되짚는다.
+            if (!_eraseRecorded)
+            {
+                _eraseRecorded = true;
+                Record();
+            }
+
+            ShapeEraser.Erase(shapes, world, radius);
+            _session.Bake();
+
+            // 도형이 갈라지고 사라져 번호가 밀린다.
+            _selected = MapSelection.None;
+            _editMode = false;
+            _insertMode = false;
+            _activeVertex = -1;
+        }
+
+        float EraserRadiusWorld() =>
+            new DeviceUnits(Screen.dpi).ToPixels(EraserRadiusDp) / _fitter.PixelsPerUnit;
 
         /// 지금 누르면 버텍스가 꽂히는가.
         bool InsertReady() =>
@@ -935,7 +1096,9 @@ namespace PPS.MapEditor
 
             _view.OnDraw(new MapDrawModel(
                 _session.Current.Level, _session.Shapes, _selected,
-                _editMode, InsertReady(), _activeVertex, HandleRadius()));
+                _editMode, InsertReady(), _activeVertex, HandleRadius(),
+                _drawing ? _stroke.Points : null,
+                _erasing ? EraserRadiusWorld() : 0f, _eraseAt));
         }
 
         float PickRadiusWorld()
