@@ -15,11 +15,20 @@ MonoBehaviour:
   m_GroupName: Default Local Group
   m_GUID: 5e72da14fcadd664a8a97f50fdabd2ff
   m_SerializeEntries:
-  - m_GUID: 440339a5ba87c5f4fa50aa1b2c452287
-    m_Address: KoreaAssetSet
+  - m_GUID: 1c7b5e6e6e3fcbd408ee11957dc7fad9
+    m_Address: DrawingToolSceneUI
     m_ReadOnly: 0
-    m_SerializedLabels:
-    - Korea
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 83cb548f708637a40a2df616f9f9754f
+    m_Address: RewardPopupUI
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: e4d03db9f76693149823b3ca43fdddd3
+    m_Address: StageSelectDiv
+    m_ReadOnly: 0
+    m_SerializedLabels: []
     FlaggedDuringContentUpdateRestriction: 0
   m_ReadOnly: 0
   m_Settings: {fileID: 11400000, guid: 159a3736949ee3944bc0e79342432c75, type: 2}

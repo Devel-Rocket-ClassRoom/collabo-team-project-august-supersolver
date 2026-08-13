@@ -12,5 +12,20 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6b88a73f856c66449875ce1745f047c8, type: 3}
   m_Name: UIRegistry
   m_EditorClassIdentifier: Assembly-CSharp::UIRegistrySO
-  sceneUIs: []
-  popupUIs: []
+  sceneUIs:
+  - m_AssetGUID: e4d03db9f76693149823b3ca43fdddd3
+    m_SubObjectName: 
+    m_SubObjectType: 
+    m_SubObjectGUID: 
+    m_EditorAssetChanged: 0
+  - m_AssetGUID: 1c7b5e6e6e3fcbd408ee11957dc7fad9
+    m_SubObjectName: 
+    m_SubObjectType: 
+    m_SubObjectGUID: 
+    m_EditorAssetChanged: 0
+  popupUIs:
+  - m_AssetGUID: 83cb548f708637a40a2df616f9f9754f
+    m_SubObjectName: 
+    m_SubObjectType: 
+    m_SubObjectGUID: 
+    m_EditorAssetChanged: 0
