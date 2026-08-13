@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b100d6d6ffcbcfa4b847d63c97d47240, type: 3}
   m_Name: MapEditStyle
   m_EditorClassIdentifier: 
-  _sim: {fileID: 11400000, guid: 24aff3ded2f74d2389273c9c64cc0bff, type: 2}
+  Sim: {fileID: 11400000, guid: 24aff3ded2f74d2389273c9c64cc0bff, type: 2}
   Selected: {r: 1, g: 1, b: 1, a: 1}
   Vertex: {r: 0.23921569, g: 0.54509807, b: 1, a: 1}
   Bounds: {r: 0.6039216, g: 0.6039216, b: 0.6039216, a: 0.6}
