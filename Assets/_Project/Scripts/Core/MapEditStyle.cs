@@ -1,5 +1,4 @@
 using PPS.Core;
-using PPS.Game;
 using UnityEngine;
 
 // UnityEngine 에도 같은 이름이 있다(SystemInfo.deviceType).
@@ -15,9 +14,7 @@ namespace PPS.MapEditor
     [CreateAssetMenu(fileName = "MapEditStyle", menuName = "PPS/Map Edit Style")]
     public sealed class MapEditStyle : ScriptableObject
     {
-        [SerializeField] SimStyle _sim;
-
-        public SimStyle Sim => _sim;
+        public SimStyle Sim;
 
         [Header("편집 가시성 — 편집 중에만 보이는 것들")]
         public Color Selected = Color.white;

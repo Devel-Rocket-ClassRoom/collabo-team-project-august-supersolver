@@ -1,10 +1,8 @@
-using PPS.Core;
 using UnityEngine;
 
-// UnityEngine 에도 같은 이름이 있다(SystemInfo.deviceType).
 using DeviceType = PPS.Core.DeviceType;
 
-namespace PPS.Game
+namespace PPS.Core
 {
     /// <summary>
     /// 시뮬레이션에 나오는 것을 어떤 모양·색·크기로 그리는가.

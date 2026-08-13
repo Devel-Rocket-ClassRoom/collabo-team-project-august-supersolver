@@ -53,6 +53,9 @@ namespace PPS.MapEditor
 
         void Awake()
         {
+            if (ServiceLocator.TryGet<IThemeRepository>(out var repo) && repo.Asset.MapStyle != null)
+                _style = repo.Asset.MapStyle;
+
             _startHandle = Create("StartHandle", _style.Sim.Sprites.Ball);
             _goalHandle = Create("GoalHandle", _style.Sim.Sprites.Goal);
             _scaleHandle = Create("ScaleHandle", MapHandleGfx.Square);

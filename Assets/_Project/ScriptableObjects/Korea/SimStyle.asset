@@ -1,0 +1,24 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 64510083d9f04017903c9ed636783f3b, type: 3}
+  m_Name: SimStyle
+  m_EditorClassIdentifier: 
+  Sprites:
+    Dot: {fileID: -2003601947, guid: a829e51a37e0dc148b87a468c29520fa, type: 3}
+    Ball: {fileID: -59877914, guid: a829e51a37e0dc148b87a468c29520fa, type: 3}
+    Goal: {fileID: 1313371594, guid: a829e51a37e0dc148b87a468c29520fa, type: 3}
+    Star: {fileID: -1095445131, guid: a829e51a37e0dc148b87a468c29520fa, type: 3}
+    Bomb: {fileID: -1892451399, guid: a829e51a37e0dc148b87a468c29520fa, type: 3}
+    FragBomb: {fileID: -1292404710, guid: a829e51a37e0dc148b87a468c29520fa, type: 3}
+    Spike: {fileID: 1380786320, guid: a829e51a37e0dc148b87a468c29520fa, type: 3}
+    Wind: {fileID: 1407274763, guid: a829e51a37e0dc148b87a468c29520fa, type: 3}
+  Terrain: {r: 0.13725491, g: 0.14509805, b: 0.16862746, a: 1}
