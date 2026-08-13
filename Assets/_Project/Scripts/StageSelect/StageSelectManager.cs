@@ -1,9 +1,11 @@
+using PPS.Core;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class StageSelectManager : MonoBehaviour
+public class StageSelectManager : MonoSingleton<StageSelectManager>
 {
+    public StageData LastSelectedStage;
     const int StagePerTheme = 20;
     const int StagePerRow = StageSelectRow.StagePerRow;
     const int MaxRow = StagePerTheme / StageSelectRow.StagePerRow + 1;
@@ -17,8 +19,10 @@ public class StageSelectManager : MonoBehaviour
 
     List<StageSelectRow> rowPool;
 
-    private void Awake()
+    protected override void Awake()
     {
+        base.Awake();
+
         rowPool = new();
 
         for (int i = 0; i < MaxRow; i++)

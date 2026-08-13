@@ -7,6 +7,7 @@ namespace PPS.Core
     // 로드 세 단계는 항상 순서대로 호출된다.
     public interface IResourceLoader
     {
+        public void Init();
         public event Action BeforeUnLoad;
 
         public event Action AfterUnLoad;

@@ -1,5 +1,3 @@
-using PPS.Core;
-using System.Net.Sockets;
 using TMPro;
 using UnityEngine;
 
@@ -23,11 +21,14 @@ public class StageButton : MonoBehaviour
     
     public void OnClicked()
     {
-        if (StageContext.Instance == null) return;
         if (stageIdx == -1) return;
         if (locked) return;
 
-        var stage = ThemeRepository.Instance.ThemeData.Stages[stageIdx];
-        StageContext.Instance.LastSelectedStage = stage;
+        if (ServiceLocator.TryGet<IThemeRepository>(out var repo))
+        {
+            StageSelectManager.Instance.LastSelectedStage 
+                = repo.Asset.Stages[stageIdx];
+        }
+       
     }
 }
