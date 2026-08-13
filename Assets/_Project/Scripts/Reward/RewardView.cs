@@ -77,13 +77,21 @@ public class RewardView : UIPopup, IRewardView
     {
         stageLabel.text = FormatStage(vm.StageIndex);
         inkUsedLabel.text = vm.InkUsed.ToString("F1");
-        clearTimeLabel.text = vm.EndStep.ToString();
+        clearTimeLabel.text = FormatTime(vm.EndStep);
 
         for (int i = 0; i < filledStars.Length; i++)
         {
             filledStars[i].gameObject.SetActive(i < vm.StarCount);
             filledStars[i].transform.localScale = Vector3.zero;
         }
+    }
+
+    /// 시뮬은 고정 dt 로만 진행한다.
+    /// 그래서 스텝 수가 곧 경과 시간이다.
+    private static string FormatTime(int endStep)
+    {
+        int seconds = Mathf.RoundToInt(endStep * SimWorld.FixedDt);
+        return $"{seconds / 60}:{seconds % 60:00}";
     }
 
     /// 스테이지 인덱스는 0 부터 시작한다고 본다.
