@@ -130,10 +130,52 @@ namespace PPS.DrawingTool
             _consumed[id] = record.time;
 
             PointerPhase phase = ToPhase(record.phase);
+            ProbeSampleRate(id, phase);
             Feed(id, phase, record.screenPosition, ScreenConstants.DrawOffsetDp);
 
             // 끝난 손가락을 남겨두면 id 가 계속 쌓인다.
             if (phase == PointerPhase.Up || phase == PointerPhase.Canceled) _consumed.Remove(id);
+        }
+
+        /// 완료조건 5-1 계측 중인 손가락. -1 이면 쉬는 중.
+        /// 인식기와 같이 first-touch-wins 라야 둘째 손가락이
+        /// 샘플 수를 부풀려 거짓 통과를 만들지 않는다.
+        int _probeId = -1;
+        int _probeSamples;
+        int _probeFrames;
+        int _probeLastFrame;
+
+        /// <summary>
+        /// 한 손가락이 닿아 있는 동안 소비한 샘플 수를
+        /// 프레임 수로 나눈다. 1 이면 history 를 안 읽고
+        /// 프레임당 한 번만 읽는 것이다. 개발 빌드 전용.
+        /// </summary>
+        [System.Diagnostics.Conditional("DEVELOPMENT_BUILD")]
+        [System.Diagnostics.Conditional("UNITY_EDITOR")]
+        void ProbeSampleRate(int id, PointerPhase phase)
+        {
+            if (phase == PointerPhase.Down && _probeId < 0)
+            {
+                _probeId = id;
+                _probeSamples = 0;
+                _probeFrames = 0;
+                _probeLastFrame = -1;
+            }
+
+            if (id != _probeId) return;
+
+            _probeSamples++;
+            if (_probeLastFrame != Time.frameCount)
+            {
+                _probeLastFrame = Time.frameCount;
+                _probeFrames++;
+            }
+
+            if (phase != PointerPhase.Up && phase != PointerPhase.Canceled) return;
+
+            Debug.Log($"[5-1] 샘플 {_probeSamples} / 프레임 {_probeFrames}"
+                + $" = {(float)_probeSamples / _probeFrames:0.00} 개/프레임");
+            _probeId = -1;
         }
 
         static PointerPhase ToPhase(TouchPhase phase)
