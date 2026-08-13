@@ -1,4 +1,3 @@
-using System;
 using Cysharp.Threading.Tasks;
 using DG.Tweening;
 using PPS.Core;
@@ -51,10 +50,25 @@ public class RewardView : UIPopup, IRewardView
     protected override async UniTask OnShowAnimation()
     {
         content.anchoredPosition = new Vector2(content.anchoredPosition.x, -slideDistance);
-        content.DOAnchorPosY(0f, slideDuration).SetEase(Ease.OutCubic);
-        await UniTask.Delay(TimeSpan.FromSeconds(slideDuration), ignoreTimeScale: true);
 
-        await PlayStarSequence(_vm.StarCount);
+        // 트윈 길이와 대기 시간이 어긋나지 않게
+        // 시퀀스 하나로 묶어 끝날 때까지 기다린다.
+        Sequence sequence = DOTween.Sequence()
+            .SetUpdate(true)
+            .SetLink(gameObject);
+
+        sequence.Append(content.DOAnchorPosY(0f, slideDuration).SetEase(Ease.OutCubic));
+
+        int count = Mathf.Clamp(_vm.StarCount, 0, filledStars.Length);
+
+        for (int i = 0; i < count; i++)
+        {
+            sequence.Insert(
+                slideDuration + starInterval * i,
+                filledStars[i].transform.DOScale(Vector3.one, starPunchDuration).SetEase(Ease.OutBack));
+        }
+
+        await sequence.AsyncWaitForCompletion();
 
         SetButtonsInteractable(true);
     }
@@ -78,20 +92,6 @@ public class RewardView : UIPopup, IRewardView
         int chapter = stageIndex / StagesPerChapter + 1;
         int number = stageIndex % StagesPerChapter + 1;
         return $"{chapter} - {number}";
-    }
-
-    private async UniTask PlayStarSequence(int starCount)
-    {
-        int count = Mathf.Clamp(starCount, 0, filledStars.Length);
-
-        for (int i = 0; i < count; i++)
-        {
-            filledStars[i].transform
-                .DOScale(Vector3.one, starPunchDuration)
-                .SetEase(Ease.OutBack);
-
-            await UniTask.Delay(TimeSpan.FromSeconds(starInterval), ignoreTimeScale: true);
-        }
     }
 
     private void SetButtonsInteractable(bool value)
