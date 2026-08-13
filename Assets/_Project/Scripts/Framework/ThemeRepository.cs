@@ -4,18 +4,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
-
-public enum ThemeLabel
-{
-    KOREA, JAPAN
-}
-public interface IThemeRepository
-{
-    void Init(IResourceLoader loader);
-    event Action OnLoaded;
-    ThemeModel Asset { get; }
-    UniTask LoadAsync(ThemeLabel theme);
-}
 public class ThemeRepository : IThemeRepository
 {
     public event Action OnLoaded;
@@ -61,8 +49,10 @@ public class ThemeRepository : IThemeRepository
         var Stages = _asset.stages
             .Select(stageText => StageData.FromJson(stageText.text))
             .ToList();
-        var ssbg = _asset.stageSelectBackground;
-        Asset = new ThemeModel(Stages, ssbg);
+        var stageSelectBackground = _asset.stageSelectBackground;
+        var mapEditStyle = _asset.MapStyle;
+
+        Asset = new ThemeModel(Stages, stageSelectBackground, mapEditStyle);
 
 
         currentTheme = theme;
