@@ -10,7 +10,7 @@ namespace PPS.DrawingTool
     /// </summary>
     [RequireComponent(typeof(Camera))]
     [DisallowMultipleComponent]
-    public sealed class CanvasCameraFitter : MonoBehaviour
+    public sealed class CanvasCameraFitter : MonoSingleton<CanvasCameraFitter>
     {
         [SerializeField] Camera _camera;
 
@@ -39,8 +39,10 @@ namespace PPS.DrawingTool
 
         public bool IsReady => _solved;
 
-        void Awake()
+        protected override void Awake()
         {
+            base.Awake();
+
             if (_camera == null) _camera = GetComponent<Camera>();
 
             // 폴백을 조용히 쓰면 탭 임계값이 기기와

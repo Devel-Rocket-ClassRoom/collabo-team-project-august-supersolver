@@ -20,7 +20,7 @@ namespace PPS.DrawingTool
         /// 터치 id 는 1부터라 마우스와 겹치지 않는다.
         const int MouseId = 0;
 
-        [SerializeField] CanvasCameraFitter _fitter;
+        CanvasCameraFitter _fitter;
         [SerializeField] ToolSelection _tools;
         [SerializeField] DrawingSession _session;
 
@@ -60,6 +60,10 @@ namespace PPS.DrawingTool
             (_recognizer.IsDrawing ? _recognizer.PreviewRemainingInk : RemainingInk)
             / _level.InkLimit);
 
+        private void Awake()
+        {
+            _fitter = CanvasCameraFitter.Instance;
+        }
         void OnEnable()
         {
             // 안 부르면 activeTouches 가 항상 비어 있다.
