@@ -35,7 +35,14 @@ public class StageSelectView : UIScene
             rowPool.Add(item.GetComponent<StageSelectRow>());
         }
         _repo = ServiceLocator.Get<IThemeRepository>();
-        BindRepo(_repo);
+        _repo.OnLoaded -= UpdateTheme;
+        _repo.OnLoaded += UpdateTheme;
+        UpdateTheme();
+    }
+    private void OnDestroy()
+    {
+        if(_repo != null)
+            _repo.OnLoaded -= UpdateTheme;
     }
     public override void OnBeforeShow()
     {
@@ -45,13 +52,7 @@ public class StageSelectView : UIScene
             rowPool[i].OnUpdate(i * StagePerRow, _repo.Asset.Stages.Count);
         }
     }
-    void BindRepo(IThemeRepository repo)
-    {
-        _repo = repo;
-        _repo.OnLoaded -= OnThemeChanged;
-        _repo.OnLoaded += OnThemeChanged;
-    }
-    void OnThemeChanged()
+    void UpdateTheme()
     {
         background.sprite = _repo.Asset.StageSelectBackground;
     }
