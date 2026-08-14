@@ -5,8 +5,9 @@ using UnityEngine;
 namespace PPS.DrawingTool
 {
     /// <summary>
-    /// 탭 한 점을 회전축으로 바꾼다. 무상태 순수 함수 —
-    /// 반경을 월드 단위로 받아 기기를 모른다.
+    /// 탭 한 점을 그림 위의 대상으로 푼다 — 회전축 생성,
+    /// 지우개 대상 고르기, 핀 인덱스 유지가 여기 모인다.
+    /// 무상태 순수 함수 — 반경이 월드 단위라 기기를 모른다.
     /// </summary>
     public static class PivotPlacement
     {
@@ -29,25 +30,8 @@ namespace PPS.DrawingTool
 
             List<Stroke> strokes = solution.Strokes;
 
-            int a = -1;
-            int b = -1;
-
-            // 최근에 그린 순 = 인덱스 역순. 정렬하지 않으니
-            // 동점에서 순서가 흔들릴 여지가 없다.
-            for (int i = strokes.Count - 1; i >= 0; i--)
-            {
-                if (Distance(strokes[i], anchor) > radius) continue;
-
-                if (a < 0)
-                {
-                    a = i;
-                    if (worldAnchored) break;
-                    continue;
-                }
-
-                b = i;
-                break;
-            }
+            int a = PickStroke(strokes, anchor, radius, strokes.Count - 1);
+            int b = worldAnchored ? -1 : PickStroke(strokes, anchor, radius, a - 1);
 
             // 단독 핀은 기준 획이 있어야 한다. 빈 곳에 놓으면
             // 두 칸이 다 비어 무엇을 이으려던 건지 남지 않는다.
@@ -59,6 +43,71 @@ namespace PPS.DrawingTool
                     : (b < 0 ? PivotJoint.Unbound : b),
                 anchor);
             return true;
+        }
+
+        /// <summary>
+        /// 반경 안에서 가장 최근에 그린 획. 없으면 -1.
+        /// 최근 순 = 인덱스 역순이고 정렬하지 않으니
+        /// 동점에서 순서가 흔들릴 여지가 없다.
+        /// </summary>
+        /// <param name="from">여기서부터 거꾸로 훑는다.</param>
+        public static int PickStroke(
+            List<Stroke> strokes, Vector2 point, float radius, int from)
+        {
+            for (int i = from; i >= 0; i--)
+                if (Distance(strokes[i], point) <= radius) return i;
+            return -1;
+        }
+
+        /// <summary>
+        /// 반경 안에서 가장 최근에 놓은 핀. 없으면 -1.
+        /// 마커는 앵커 한 점이라 선분이 아니라 점까지 잰다.
+        /// </summary>
+        public static int PickPivot(List<PivotJoint> pivots, Vector2 point, float radius)
+        {
+            for (int i = pivots.Count - 1; i >= 0; i--)
+                if (Vector2.Distance(pivots[i].Anchor, point) <= radius) return i;
+            return -1;
+        }
+
+        /// <summary>
+        /// 획 하나가 빠진 뒤 핀 인덱스를 맞춘다. 지운 획을
+        /// 물던 칸은 비우고, 두 칸이 다 비면 핀째 버린다.
+        /// 안 하면 조용히 엉뚱한 획에 조인트가 붙는다.
+        /// </summary>
+        /// <param name="erased">방금 빠진 획의 인덱스.</param>
+        public static void Remap(Solution solution, int erased)
+        {
+            List<PivotJoint> pivots = solution.Pivots;
+
+            // RemoveAt 하며 훑으므로 역순이다.
+            for (int i = pivots.Count - 1; i >= 0; i--)
+            {
+                PivotJoint pivot = pivots[i];
+                int a = Shift(pivot.StrokeA, erased);
+                int b = Shift(pivot.StrokeB, erased);
+
+                // 무효는 두 칸이 다 빈 핀뿐이다. 월드 고정은
+                // 한 칸이 비어도 상대를 기다릴 수 있다.
+                if (a == PivotJoint.Unbound && b == PivotJoint.Unbound)
+                {
+                    pivots.RemoveAt(i);
+                    continue;
+                }
+
+                pivots[i] = new PivotJoint(a, b, pivot.Anchor);
+            }
+        }
+
+        /// <summary>
+        /// 음수는 인덱스가 아니라 표식이라 건드리면 안 된다 —
+        /// 월드 고정(-1)·빈 칸(-2)은 획 순서와 무관하다.
+        /// </summary>
+        static int Shift(int index, int erased)
+        {
+            if (index < 0) return index;
+            if (index == erased) return PivotJoint.Unbound;
+            return index > erased ? index - 1 : index;
         }
 
         /// <summary>

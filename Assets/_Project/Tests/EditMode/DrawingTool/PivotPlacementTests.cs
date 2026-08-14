@@ -235,5 +235,110 @@ namespace PPS.DrawingTool.Tests
             Assert.IsFalse(PivotPlacement.TryResolve(
                 solution, V(2f, 2f), Radius, worldAnchored: false, out _));
         }
+
+        [Test]
+        public void 지우기_대상은_반경_안의_최근_핀이다()
+        {
+            var solution = new Solution();
+            solution.Pivots.Add(new PivotJoint(0, 1, V(0f, 0f)));
+            solution.Pivots.Add(new PivotJoint(0, 1, V(0.02f, 0f)));
+            solution.Pivots.Add(new PivotJoint(0, 1, V(3f, 0f)));   // 반경 밖
+
+            Assert.AreEqual(1,
+                PivotPlacement.PickPivot(solution.Pivots, V(0f, 0f), Radius),
+                "최근에 놓은 핀이 아니다");
+            Assert.AreEqual(-1,
+                PivotPlacement.PickPivot(solution.Pivots, V(9f, 9f), Radius),
+                "빈 곳인데 무언가를 집었다");
+        }
+
+        /// 재매핑 테스트의 핀 자리. 인덱스만 보므로 아무 데나 둔다.
+        static readonly Vector2 Far = new Vector2(9f, 9f);
+
+        /// <summary>
+        /// 획 n개에 핀 하나를 놓고 획 하나를 지운다.
+        /// 지우는 쪽과 같은 순서로 — 리스트에서 빼고 재매핑한다.
+        /// </summary>
+        static Solution Remapped(int strokeCount, PivotJoint pivot, int erased)
+        {
+            var solution = new Solution();
+            for (int i = 0; i < strokeCount; i++)
+                solution.Strokes.Add(Bar(ToolType.FreeBody, i));
+            solution.Pivots.Add(pivot);
+
+            solution.Strokes.RemoveAt(erased);
+            PivotPlacement.Remap(solution, erased);
+            return solution;
+        }
+
+        [Test]
+        public void 지운_획보다_뒤의_인덱스만_당겨진다()
+        {
+            Solution solution = Remapped(3, new PivotJoint(0, 2, Far), erased: 1);
+
+            Assert.AreEqual(0, solution.Pivots[0].StrokeA, "앞 인덱스가 움직였다");
+            Assert.AreEqual(1, solution.Pivots[0].StrokeB, "뒤 인덱스가 안 당겨졌다");
+        }
+
+        [Test]
+        public void 지운_획을_물던_칸은_비고_나머지는_당겨진다()
+        {
+            Solution solution = Remapped(3, new PivotJoint(1, 2, Far), erased: 1);
+
+            Assert.AreEqual(PivotJoint.Unbound, solution.Pivots[0].StrokeA);
+            Assert.AreEqual(1, solution.Pivots[0].StrokeB);
+        }
+
+        [Test]
+        public void 월드_고정을_문_핀은_획을_지워도_월드를_유지한다()
+        {
+            Solution solution = Remapped(
+                3, new PivotJoint(2, PivotJoint.WorldIndex, Far), erased: 2);
+
+            Assert.AreEqual(1, solution.Pivots.Count, "상대를 기다릴 수 있는 핀을 지웠다");
+            Assert.AreEqual(PivotJoint.Unbound, solution.Pivots[0].StrokeA);
+            Assert.AreEqual(PivotJoint.WorldIndex, solution.Pivots[0].StrokeB,
+                "-1 은 인덱스가 아니라 표식이라 당기면 안 된다");
+        }
+
+        [Test]
+        public void 획_하나짜리_대기_핀은_그_획과_함께_사라진다()
+        {
+            Solution solution = Remapped(
+                1, new PivotJoint(0, PivotJoint.Unbound, Far), erased: 0);
+
+            Assert.AreEqual(0, solution.Pivots.Count, "이을 것이 없는 핀이 살아 있다");
+        }
+
+        [Test]
+        public void 반쪽만_남은_핀은_남은_쪽을_마저_지울_때_사라진다()
+        {
+            // (Unbound, 실제인덱스) 는 한 번 지운 뒤에만 나오는 모양이다.
+            Solution solution = Remapped(
+                2, new PivotJoint(PivotJoint.Unbound, 1, Far), erased: 1);
+
+            Assert.AreEqual(0, solution.Pivots.Count);
+        }
+
+        [Test]
+        public void 핀_여럿을_한_번에_맞추고_빈_핀만_솎아낸다()
+        {
+            var solution = new Solution();
+            for (int i = 0; i < 4; i++)
+                solution.Strokes.Add(Bar(ToolType.FreeBody, i));
+
+            solution.Pivots.Add(new PivotJoint(0, 1, Far));
+            solution.Pivots.Add(new PivotJoint(PivotJoint.Unbound, 1, Far));
+            solution.Pivots.Add(new PivotJoint(2, 3, Far));
+
+            solution.Strokes.RemoveAt(1);
+            PivotPlacement.Remap(solution, 1);
+
+            Assert.AreEqual(2, solution.Pivots.Count, "빈 핀만 사라져야 한다");
+            Assert.AreEqual(0, solution.Pivots[0].StrokeA);
+            Assert.AreEqual(PivotJoint.Unbound, solution.Pivots[0].StrokeB);
+            Assert.AreEqual(1, solution.Pivots[1].StrokeA, "역순 삭제가 뒤 핀을 건너뛰었다");
+            Assert.AreEqual(2, solution.Pivots[1].StrokeB);
+        }
     }
 }

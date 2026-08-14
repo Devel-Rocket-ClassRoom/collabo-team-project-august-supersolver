@@ -95,6 +95,37 @@ namespace PPS.DrawingTool.Tests
         }
 
         [Test]
+        public void 깊이_상한을_넘으면_가장_오래된_스냅샷이_밀려난다()
+        {
+            var history = new SolutionHistory();
+
+            // 상한보다 한 번 더. 빈 그림 스냅샷 하나가 밀려난다.
+            for (int i = 0; i <= SolutionHistory.MaxDepth; i++)
+                history.AddStroke(Line(i, 1f));
+
+            int undone = 0;
+            while (history.Undo()) undone++;
+
+            Assert.AreEqual(SolutionHistory.MaxDepth, undone, "스택이 상한을 안 지켰다");
+            Assert.AreEqual(1, history.Current.Strokes.Count,
+                "밀려난 것이 가장 오래된 쪽이 아니다 — 첫 획이 남아 있어야 한다");
+        }
+
+        [Test]
+        public void 상한까지_되돌린_뒤에는_CanUndo_가_거짓이다()
+        {
+            var history = new SolutionHistory();
+            for (int i = 0; i < SolutionHistory.MaxDepth * 2; i++)
+                history.AddStroke(Line(i, 1f));
+
+            for (int i = 0; i < SolutionHistory.MaxDepth; i++)
+                Assert.IsTrue(history.Undo(), $"{i + 1} 번째 되돌리기가 실패했다");
+
+            Assert.IsFalse(history.CanUndo, "빈 스택인데 되돌릴 수 있다고 한다");
+            Assert.IsFalse(history.Undo(), "빈 스택에서 되돌리기가 성공했다");
+        }
+
+        [Test]
         public void 새_액션은_다시_실행_스택을_파기한다()
         {
             var history = new SolutionHistory();

@@ -29,6 +29,8 @@ namespace PPS.DrawingTool
 
         public void OnClickSelectPivotWorld() => SelectPivot(DrawTool.PivotWorld);
 
+        public void OnClickSelectErase() => Select(DrawTool.Erase);
+
         void Select(DrawTool tool)
         {
             Current = tool;
