@@ -29,8 +29,8 @@ namespace PPS.DrawingTool
         /// 월드 고정을 두르는 바깥 원. 안쪽 점의 배수다.
         const float WorldRingScale = 1.8f;
 
-        [SerializeField] CanvasCameraFitter _fitter;
         [SerializeField] DrawingSession _session;
+        CanvasCameraFitter _fitter;
 
         // 핀은 대개 어두운 획 위에 놓여 실제 배경이 크림이
         // 아니다. 크림 대비만 보고 내리면 노랑이 갈색으로,
@@ -45,7 +45,10 @@ namespace PPS.DrawingTool
         /// 인덱스가 Solution.Pivots 와 같다.
         /// 시뮬 중에는 SimStageView 가 host 바디에 얹는다.
         public IReadOnlyList<Transform> Markers => _markers;
-
+        private void Awake()
+        {
+            _fitter = CanvasCameraFitter.Instance;
+        }
         void OnEnable()
         {
             _session.Changed += Refresh;

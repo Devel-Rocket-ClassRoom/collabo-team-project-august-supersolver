@@ -6,7 +6,6 @@ public class ThemeAssetSet : ScriptableObject
 {
     public MapEditStyle MapStyle;
     public Sprite stageSelectBackground;
-    //public Sprite ballIcon;
 
     public TextAsset[] stages;
 }

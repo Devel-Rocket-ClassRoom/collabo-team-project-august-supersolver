@@ -135,8 +135,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 0}
-  m_AnchoredPosition: {x: 125, y: 0}
-  m_SizeDelta: {x: -350, y: 40}
+  m_AnchoredPosition: {x: 150, y: 0}
+  m_SizeDelta: {x: -300, y: 40}
   m_Pivot: {x: 0.5, y: 0}
 --- !u!222 &9190253466868218026
 CanvasRenderer:
@@ -210,11 +210,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 6542418661566760096, guid: 57566b3ae7d8da24a85a083b007f772f, type: 3}
       propertyPath: m_SizeDelta.x
-      value: 80
+      value: 96
       objectReference: {fileID: 0}
     - target: {fileID: 6542418661566760096, guid: 57566b3ae7d8da24a85a083b007f772f, type: 3}
       propertyPath: m_SizeDelta.y
-      value: 80
+      value: 96
       objectReference: {fileID: 0}
     - target: {fileID: 6542418661566760096, guid: 57566b3ae7d8da24a85a083b007f772f, type: 3}
       propertyPath: m_LocalPosition.x
@@ -323,11 +323,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 6542418661566760096, guid: 57566b3ae7d8da24a85a083b007f772f, type: 3}
       propertyPath: m_SizeDelta.x
-      value: 80
+      value: 96
       objectReference: {fileID: 0}
     - target: {fileID: 6542418661566760096, guid: 57566b3ae7d8da24a85a083b007f772f, type: 3}
       propertyPath: m_SizeDelta.y
-      value: 80
+      value: 96
       objectReference: {fileID: 0}
     - target: {fileID: 6542418661566760096, guid: 57566b3ae7d8da24a85a083b007f772f, type: 3}
       propertyPath: m_LocalPosition.x
@@ -436,11 +436,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 6542418661566760096, guid: 57566b3ae7d8da24a85a083b007f772f, type: 3}
       propertyPath: m_SizeDelta.x
-      value: 80
+      value: 96
       objectReference: {fileID: 0}
     - target: {fileID: 6542418661566760096, guid: 57566b3ae7d8da24a85a083b007f772f, type: 3}
       propertyPath: m_SizeDelta.y
-      value: 80
+      value: 96
       objectReference: {fileID: 0}
     - target: {fileID: 6542418661566760096, guid: 57566b3ae7d8da24a85a083b007f772f, type: 3}
       propertyPath: m_LocalPosition.x

@@ -3,8 +3,17 @@ using Cysharp.Threading.Tasks;
 
 namespace PPS.Core
 {
+    public interface IUserDataService
+    {
+        event Action BeforeSave;
+        event Action<UserDataOperationResult> AfterSave;
+        event Action BeforeLoad;
+        event Action<UserDataLoadResult> AfterLoad;
+        UniTask<UserDataOperationResult> SaveAsync(UserData data);
+        UniTask<UserDataLoadResult> LoadAsync();
+    }
     // 저장 방식과 게임 코드 사이에서 Save/Load 흐름과 이벤트를 관리한다.
-    public class UserDataService
+    public class UserDataService : IUserDataService
     {
         // 실제 저장과 불러오기를 수행할 구현체를 보관한다.
         // 다음 단계에서 PlayerPrefs 구현체가 들어간다.

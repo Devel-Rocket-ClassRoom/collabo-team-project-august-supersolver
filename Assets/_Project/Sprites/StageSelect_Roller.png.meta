@@ -1,5 +1,5 @@
 fileFormatVersion: 2
-guid: d1998d60a8bc9394f9cac3f8e923ad48
+guid: f9cdcd4cacbbb8e4cb6147cdaf4f2d44
 TextureImporter:
   internalIDToNameTable: []
   externalObjects: {}
@@ -43,17 +43,17 @@ TextureImporter:
   nPOTScale: 0
   lightmap: 0
   compressionQuality: 50
-  spriteMode: 1
+  spriteMode: 2
   spriteExtrude: 1
   spriteMeshType: 1
   alignment: 0
   spritePivot: {x: 0.5, y: 0.5}
   spritePixelsToUnits: 100
-  spriteBorder: {x: 0, y: 0, z: 0, w: 0}
+  spriteBorder: {x: 16, y: 300, z: 0, w: 300}
   spriteGenerateFallbackPhysicsShape: 1
   alphaUsage: 1
   alphaIsTransparency: 1
-  spriteTessellationDetail: -1
+  spriteTessellationDetail: 0
   textureType: 8
   textureShape: 1
   singleChannelComponent: 0
@@ -108,21 +108,56 @@ TextureImporter:
     forceMaximumCompressionQuality_BC6H_BC7: 0
   spriteSheet:
     serializedVersion: 2
-    sprites: []
-    outline: []
+    sprites:
+    - serializedVersion: 2
+      name: StageSelect_Roller_0
+      rect:
+        serializedVersion: 2
+        x: 55
+        y: 311
+        width: 1670
+        height: 265
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 4ec98fe317b4fa64d8c63da07b897d6a
+      internalID: -849913077
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    outline:
+    - - {x: 840, y: -117.5}
+      - {x: 840, y: 110.5}
+      - {x: 795, y: 134.5}
+      - {x: -595, y: 134.5}
+      - {x: -830, y: 115.5}
+      - {x: -834, y: 92.5}
+      - {x: -834, y: -69.5}
+      - {x: -827, y: -81.5}
+      - {x: -771, y: -134.5}
+      - {x: 700, y: -134.5}
     customData: 
     physicsShape: []
     bones: []
     spriteID: 5e97eb03825dee720800000000000000
-    internalID: 0
+    internalID: 1537655665
     vertices: []
     indices: 
     edges: []
     weights: []
     secondaryTextures: []
     spriteCustomMetadata:
-      entries: []
-    nameFileIdTable: {}
+      entries:
+      - key: SpriteEditor.SliceSettings
+        value: '{"sliceOnImport":false,"gridCellCount":{"x":1.0,"y":1.0},"gridSpriteSize":{"x":64.0,"y":64.0},"gridSpriteOffset":{"x":0.0,"y":0.0},"gridSpritePadding":{"x":0.0,"y":0.0},"pivot":{"x":0.5,"y":0.5},"pivotPixels":{"x":0.0,"y":0.0},"autoSlicingMethod":0,"spriteAlignment":0,"pivotUnitMode":0,"slicingType":0,"keepEmptyRects":false,"isAlternate":false}'
+    nameFileIdTable:
+      StageSelect_Roller_0: -849913077
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

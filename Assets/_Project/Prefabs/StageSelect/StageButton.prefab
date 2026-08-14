@@ -74,8 +74,8 @@ MonoBehaviour:
   m_fontMaterials: []
   m_fontColor32:
     serializedVersion: 2
-    rgba: 4294967295
-  m_fontColor: {r: 1, g: 1, b: 1, a: 1}
+    rgba: 4278190080
+  m_fontColor: {r: 0, g: 0, b: 0, a: 1}
   m_enableVertexGradient: 0
   m_colorMode: 3
   m_fontColorGradient:
@@ -198,7 +198,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.Image
   m_Material: {fileID: 0}
-  m_Color: {r: 1, g: 0, b: 0, a: 1}
+  m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_RaycastTarget: 1
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
@@ -283,4 +283,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: af3af2006d8dc7847bbfb4ffb5b6317f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::StageButton
+  img: {fileID: 181823205951050762}
+  Spr_Locked: {fileID: 21300000, guid: 405ac4ab44da8e540849d0a3619d1f26, type: 3}
+  Spr_Unlocked: {fileID: 21300000, guid: 0eba8f2f2fec4ca4b87773db2a30af51, type: 3}
+  Spr_Star1: {fileID: 21300000, guid: 057ca48864dc113489a28935ca9fb5b8, type: 3}
+  Spr_Star2: {fileID: 21300000, guid: 74ac460a1f26071428cbfb7a392c2f1a, type: 3}
+  Spr_Star3: {fileID: 21300000, guid: 76684be86fe747e43a4bed0f65350719, type: 3}
   stageNumText: {fileID: 648482196005425362}
