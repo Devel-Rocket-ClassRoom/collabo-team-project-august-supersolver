@@ -1,3 +1,4 @@
+using System;
 using PPS.Game;
 using UnityEngine;
 
@@ -17,16 +18,12 @@ namespace PPS.DrawingTool
         [SerializeField] DrawInputBehaviour _input;
         [SerializeField] SimStageView _simView;
 
-        [Header("모드별 UI")]
-        [SerializeField] GameObject _drawPanel;
-        [SerializeField] GameObject _simPanel;
-        [SerializeField] GameObject _play;
-        [SerializeField] GameObject _pauseResume;
-        [SerializeField] GameObject _speed;
-
         readonly StageStateMachine _flow = new StageStateMachine();
 
         public StageMode Mode => _flow.Mode;
+
+        /// 모드가 바뀔 때마다. StageModeView 가 듣는다.
+        public event Action<StageMode> ModeChanged;
 
         void Start() => Apply();
 
@@ -75,21 +72,10 @@ namespace PPS.DrawingTool
 
         void Apply()
         {
-            bool drawing = _flow.Mode == StageMode.Draw;
-
             // 캔버스 입력은 그리기에서만 산다.
-            _input.enabled = drawing;
+            _input.enabled = _flow.Mode == StageMode.Draw;
 
-            // 하단은 높이를 유지한 채 내용만 바뀐다.
-            _drawPanel.SetActive(drawing);
-            _simPanel.SetActive(!drawing);
-
-            // 상단 슬롯의 두 버튼은 겹쳐 있다. 한쪽을 끄지
-            // 않으면 위엣것이 클릭을 전부 먹는다.
-            _play.SetActive(drawing);
-            _pauseResume.SetActive(!drawing);
-
-            _speed.SetActive(!drawing);
+            ModeChanged?.Invoke(_flow.Mode);
         }
     }
 }

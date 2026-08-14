@@ -6,7 +6,7 @@ namespace PPS.DrawingTool
     /// <summary>
     /// 툴바가 지금 고른 도구를 내보인다. 표시는 두 채널을
     /// 겹친다 — 선택 배경의 유무와 아이콘 색. 모드별 숨김은
-    /// 패널을 통째로 끄는 StageFlow 몫이라 여기 없다.
+    /// 패널을 통째로 끄는 StageModeView 몫이라 여기 없다.
     /// </summary>
     [DisallowMultipleComponent]
     public sealed class ToolbarView : MonoBehaviour
@@ -19,7 +19,12 @@ namespace PPS.DrawingTool
         static readonly Color SelectedIcon = new Color32(0x1B, 0x1E, 0x24, 0xFF);
         static readonly Color NormalIcon = new Color32(0xE8, 0xEA, 0xEE, 0xFF);
 
-        [SerializeField] ToolSelection _tools;
+        ToolSelection _tools;
+
+        [Header("도구 버튼")]
+        [SerializeField] Button _fixedLine;
+        [SerializeField] Button _freeBody;
+        [SerializeField] Button _erase;
 
         [Header("선택 표시")]
         [SerializeField] GameObject _fixedLineSelected;
@@ -36,18 +41,25 @@ namespace PPS.DrawingTool
         [SerializeField] Graphic _eraseIcon;
 
         [Header("회전축 슬롯 2모드")]
-        [SerializeField] GameObject _justPivot;
-        [SerializeField] GameObject _worldPivot;
+        [SerializeField] Button _justPivot;
+        [SerializeField] Button _worldPivot;
 
-        void OnEnable()
+        /// <summary>
+        /// 구독만으로는 첫 화면이 비어 있다. 지금 도구를
+        /// 한 번 비추고 나서 변화를 따라간다.
+        /// </summary>
+        public void Bind(ToolSelection tools)
         {
-            _tools.Changed += Apply;
+            _tools = tools;
+
+            _fixedLine.onClick.AddListener(tools.OnClickSelectFixedLine);
+            _freeBody.onClick.AddListener(tools.OnClickSelectFreeBody);
+            _erase.onClick.AddListener(tools.OnClickSelectErase);
+            _justPivot.onClick.AddListener(tools.OnClickSelectPivotSingle);
+            _worldPivot.onClick.AddListener(tools.OnClickSelectPivotWorld);
+
+            tools.Changed += Apply;
             Apply();
-        }
-
-        void OnDisable()
-        {
-            _tools.Changed -= Apply;
         }
 
         void Apply()
@@ -55,8 +67,8 @@ namespace PPS.DrawingTool
             // 두 핀 버튼은 같은 rect 에 겹쳐 있다. 한쪽을
             // 끄지 않으면 위엣것이 클릭을 전부 먹는다.
             bool single = _tools.PivotMode == DrawTool.PivotSingle;
-            _justPivot.SetActive(single);
-            _worldPivot.SetActive(!single);
+            _justPivot.gameObject.SetActive(single);
+            _worldPivot.gameObject.SetActive(!single);
 
             DrawTool current = _tools.Current;
             _fixedLineSelected.SetActive(current == DrawTool.FixedLine);

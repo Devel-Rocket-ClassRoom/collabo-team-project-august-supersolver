@@ -13,17 +13,26 @@ namespace PPS.DrawingTool
     [DisallowMultipleComponent]
     public sealed class ResultBanner : MonoBehaviour
     {
-        [SerializeField] GameSimDriver _driver;
         [SerializeField] GameObject _banner;
         [SerializeField] TMP_Text _label;
+
+        GameSimDriver _driver;
 
         bool _shown;
 
         /// 첫 프레임의 상태는 파생이 아니라 강제한다.
         /// 씬에 켜진 채 저장돼 있으면 폴링은 못 고친다.
+        /// 배선 전에 도는 프레임도 여기서 막는다.
         void Awake()
         {
             _banner.SetActive(false);
+            enabled = false;
+        }
+
+        public void Bind(GameSimDriver driver)
+        {
+            _driver = driver;
+            enabled = true;
         }
 
         // 드라이버가 Update 에서 스텝을 돌린다. 여기가
