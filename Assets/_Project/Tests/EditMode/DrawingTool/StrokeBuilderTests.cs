@@ -79,7 +79,7 @@ namespace PPS.DrawingTool.Tests
         [Test]
         public void 최소_획_길이도_못_채우는_잔량이면_획이_시작되지_않는다()
         {
-            var builder = Started(DrawConstants.MinStrokeLength - 0.01f);
+            var builder = Started(WorldMetrics.MinStrokeLength - 0.01f);
 
             Assert.IsFalse(builder.AddPoint(Vector2.zero));
             Assert.AreEqual(0, builder.Points.Count);

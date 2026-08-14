@@ -19,9 +19,8 @@ namespace PPS.DrawingTool.Tests
         const string ScenePath = "Assets/_Project/Scenes/DrawingTool.unity";
 
         StageFlow _flow;
-        StageLoader _stage;
         DrawingSession _session;
-        DrawInputBehaviour _input;
+        PointerReader _input;
         GameSimDriver _driver;
         Camera _camera;
 
@@ -34,14 +33,13 @@ namespace PPS.DrawingTool.Tests
             yield return null;   // 카메라 fit 은 LateUpdate 에서 풀린다
 
             _flow = Object.FindFirstObjectByType<StageFlow>();
-            _stage = Object.FindFirstObjectByType<StageLoader>();
             _session = Object.FindFirstObjectByType<DrawingSession>();
-            _input = Object.FindFirstObjectByType<DrawInputBehaviour>();
+            _input = Object.FindFirstObjectByType<PointerReader>();
             _driver = Object.FindFirstObjectByType<GameSimDriver>();
             _camera = Object.FindFirstObjectByType<CanvasCameraFitter>().GetComponent<Camera>();
 
             Assert.IsNotNull(_flow, "씬에 StageFlow 가 없다 — 배선이 빠졌다");
-            Assert.IsNotNull(_stage.Stage, "스테이지 파일이 안 물렸다");
+            Assert.IsNotNull(_flow.Stage, "스테이지 파일이 안 물렸다");
         }
 
         [UnityTest]

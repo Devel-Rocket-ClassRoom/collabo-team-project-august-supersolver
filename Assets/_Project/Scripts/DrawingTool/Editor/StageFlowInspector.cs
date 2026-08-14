@@ -31,7 +31,7 @@ namespace PPS.DrawingTool.Dev
             DrawDefaultInspector();
             EditorGUILayout.Space();
 
-            // 판도 그림도 재생 중에만 있다. StageLoader 가
+            // 판도 그림도 재생 중에만 있다. StageFlow 가
             // Start 에서 파일을 읽는다.
             using (new EditorGUI.DisabledScope(!Application.isPlaying))
             {
@@ -49,7 +49,7 @@ namespace PPS.DrawingTool.Dev
         /// </summary>
         static void SaveReplay()
         {
-            var stage = FindFirstObjectByType<StageLoader>();
+            var stage = FindFirstObjectByType<StageFlow>();
             var session = FindFirstObjectByType<DrawingSession>();
 
             if (stage == null || session == null || stage.Stage == null)

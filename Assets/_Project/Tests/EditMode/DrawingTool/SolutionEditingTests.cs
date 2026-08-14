@@ -9,7 +9,7 @@ namespace PPS.DrawingTool.Tests
     /// 탭 한 점이 어느 획에 걸리는가.
     /// 반경을 월드로 받는 순수 함수라 기기가 필요 없다.
     /// </summary>
-    public class PivotPlacementTests
+    public class SolutionEditingTests
     {
         /// 대표 기기의 탭 환산치와 같은 자릿수.
         const float Radius = 0.1f;
@@ -37,7 +37,7 @@ namespace PPS.DrawingTool.Tests
             // 점까지 거리로 재면 한가운데가 2wu 밖이라 못 잡는다.
             var solution = With(Line(ToolType.FreeBody, V(0f, 0f), V(4f, 0f)));
 
-            Assert.IsTrue(PivotPlacement.TryResolve(
+            Assert.IsTrue(SolutionEditing.TryCreatePivot(
                 solution, V(2f, 0.05f), Radius, worldAnchored: true, out PivotJoint pivot));
 
             Assert.AreEqual(0, pivot.StrokeA);
@@ -52,7 +52,7 @@ namespace PPS.DrawingTool.Tests
 
             Vector2 anchor = V(0f, 0.5f);
 
-            Assert.IsTrue(PivotPlacement.TryResolve(
+            Assert.IsTrue(SolutionEditing.TryCreatePivot(
                 solution, anchor, Radius, worldAnchored: true, out PivotJoint pivot));
 
             Assert.AreEqual(1, pivot.StrokeA, "최근에 그린 획이 아니다");
@@ -68,7 +68,7 @@ namespace PPS.DrawingTool.Tests
                 Bar(ToolType.FreeBody, 0.02f),
                 Bar(ToolType.FreeBody, 3f));   // 더 최근이지만 반경 밖
 
-            Assert.IsTrue(PivotPlacement.TryResolve(
+            Assert.IsTrue(SolutionEditing.TryCreatePivot(
                 solution, V(0f, 0.5f), Radius, worldAnchored: false, out PivotJoint pivot));
 
             Assert.AreEqual(1, pivot.StrokeA, "반경 밖 획을 집었다");
@@ -84,12 +84,12 @@ namespace PPS.DrawingTool.Tests
                 Bar(ToolType.FixedLine, 0f),
                 Bar(ToolType.FixedLine, 0.02f));
 
-            Assert.IsTrue(PivotPlacement.TryResolve(
+            Assert.IsTrue(SolutionEditing.TryCreatePivot(
                 solution, V(0f, 0.5f), Radius, worldAnchored: false, out PivotJoint solo), "단독 핀");
             Assert.AreEqual(1, solo.StrokeA);
             Assert.AreEqual(0, solo.StrokeB);
 
-            Assert.IsTrue(PivotPlacement.TryResolve(
+            Assert.IsTrue(SolutionEditing.TryCreatePivot(
                 solution, V(0f, 0.5f), Radius, worldAnchored: true, out PivotJoint world), "월드 고정");
             Assert.AreEqual(PivotJoint.WorldIndex, world.StrokeB);
         }
@@ -101,12 +101,12 @@ namespace PPS.DrawingTool.Tests
                 Bar(ToolType.FixedLine, 0f),
                 Bar(ToolType.FixedLine, 0.02f));
 
-            PivotPlacement.TryResolve(
+            SolutionEditing.TryCreatePivot(
                 solution, V(0f, 0.5f), Radius, worldAnchored: false, out PivotJoint pivot);
             solution.Pivots.Add(pivot);
 
             solution.Strokes.Add(Bar(later, laterX));
-            PivotPlacement.Rebind(solution, solution.Strokes.Count - 1);
+            SolutionEditing.RebindPivots(solution, solution.Strokes.Count - 1);
             return solution;
         }
 
@@ -146,12 +146,12 @@ namespace PPS.DrawingTool.Tests
                 Bar(ToolType.FreeBody, 0f),
                 Bar(ToolType.FreeBody, 0.02f));
 
-            PivotPlacement.TryResolve(
+            SolutionEditing.TryCreatePivot(
                 solution, V(0f, 0.5f), Radius, worldAnchored: false, out PivotJoint pivot);
             solution.Pivots.Add(pivot);
 
             solution.Strokes.Add(Bar(ToolType.FreeBody, 0.05f));
-            PivotPlacement.Rebind(solution, 2);
+            SolutionEditing.RebindPivots(solution, 2);
 
             Assert.AreEqual(1, solution.Pivots[0].StrokeA, "멀쩡한 핀을 갈아꼈다");
             Assert.AreEqual(0, solution.Pivots[0].StrokeB);
@@ -162,7 +162,7 @@ namespace PPS.DrawingTool.Tests
         {
             var solution = With(Bar(ToolType.FreeBody, 0f));
 
-            Assert.IsTrue(PivotPlacement.TryResolve(
+            Assert.IsTrue(SolutionEditing.TryCreatePivot(
                 solution, V(0f, 0.5f), Radius, worldAnchored: false, out PivotJoint pivot));
 
             Assert.AreEqual(0, pivot.StrokeA);
@@ -174,7 +174,7 @@ namespace PPS.DrawingTool.Tests
         {
             var solution = With(Bar(ToolType.FreeBody, 3f));   // 반경 밖
 
-            Assert.IsTrue(PivotPlacement.TryResolve(
+            Assert.IsTrue(SolutionEditing.TryCreatePivot(
                 solution, V(0f, 0.5f), Radius, worldAnchored: true, out PivotJoint pivot));
 
             Assert.AreEqual(PivotJoint.Unbound, pivot.StrokeA);
@@ -187,7 +187,7 @@ namespace PPS.DrawingTool.Tests
             // 두 칸이 다 비면 무엇을 이으려던 건지 남지 않는다.
             var solution = With(Bar(ToolType.FreeBody, 3f));
 
-            Assert.IsFalse(PivotPlacement.TryResolve(
+            Assert.IsFalse(SolutionEditing.TryCreatePivot(
                 solution, V(0f, 0.5f), Radius, worldAnchored: false, out _));
         }
 
@@ -196,12 +196,12 @@ namespace PPS.DrawingTool.Tests
         {
             var solution = With(Bar(ToolType.FreeBody, 0f));
 
-            PivotPlacement.TryResolve(
+            SolutionEditing.TryCreatePivot(
                 solution, V(0f, 0.5f), Radius, worldAnchored: false, out PivotJoint pivot);
             solution.Pivots.Add(pivot);
 
             solution.Strokes.Add(Bar(ToolType.FixedLine, 0.05f));
-            PivotPlacement.Rebind(solution, 1);
+            SolutionEditing.RebindPivots(solution, 1);
 
             Assert.AreEqual(0, solution.Pivots[0].StrokeA, "기준 획이 바뀌었다");
             Assert.AreEqual(1, solution.Pivots[0].StrokeB,
@@ -213,12 +213,12 @@ namespace PPS.DrawingTool.Tests
         {
             var solution = With(Bar(ToolType.FreeBody, 3f));
 
-            PivotPlacement.TryResolve(
+            SolutionEditing.TryCreatePivot(
                 solution, V(0f, 0.5f), Radius, worldAnchored: true, out PivotJoint pivot);
             solution.Pivots.Add(pivot);
 
             solution.Strokes.Add(Bar(ToolType.FreeBody, 0.05f));
-            PivotPlacement.Rebind(solution, 1);
+            SolutionEditing.RebindPivots(solution, 1);
 
             Assert.AreEqual(1, solution.Pivots[0].StrokeA);
             Assert.AreEqual(PivotJoint.WorldIndex, solution.Pivots[0].StrokeB,
@@ -232,7 +232,7 @@ namespace PPS.DrawingTool.Tests
                 Bar(ToolType.FreeBody, 0f),
                 Bar(ToolType.FreeBody, 0.02f));
 
-            Assert.IsFalse(PivotPlacement.TryResolve(
+            Assert.IsFalse(SolutionEditing.TryCreatePivot(
                 solution, V(2f, 2f), Radius, worldAnchored: false, out _));
         }
 
@@ -245,10 +245,10 @@ namespace PPS.DrawingTool.Tests
             solution.Pivots.Add(new PivotJoint(0, 1, V(3f, 0f)));   // 반경 밖
 
             Assert.AreEqual(1,
-                PivotPlacement.PickPivot(solution.Pivots, V(0f, 0f), Radius),
+                SolutionEditing.FindPivotNear(solution.Pivots, V(0f, 0f), Radius),
                 "최근에 놓은 핀이 아니다");
             Assert.AreEqual(-1,
-                PivotPlacement.PickPivot(solution.Pivots, V(9f, 9f), Radius),
+                SolutionEditing.FindPivotNear(solution.Pivots, V(9f, 9f), Radius),
                 "빈 곳인데 무언가를 집었다");
         }
 
@@ -267,7 +267,7 @@ namespace PPS.DrawingTool.Tests
             solution.Pivots.Add(pivot);
 
             solution.Strokes.RemoveAt(erased);
-            PivotPlacement.Remap(solution, erased);
+            SolutionEditing.RemapPivots(solution, erased);
             return solution;
         }
 
@@ -332,7 +332,7 @@ namespace PPS.DrawingTool.Tests
             solution.Pivots.Add(new PivotJoint(2, 3, Far));
 
             solution.Strokes.RemoveAt(1);
-            PivotPlacement.Remap(solution, 1);
+            SolutionEditing.RemapPivots(solution, 1);
 
             Assert.AreEqual(2, solution.Pivots.Count, "빈 핀만 사라져야 한다");
             Assert.AreEqual(0, solution.Pivots[0].StrokeA);

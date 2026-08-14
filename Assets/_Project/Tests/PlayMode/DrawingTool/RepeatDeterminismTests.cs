@@ -27,7 +27,6 @@ namespace PPS.DrawingTool.Tests
         const int ActionCount = 4;
 
         StageFlow _flow;
-        StageLoader _stage;
         DrawingSession _session;
         GameSimDriver _driver;
 
@@ -40,12 +39,11 @@ namespace PPS.DrawingTool.Tests
             yield return null;   // 카메라 fit 은 LateUpdate 에서 풀린다
 
             _flow = Object.FindFirstObjectByType<StageFlow>();
-            _stage = Object.FindFirstObjectByType<StageLoader>();
             _session = Object.FindFirstObjectByType<DrawingSession>();
             _driver = Object.FindFirstObjectByType<GameSimDriver>();
 
             Assert.IsNotNull(_flow, "씬에 StageFlow 가 없다 — 배선이 빠졌다");
-            Assert.IsNotNull(_stage.Stage, "스테이지 파일이 안 물렸다");
+            Assert.IsNotNull(_flow.Stage, "스테이지 파일이 안 물렸다");
         }
 
         [UnityTest]
@@ -133,7 +131,7 @@ namespace PPS.DrawingTool.Tests
 
         List<ulong> TraceOf(Solution solution)
         {
-            using (SimWorld world = WorldBuilder.Build(_stage.Stage, solution))
+            using (SimWorld world = WorldBuilder.Build(_flow.Stage, solution))
                 return StepAndHash(world);
         }
 

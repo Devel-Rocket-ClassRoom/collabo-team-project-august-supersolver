@@ -15,10 +15,10 @@ namespace PPS.DrawingTool
         {
             if (rawPoints == null || rawPoints.Count < 2) return Rejected(tool);
 
-            var stroke = new Stroke(tool, Simplify(rawPoints, DrawConstants.RdpEpsilon));
+            var stroke = new Stroke(tool, Simplify(rawPoints, WorldMetrics.RdpEpsilon));
 
             // 미세 콜라이더는 물리에서 터널링·지터를 일으킨다.
-            if (stroke.Length() < DrawConstants.MinStrokeLength) return Rejected(tool);
+            if (stroke.Length() < WorldMetrics.MinStrokeLength) return Rejected(tool);
 
             return stroke;
         }

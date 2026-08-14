@@ -25,7 +25,7 @@ namespace PPS.DrawingTool
         /// 빌더를 안 열어 이 값이 false 다.
         bool _buildingStroke;
 
-        DrawContext _context;
+        StrokeContext _context;
         Vector2 _downWorld;
         float _maxTravel;
 
@@ -58,7 +58,7 @@ namespace PPS.DrawingTool
         /// 프리뷰 근사 잔량. 게이지가 읽는다.
         public float PreviewRemainingInk => _builder.RemainingInk;
 
-        public void Feed(in PointerSample sample, in DrawContext context)
+        public void Feed(in PointerSample sample, in StrokeContext context)
         {
             switch (sample.Phase)
             {
@@ -69,7 +69,7 @@ namespace PPS.DrawingTool
             }
         }
 
-        void Down(in PointerSample sample, in DrawContext context)
+        void Down(in PointerSample sample, in StrokeContext context)
         {
             // first-touch-wins. 두 번째 손가락은 첫 손가락을
             // 뗄 때까지 완전히 무시한다.
@@ -129,7 +129,7 @@ namespace PPS.DrawingTool
         {
             // 드로잉 도구는 탭을 무시한다 — 미세 콜라이더가
             // 물리에서 터널링·지터를 일으킨다.
-            if (_maxTravel < _context.ToWorld(ScreenConstants.TapThresholdDp)) return;
+            if (_maxTravel < _context.ToWorld(TouchMetrics.TapThresholdDp)) return;
 
             Stroke stroke = _processor.Process(_context.Tool.ToToolType(), _builder.Points);
             if (stroke.IsValid) StrokeConfirmed?.Invoke(stroke);
@@ -142,7 +142,7 @@ namespace PPS.DrawingTool
         /// </summary>
         void ConfirmTap()
         {
-            float radius = _context.ToWorld(ScreenConstants.TapThresholdDp);
+            float radius = _context.ToWorld(TouchMetrics.TapThresholdDp);
             if (_maxTravel >= radius) return;
 
             Vector2 anchor = Adjust(_downWorld);

@@ -1,6 +1,8 @@
 using System;
+using PPS.Core;
 using PPS.Game;
 using UnityEngine;
+using UnityEngine.Serialization;
 
 namespace PPS.DrawingTool
 {
@@ -12,45 +14,55 @@ namespace PPS.DrawingTool
     [DisallowMultipleComponent]
     public sealed class StageFlow : MonoBehaviour
     {
-        [SerializeField] StageLoader _stage;
         [SerializeField] DrawingSession _session;
         [SerializeField] GameSimDriver _driver;
-        [SerializeField] DrawInputBehaviour _input;
-        [SerializeField] SimStageView _simView;
 
-        readonly StageStateMachine _flow = new StageStateMachine();
+        [FormerlySerializedAs("_input")]
+        [SerializeField] PointerReader _pointer;
 
-        public StageMode Mode => _flow.Mode;
+        [FormerlySerializedAs("_simView")]
+        [SerializeField] SimulationView _simulationView;
 
-        /// 모드가 바뀔 때마다. StageModeView 가 듣는다.
+        readonly StageStateMachine _state = new StageStateMachine();
+
+        /// 지금 판. 시뮬레이션을 여는 곳이 여기라
+        /// 판도 여기가 든다. 저장 경로가 StageId 를 쓴다.
+        public StageData Stage { get; private set; }
+
+        public StageMode Mode => _state.Mode;
+
+        /// <summary>고른 판을 물린다. DrawingToolManagers 가 부른다.</summary>
+        public void SetStage(StageData stage) => Stage = stage;
+
+        /// 모드가 바뀔 때마다. DrawingToolSceneUI 가 듣는다.
         public event Action<StageMode> ModeChanged;
 
         void Start() => Apply();
 
         public void OnClickPlay()
         {
-            if (!_flow.Play()) return;
+            if (!_state.Play()) return;
 
             // 획을 그리는 중에도 두 번째 손가락이 버튼을 누른다.
             // 남겨두면 프리뷰 선이 화면에 박힌다.
-            _input.CancelStroke();
+            _pointer.CancelStroke();
 
             // 여기서 아무것도 저장하지 않는다. 그림을 파일로
             // 뽑는 일은 에디터 도구 몫이다(StageFlowInspector) —
             // 게임에는 그 파일을 읽는 코드가 없다.
-            _driver.StartSimulation(_stage.Stage, _session.Solution);
+            _driver.StartSimulation(Stage, _session.Solution);
 
             // 스텝이 돌기 전에 잡아야 획이 제자리에서 출발한다.
-            _simView.Begin();
+            _simulationView.Begin();
 
             Apply();
         }
 
         public void OnClickPauseResume()
         {
-            if (!_flow.PauseResume()) return;
+            if (!_state.PauseResume()) return;
 
-            _driver.Paused = _flow.Mode == StageMode.Paused;
+            _driver.Paused = _state.Mode == StageMode.Paused;
             Apply();
         }
 
@@ -62,10 +74,10 @@ namespace PPS.DrawingTool
         /// </summary>
         public void OnClickRetry()
         {
-            if (!_flow.Retry()) return;
+            if (!_state.Retry()) return;
 
             _driver.Stop();
-            _simView.Reset();
+            _simulationView.Reset();
 
             Apply();
         }
@@ -73,9 +85,9 @@ namespace PPS.DrawingTool
         void Apply()
         {
             // 캔버스 입력은 그리기에서만 산다.
-            _input.enabled = _flow.Mode == StageMode.Draw;
+            _pointer.enabled = _state.Mode == StageMode.Draw;
 
-            ModeChanged?.Invoke(_flow.Mode);
+            ModeChanged?.Invoke(_state.Mode);
         }
     }
 }

@@ -2618,7 +2618,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a785d39977c42f64688d15f28534f12c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: PPS.DrawingTool::PPS.DrawingTool.InkGauge
-  _fill: {fileID: 3369660669507813382}
+  _fill: {fileID: 4081861782265711984}
 --- !u!1 &4668741329270606362
 GameObject:
   m_ObjectHideFlags: 0

@@ -26,7 +26,7 @@ namespace PPS.DrawingTool.Tests
             Solution solution = TestLevels.PivotSolution();
 
             solution.Strokes.RemoveAt(0);
-            PivotPlacement.Remap(solution, 0);
+            SolutionEditing.RemapPivots(solution, 0);
             return solution;
         }
 

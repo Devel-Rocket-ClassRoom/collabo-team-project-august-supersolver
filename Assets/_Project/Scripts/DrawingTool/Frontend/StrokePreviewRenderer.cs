@@ -27,7 +27,7 @@ namespace PPS.DrawingTool
         /// 프로퍼티 블록으로 _BaseColor 만 덮는다.
         static readonly int BaseColor = Shader.PropertyToID("_BaseColor");
 
-        [SerializeField] DrawInputBehaviour _input;
+        [SerializeField] PointerReader _input;
         [SerializeField] DrawingSession _session;
         [SerializeField] ToolSelection _tools;
         [SerializeField] Material _material;
@@ -39,7 +39,7 @@ namespace PPS.DrawingTool
         readonly List<LineRenderer> _lines = new List<LineRenderer>();
 
         /// 인덱스가 Solution.Strokes 와 같다.
-        /// 시뮬 중에는 SimStageView 가 바디에 얹는다.
+        /// 시뮬 중에는 SimulationView 가 바디에 얹는다.
         public IReadOnlyList<LineRenderer> Lines => _lines;
 
         void Awake()

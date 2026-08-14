@@ -45,7 +45,7 @@ namespace PPS.DrawingTool.Tests
         {
             var stroke = Process(
                 new Vector2(0f, 0f),
-                new Vector2(1f, DrawConstants.RdpEpsilon * 0.5f),
+                new Vector2(1f, WorldMetrics.RdpEpsilon * 0.5f),
                 new Vector2(2f, 0f));
 
             Assert.AreEqual(2, stroke.Points.Count);

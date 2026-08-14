@@ -30,7 +30,7 @@ namespace PPS.DrawingTool
         public void AddStroke(Stroke stroke)
         {
             _history.AddStroke(stroke);
-            PivotPlacement.Rebind(Solution, Solution.Strokes.Count - 1);
+            SolutionEditing.RebindPivots(Solution, Solution.Strokes.Count - 1);
             Changed?.Invoke();
         }
 
@@ -38,6 +38,38 @@ namespace PPS.DrawingTool
         {
             _history.AddPivot(pivot);
             Changed?.Invoke();
+        }
+
+        /// <summary>
+        /// 탭 한 점을 핀으로 푼다. 어느 획에 걸리는지는
+        /// Solution 을 아는 여기서 정한다. 도구는 인식기가
+        /// Down 에서 잡아둔 값이라 도중에 바꿔도 안 흔들린다.
+        /// </summary>
+        public void PlacePivot(DrawTool tool, Vector2 anchor, float radius)
+        {
+            if (SolutionEditing.TryCreatePivot(
+                    Solution, anchor, radius,
+                    tool == DrawTool.PivotWorld, out PivotJoint pivot))
+                AddPivot(pivot);
+        }
+
+        /// <summary>
+        /// 핀을 획보다 먼저 본다 — 핀은 획 위에 놓이므로
+        /// 획을 먼저 보면 핀을 영영 못 지운다. 반경 안에
+        /// 아무것도 없으면 아무 일도 일어나지 않는다.
+        /// </summary>
+        public void EraseAt(Vector2 anchor, float radius)
+        {
+            int pivot = SolutionEditing.FindPivotNear(Solution.Pivots, anchor, radius);
+            if (pivot >= 0)
+            {
+                ErasePivot(pivot);
+                return;
+            }
+
+            int stroke = SolutionEditing.FindStrokeNear(
+                Solution.Strokes, anchor, radius, Solution.Strokes.Count - 1);
+            if (stroke >= 0) EraseStroke(stroke);
         }
 
         /// <summary>
@@ -49,7 +81,7 @@ namespace PPS.DrawingTool
         public void EraseStroke(int index)
         {
             _history.EraseStroke(index);
-            PivotPlacement.Remap(Solution, index);
+            SolutionEditing.RemapPivots(Solution, index);
             Changed?.Invoke();
         }
 

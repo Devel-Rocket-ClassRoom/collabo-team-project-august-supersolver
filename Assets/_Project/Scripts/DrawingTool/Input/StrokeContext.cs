@@ -7,7 +7,7 @@ namespace PPS.DrawingTool
     /// 인식기가 Down 에서 캡처해 끝까지 쓴다 — 도중에
     /// fit 이 바뀌면 한 획 안에서 좌표계가 갈라진다.
     /// </summary>
-    public readonly struct DrawContext
+    public readonly struct StrokeContext
     {
         public readonly DrawTool Tool;
 
@@ -27,7 +27,7 @@ namespace PPS.DrawingTool
         /// 손가락이 나가도 점은 이 경계에 붙는다.
         public readonly Rect PlayArea;
 
-        public DrawContext(
+        public StrokeContext(
             DrawTool tool,
             float remainingInk,
             float pixelsPerUnit,

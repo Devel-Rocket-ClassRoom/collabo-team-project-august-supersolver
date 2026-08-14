@@ -52,7 +52,7 @@ namespace PPS.DrawingTool.Tests
         void Feed(PointerPhase phase, Vector2 world, bool overUI = false, int id = FirstFinger) =>
             _recognizer.Feed(
                 new PointerSample(id, phase, world, overUI),
-                new DrawContext(_tool, _ink, PixelsPerUnit, Dpi, _offsetDp, Area));
+                new StrokeContext(_tool, _ink, PixelsPerUnit, Dpi, _offsetDp, Area));
 
         /// <summary>Down → Move… → 마지막 점에서 Up.</summary>
         void Drag(params Vector2[] path)
@@ -138,7 +138,7 @@ namespace PPS.DrawingTool.Tests
         [Test]
         public void offset_이_있어도_영역_바닥까지_그릴_수_있다()
         {
-            _offsetDp = ScreenConstants.DrawOffsetDp;
+            _offsetDp = TouchMetrics.DrawOffsetDp;
 
             // 손가락이 바닥(yMin=-6) 아래로 내려간다. offset 이
             // 위로 미는 값이라 클램프가 없으면 바닥에 못 닿는다.
@@ -173,7 +173,7 @@ namespace PPS.DrawingTool.Tests
         [Test]
         public void 영역_최상단에서_offset_을_줘도_점이_영역을_안_벗어난다()
         {
-            _offsetDp = ScreenConstants.DrawOffsetDp;
+            _offsetDp = TouchMetrics.DrawOffsetDp;
 
             Drag(V(0f, 5f), V(0f, 5.4f), V(0f, 5.8f), V(0f, 5.9f));
 
@@ -249,13 +249,13 @@ namespace PPS.DrawingTool.Tests
             List<Vector2> mouse = _confirmed[0].Points;
 
             Reset();
-            _offsetDp = ScreenConstants.DrawOffsetDp;
+            _offsetDp = TouchMetrics.DrawOffsetDp;
             Drag(path);
             List<Vector2> touch = _confirmed[0].Points;
 
             Assert.AreEqual(mouse.Count, touch.Count, "offset 이 점 개수를 바꿨다");
 
-            float offset = new DeviceUnits(Dpi).ToPixels(ScreenConstants.DrawOffsetDp) / PixelsPerUnit;
+            float offset = new DeviceUnits(Dpi).ToPixels(TouchMetrics.DrawOffsetDp) / PixelsPerUnit;
             for (int i = 0; i < mouse.Count; i++)
             {
                 Assert.AreEqual(mouse[i].x, touch[i].x, 1e-4f);

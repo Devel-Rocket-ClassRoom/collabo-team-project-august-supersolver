@@ -60,7 +60,7 @@ namespace PPS.DrawingTool.Tests
             // 0.25wu 는 시작은 되는 잔량이다. 절단이
             // 0.2wu 에서 끊어 최소 길이 밑으로 내려간다.
             var builder = new StrokeBuilder();
-            builder.Begin(DrawConstants.MinStrokeLength);
+            builder.Begin(WorldMetrics.MinStrokeLength);
             for (int i = 0; i <= 8; i++)
                 builder.AddPoint(new Vector2(i * 0.1f, 0f));
 

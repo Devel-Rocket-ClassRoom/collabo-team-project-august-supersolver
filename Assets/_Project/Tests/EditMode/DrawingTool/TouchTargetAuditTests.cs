@@ -83,7 +83,7 @@ namespace PPS.DrawingTool.Tests
         /// 화면 폭에 비례하고, dpi 가 그대로 약분된다.
         /// </summary>
         static float RequiredInches(float referenceSize) =>
-            ScreenConstants.MinTouchTargetDp * Reference.x
+            TouchMetrics.MinTouchTargetDp * Reference.x
             / (referenceSize * DeviceUnits.BaselineDpi);
 
         /// <summary>

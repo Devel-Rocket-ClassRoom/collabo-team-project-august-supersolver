@@ -5,7 +5,7 @@ namespace PPS.DrawingTool
     /// 저장되는 점 밀도가 기기 해상도·주사율과 무관해야
     /// 솔버가 푼 결과와 플레이어의 결과가 일치한다.
     /// </summary>
-    public static class DrawConstants
+    public static class WorldMetrics
     {
         /// 직전 확정점과 이만큼 떨어져야 점을 받는다.
         public const float MinPointDistance = 0.06f;

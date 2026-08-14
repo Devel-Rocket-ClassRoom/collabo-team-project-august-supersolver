@@ -9,16 +9,16 @@ namespace PPS.DrawingTool
     /// 지우개 대상 고르기, 핀 인덱스 유지가 여기 모인다.
     /// 무상태 순수 함수 — 반경이 월드 단위라 기기를 모른다.
     /// </summary>
-    public static class PivotPlacement
+    public static class SolutionEditing
     {
 
         /// <summary>
         /// 반경 안의 획을 최근에 그린 순으로 집어 핀을 만든다.
         /// 획 종류는 가리지 않는다 — 정적끼리 물린 핀은 당장
         /// 조인트가 안 생기지만, 그 자리를 지나는 자유물체가
-        /// 나중에 그려지면 Rebind 가 되살린다.
+        /// 나중에 그려지면 RebindPivots 가 되살린다.
         /// </summary>
-        public static bool TryResolve(
+        public static bool TryCreatePivot(
             Solution solution,
             Vector2 anchor,
             float radius,
@@ -30,8 +30,8 @@ namespace PPS.DrawingTool
 
             List<Stroke> strokes = solution.Strokes;
 
-            int a = PickStroke(strokes, anchor, radius, strokes.Count - 1);
-            int b = worldAnchored ? -1 : PickStroke(strokes, anchor, radius, a - 1);
+            int a = FindStrokeNear(strokes, anchor, radius, strokes.Count - 1);
+            int b = worldAnchored ? -1 : FindStrokeNear(strokes, anchor, radius, a - 1);
 
             // 단독 핀은 기준 획이 있어야 한다. 빈 곳에 놓으면
             // 두 칸이 다 비어 무엇을 이으려던 건지 남지 않는다.
@@ -51,7 +51,7 @@ namespace PPS.DrawingTool
         /// 동점에서 순서가 흔들릴 여지가 없다.
         /// </summary>
         /// <param name="from">여기서부터 거꾸로 훑는다.</param>
-        public static int PickStroke(
+        public static int FindStrokeNear(
             List<Stroke> strokes, Vector2 point, float radius, int from)
         {
             for (int i = from; i >= 0; i--)
@@ -63,7 +63,7 @@ namespace PPS.DrawingTool
         /// 반경 안에서 가장 최근에 놓은 핀. 없으면 -1.
         /// 마커는 앵커 한 점이라 선분이 아니라 점까지 잰다.
         /// </summary>
-        public static int PickPivot(List<PivotJoint> pivots, Vector2 point, float radius)
+        public static int FindPivotNear(List<PivotJoint> pivots, Vector2 point, float radius)
         {
             for (int i = pivots.Count - 1; i >= 0; i--)
                 if (Vector2.Distance(pivots[i].Anchor, point) <= radius) return i;
@@ -76,7 +76,7 @@ namespace PPS.DrawingTool
         /// 안 하면 조용히 엉뚱한 획에 조인트가 붙는다.
         /// </summary>
         /// <param name="erased">방금 빠진 획의 인덱스.</param>
-        public static void Remap(Solution solution, int erased)
+        public static void RemapPivots(Solution solution, int erased)
         {
             List<PivotJoint> pivots = solution.Pivots;
 
@@ -116,7 +116,7 @@ namespace PPS.DrawingTool
         /// 갈아끼운다.
         /// </summary>
         /// <param name="index">방금 추가된 획의 인덱스.</param>
-        public static void Rebind(Solution solution, int index)
+        public static void RebindPivots(Solution solution, int index)
         {
             List<Stroke> strokes = solution.Strokes;
             if (index < 0 || index >= strokes.Count) return;
@@ -125,7 +125,7 @@ namespace PPS.DrawingTool
             for (int i = 0; i < pivots.Count; i++)
             {
                 PivotJoint pivot = pivots[i];
-                if (Distance(strokes[index], pivot.Anchor) > DrawConstants.PivotRebindDistance)
+                if (Distance(strokes[index], pivot.Anchor) > WorldMetrics.PivotRebindDistance)
                     continue;
 
                 // 빈 칸은 획 종류를 안 가린다 —

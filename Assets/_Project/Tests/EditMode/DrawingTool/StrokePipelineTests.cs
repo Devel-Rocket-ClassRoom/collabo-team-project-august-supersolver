@@ -66,7 +66,7 @@ namespace PPS.DrawingTool.Tests
                 for (int i = 1; i < points.Count; i++)
                 {
                     float gap = Vector2.Distance(points[i - 1], points[i]);
-                    Assert.GreaterOrEqual(gap, DrawConstants.MinPointDistance - 0.0001f,
+                    Assert.GreaterOrEqual(gap, WorldMetrics.MinPointDistance - 0.0001f,
                         $"{hz}Hz — {i - 1}번과 {i}번 점이 {gap:F4}wu 밖에 안 떨어져 있다.");
                 }
             }

@@ -71,7 +71,7 @@ namespace PPS.DrawingTool.Tests
             {
                 float tapWorld = TapThresholdInWorld(device, Box(8f, 12f));
 
-                Assert.Less(tapWorld, DrawConstants.MinStrokeLength,
+                Assert.Less(tapWorld, WorldMetrics.MinStrokeLength,
                     $"{device.Name}: 탭 임계값 {tapWorld:F3}wu 가 최소 획 길이를 넘었다");
             }
         }
@@ -86,13 +86,13 @@ namespace PPS.DrawingTool.Tests
             {
                 float tapWorld = TapThresholdInWorld(device, Landscape(11f));
 
-                Assert.Less(tapWorld, DrawConstants.MinStrokeLength,
+                Assert.Less(tapWorld, WorldMetrics.MinStrokeLength,
                     $"{device.Name}: 폭 11wu 에서 이미 겹쳤다");
             }
 
             Device worst = Devices[4];
             Assert.Greater(TapThresholdInWorld(worst, Landscape(12f)),
-                DrawConstants.MinStrokeLength,
+                WorldMetrics.MinStrokeLength,
                 "폭 12wu 에서도 안 겹치면 상한이 바뀐 것이다");
         }
 
@@ -113,7 +113,7 @@ namespace PPS.DrawingTool.Tests
             Assert.IsTrue(CanvasFit.TrySolve(CanvasRect(device), screen, playArea, out var frame),
                 $"{device.Name}: 카메라를 풀지 못했다");
 
-            float tapPixels = new DeviceUnits(device.Dpi).ToPixels(ScreenConstants.TapThresholdDp);
+            float tapPixels = new DeviceUnits(device.Dpi).ToPixels(TouchMetrics.TapThresholdDp);
             return tapPixels / frame.PixelsPerUnit;
         }
 

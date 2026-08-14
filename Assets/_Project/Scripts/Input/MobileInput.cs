@@ -13,7 +13,7 @@ namespace PPS.Input
     /// 모바일 제스처를 탭·더블탭·드래그·핀치로 갈라
     /// 이벤트로 내보낸다. 좌표는 전부 스크린 픽셀이다 —
     /// 월드 변환은 씬마다 카메라가 다르니 듣는 쪽이 한다.
-    /// 그리기 입력은 DrawInputBehaviour 가 따로 처리한다.
+    /// 그리기 입력은 PointerReader 가 따로 처리한다.
     /// </summary>
     [DisallowMultipleComponent]
     public sealed class MobileInput : MonoBehaviour

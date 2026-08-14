@@ -13,13 +13,13 @@ namespace PPS.DrawingTool
     {
         [SerializeField] Image _fill;
 
-        DrawInputBehaviour _input;
+        PointerReader _input;
 
         /// 배선 전 한 프레임이 뜰 수 있다. 그때 돌면
         /// 아직 없는 로직을 읽는다.
         void Awake() => enabled = false;
 
-        public void Bind(DrawInputBehaviour input)
+        public void Bind(PointerReader input)
         {
             _input = input;
             enabled = true;

@@ -38,7 +38,7 @@ public class DrawingToolSceneUI : UIScene
         DrawingToolManagers managers = DrawingToolManagers.Instance;
 
         toolbar.Bind(managers.Tools);
-        inkGauge.Bind(managers.Input);
+        inkGauge.Bind(managers.Pointer);
         resultBanner.Bind(managers.Driver);
         speedToggle.Bind(managers.Driver);
 

@@ -45,7 +45,7 @@ public class StageButton : MonoBehaviour
 
             await UIManager.Instance.ShowScene<DrawingToolSceneUI>();
 
-            StageLoader.SetStage(StageData);
+            DrawingToolManagers.Instance.SetStage(StageData);
         }
         locked = false;
     }

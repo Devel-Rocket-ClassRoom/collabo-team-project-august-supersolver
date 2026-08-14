@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using PPS.Core;
 using PPS.Game;
 using UnityEngine;
+using UnityEngine.Serialization;
 
 namespace PPS.DrawingTool
 {
@@ -11,13 +12,16 @@ namespace PPS.DrawingTool
     /// 장치가 도중에 뿌리는 파편은 그리지 않는다.
     /// </summary>
     [DisallowMultipleComponent]
-    public sealed class SimStageView : MonoBehaviour
+    public sealed class SimulationView : MonoBehaviour
     {
         [SerializeField] GameSimDriver _driver;
         [SerializeField] DrawingSession _session;
         [SerializeField] LevelView _levelView;
-        [SerializeField] StrokePreviewRenderer _strokes;
-        [SerializeField] PivotMarkerView _pivots;
+        [FormerlySerializedAs("_strokes")]
+        [SerializeField] StrokePreviewRenderer _strokeView;
+
+        [FormerlySerializedAs("_pivots")]
+        [SerializeField] PivotMarkerView _pivotView;
 
         /// 획마다 바디 기준 로컬 점. 인덱스는 Solution.Strokes
         /// 와 같고, 따라갈 것이 없는 자리는 null 이다.
@@ -55,8 +59,8 @@ namespace PPS.DrawingTool
             _pivotLocal.Clear();
 
             _levelView.ResetBall();
-            _strokes.Rebuild();
-            _pivots.Refresh();
+            _strokeView.Rebuild();
+            _pivotView.Refresh();
         }
 
         void LateUpdate()
@@ -73,7 +77,7 @@ namespace PPS.DrawingTool
 
         void BeginStrokes(IReadOnlyList<Rigidbody2D> bodies)
         {
-            IReadOnlyList<LineRenderer> lines = _strokes.Lines;
+            IReadOnlyList<LineRenderer> lines = _strokeView.Lines;
 
             for (int i = 0; i < bodies.Count; i++)
             {
@@ -106,7 +110,7 @@ namespace PPS.DrawingTool
 
         void FollowStrokes(IReadOnlyList<Rigidbody2D> bodies)
         {
-            IReadOnlyList<LineRenderer> lines = _strokes.Lines;
+            IReadOnlyList<LineRenderer> lines = _strokeView.Lines;
 
             for (int i = 0; i < _strokeLocal.Count; i++)
             {
@@ -124,7 +128,7 @@ namespace PPS.DrawingTool
         /// 마커는 원이라 각도가 안 보인다. 위치만 옮긴다.
         void FollowPivots()
         {
-            IReadOnlyList<Transform> markers = _pivots.Markers;
+            IReadOnlyList<Transform> markers = _pivotView.Markers;
             int count = Mathf.Min(_pivotHost.Count, markers.Count);
 
             for (int i = 0; i < count; i++)

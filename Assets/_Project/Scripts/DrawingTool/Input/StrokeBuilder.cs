@@ -31,7 +31,7 @@ namespace PPS.DrawingTool
 
             // 최소 획 길이도 못 채우는 잔량은 0 과 같다.
             // 그려봤자 롤백될 획이라 아예 시작하지 않는다.
-            _exhausted = remainingInk < DrawConstants.MinStrokeLength;
+            _exhausted = remainingInk < WorldMetrics.MinStrokeLength;
         }
 
         /// <returns>점이 실제로 추가됐으면 true.</returns>
@@ -48,7 +48,7 @@ namespace PPS.DrawingTool
             Vector2 last = _points[_points.Count - 1];
             float step = Vector2.Distance(last, point);
 
-            if (step < DrawConstants.MinPointDistance) return false;
+            if (step < WorldMetrics.MinPointDistance) return false;
 
             if (step <= _remainingInk)
             {
@@ -65,7 +65,7 @@ namespace PPS.DrawingTool
 
             // 절단점만 유일하게 필터 밖이라 직전 점과 붙을
             // 수 있다. 붙은 채로 두면 콜라이더가 퇴화한다.
-            if (cut < DrawConstants.MinPointDistance) return false;
+            if (cut < WorldMetrics.MinPointDistance) return false;
 
             _points.Add(last + (point - last) * (cut / step));
             return true;

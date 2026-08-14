@@ -43,7 +43,7 @@ namespace PPS.DrawingTool
         readonly List<Transform> _markers = new List<Transform>();
 
         /// 인덱스가 Solution.Pivots 와 같다.
-        /// 시뮬 중에는 SimStageView 가 host 바디에 얹는다.
+        /// 시뮬 중에는 SimulationView 가 host 바디에 얹는다.
         public IReadOnlyList<Transform> Markers => _markers;
         private void Awake()
         {
@@ -93,7 +93,7 @@ namespace PPS.DrawingTool
         {
             if (_markers.Count == 0 || !_fitter.IsReady) return;
 
-            float diameter = _fitter.DpToWorld(ScreenConstants.TapThresholdDp) * 2f;
+            float diameter = _fitter.DpToWorld(TouchMetrics.TapThresholdDp) * 2f;
             for (int i = 0; i < _markers.Count; i++)
                 _markers[i].localScale = Vector3.one * diameter;
         }
