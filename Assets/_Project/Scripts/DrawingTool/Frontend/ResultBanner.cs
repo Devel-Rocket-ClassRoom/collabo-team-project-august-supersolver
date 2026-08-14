@@ -19,7 +19,16 @@ namespace PPS.DrawingTool
 
         bool _shown;
 
-        void Update()
+        /// 첫 프레임의 상태는 파생이 아니라 강제한다.
+        /// 씬에 켜진 채 저장돼 있으면 폴링은 못 고친다.
+        void Awake()
+        {
+            _banner.SetActive(false);
+        }
+
+        // 드라이버가 Update 에서 스텝을 돌린다. 여기가
+        // Update 면 실행 순서에 따라 한 프레임 늦는다.
+        void LateUpdate()
         {
             SimWorld world = _driver.World;
             bool decided = world != null && world.IsTerminal;

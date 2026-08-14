@@ -21,7 +21,7 @@ namespace PPS.DrawingTool
         int _pointerId = NoPointer;
         bool _ownedByCanvas;
 
-        /// 획을 쌓는 중인가. 핀 도구는 캔버스를 쥐고도
+        /// 획을 쌓는 중인가. 탭 도구는 캔버스를 쥐고도
         /// 빌더를 안 열어 이 값이 false 다.
         bool _buildingStroke;
 
@@ -42,6 +42,12 @@ namespace PPS.DrawingTool
         /// 어느 획에 걸리는지는 Solution 을 아는 쪽이 정한다.
         /// </summary>
         public event Action<DrawTool, Vector2, float> PivotRequested;
+
+        /// <summary>
+        /// 지우기 탭. 앵커·히트 반경(월드)을 준다.
+        /// 무엇이 걸리는지는 Solution 을 아는 쪽이 정한다.
+        /// </summary>
+        public event Action<Vector2, float> EraseRequested;
 
         public bool IsDrawing => _buildingStroke;
 
@@ -77,8 +83,8 @@ namespace PPS.DrawingTool
             _downWorld = sample.World;
             _maxTravel = 0f;
 
-            // 핀은 잉크도 프리뷰도 쓰지 않는다.
-            if (context.Tool.IsPivot()) return;
+            // 핀·지우개는 잉크도 프리뷰도 쓰지 않는다.
+            if (context.Tool.IsTap()) return;
 
             _buildingStroke = true;
             _builder.Begin(context.RemainingInk);
@@ -102,7 +108,7 @@ namespace PPS.DrawingTool
                 Track(sample.World);
 
                 if (_buildingStroke) Confirm();
-                else ConfirmPivot();
+                else ConfirmTap();
             }
 
             Release();
@@ -130,16 +136,19 @@ namespace PPS.DrawingTool
         }
 
         /// <summary>
-        /// 핀은 탭만 받는다. 끌었으면 아무것도 만들지
+        /// 핀·지우개는 탭만 받는다. 끌었으면 아무것도 하지
         /// 않는다 — 획을 그으려다 도구를 잘못 고른 손이다.
         /// 히트 반경은 탭 임계값과 같은 값을 쓴다.
         /// </summary>
-        void ConfirmPivot()
+        void ConfirmTap()
         {
             float radius = _context.ToWorld(ScreenConstants.TapThresholdDp);
             if (_maxTravel >= radius) return;
 
-            PivotRequested?.Invoke(_context.Tool, Adjust(_downWorld), radius);
+            Vector2 anchor = Adjust(_downWorld);
+
+            if (_context.Tool == DrawTool.Erase) EraseRequested?.Invoke(anchor, radius);
+            else PivotRequested?.Invoke(_context.Tool, anchor, radius);
         }
 
         /// <summary>

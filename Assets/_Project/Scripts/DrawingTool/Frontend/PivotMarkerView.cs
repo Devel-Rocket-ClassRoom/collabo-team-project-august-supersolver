@@ -103,7 +103,8 @@ namespace PPS.DrawingTool
 
         void Add(in PivotJoint pivot, int index)
         {
-            Color color = ColorOf(FillOf(pivot));
+            PivotFill fill = FillOf(pivot);
+            Color color = ColorOf(fill);
 
             var root = new GameObject($"Pivot_{index}").transform;
             root.SetParent(transform, false);
@@ -115,7 +116,12 @@ namespace PPS.DrawingTool
             if (pivot.StrokeB == PivotJoint.WorldIndex)
                 AddShape(root, "WorldRing", ShapeSprites.Ring, WorldRingScale, color);
 
-            AddShape(root, "Dot", ShapeSprites.Disc, 1f, color);
+            // 속을 채우는 것은 이을 것이 다 정해진 핀뿐이다.
+            // 채움을 색에만 실으면 색약인 눈에 작동 여부가
+            // 안 보인다 — 바깥 원과 축이 달라 안 겹친다.
+            AddShape(root, "Dot",
+                fill == PivotFill.Bound ? ShapeSprites.Disc : ShapeSprites.Ring,
+                1f, color);
 
             _markers.Add(root);
         }

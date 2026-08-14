@@ -25,7 +25,7 @@ namespace PPS.DrawingTool.Tests
         static readonly string[] TouchTargets =
         {
             "Btn_Settings", "Btn_Play", "Btn_PauseResume", "Btn_Speed",
-            "Btn_FixedLine", "Btn_FreeBody", "Btn_PivotGroup",
+            "Btn_FixedLine", "Btn_FreeBody", "Btn_PivotGroup", "Btn_Erase",
             "Btn_Reset", "Btn_Undo", "Btn_Redo", "Btn_Retry",
         };
 

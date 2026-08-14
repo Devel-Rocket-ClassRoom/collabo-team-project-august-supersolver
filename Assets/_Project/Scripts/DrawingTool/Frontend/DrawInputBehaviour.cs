@@ -70,12 +70,14 @@ namespace PPS.DrawingTool
             EnhancedTouchSupport.Enable();
             _recognizer.StrokeConfirmed += _session.AddStroke;
             _recognizer.PivotRequested += PlacePivot;
+            _recognizer.EraseRequested += Erase;
         }
 
         void OnDisable()
         {
             _recognizer.StrokeConfirmed -= _session.AddStroke;
             _recognizer.PivotRequested -= PlacePivot;
+            _recognizer.EraseRequested -= Erase;
             EnhancedTouchSupport.Disable();
         }
 
@@ -90,6 +92,27 @@ namespace PPS.DrawingTool
                     _session.Solution, anchor, radius,
                     tool == DrawTool.PivotWorld, out PivotJoint pivot))
                 _session.AddPivot(pivot);
+        }
+
+        /// <summary>
+        /// 핀을 획보다 먼저 본다 — 핀은 획 위에 놓이므로
+        /// 획을 먼저 보면 핀을 영영 못 지운다. 반경 안에
+        /// 아무것도 없으면 아무 일도 일어나지 않는다.
+        /// </summary>
+        void Erase(Vector2 anchor, float radius)
+        {
+            Solution solution = _session.Solution;
+
+            int pivot = PivotPlacement.PickPivot(solution.Pivots, anchor, radius);
+            if (pivot >= 0)
+            {
+                _session.ErasePivot(pivot);
+                return;
+            }
+
+            int stroke = PivotPlacement.PickStroke(
+                solution.Strokes, anchor, radius, solution.Strokes.Count - 1);
+            if (stroke >= 0) _session.EraseStroke(stroke);
         }
 
         void Update()

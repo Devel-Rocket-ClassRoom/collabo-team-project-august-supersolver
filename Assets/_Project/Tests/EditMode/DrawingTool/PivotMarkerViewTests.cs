@@ -84,6 +84,25 @@ namespace PPS.DrawingTool.Tests
             Assert.IsNotNull(world.Find("WorldRing"), "월드 고정에 바깥 원이 없다");
         }
 
+        /// <summary>
+        /// 채움을 색에만 실으면 색약인 눈에 작동 여부가
+        /// 안 보인다(WCAG 1.4.1). 바깥 원은 종류를 가르므로
+        /// 축이 겹치지 않는다.
+        /// </summary>
+        [Test]
+        public void 이을_것이_다_정해진_핀만_속이_찬다()
+        {
+            _view.Show(MakeSolution());
+
+            Assert.AreEqual(ShapeSprites.Ring, DotOf("Pivot_0"),
+                "상대를 기다리는 핀의 속이 찼다");
+            Assert.AreEqual(ShapeSprites.Disc, DotOf("Pivot_1"),
+                "완성된 핀의 속이 비었다");
+        }
+
+        Sprite DotOf(string marker) =>
+            _go.transform.Find(marker).Find("Dot").GetComponent<SpriteRenderer>().sprite;
+
         [Test]
         public void 다시_보여도_늘어나지_않는다()
         {

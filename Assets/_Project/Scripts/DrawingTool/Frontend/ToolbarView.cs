@@ -26,12 +26,14 @@ namespace PPS.DrawingTool
         [SerializeField] GameObject _freeBodySelected;
         [SerializeField] GameObject _justPivotSelected;
         [SerializeField] GameObject _worldPivotSelected;
+        [SerializeField] GameObject _eraseSelected;
 
         [Header("아이콘 색 채널")]
         [SerializeField] Graphic _fixedLineIcon;
         [SerializeField] Graphic _freeBodyIcon;
         [SerializeField] Graphic _justPivotIcon;
         [SerializeField] Graphic _worldPivotIcon;
+        [SerializeField] Graphic _eraseIcon;
 
         [Header("회전축 슬롯 2모드")]
         [SerializeField] GameObject _justPivot;
@@ -61,6 +63,7 @@ namespace PPS.DrawingTool
             _freeBodySelected.SetActive(current == DrawTool.FreeBody);
             _justPivotSelected.SetActive(current == DrawTool.PivotSingle);
             _worldPivotSelected.SetActive(current == DrawTool.PivotWorld);
+            _eraseSelected.SetActive(current == DrawTool.Erase);
 
             // 배경 유무는 색이 아닌 채널이다. 색약이어도 그쪽으로
             // 알 수 있고, 배경을 놓쳐도 아이콘 색으로 안다.
@@ -68,6 +71,7 @@ namespace PPS.DrawingTool
             Tint(_freeBodyIcon, current == DrawTool.FreeBody);
             Tint(_justPivotIcon, current == DrawTool.PivotSingle);
             Tint(_worldPivotIcon, current == DrawTool.PivotWorld);
+            Tint(_eraseIcon, current == DrawTool.Erase);
         }
 
         static void Tint(Graphic icon, bool selected) =>
