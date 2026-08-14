@@ -196,19 +196,7 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 8620688385107984927}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls:
-      - m_Target: {fileID: 4997955627161198311}
-        m_TargetAssemblyTypeName: PPS.DrawingTool.SpeedToggle, PPS.DrawingTool
-        m_MethodName: OnClick
-        m_Mode: 1
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 0
-        m_CallState: 2
+      m_Calls: []
 --- !u!114 &4997955627161198311
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -221,7 +209,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1d7272b2116e4896bb0cfe12cd25222c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: PPS.DrawingTool::PPS.DrawingTool.SpeedToggle
-  _driver: {fileID: 2487151381449205098}
   _label: {fileID: 185072821414052970}
 --- !u!1 &1315574273754060908
 GameObject:
@@ -494,19 +481,7 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 8293912333650711575}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls:
-      - m_Target: {fileID: 8860626864616630411}
-        m_TargetAssemblyTypeName: PPS.DrawingTool.DrawingSession, PPS.DrawingTool
-        m_MethodName: OnClickUndo
-        m_Mode: 1
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 0
-        m_CallState: 2
+      m_Calls: []
 --- !u!1 &2394754656419080493
 GameObject:
   m_ObjectHideFlags: 0
@@ -627,19 +602,7 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 5419322773452155972}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls:
-      - m_Target: {fileID: 8860626864616630411}
-        m_TargetAssemblyTypeName: PPS.DrawingTool.DrawingSession, PPS.DrawingTool
-        m_MethodName: OnClickClear
-        m_Mode: 1
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 0
-        m_CallState: 2
+      m_Calls: []
 --- !u!1 &2396300098279141668
 GameObject:
   m_ObjectHideFlags: 0
@@ -1574,19 +1537,7 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 9019929242096440735}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls:
-      - m_Target: {fileID: 3545865156405471717}
-        m_TargetAssemblyTypeName: PPS.DrawingTool.ToolSelection, PPS.DrawingTool
-        m_MethodName: OnClickSelectFixedLine
-        m_Mode: 1
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 0
-        m_CallState: 2
+      m_Calls: []
 --- !u!1 &3285682214961816029
 GameObject:
   m_ObjectHideFlags: 0
@@ -1846,19 +1797,7 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 7034745514556175960}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls:
-      - m_Target: {fileID: 8860626864616630411}
-        m_TargetAssemblyTypeName: PPS.DrawingTool.DrawingSession, PPS.DrawingTool
-        m_MethodName: OnClickRedo
-        m_Mode: 1
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 0
-        m_CallState: 2
+      m_Calls: []
 --- !u!1 &3479451780287938400
 GameObject:
   m_ObjectHideFlags: 0
@@ -1981,19 +1920,7 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 5202525628135970970}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls:
-      - m_Target: {fileID: 3545865156405471717}
-        m_TargetAssemblyTypeName: PPS.DrawingTool.ToolSelection, PPS.DrawingTool
-        m_MethodName: OnClickSelectPivotSingle
-        m_Mode: 1
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 0
-        m_CallState: 2
+      m_Calls: []
 --- !u!1 &3507673360646145916
 GameObject:
   m_ObjectHideFlags: 0
@@ -2281,95 +2208,6 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
---- !u!1 &3991232490152225623
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 5687545890129778935}
-  - component: {fileID: 4792970176928094255}
-  m_Layer: 0
-  m_Name: PivotMarkers
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &5687545890129778935
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3991232490152225623}
-  serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 587199849138246980}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &4792970176928094255
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3991232490152225623}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: bc0540b8d40bcb24ca3cc11407da5d03, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: PPS.DrawingTool::PPS.DrawingTool.PivotMarkerView
-  _session: {fileID: 8860626864616630411}
---- !u!1 &4147804011475830640
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 374439541471999817}
-  - component: {fileID: 3831302384126052970}
-  m_Layer: 0
-  m_Name: LevelView
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &374439541471999817
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4147804011475830640}
-  serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 587199849138246980}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &3831302384126052970
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4147804011475830640}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: d3715f777d1e7cf438abae15217f7baf, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: PPS.DrawingTool::PPS.DrawingTool.LevelView
 --- !u!1 &4452359417416854237
 GameObject:
   m_ObjectHideFlags: 0
@@ -2492,19 +2330,7 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 4382760418742001903}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls:
-      - m_Target: {fileID: 3545865156405471717}
-        m_TargetAssemblyTypeName: PPS.DrawingTool.ToolSelection, PPS.DrawingTool
-        m_MethodName: OnClickSelectErase
-        m_Mode: 1
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 0
-        m_CallState: 2
+      m_Calls: []
 --- !u!1 &4475436463557420435
 GameObject:
   m_ObjectHideFlags: 0
@@ -2624,19 +2450,7 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 3196353021891246643}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls:
-      - m_Target: {fileID: 5266486316885008130}
-        m_TargetAssemblyTypeName: PPS.DrawingTool.StageFlow, PPS.DrawingTool
-        m_MethodName: OnClickPlay
-        m_Mode: 1
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 0
-        m_CallState: 2
+      m_Calls: []
 --- !u!1 &4488560224788083893
 GameObject:
   m_ObjectHideFlags: 0
@@ -2726,6 +2540,7 @@ GameObject:
   - component: {fileID: 5755024947825065143}
   - component: {fileID: 4801139356483791337}
   - component: {fileID: 325703605600018327}
+  - component: {fileID: 7944135135639332092}
   m_Layer: 5
   m_Name: InkBand
   m_TagString: Untagged
@@ -2791,6 +2606,19 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+--- !u!114 &7944135135639332092
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4641885186573003210}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a785d39977c42f64688d15f28534f12c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: PPS.DrawingTool::PPS.DrawingTool.InkGauge
+  _fill: {fileID: 3369660669507813382}
 --- !u!1 &4668741329270606362
 GameObject:
   m_ObjectHideFlags: 0
@@ -2954,6 +2782,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 5659013810104026367}
+  - component: {fileID: 6063467725984739680}
   m_Layer: 5
   m_Name: CanvasArea
   m_TagString: Untagged
@@ -2981,6 +2810,20 @@ RectTransform:
   m_AnchoredPosition: {x: 0, y: 38}
   m_SizeDelta: {x: 0, y: -616}
   m_Pivot: {x: 0.5, y: 0.5}
+--- !u!114 &6063467725984739680
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5129965880411023166}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: edd57890ec054bc39e8824e9d15070ea, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: PPS.DrawingTool::PPS.DrawingTool.ResultBanner
+  _banner: {fileID: 1683656292986877368}
+  _label: {fileID: 1108063907814056867}
 --- !u!1 &5377485940152452618
 GameObject:
   m_ObjectHideFlags: 0
@@ -3547,19 +3390,7 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 8036452608996788676}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls:
-      - m_Target: {fileID: 3545865156405471717}
-        m_TargetAssemblyTypeName: PPS.DrawingTool.ToolSelection, PPS.DrawingTool
-        m_MethodName: OnClickSelectPivotWorld
-        m_Mode: 1
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 0
-        m_CallState: 2
+      m_Calls: []
 --- !u!1 &6796339362370554854
 GameObject:
   m_ObjectHideFlags: 0
@@ -4108,19 +3939,7 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 1178813334583132260}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls:
-      - m_Target: {fileID: 5266486316885008130}
-        m_TargetAssemblyTypeName: PPS.DrawingTool.StageFlow, PPS.DrawingTool
-        m_MethodName: OnClickRetry
-        m_Mode: 1
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 0
-        m_CallState: 2
+      m_Calls: []
 --- !u!1 &7420089488341394756
 GameObject:
   m_ObjectHideFlags: 0
@@ -4320,19 +4139,7 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 6975465939859079125}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls:
-      - m_Target: {fileID: 5266486316885008130}
-        m_TargetAssemblyTypeName: PPS.DrawingTool.StageFlow, PPS.DrawingTool
-        m_MethodName: OnClickPauseResume
-        m_Mode: 1
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 0
-        m_CallState: 2
+      m_Calls: []
 --- !u!1 &7721155482105700588
 GameObject:
   m_ObjectHideFlags: 0
@@ -4619,107 +4426,6 @@ RectTransform:
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
---- !u!1 &8160753180668085176
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 2548312522457161368}
-  - component: {fileID: 2487151381449205098}
-  - component: {fileID: 5266486316885008130}
-  - component: {fileID: 8646197309606334596}
-  - component: {fileID: 4242659831386256946}
-  m_Layer: 0
-  m_Name: Game
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &2548312522457161368
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 8160753180668085176}
-  serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 587199849138246980}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &2487151381449205098
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 8160753180668085176}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 9951c7c2a84e6fa4c8d98f1246c864d0, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: PPS.Game::PPS.Game.GameSimDriver
---- !u!114 &5266486316885008130
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 8160753180668085176}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: bb18c2b0698e45eca97a44cf48cd8ffb, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: PPS.DrawingTool::PPS.DrawingTool.StageFlow
-  _stage: {fileID: 663763214437232913}
-  _session: {fileID: 8860626864616630411}
-  _driver: {fileID: 2487151381449205098}
-  _input: {fileID: 4071896270747351564}
-  _simView: {fileID: 8646197309606334596}
-  _drawPanel: {fileID: 7754244730403684119}
-  _simPanel: {fileID: 8114867133524747478}
-  _play: {fileID: 4475436463557420435}
-  _pauseResume: {fileID: 7641140642645603582}
-  _speed: {fileID: 1308026290287973181}
---- !u!114 &8646197309606334596
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 8160753180668085176}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: e7f2de54f6aa4bbb9db9f8534dd837df, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: PPS.DrawingTool::PPS.DrawingTool.SimStageView
-  _driver: {fileID: 2487151381449205098}
-  _session: {fileID: 8860626864616630411}
-  _levelView: {fileID: 3831302384126052970}
-  _strokes: {fileID: 437867925994219035}
-  _pivots: {fileID: 4792970176928094255}
---- !u!114 &4242659831386256946
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 8160753180668085176}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: edd57890ec054bc39e8824e9d15070ea, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: PPS.DrawingTool::PPS.DrawingTool.ResultBanner
-  _driver: {fileID: 2487151381449205098}
-  _banner: {fileID: 1683656292986877368}
-  _label: {fileID: 1108063907814056867}
 --- !u!1 &8279939822960021732
 GameObject:
   m_ObjectHideFlags: 0
@@ -4824,7 +4530,6 @@ RectTransform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
-  - {fileID: 587199849138246980}
   - {fileID: 596628022865668122}
   - {fileID: 5755024947825065143}
   - {fileID: 5659013810104026367}
@@ -4850,7 +4555,19 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::DrawingToolSceneUI
   canvasArea: {fileID: 5659013810104026367}
-  managers: {fileID: 587199849138246980}
+  drawPanel: {fileID: 7754244730403684119}
+  simPanel: {fileID: 8114867133524747478}
+  speedSlot: {fileID: 1308026290287973181}
+  play: {fileID: 7981833438857650945}
+  pauseResume: {fileID: 6009365151232179047}
+  retry: {fileID: 4221126597738762293}
+  undo: {fileID: 6512751335644146528}
+  redo: {fileID: 7387511022185608303}
+  reset: {fileID: 3497871996009557893}
+  toolbar: {fileID: 9116060679673163539}
+  inkGauge: {fileID: 7944135135639332092}
+  resultBanner: {fileID: 6063467725984739680}
+  speedToggle: {fileID: 4997955627161198311}
 --- !u!1 &8392139137242752205
 GameObject:
   m_ObjectHideFlags: 0
@@ -4973,105 +4690,7 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 8491418575886931855}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls:
-      - m_Target: {fileID: 3545865156405471717}
-        m_TargetAssemblyTypeName: PPS.DrawingTool.ToolSelection, PPS.DrawingTool
-        m_MethodName: OnClickSelectFreeBody
-        m_Mode: 1
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 0
-        m_CallState: 2
---- !u!1 &8771362335702801616
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 587199849138246980}
-  m_Layer: 5
-  m_Name: DrawingToolManagers
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!224 &587199849138246980
-RectTransform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 8771362335702801616}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children:
-  - {fileID: 6929248141560085836}
-  - {fileID: 646362941018502031}
-  - {fileID: 374439541471999817}
-  - {fileID: 5687545890129778935}
-  - {fileID: 2548312522457161368}
-  m_Father: {fileID: 1611152548038492879}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0.5, y: 0.5}
-  m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 100, y: 100}
-  m_Pivot: {x: 0.5, y: 0.5}
---- !u!1 &8835089131750442306
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 646362941018502031}
-  - component: {fileID: 663763214437232913}
-  m_Layer: 0
-  m_Name: StageLoader
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &646362941018502031
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 8835089131750442306}
-  serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 587199849138246980}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &663763214437232913
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 8835089131750442306}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 61149505333311b49a17bcae5b80934c, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: PPS.DrawingTool::PPS.DrawingTool.LevelLoader
-  _input: {fileID: 4071896270747351564}
-  _levelView: {fileID: 3831302384126052970}
+      m_Calls: []
 --- !u!1 &8926354915234762668
 GameObject:
   m_ObjectHideFlags: 0
@@ -5175,7 +4794,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6e94606465f92754b8d08ac31a64e0af, type: 3}
   m_Name: 
   m_EditorClassIdentifier: PPS.DrawingTool::PPS.DrawingTool.ToolbarView
-  _tools: {fileID: 3545865156405471717}
+  _fixedLine: {fileID: 5241208040757300124}
+  _freeBody: {fileID: 1183181952667635595}
+  _erase: {fileID: 4723619590724904303}
   _fixedLineSelected: {fileID: 3690028430673742682}
   _freeBodySelected: {fileID: 5825158345503794076}
   _justPivotSelected: {fileID: 6949278227836314342}
@@ -5186,112 +4807,8 @@ MonoBehaviour:
   _justPivotIcon: {fileID: 1624249114804997758}
   _worldPivotIcon: {fileID: 7460856288205263281}
   _eraseIcon: {fileID: 1624249114804997758}
-  _justPivot: {fileID: 3479451780287938400}
-  _worldPivot: {fileID: 6470447663724841927}
---- !u!1 &8971833346624565624
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 6929248141560085836}
-  - component: {fileID: 4071896270747351564}
-  - component: {fileID: 3545865156405471717}
-  - component: {fileID: 437867925994219035}
-  - component: {fileID: 1283384079886731352}
-  - component: {fileID: 8860626864616630411}
-  m_Layer: 0
-  m_Name: DrawInput
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &6929248141560085836
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 8971833346624565624}
-  serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 587199849138246980}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &4071896270747351564
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 8971833346624565624}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 5808096cb7b9b3341ac4845521e6ef2d, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: PPS.DrawingTool::PPS.DrawingTool.DrawInputBehaviour
-  _tools: {fileID: 3545865156405471717}
-  _session: {fileID: 8860626864616630411}
---- !u!114 &3545865156405471717
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 8971833346624565624}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 2725a2a6254df1a499cb28c6cb36118b, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: PPS.DrawingTool::PPS.DrawingTool.ToolSelection
---- !u!114 &437867925994219035
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 8971833346624565624}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: e1bcf1eccc2ffd143a9fa6970dacb060, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: PPS.DrawingTool::PPS.DrawingTool.StrokePreviewRenderer
-  _input: {fileID: 4071896270747351564}
-  _session: {fileID: 8860626864616630411}
-  _tools: {fileID: 3545865156405471717}
-  _material: {fileID: 2100000, guid: a10c6925914c6a44080d5bda42206668, type: 2}
---- !u!114 &1283384079886731352
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 8971833346624565624}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: a785d39977c42f64688d15f28534f12c, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: PPS.DrawingTool::PPS.DrawingTool.InkGauge
-  _input: {fileID: 4071896270747351564}
-  _fill: {fileID: 4081861782265711984}
---- !u!114 &8860626864616630411
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 8971833346624565624}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 69e9f10189d299a4fb79d0fba8a32f50, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: PPS.DrawingTool::PPS.DrawingTool.DrawingSession
+  _justPivot: {fileID: 1766117946234023990}
+  _worldPivot: {fileID: 7401179719714712059}
 --- !u!1 &9032983006958625920
 GameObject:
   m_ObjectHideFlags: 0
