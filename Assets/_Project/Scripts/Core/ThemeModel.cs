@@ -13,15 +13,18 @@ namespace PPS.Core
         public readonly MapEditStyle MapStyle;
         public readonly IReadOnlyList<StageData> Stages;
         public readonly Sprite StageSelectBackground;
+        public readonly Sprite PlayBackground;
         public readonly IReadOnlyList<Tutorial> Tutorials;
         public ThemeModel(
             IReadOnlyList<StageData> stages,
             Sprite stageSelectBackground,
+            Sprite playBackground,
             MapEditStyle MapStyle,
             IReadOnlyList<Tutorial> tutorials)
         {
             Stages = stages;
             StageSelectBackground = stageSelectBackground;
+            PlayBackground = playBackground;
             this.MapStyle = MapStyle;
             Tutorials = tutorials;
         }

@@ -7,7 +7,10 @@ namespace PPS.DrawingTool
     /// </summary>
     public static class RenderOrder
     {
-        /// 그릴 수 있는 영역을 알리는 판. 맨 밑이다.
+        /// 테마 배경 한 장. 맨 밑이다.
+        public const int Background = -200;
+
+        /// 그릴 수 있는 영역을 두르는 점선.
         public const int PlayArea = -100;
 
         public const int KillLine = -50;
@@ -21,6 +24,10 @@ namespace PPS.DrawingTool
         public const int Stroke = 0;
 
         public const int PivotMarker = 1000;
+
+        /// 장치가 뿌리는 파편. 닿으면 실패라 지형·장치보다
+        /// 위다. 공은 그보다 위다 — 어디 있는지가 먼저다.
+        public const int Fragment = 1500;
 
         /// 공이 획에 가리면 어디 있는지 알 수 없다.
         public const int Ball = 2000;

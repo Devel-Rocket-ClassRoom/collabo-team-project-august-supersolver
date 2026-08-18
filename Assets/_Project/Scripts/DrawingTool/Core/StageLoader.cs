@@ -12,6 +12,7 @@ namespace PPS.DrawingTool
     {
         [SerializeField] DrawInputBehaviour _input;
         [SerializeField] LevelView _levelView;
+        [SerializeField] StageFlow _flow;
         CanvasCameraFitter _fitter;
 
         static StageLoader Instance;
@@ -30,6 +31,9 @@ namespace PPS.DrawingTool
         }
         public static void SetStage(StageData stage)
         {
+            // 이전 판의 그림·시뮬을 먼저 버리고 새 판을 세운다.
+            Instance._flow.EnterStage();
+
             Instance.Stage = stage;
             Instance._fitter.SetLevel(stage.Level);
             Instance._input.SetLevel(stage.Level);

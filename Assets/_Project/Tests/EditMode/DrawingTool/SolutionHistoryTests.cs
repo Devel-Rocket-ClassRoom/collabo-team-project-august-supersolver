@@ -137,5 +137,22 @@ namespace PPS.DrawingTool.Tests
 
             Assert.IsFalse(history.CanRedo, "갈라진 가지를 다시 실행할 수 있으면 안 된다");
         }
+
+        /// <summary>
+        /// 새 판에서 되돌려지면 이전 판의 획이 돌아온다.
+        /// 초기화 버튼과 갈리는 지점이다 — 그쪽은 되돌릴 수 있다.
+        /// </summary>
+        [Test]
+        public void 새_판은_이전_판의_그림으로_되돌아가지_않는다()
+        {
+            var history = new SolutionHistory();
+            history.AddStroke(Line(0f, 1.3f));
+
+            history.Reset();
+
+            Assert.AreEqual(0, history.Current.Strokes.Count, "이전 판의 획이 남았다");
+            Assert.IsFalse(history.CanUndo, "이전 판의 그림으로 되돌릴 수 있다");
+            Assert.IsFalse(history.CanRedo, "이전 판의 그림을 다시 실행할 수 있다");
+        }
     }
 }

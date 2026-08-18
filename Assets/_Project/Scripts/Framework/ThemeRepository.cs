@@ -50,9 +50,11 @@ public class ThemeRepository : IThemeRepository
             .Select(stageText => StageData.FromJson(stageText.text))
             .ToList();
         var stageSelectBackground = _asset.stageSelectBackground;
+        var playBackground = _asset.playBackground;
         var mapEditStyle = _asset.MapStyle;
 
-        Asset = new ThemeModel(Stages, stageSelectBackground, mapEditStyle, _asset.tutorials);
+        Asset = new ThemeModel(
+            Stages, stageSelectBackground, playBackground, mapEditStyle, _asset.tutorials);
 
 
         currentTheme = theme;

@@ -12,7 +12,7 @@ namespace PPS.DrawingTool
         public const float TapThresholdDp = 8f;
 
         /// 그리기 지점을 손가락보다 위로 띄우는 거리.
-        public const float DrawOffsetDp = 24f;
+        public const float DrawOffsetDp = 0f;
 
         /// 기획 요구. 이보다 작은 버튼은 못 누른다.
         public const float MinTouchTargetDp = 48f;

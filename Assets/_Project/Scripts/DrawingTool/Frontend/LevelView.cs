@@ -22,23 +22,31 @@ namespace PPS.DrawingTool
 
         const float KillLineWidth = 0.06f;
 
-        /// 장치 본체 지름. DeviceData 에 몸집이 없어 앱이
-        /// 정한다 — Radius 는 영향 범위지 크기가 아니다.
-        /// 계약에 몸집이 생기면 이 상수는 사라진다.
+        /// 영역을 두르는 점 한 칸의 목표 길이. 변마다
+        /// 칸 수를 반올림해 실제 길이는 조금씩 다르다.
+        const float DashPeriod = 0.5f;
+
+        /// 한 칸에서 점이 차지하는 몫. 나머지가 빈칸이다.
+        const float DashRatio = 0.55f;
+
+        const float DashWidth = 0.06f;
+
+        /// 테마 그림이 없을 때 쓰는 장치 본체 지름.
+        /// 그림이 있으면 몸집은 SimStyle 이 안다.
         const float DeviceSize = 0.6f;
 
         /// 링이라 안쪽은 안 가리지만 띠가 지나는 자리의
-        /// 지형은 가린다. 밝은 판 위에서는 이보다 옅으면
+        /// 지형은 가린다. 밝은 배경 위에서는 이보다 옅으면
         /// 띠 자체가 안 보인다.
         const float DeviceRangeAlpha = 0.6f;
 
-        /// 그릴 수 있는 곳. 맵 에디터의 캔버스 배경과
-        /// 같은 색이라 저작자가 보던 판이 그대로 온다.
-        static readonly Color PlayAreaColor = new Color32(0xFF, 0xD4, 0x99, 0xFF);
+        /// 그릴 수 있는 곳을 두르는 점선. 뒤에 깔린 배경
+        /// 아트가 무엇일지 몰라 밝은 그림에도 남게 어둡되,
+        /// 지형과 같은 색이면 지형처럼 읽혀 한 단계 옅다.
+        static readonly Color PlayAreaColor = new Color32(0x4A, 0x51, 0x60, 0xE0);
 
-        // 넷은 맵 에디터 값 그대로다. 인스펙터로 열어 두면
-        // 값의 주인이 씬이 되어, 저작자 화면과 어긋나도
-        // 코드만 보고는 알 수 없다.
+        // 테마 그림이 없을 때만 쓰는 색. 맵 에디터 값
+        // 그대로라 그림이 빠져도 저작자가 보던 화면에 가깝다.
         static readonly Color TerrainColor = new Color32(0x23, 0x25, 0x2B, 0xFF);
         static readonly Color BallColor = new Color32(0xC0, 0x14, 0x3C, 0xFF);
         static readonly Color GoalColor = new Color32(0x0E, 0x7A, 0x3C, 0xFF);
@@ -55,8 +63,34 @@ namespace PPS.DrawingTool
         /// 정적이라 다시 세울 일이 없다.
         Transform _ball;
 
+        /// 시뮬 중 사라지는 것들. 인덱스는 LevelData 와 같다.
+        /// 장치는 몸과 범위가 따로라 둘을 나란히 든다.
+        readonly List<Transform> _stars = new List<Transform>();
+        readonly List<Transform> _deviceBodies = new List<Transform>();
+        readonly List<Transform> _deviceRanges = new List<Transform>();
+
         /// 재시도가 공을 되돌릴 출발점의 출처.
         LevelData _level;
+
+        /// 그림의 출처. 테마가 물려 주기 전에는 코드 도형을
+        /// 쓴다 — 씬을 단독으로 열어도 판은 보여야 한다.
+        SimStyle _style;
+
+        /// 테마가 없으면 null 이다.
+        SimStyle.Shapes Art => _style == null ? null : _style.Sprites;
+
+        /// 지형은 코드가 만든 사각형이라 테마가 색만 준다.
+        Color TerrainInk => _style == null ? TerrainColor : _style.Terrain;
+
+        /// <summary>
+        /// 테마가 정해지면 그림도 정해진다. 레벨이 이미
+        /// 서 있으면 다시 세운다 — 테마는 나중에 올 수 있다.
+        /// </summary>
+        public void SetStyle(SimStyle style)
+        {
+            _style = style;
+            if (_level != null) SetLevel(_level);
+        }
 
         /// <summary>
         /// 레벨이 정해지면 화면도 정해진다. 영역은
@@ -71,8 +105,7 @@ namespace PPS.DrawingTool
             if (level == null) return;
 
             Rect area = LevelDataArea.Calculate(level);
-            AddQuad("PlayArea", area.center, area.size, 0f,
-                PlayAreaColor, RenderOrder.PlayArea);
+            AddPlayAreaOutline(area);
 
             AddQuad("KillLine",
                 new Vector2(area.center.x, level.KillY),
@@ -86,17 +119,18 @@ namespace PPS.DrawingTool
                 AddDevice(level.Devices[i], i);
 
             // 셋의 크기는 LevelData 의 const 다 — 파일에 남은
-            // BallRadius·GoalRadius 는 무시된다. 모양·색은 맵
-            // 에디터와 맞춰 저작자와 같은 화면을 준다.
-            AddDot("Goal", level.GoalPosition, LevelData.GoalRadius * 2f,
-                ShapeSprites.Disc, GoalColor, RenderOrder.Goal);
+            // BallRadius·GoalRadius 는 무시된다. 그림은 테마가
+            // 주므로 게임·에디터와 같은 것이 나온다.
+            AddThemed("Goal", level.GoalPosition, LevelData.GoalRadius * 2f,
+                Art?.Goal, GoalColor, RenderOrder.Goal);
 
             for (int i = 0; i < level.Stars.Count; i++)
-                AddDot($"Star_{i}", level.Stars[i], LevelData.StarCaptureRadius * 2f,
-                    ShapeSprites.Disc, StarColor, RenderOrder.Star);
+                _stars.Add(AddThemed($"Star_{i}", level.Stars[i],
+                    LevelData.StarCaptureRadius * 2f,
+                    Art?.Star, StarColor, RenderOrder.Star));
 
-            _ball = AddDot("Ball", level.BallStart, LevelData.BallRadius * 2f,
-                ShapeSprites.Disc, BallColor, RenderOrder.Ball);
+            _ball = AddThemed("Ball", level.BallStart, LevelData.BallRadius * 2f,
+                Art?.Ball, BallColor, RenderOrder.Ball);
         }
 
         /// <summary>
@@ -124,17 +158,104 @@ namespace PPS.DrawingTool
                 (segment.A + segment.B) * 0.5f,
                 new Vector2(ab.magnitude + TerrainWidth, TerrainWidth),
                 Mathf.Atan2(ab.y, ab.x) * Mathf.Rad2Deg,
-                TerrainColor, RenderOrder.Terrain);
+                TerrainInk, RenderOrder.Terrain);
         }
 
         void AddDevice(in DeviceData device, int index)
         {
-            AddDot($"DeviceRange_{index}", device.Position, device.Radius * 2f,
+            _deviceRanges.Add(AddDot($"DeviceRange_{index}", device.Position,
+                device.Radius * 2f,
                 ShapeSprites.Ring, Fade(DeviceColor, DeviceRangeAlpha),
-                RenderOrder.Device);
+                RenderOrder.Device));
 
-            AddDot($"Device_{index}", device.Position, DeviceSize,
-                ShapeSprites.Disc, DeviceColor, RenderOrder.Device + 1);
+            // 몸집과 방향은 SimStyle 이 안다 — 게임과 같은
+            // 크기로 그려야 저작자가 본 것이 그대로 온다.
+            Sprite art = _style == null ? null : _style.SpriteOf(device.Type);
+            float diameter = art == null ? DeviceSize : SimStyle.RadiusOf(device) * 2f;
+
+            Transform body = AddThemed($"Device_{index}", device.Position, diameter,
+                art, DeviceColor, RenderOrder.Device + 1);
+
+            body.rotation = Quaternion.Euler(0f, 0f, SimStyle.AngleOf(device));
+            _deviceBodies.Add(body);
+        }
+
+        /// <summary>먹은 별을 지운다. 남아 있으면 먹었는지 알 수 없다.</summary>
+        public void SetStarVisible(int index, bool visible)
+        {
+            if (index >= 0 && index < _stars.Count)
+                _stars[index].gameObject.SetActive(visible);
+        }
+
+        /// <summary>
+        /// 터진 장치를 지운다. 몸과 범위가 같이 사라진다 —
+        /// 없는 폭탄의 범위는 거짓이다.
+        /// </summary>
+        public void SetDeviceVisible(int index, bool visible)
+        {
+            if (index < 0 || index >= _deviceBodies.Count) return;
+
+            _deviceBodies[index].gameObject.SetActive(visible);
+            _deviceRanges[index].gameObject.SetActive(visible);
+        }
+
+        /// <summary>재시도가 부른다. 시뮬 중 지운 것을 되살린다.</summary>
+        public void ShowAll()
+        {
+            for (int i = 0; i < _stars.Count; i++) SetStarVisible(i, true);
+            for (int i = 0; i < _deviceBodies.Count; i++) SetDeviceVisible(i, true);
+        }
+
+        /// <summary>
+        /// 그릴 수 있는 곳을 점선으로 두른다. 채운 판은
+        /// 뒤에 깔린 배경을 통째로 가린다.
+        /// </summary>
+        void AddPlayAreaOutline(Rect area)
+        {
+            var root = new GameObject("PlayArea");
+            root.transform.SetParent(transform, false);
+            root.transform.position = area.center;
+            _parts.Add(root);
+
+            float halfWidth = area.width * 0.5f;
+            float halfHeight = area.height * 0.5f;
+
+            AddDashes(root.transform, new Vector2(0f, halfHeight), area.width, true);
+            AddDashes(root.transform, new Vector2(0f, -halfHeight), area.width, true);
+            AddDashes(root.transform, new Vector2(-halfWidth, 0f), area.height, false);
+            AddDashes(root.transform, new Vector2(halfWidth, 0f), area.height, false);
+        }
+
+        /// <param name="center">뿌리 기준 변의 한가운데.</param>
+        /// <param name="horizontal">가로 변이면 점도 눕는다.</param>
+        void AddDashes(Transform root, Vector2 center, float length, bool horizontal)
+        {
+            // 칸 수를 반올림해 변 길이에 맞춘다. 목표 간격을
+            // 그대로 쓰면 마지막 점이 모서리 밖으로 나간다.
+            int count = Mathf.Max(1, Mathf.RoundToInt(length / DashPeriod));
+            float step = length / count;
+
+            Vector2 direction = horizontal ? Vector2.right : Vector2.up;
+            Vector2 size = horizontal
+                ? new Vector2(step * DashRatio, DashWidth)
+                : new Vector2(DashWidth, step * DashRatio);
+
+            for (int i = 0; i < count; i++)
+            {
+                // 칸 한가운데에 놓는다. 칸 끝에 놓으면
+                // 양 모서리에서 점이 반만 남는다.
+                float offset = step * (i + 0.5f) - length * 0.5f;
+
+                var part = new GameObject("Dash");
+                part.transform.SetParent(root, false);
+                part.transform.localPosition = center + direction * offset;
+                part.transform.localScale = new Vector3(size.x, size.y, 1f);
+
+                var renderer = part.AddComponent<SpriteRenderer>();
+                renderer.sprite = ShapeSprites.Quad;
+                renderer.color = PlayAreaColor;
+                renderer.sortingOrder = RenderOrder.PlayArea;
+            }
         }
 
         void AddQuad(string name, Vector2 center, Vector2 size, float angle,
@@ -145,6 +266,18 @@ namespace PPS.DrawingTool
             part.SetPositionAndRotation(center, Quaternion.Euler(0f, 0f, angle));
             part.localScale = new Vector3(size.x, size.y, 1f);
         }
+
+        /// <summary>
+        /// 테마 그림이 있으면 덧칠 없이 그대로 쓰고, 없으면
+        /// 코드 도형에 색을 입힌다. 그림에 색을 곱하면
+        /// 아트가 의도한 색이 안 나온다.
+        /// </summary>
+        Transform AddThemed(string name, Vector2 center, float diameter, Sprite art,
+            Color fallback, int order) =>
+            AddDot(name, center, diameter,
+                art == null ? ShapeSprites.Disc : art,
+                art == null ? fallback : SimStyle.Plain,
+                order);
 
         Transform AddDot(string name, Vector2 center, float diameter, Sprite sprite,
             Color color, int order)
@@ -186,6 +319,9 @@ namespace PPS.DrawingTool
             }
 
             _parts.Clear();
+            _stars.Clear();
+            _deviceBodies.Clear();
+            _deviceRanges.Clear();
             _ball = null;
         }
 

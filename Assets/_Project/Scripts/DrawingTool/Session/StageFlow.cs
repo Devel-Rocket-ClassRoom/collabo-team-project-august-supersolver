@@ -30,6 +30,24 @@ namespace PPS.DrawingTool
 
         void Start() => Apply();
 
+        /// <summary>
+        /// 판이 갈렸다. 그림·시뮬·모드가 전부 이전 판의
+        /// 것이라 통째로 버린다 — 남겨 두면 스테이지 2 에서
+        /// 스테이지 1 의 획과 공이 그대로 보인다.
+        /// </summary>
+        public void EnterStage()
+        {
+            // 월드를 먼저 버린다. 살아 있으면 SimStageView 가
+            // 새 판의 공을 이전 판 자리로 끌고 간다.
+            _driver.Stop();
+
+            _session.ResetForStage();
+            _simView.Reset();
+            _flow.Retry();
+
+            Apply();
+        }
+
         public void OnClickPlay()
         {
             if (!_flow.Play()) return;
