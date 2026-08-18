@@ -59,6 +59,18 @@ namespace PPS.DrawingTool
             _current.Pivots.Clear();
         }
 
+        /// <summary>
+        /// 새 판을 물릴 때. 초기화와 달리 되돌릴 수 없다 —
+        /// 이전 판의 그림으로 돌아가 봐야 지금 판과
+        /// 아무 상관이 없다.
+        /// </summary>
+        public void Reset()
+        {
+            _undo.Clear();
+            _redo.Clear();
+            _current = new Solution();
+        }
+
         public bool Undo()
         {
             if (!CanUndo) return false;

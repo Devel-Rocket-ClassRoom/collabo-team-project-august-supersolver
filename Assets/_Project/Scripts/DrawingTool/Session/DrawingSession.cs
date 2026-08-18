@@ -73,6 +73,16 @@ namespace PPS.DrawingTool
             Changed?.Invoke();
         }
 
+        /// <summary>
+        /// 새 판을 물릴 때 StageFlow 가 부른다. 초기화
+        /// 버튼과 달리 되돌리기 스택도 함께 버린다.
+        /// </summary>
+        public void ResetForStage()
+        {
+            _history.Reset();
+            Changed?.Invoke();
+        }
+
         public void OnClickUndo()
         {
             if (_history.Undo()) Changed?.Invoke();

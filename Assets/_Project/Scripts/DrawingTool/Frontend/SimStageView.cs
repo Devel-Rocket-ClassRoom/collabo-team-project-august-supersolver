@@ -7,8 +7,8 @@ namespace PPS.DrawingTool
 {
     /// <summary>
     /// 시뮬레이션 중 화면. 레벨 지오메트리는 정적이라 그대로
-    /// 두고 공·자유물체·핀만 SimWorld 바디에서 읽어 얹는다.
-    /// 장치가 도중에 뿌리는 파편은 그리지 않는다.
+    /// 두고, 움직이거나 사라지는 것만 SimWorld 에서 읽어
+    /// 얹는다 — 공·자유물체·핀·별·장치·파편.
     /// </summary>
     [DisallowMultipleComponent]
     public sealed class SimStageView : MonoBehaviour
@@ -18,6 +18,16 @@ namespace PPS.DrawingTool
         [SerializeField] LevelView _levelView;
         [SerializeField] StrokePreviewRenderer _strokes;
         [SerializeField] PivotMarkerView _pivots;
+
+        /// 테마 그림이 없을 때 쓰는 파편 색. 닿으면 실패라
+        /// 킬라인과 같은 붉은색을 쓴다.
+        static readonly Color FragmentColor = new Color32(0x8A, 0x1C, 0x1C, 0xFF);
+
+        /// 파편은 개수가 스텝마다 변한다. 레벨이 아니라
+        /// 월드에서 나오므로 여기서 만들고 재사용한다.
+        readonly List<SpriteRenderer> _fragments = new List<SpriteRenderer>();
+
+        SimStyle _style;
 
         /// 획마다 바디 기준 로컬 점. 인덱스는 Solution.Strokes
         /// 와 같고, 따라갈 것이 없는 자리는 null 이다.
@@ -33,6 +43,9 @@ namespace PPS.DrawingTool
         /// 위치가 곧 그린 좌표의 원점이라, 그때 로컬 값을 떠
         /// 둬야 플레이를 눌러도 화면이 제자리에 있다.
         /// </summary>
+        /// <summary>테마가 파편 그림을 준다. 없으면 코드 도형이다.</summary>
+        public void SetStyle(SimStyle style) => _style = style;
+
         public void Begin()
         {
             _strokeLocal.Clear();
@@ -55,6 +68,8 @@ namespace PPS.DrawingTool
             _pivotLocal.Clear();
 
             _levelView.ResetBall();
+            _levelView.ShowAll();
+            HideFragments();
             _strokes.Rebuild();
             _pivots.Refresh();
         }
@@ -69,6 +84,79 @@ namespace PPS.DrawingTool
             _levelView.MoveBall(world.Ball.position);
             FollowStrokes(world.StrokeBodies);
             FollowPivots();
+            FollowStars(world);
+            FollowDevices(world);
+            FollowFragments(world);
+        }
+
+        /// <summary>
+        /// 먹은 별을 지운다. 판정은 코어가 이미 했다 —
+        /// 여기서 또 재면 둘이 어긋난다.
+        /// </summary>
+        void FollowStars(SimWorld world)
+        {
+            IReadOnlyList<Vector2> stars = world.Level.Stars;
+
+            for (int i = 0; i < stars.Count; i++)
+                _levelView.SetStarVisible(i, !world.Judge.IsCollected(i));
+        }
+
+        /// <summary>
+        /// 바디를 가질 장치인데 없으면 이미 터진 것이다.
+        /// 바람처럼 몸이 없는 장치는 사라지지 않는다.
+        /// </summary>
+        void FollowDevices(SimWorld world)
+        {
+            IReadOnlyList<DeviceData> devices = world.Level.Devices;
+
+            for (int i = 0; i < devices.Count; i++)
+            {
+                (DeviceData data, Rigidbody2D body) = world.GetDevice(i);
+
+                _levelView.SetDeviceVisible(i, body != null || !DeviceFactory.MakesBody(data.Type));
+            }
+        }
+
+        /// <summary>
+        /// 파편은 닿으면 실패다. 안 보이면 왜 죽었는지 알 수 없다.
+        /// 터질 때마다 늘어나므로 만든 것을 다시 쓴다.
+        /// </summary>
+        void FollowFragments(SimWorld world)
+        {
+            IReadOnlyList<Collider2D> hazards = world.Hazards;
+
+            while (_fragments.Count < hazards.Count) _fragments.Add(CreateFragment());
+
+            for (int i = 0; i < _fragments.Count; i++)
+            {
+                bool used = i < hazards.Count && hazards[i] != null;
+
+                _fragments[i].gameObject.SetActive(used);
+                if (!used) continue;
+
+                Transform part = _fragments[i].transform;
+                part.position = hazards[i].transform.position;
+                part.localScale = Vector3.one * (FragBombDevice.FragmentRadius * 2f);
+            }
+        }
+
+        void HideFragments()
+        {
+            for (int i = 0; i < _fragments.Count; i++)
+                _fragments[i].gameObject.SetActive(false);
+        }
+
+        SpriteRenderer CreateFragment()
+        {
+            var part = new GameObject("Fragment");
+            part.transform.SetParent(transform, false);
+
+            var renderer = part.AddComponent<SpriteRenderer>();
+            renderer.sprite = _style == null ? ShapeSprites.Disc : _style.Sprites.Dot;
+            renderer.color = _style == null ? FragmentColor : SimStyle.Plain;
+            renderer.sortingOrder = RenderOrder.Fragment;
+
+            return renderer;
         }
 
         void BeginStrokes(IReadOnlyList<Rigidbody2D> bodies)

@@ -12,6 +12,8 @@ namespace PPS.DrawingTool
     public sealed class DrawingToolAssetApplier : MonoBehaviour
     {
         [SerializeField] BackgroundView _background;
+        [SerializeField] LevelView _levelView;
+        [SerializeField] SimStageView _simView;
 
         IThemeRepository _repository;
 
@@ -34,6 +36,16 @@ namespace PPS.DrawingTool
             if (_repository != null) _repository.OnLoaded -= Apply;
         }
 
-        void Apply() => _background.SetSprite(_repository.Asset.PlayBackground);
+        void Apply()
+        {
+            ThemeModel asset = _repository.Asset;
+
+            _background.SetSprite(asset.PlayBackground);
+
+            // 게임이 쓰는 SimStyle 이 편집용 MapEditStyle 안에
+            // 들어 있다. 테마 계약을 고칠 때 꺼내야 한다.
+            _levelView.SetStyle(asset.MapStyle.Sim);
+            _simView.SetStyle(asset.MapStyle.Sim);
+        }
     }
 }
