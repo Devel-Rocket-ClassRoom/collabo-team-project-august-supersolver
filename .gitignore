@@ -39,3 +39,4 @@ __pycache__/
 **/secrets.*
 *.env
 PhotonAppSettings.local.*
+.utmp
