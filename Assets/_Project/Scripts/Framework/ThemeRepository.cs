@@ -52,7 +52,7 @@ public class ThemeRepository : IThemeRepository
         var stageSelectBackground = _asset.stageSelectBackground;
         var mapEditStyle = _asset.MapStyle;
 
-        Asset = new ThemeModel(Stages, stageSelectBackground, mapEditStyle);
+        Asset = new ThemeModel(Stages, stageSelectBackground, mapEditStyle, _asset.tutorials);
 
 
         currentTheme = theme;

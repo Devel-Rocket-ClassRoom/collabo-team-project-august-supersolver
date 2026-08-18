@@ -53,6 +53,12 @@ namespace PPS.DrawingTool
         }
 
         /// <summary>
+        /// 그리기 영역을 쥐여 준다. 영역을 가진 UI 는
+        /// 런타임에 붙어 씬에서 미리 꽂을 수 없다.
+        /// </summary>
+        public void SetCanvasArea(RectTransform area) => _canvasArea = area;
+
+        /// <summary>
         /// 레벨이 정해지면 그리기 영역도 정해진다.
         /// 영역은 레벨 내용물에서 나오는 값이라
         /// 여기서 계산하지 않는다.

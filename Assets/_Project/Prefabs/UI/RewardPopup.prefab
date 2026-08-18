@@ -1484,6 +1484,11 @@ MonoBehaviour:
   - {fileID: 3509525150945396579}
   - {fileID: 2195272703272872398}
   - {fileID: 293785878350890768}
+  goldStar: {fileID: -2014013842, guid: c54ebdf13b7eba54a85f4e41ea725de3, type: 3}
+  silverStar: {fileID: -1469208299, guid: a829e51a37e0dc148b87a468c29520fa, type: 3}
+  bronzeStar: {fileID: 1455213177, guid: c54ebdf13b7eba54a85f4e41ea725de3, type: 3}
+  goldInkRatio: 0.5
+  silverInkRatio: 0.75
   retryButton: {fileID: 4374493722484817056}
   homeButton: {fileID: 5929256007971284637}
   nextStageButton: {fileID: 890164351324397593}
