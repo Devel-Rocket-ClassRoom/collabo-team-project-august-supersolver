@@ -7,7 +7,10 @@ namespace PPS.DrawingTool
     /// </summary>
     public static class RenderOrder
     {
-        /// 그릴 수 있는 영역을 알리는 판. 맨 밑이다.
+        /// 테마 배경 한 장. 맨 밑이다.
+        public const int Background = -200;
+
+        /// 그릴 수 있는 영역을 두르는 점선.
         public const int PlayArea = -100;
 
         public const int KillLine = -50;

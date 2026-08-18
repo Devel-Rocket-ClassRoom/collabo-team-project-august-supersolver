@@ -44,7 +44,7 @@ namespace PPS.DrawingTool.Tests
         {
             _view.SetLevel(MakeLevel());
 
-            // 영역 판 · 킬라인 · 지형 2 · 장치 2 · 목표 · 별 · 공
+            // 영역 점선 · 킬라인 · 지형 2 · 장치 2 · 목표 · 별 · 공
             Assert.AreEqual(9, _go.transform.childCount);
 
             Assert.AreEqual(2, CountStartingWith("Terrain_"), "지형 선분 수가 다르다");
@@ -69,24 +69,45 @@ namespace PPS.DrawingTool.Tests
         }
 
         /// <summary>
-        /// 판이 곧 "여기는 그릴 수 있다"는 표시다.
+        /// 점선이 곧 "여기는 그릴 수 있다"는 표시다.
         /// 카메라가 맞추는 영역과 갈라지면 못 그리는
         /// 자리가 그려 보인다.
         /// </summary>
         [Test]
-        public void 영역_판이_LevelDataArea_와_일치한다()
+        public void 영역_점선이_LevelDataArea_와_일치한다()
         {
             LevelData level = MakeLevel();
             _view.SetLevel(level);
 
             Rect area = LevelDataArea.Calculate(level);
-            Transform panel = _go.transform.Find("PlayArea");
+            Transform outline = _go.transform.Find("PlayArea");
 
-            Assert.AreEqual(area.width, panel.localScale.x, 1e-5f);
-            Assert.AreEqual(area.height, panel.localScale.y, 1e-5f);
+            Bounds bounds = DashBounds(outline);
 
-            Assert.AreEqual(area.center.x, panel.position.x, 1e-5f);
-            Assert.AreEqual(area.center.y, panel.position.y, 1e-5f);
+            // 점은 경계선을 타고 앉아 두께의 절반씩 밖으로
+            // 나온다. 두께를 걷어내면 영역과 같아야 한다.
+            Vector3 dash = outline.GetChild(0).localScale;
+            float thickness = Mathf.Min(dash.x, dash.y);
+
+            Assert.AreEqual(area.center.x, bounds.center.x, 1e-4f);
+            Assert.AreEqual(area.center.y, bounds.center.y, 1e-4f);
+            Assert.AreEqual(area.width, bounds.size.x - thickness, 1e-4f);
+            Assert.AreEqual(area.height, bounds.size.y - thickness, 1e-4f);
+        }
+
+        /// 점 전부를 담는 상자. 점마다 자리와 크기가 달라
+        /// 뿌리 하나로는 테두리 크기를 알 수 없다.
+        static Bounds DashBounds(Transform outline)
+        {
+            var bounds = new Bounds(outline.GetChild(0).position, Vector3.zero);
+
+            foreach (Transform dash in outline)
+            {
+                bounds.Encapsulate(dash.position + dash.localScale * 0.5f);
+                bounds.Encapsulate(dash.position - dash.localScale * 0.5f);
+            }
+
+            return bounds;
         }
 
         /// <summary>

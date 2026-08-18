@@ -22,19 +22,29 @@ namespace PPS.DrawingTool
 
         const float KillLineWidth = 0.06f;
 
+        /// 영역을 두르는 점 한 칸의 목표 길이. 변마다
+        /// 칸 수를 반올림해 실제 길이는 조금씩 다르다.
+        const float DashPeriod = 0.5f;
+
+        /// 한 칸에서 점이 차지하는 몫. 나머지가 빈칸이다.
+        const float DashRatio = 0.55f;
+
+        const float DashWidth = 0.06f;
+
         /// 장치 본체 지름. DeviceData 에 몸집이 없어 앱이
         /// 정한다 — Radius 는 영향 범위지 크기가 아니다.
         /// 계약에 몸집이 생기면 이 상수는 사라진다.
         const float DeviceSize = 0.6f;
 
         /// 링이라 안쪽은 안 가리지만 띠가 지나는 자리의
-        /// 지형은 가린다. 밝은 판 위에서는 이보다 옅으면
+        /// 지형은 가린다. 밝은 배경 위에서는 이보다 옅으면
         /// 띠 자체가 안 보인다.
         const float DeviceRangeAlpha = 0.6f;
 
-        /// 그릴 수 있는 곳. 맵 에디터의 캔버스 배경과
-        /// 같은 색이라 저작자가 보던 판이 그대로 온다.
-        static readonly Color PlayAreaColor = new Color32(0xFF, 0xD4, 0x99, 0xFF);
+        /// 그릴 수 있는 곳을 두르는 점선. 뒤에 깔린 배경
+        /// 아트가 무엇일지 몰라 밝은 그림에도 남게 어둡되,
+        /// 지형과 같은 색이면 지형처럼 읽혀 한 단계 옅다.
+        static readonly Color PlayAreaColor = new Color32(0x4A, 0x51, 0x60, 0xE0);
 
         // 넷은 맵 에디터 값 그대로다. 인스펙터로 열어 두면
         // 값의 주인이 씬이 되어, 저작자 화면과 어긋나도
@@ -71,8 +81,7 @@ namespace PPS.DrawingTool
             if (level == null) return;
 
             Rect area = LevelDataArea.Calculate(level);
-            AddQuad("PlayArea", area.center, area.size, 0f,
-                PlayAreaColor, RenderOrder.PlayArea);
+            AddPlayAreaOutline(area);
 
             AddQuad("KillLine",
                 new Vector2(area.center.x, level.KillY),
@@ -135,6 +144,58 @@ namespace PPS.DrawingTool
 
             AddDot($"Device_{index}", device.Position, DeviceSize,
                 ShapeSprites.Disc, DeviceColor, RenderOrder.Device + 1);
+        }
+
+        /// <summary>
+        /// 그릴 수 있는 곳을 점선으로 두른다. 채운 판은
+        /// 뒤에 깔린 배경을 통째로 가린다.
+        /// </summary>
+        void AddPlayAreaOutline(Rect area)
+        {
+            var root = new GameObject("PlayArea");
+            root.transform.SetParent(transform, false);
+            root.transform.position = area.center;
+            _parts.Add(root);
+
+            float halfWidth = area.width * 0.5f;
+            float halfHeight = area.height * 0.5f;
+
+            AddDashes(root.transform, new Vector2(0f, halfHeight), area.width, true);
+            AddDashes(root.transform, new Vector2(0f, -halfHeight), area.width, true);
+            AddDashes(root.transform, new Vector2(-halfWidth, 0f), area.height, false);
+            AddDashes(root.transform, new Vector2(halfWidth, 0f), area.height, false);
+        }
+
+        /// <param name="center">뿌리 기준 변의 한가운데.</param>
+        /// <param name="horizontal">가로 변이면 점도 눕는다.</param>
+        void AddDashes(Transform root, Vector2 center, float length, bool horizontal)
+        {
+            // 칸 수를 반올림해 변 길이에 맞춘다. 목표 간격을
+            // 그대로 쓰면 마지막 점이 모서리 밖으로 나간다.
+            int count = Mathf.Max(1, Mathf.RoundToInt(length / DashPeriod));
+            float step = length / count;
+
+            Vector2 direction = horizontal ? Vector2.right : Vector2.up;
+            Vector2 size = horizontal
+                ? new Vector2(step * DashRatio, DashWidth)
+                : new Vector2(DashWidth, step * DashRatio);
+
+            for (int i = 0; i < count; i++)
+            {
+                // 칸 한가운데에 놓는다. 칸 끝에 놓으면
+                // 양 모서리에서 점이 반만 남는다.
+                float offset = step * (i + 0.5f) - length * 0.5f;
+
+                var part = new GameObject("Dash");
+                part.transform.SetParent(root, false);
+                part.transform.localPosition = center + direction * offset;
+                part.transform.localScale = new Vector3(size.x, size.y, 1f);
+
+                var renderer = part.AddComponent<SpriteRenderer>();
+                renderer.sprite = ShapeSprites.Quad;
+                renderer.color = PlayAreaColor;
+                renderer.sortingOrder = RenderOrder.PlayArea;
+            }
         }
 
         void AddQuad(string name, Vector2 center, Vector2 size, float angle,
