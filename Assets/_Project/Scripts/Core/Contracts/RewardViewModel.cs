@@ -12,6 +12,10 @@ namespace PPS.Core
         /// 사용한 잉크.
         public float InkUsed;
 
+        /// 그 판의 잉크 상한. 판마다 달라
+        /// 아낀 정도는 사용량이 아니라 비율로 본다.
+        public float InkLimit;
+
         /// 깬 스테이지 인덱스.
         public int StageIndex;
     }

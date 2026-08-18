@@ -22,6 +22,16 @@ public class RewardView : UIPopup, IRewardView
     [Header("Stars")]
     [SerializeField] private Image[] filledStars = new Image[3];
 
+    [Header("Ink Rank")]
+    /// 잉크를 아낀 정도에 따라 갈아 끼울 별.
+    [SerializeField] private Sprite goldStar;
+    [SerializeField] private Sprite silverStar;
+    [SerializeField] private Sprite bronzeStar;
+
+    /// 상한 대비 사용량(%)이 이 값 이하면 그 등급이다.
+    [SerializeField, Range(0f, 100f)] private float goldInkPercent = 50f;
+    [SerializeField, Range(0f, 100f)] private float silverInkPercent = 75f;
+
     [Header("Buttons")]
     [SerializeField] private Button retryButton;
     [SerializeField] private Button homeButton;
@@ -79,11 +89,31 @@ public class RewardView : UIPopup, IRewardView
         inkUsedLabel.text = vm.InkUsed.ToString("F1");
         clearTimeLabel.text = FormatTime(vm.EndStep);
 
+        Sprite star = RankStar(vm);
+
         for (int i = 0; i < filledStars.Length; i++)
         {
+            if (star != null) filledStars[i].sprite = star;
+
             filledStars[i].gameObject.SetActive(i < vm.StarCount);
             filledStars[i].transform.localScale = Vector3.zero;
         }
+    }
+
+    /// <summary>
+    /// 잉크를 적게 쓸수록 좋은 별이 온다.
+    /// 상한이 없는 판은 아낄 여지가 없어 가장 낮은 등급이다.
+    /// </summary>
+    private Sprite RankStar(RewardViewModel vm)
+    {
+        if (vm.InkLimit <= 0f) return bronzeStar;
+
+        float percent = vm.InkUsed / vm.InkLimit * 100f;
+
+        if (percent <= goldInkPercent) return goldStar;
+        if (percent <= silverInkPercent) return silverStar;
+
+        return bronzeStar;
     }
 
     /// 시뮬은 고정 dt 로만 진행한다.
