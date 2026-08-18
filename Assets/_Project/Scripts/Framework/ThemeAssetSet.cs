@@ -1,3 +1,4 @@
+using PPS.Core;
 using PPS.MapEditor;
 using UnityEngine;
 
@@ -11,4 +12,5 @@ public class ThemeAssetSet : ScriptableObject
     public Sprite playBackground;
 
     public TextAsset[] stages;
+    public Tutorial[] tutorials;
 }
