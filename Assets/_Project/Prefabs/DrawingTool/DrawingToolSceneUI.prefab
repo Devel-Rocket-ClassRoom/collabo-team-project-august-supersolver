@@ -2915,6 +2915,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: PPS.DrawingTool::PPS.DrawingTool.DrawingToolAssetApplier
   _background: {fileID: 8299290041041766131}
+  _levelView: {fileID: 3831302384126052970}
+  _simView: {fileID: 8646197309606334596}
 --- !u!1 &4957517419510700542
 GameObject:
   m_ObjectHideFlags: 0
