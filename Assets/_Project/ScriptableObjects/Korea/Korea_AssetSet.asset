@@ -17,6 +17,7 @@ MonoBehaviour:
   playBackground: {fileID: 21300000, guid: 206730cc370921645bb7fde8f019db38, type: 3}
   stages:
   - {fileID: 4900000, guid: 9d2b316eca989dc4d8264d985d95dd10, type: 3}
-  - {fileID: 4900000, guid: ca9132a0cd667244f8f793ff003a885d, type: 3}
+  - {fileID: 4900000, guid: 478885bab6d71bf41be385915f887663, type: 3}
+  - {fileID: 4900000, guid: 2b396c35c01937142a4c9ae74b287507, type: 3}
   tutorials:
   - {fileID: 11400000, guid: 9a8ea099c82a98649aadc64b62beac64, type: 2}
