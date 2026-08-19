@@ -16,12 +16,6 @@ namespace PPS.DrawingTool
         /// 두께 없는 선분이라 굵기로 갈리면 오해가 된다.
         const float TerrainWidth = 0.12f;
 
-        /// 킬라인이 뻗는 길이. 영역 폭의 배수다 —
-        /// 끝이 보이면 넘어가도 되는 구간처럼 읽힌다.
-        const float KillLineSpan = 4f;
-
-        const float KillLineWidth = 0.06f;
-
         /// 영역을 두르는 점 한 칸의 목표 길이. 변마다
         /// 칸 수를 반올림해 실제 길이는 조금씩 다르다.
         const float DashPeriod = 0.5f;
@@ -52,8 +46,7 @@ namespace PPS.DrawingTool
         static readonly Color GoalColor = new Color32(0x0E, 0x7A, 0x3C, 0xFF);
         static readonly Color StarColor = new Color32(0xE8, 0x9A, 0x1C, 0xFF);
 
-        // 둘은 맵 에디터가 안 그리는 것이라 여기서 정한다.
-        static readonly Color KillLineColor = new Color32(0x8A, 0x1C, 0x1C, 0xFF);
+        // 맵 에디터가 안 그리는 것이라 여기서 정한다.
         static readonly Color DeviceColor = new Color32(0x0B, 0x6E, 0x6E, 0xFF);
 
         /// 지어 둔 것 전부. 레벨이 바뀌면 통째로 버린다.
@@ -107,11 +100,6 @@ namespace PPS.DrawingTool
             Rect area = LevelDataArea.Calculate(level);
             AddPlayAreaOutline(area);
 
-            AddQuad("KillLine",
-                new Vector2(area.center.x, level.KillY),
-                new Vector2(area.width * KillLineSpan, KillLineWidth),
-                0f, KillLineColor, RenderOrder.KillLine);
-
             for (int i = 0; i < level.Terrain.Count; i++)
                 AddSegment(level.Terrain[i], i);
 
@@ -140,6 +128,15 @@ namespace PPS.DrawingTool
         public void MoveBall(Vector2 position)
         {
             if (_ball != null) _ball.position = position;
+        }
+
+        /// <summary>
+        /// 죽은 공을 지운다. 남겨 두면 킬라인 아래에 멈춰
+        /// 선 공이 아직 살아 있는 것처럼 읽힌다.
+        /// </summary>
+        public void SetBallVisible(bool visible)
+        {
+            if (_ball != null) _ball.gameObject.SetActive(visible);
         }
 
         /// <summary>재시도가 부른다. 공만 출발점으로 되돌린다.</summary>
@@ -202,6 +199,8 @@ namespace PPS.DrawingTool
         /// <summary>재시도가 부른다. 시뮬 중 지운 것을 되살린다.</summary>
         public void ShowAll()
         {
+            SetBallVisible(true);
+
             for (int i = 0; i < _stars.Count; i++) SetStarVisible(i, true);
             for (int i = 0; i < _deviceBodies.Count; i++) SetDeviceVisible(i, true);
         }

@@ -27,6 +27,14 @@ namespace PPS.DrawingTool
         /// 월드에서 나오므로 여기서 만들고 재사용한다.
         readonly List<SpriteRenderer> _fragments = new List<SpriteRenderer>();
 
+        /// 낙사 이펙트. 테마 프리팹의 사본이라 처음
+        /// 죽을 때 만들고 그 뒤로는 다시 쓴다.
+        ParticleSystem _killEffect;
+
+        /// 이번 판의 판정을 이미 봤는가. 확정되는
+        /// 순간에만 이펙트를 걸려고 든다.
+        bool _judged;
+
         SimStyle _style;
 
         /// 획마다 바디 기준 로컬 점. 인덱스는 Solution.Strokes
@@ -43,8 +51,22 @@ namespace PPS.DrawingTool
         /// 위치가 곧 그린 좌표의 원점이라, 그때 로컬 값을 떠
         /// 둬야 플레이를 눌러도 화면이 제자리에 있다.
         /// </summary>
-        /// <summary>테마가 파편 그림을 준다. 없으면 코드 도형이다.</summary>
-        public void SetStyle(SimStyle style) => _style = style;
+        /// <summary>
+        /// 테마가 파편 그림과 낙사 이펙트를 준다.
+        /// 파편은 그림이 없으면 코드 도형으로 그린다.
+        /// </summary>
+        public void SetStyle(SimStyle style)
+        {
+            _style = style;
+
+            // 테마가 바뀌면 만들어 둔 사본도 옛 그림이다.
+            if (_killEffect != null) Destroy(_killEffect.gameObject);
+            _killEffect = null;
+
+            // 조용히 넘기면 이펙트가 빠진 것을 죽어 봐야 안다.
+            if (style != null && style.KillEffect == null)
+                Debug.LogWarning("테마에 낙사 이펙트가 없다. 떨어져 죽어도 안 터진다.", this);
+        }
 
         public void Begin()
         {
@@ -70,6 +92,7 @@ namespace PPS.DrawingTool
             _levelView.ResetBall();
             _levelView.ShowAll();
             HideFragments();
+            StopKillEffect();
             _strokes.Rebuild();
             _pivots.Refresh();
         }
@@ -87,6 +110,7 @@ namespace PPS.DrawingTool
             FollowStars(world);
             FollowDevices(world);
             FollowFragments(world);
+            FollowKill(world);
         }
 
         /// <summary>
@@ -138,6 +162,48 @@ namespace PPS.DrawingTool
                 part.position = hazards[i].transform.position;
                 part.localScale = Vector3.one * (FragBombDevice.FragmentRadius * 2f);
             }
+        }
+
+        /// <summary>
+        /// 떨어져 죽었으면 그 자리에서 터뜨린다. 판정은
+        /// 코어가 이미 했다 — Judge 가 킬라인을 위험물보다
+        /// 먼저 보므로 선 아래에서 난 실패는 낙사뿐이다.
+        /// </summary>
+        void FollowKill(SimWorld world)
+        {
+            if (_judged || !world.IsTerminal) return;
+            _judged = true;
+
+            // 판정이 확정되면 스텝이 멈춰 공은 죽은 자리에
+            // 남는다. 킬라인을 지나친 만큼 아래지만 그 폭은
+            // 공 반지름의 절반도 안 된다.
+            if (!world.Judge.Failed || world.Ball.position.y >= world.Level.KillY) return;
+
+            _levelView.SetBallVisible(false);
+            PlayKillEffect(world.Ball.position);
+        }
+
+        void PlayKillEffect(Vector2 at)
+        {
+            if (_style == null || _style.KillEffect == null) return;
+
+            if (_killEffect == null)
+            {
+                _killEffect = Instantiate(_style.KillEffect, transform);
+                _killEffect.GetComponent<ParticleSystemRenderer>().sortingOrder =
+                    RenderOrder.KillEffect;
+            }
+
+            _killEffect.transform.position = at;
+            _killEffect.Play();
+        }
+
+        void StopKillEffect()
+        {
+            _judged = false;
+
+            if (_killEffect != null)
+                _killEffect.Stop(true, ParticleSystemStopBehavior.StopEmittingAndClear);
         }
 
         void HideFragments()

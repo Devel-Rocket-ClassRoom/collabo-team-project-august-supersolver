@@ -44,8 +44,8 @@ namespace PPS.DrawingTool.Tests
         {
             _view.SetLevel(MakeLevel());
 
-            // 영역 점선 · 킬라인 · 지형 2 · 장치 2 · 목표 · 별 · 공
-            Assert.AreEqual(9, _go.transform.childCount);
+            // 영역 점선 · 지형 2 · 장치 2 · 목표 · 별 · 공
+            Assert.AreEqual(8, _go.transform.childCount);
 
             Assert.AreEqual(2, CountStartingWith("Terrain_"), "지형 선분 수가 다르다");
             Assert.AreEqual(1, CountStartingWith("Star_"), "별 수가 다르다");
@@ -53,7 +53,6 @@ namespace PPS.DrawingTool.Tests
 
             Assert.IsNotNull(_go.transform.Find("Ball"));
             Assert.IsNotNull(_go.transform.Find("Goal"));
-            Assert.IsNotNull(_go.transform.Find("KillLine"));
         }
 
         [Test]
