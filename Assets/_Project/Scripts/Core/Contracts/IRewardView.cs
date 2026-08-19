@@ -6,6 +6,8 @@ namespace PPS.Core
     public interface IRewardView
     {
         void Show(RewardViewModel vm);
+        void Hide();
+        // AddListener to Buttons. Nullable. 
         void BindButtonListener(Action retry, Action home, Action next);
     }
 }

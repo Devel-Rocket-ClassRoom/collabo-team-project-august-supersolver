@@ -9,6 +9,7 @@ public class StageSceneLoaderOnClick : MonoBehaviour
         if (locked) return;
         locked = true;
         await UIManager.Instance.ShowScene<StageSelectView>();
+        await UIManager.Instance.HidePopup(true);
         locked = false;
     }
 }

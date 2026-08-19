@@ -56,11 +56,16 @@ public class RewardView : UIPopup, IRewardView
         _vm = vm;
         UIManager.Instance.ShowPopup<RewardView>().Forget();
     }
+
+    public void Hide() => UIManager.Instance.HidePopup(true).Forget();
     public void BindButtonListener(Action retry, Action home, Action next)
     {
-        retryButton.onClick.AddListener(new UnityAction(retry));
-        homeButton.onClick.AddListener(new UnityAction(home));
-        nextStageButton.onClick.AddListener(new UnityAction(next));
+        if (retry != null)
+            retryButton.onClick.AddListener(new UnityAction(retry));
+        if (home != null)
+            homeButton.onClick.AddListener(new UnityAction(home));
+        if (next != null)
+            nextStageButton.onClick.AddListener(new UnityAction(next));
     }
     private void OnDestroy()
     {
