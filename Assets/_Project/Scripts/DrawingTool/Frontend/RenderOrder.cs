@@ -13,7 +13,6 @@ namespace PPS.DrawingTool
         /// 그릴 수 있는 영역을 두르는 점선.
         public const int PlayArea = -100;
 
-        public const int KillLine = -50;
         public const int Terrain = -40;
         public const int Device = -30;
         public const int Goal = -20;
@@ -31,6 +30,10 @@ namespace PPS.DrawingTool
 
         /// 공이 획에 가리면 어디 있는지 알 수 없다.
         public const int Ball = 2000;
+
+        /// 낙사 이펙트. 죽은 공이 그 자리에 남아 있어
+        /// 공보다 위여야 보인다.
+        public const int KillEffect = 2500;
 
         /// 그리는 중인 선은 항상 맨 위다.
         public const int Preview = short.MaxValue;
