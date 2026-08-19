@@ -10,7 +10,7 @@ public sealed class GameComposite : MonoSingleton<GameComposite>
         base.Awake();
         Debug.Log("로딩 시작");
         await UIManager.Instance.ShowInitialLoading();
-
+        
         Debug.Log($"로딩 화면 띄우기 완료 elapsed: {Time.time - elapsed}");
 
         // 유저 데이터 레포지토리
@@ -48,6 +48,9 @@ public sealed class GameComposite : MonoSingleton<GameComposite>
 
 
         await UIManager.Instance.InitializeAsync();
+
+        ServiceLocator.Register<IRewardView>(UIManager.Instance.GetPanel<RewardView>());
+
         await UIManager.Instance.HideInitialLoading();
         await UIManager.Instance.ShowScene<StageSelectView>();
     }

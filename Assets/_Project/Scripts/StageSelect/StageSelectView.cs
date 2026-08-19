@@ -5,9 +5,8 @@ using UnityEngine.UI;
 
 public class StageSelectView : UIScene
 {
-    const int StagePerTheme = 20;
     const int StagePerRow = StageSelectRow.StagePerRow;
-    const int MaxRow = StagePerTheme / StageSelectRow.StagePerRow + 1;
+    const int MaxRow = CurrentStageIndex.StagePerTheme / StageSelectRow.StagePerRow + 1;
 
     [SerializeField] Transform parent;
     [SerializeField] ScrollRect scroll;

@@ -14,9 +14,9 @@ namespace PPS.DrawingTool
     public sealed class ResultBanner : MonoBehaviour
     {
         [SerializeField] GameSimDriver _driver;
+        [SerializeField] DrawingSession _session;
         [SerializeField] GameObject _banner;
         [SerializeField] TMP_Text _label;
-
         bool _shown;
 
         /// 첫 프레임의 상태는 파생이 아니라 강제한다.
@@ -37,10 +37,24 @@ namespace PPS.DrawingTool
             // 바뀔 때만 손대 매 프레임 문자열을 만들지 않는다.
             if (decided == _shown) return;
 
-            _shown = decided;
+            _shown = decided;   // true면 게임 끝, false면 재시작 또는 시작임
             _banner.SetActive(decided);
-
-            if (decided) _label.text = TextOf(world.Judge);
+            if(decided)
+            {
+                if(world.Judge.Cleared)
+                {
+                    RewardViewModel vm = new RewardViewModel()
+                    {
+                        InkUsed = _session.Solution.TotalInk(),
+                        InkLimit = world.Level.InkLimit,
+                        EndStep = world.Judge.DecidedStep,
+                        StageIndex = CurrentStageIndex.CurrentStage + CurrentStageIndex.CurrentTheme * CurrentStageIndex.StagePerTheme,
+                        StarCount = world.Judge.Stars,
+                    };
+                    ServiceLocator.Get<IRewardView>().Show(vm);
+                }
+                _label.text = TextOf(world.Judge);
+            }
         }
 
         /// <summary>
