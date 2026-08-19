@@ -1,8 +1,10 @@
 using Cysharp.Threading.Tasks;
 using DG.Tweening;
 using PPS.Core;
+using System;
 using TMPro;
 using UnityEngine;
+using UnityEngine.Events;
 using UnityEngine.UI;
 
 /// <summary>클리어 보상 팝업. 스테이지 표기·별·잉크·스텝을 보여준다.</summary>
@@ -46,10 +48,25 @@ public class RewardView : UIPopup, IRewardView
 
     private RewardViewModel _vm;
 
+    private Action _retryAction;
+    private Action _homeAction;
+    private Action _nextStageAction;
     public void Show(RewardViewModel vm)
     {
         _vm = vm;
         UIManager.Instance.ShowPopup<RewardView>().Forget();
+    }
+    public void BindButtonListener(Action retry, Action home, Action next)
+    {
+        retryButton.onClick.AddListener(new UnityAction(retry));
+        homeButton.onClick.AddListener(new UnityAction(home));
+        nextStageButton.onClick.AddListener(new UnityAction(next));
+    }
+    private void OnDestroy()
+    {
+        retryButton.onClick.RemoveAllListeners();
+        homeButton.onClick.RemoveAllListeners();
+        nextStageButton.onClick.RemoveAllListeners();
     }
 
     public override void OnBeforeShow()
