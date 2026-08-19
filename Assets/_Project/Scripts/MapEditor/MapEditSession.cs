@@ -24,6 +24,12 @@ namespace PPS.MapEditor
         public MapShapes Shapes => _shapes;
 
         /// <summary>
+        /// 첫 굽기. 한 번도 손대지 않은 맵을 그대로
+        /// 테스트해도 킬라인이 맞아야 한다.
+        /// </summary>
+        void Awake() => Bake();
+
+        /// <summary>
         /// 실행 취소가 예전 상태로 되돌릴 때 쓴다.
         /// 통째로 갈아끼워야 고른 번호도 함께 풀린다.
         /// </summary>
@@ -38,7 +44,14 @@ namespace PPS.MapEditor
         /// 도형을 고친 뒤 부른다.
         /// 지형은 파생 데이터라 원본이 바뀌면 다시 굽는다.
         /// </summary>
-        public void Bake() => ShapeBaker.Bake(_shapes, _stage.Level);
+        public void Bake()
+        {
+            ShapeBaker.Bake(_shapes, _stage.Level);
+
+            // 킬라인은 플레이 영역의 아래 변이다. 저장 때만
+            // 잡으면 테스트 플레이가 옛 자리에서 죽는다.
+            _stage.Level.KillY = LevelDataArea.Calculate(_stage.Level).yMin;
+        }
 
         /// <summary>빈 맵으로 새로 시작한다.</summary>
         public void NewMap()
@@ -124,7 +137,6 @@ namespace PPS.MapEditor
                 {
                     BallStart = new Vector2(-3f, 2f),
                     GoalPosition = new Vector2(3f, -1f),
-                    KillY = -8f,
                 },
             };
         }
