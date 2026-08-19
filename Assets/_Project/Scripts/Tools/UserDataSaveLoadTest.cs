@@ -6,8 +6,8 @@ public class UserDataSaveLoadTest : MonoBehaviour
     // Play Mode가 시작되면 저장과 불러오기를 차례대로 검증한다.
     async void Start()
     {
-        // PlayerPrefs 저장 구현체를 생성한다.
-        IUserDataStorage storage = new PlayerPrefsUserDataStorage();
+        // Firebase 저장 구현체를 생성한다.
+        IUserDataStorage storage = new FirebaseUserDataStorage();
 
         // 저장 흐름과 이벤트를 관리하는 서비스를 생성한다.
         UserDataService service = new UserDataService(storage);
@@ -35,18 +35,18 @@ public class UserDataSaveLoadTest : MonoBehaviour
             BestStars = 3
         });
 
-        // 테스트 유저 데이터를 PlayerPrefs에 저장한다.
-        //UserDataOperationResult saveResult =
-        //    await service.SaveAsync(originalData);
+       // 테스트 유저 데이터를 Firestore에 저장한다.
+       UserDataOperationResult saveResult =
+           await service.SaveAsync(originalData);
 
-        //// 저장에 실패했다면 이유를 출력하고 테스트를 중단한다.
-        //if (!saveResult.Success)
-        //{
-        //    Debug.LogError($"저장 실패: {saveResult.ErrorMessage}");
-        //    return;
-        //}
+        // 저장에 실패했다면 이유를 출력하고 테스트를 중단한다.
+        if (!saveResult.Success)
+        {
+            Debug.LogError($"저장 실패: {saveResult.ErrorMessage}");
+            return;
+        }
 
-        // 저장했던 유저 데이터를 PlayerPrefs에서 다시 불러온다.
+        // 저장했던 유저 데이터를 Firestore에서 다시 불러온다.
         UserDataLoadResult loadResult =
             await service.LoadAsync();
 
