@@ -114,11 +114,14 @@ namespace PPS.Solver
     public sealed class SolutionSearch
     {
         /// <summary>
-        /// 패스 하나가 굴려 볼 최대 횟수.
-        /// 패스별로 나누는 것이 중요하다 — 통틀어 세면 앞 패스가
-        /// 예산을 다 써서 뒤 패스는 한 번도 안 돌아 본 채 끝난다.
+        /// 패스마다 굴려 볼 최대 횟수. 통틀어 세면 앞 패스가 예산을
+        /// 다 써서 뒤 패스는 한 번도 안 돌아 본 채 끝난다.
+        /// 패스 2가 큰 것은 표를 통째로 굴리고 실패마다 통로까지
+        /// 이어 보기 때문이다 — 표가 500개면 시작부터 500회다.
         /// </summary>
-        public const int MaxTriesPerPass = 300;
+        public const int LeverTries = 2000;
+
+        public const int HighGroundTries = 300;
 
         /// 천장이 없을 때 여유로 칠 값. 어떤 프리셋도 통과한다.
         const float OpenSky = 1000f;
@@ -142,14 +145,14 @@ namespace PPS.Solver
             for (int i = 0; i < paths.Count && !attempts.Stop; i++)
                 attempts.Run(SolvePass.Corridor, stage, Corridor(stage, paths[i]));
 
-            // 2. 지렛대로 통로의 점까지 바로 보낸다. 벽은 안 세운다 —
+            // 2. 표에 있는 지렛대를 전부 굴려 본다. 벽은 안 세운다 —
             //    벽이 없으니 판이 걸릴 것도, 날아가는 공이 막힐 것도 없다.
-            attempts.Begin();
-            for (int i = 0; i < paths.Count && !attempts.Stop && !attempts.Spent; i++)
-                WithLever(stage, paths[i], attempts);
+            //    실패하면 공이 실제로 올라갔던 꼭짓점에서 통로를 이어 본다.
+            attempts.Begin(LeverTries);
+            if (!attempts.Stop) WithLever(stage, attempts);
 
             // 3. 목표보다 높은 데로 올려놓고 거기서부터 굴린다.
-            attempts.Begin();
+            attempts.Begin(HighGroundTries);
             if (!attempts.Stop) FromHighGround(stage, attempts);
 
             return attempts.Done();
@@ -167,8 +170,14 @@ namespace PPS.Solver
             readonly List<Attempt> _log = new List<Attempt>();
             readonly bool _stopAtClear;
 
+            /// 궤적을 담아 돌려 쓴다. 시도마다 새로 잡으면 GC 가 는다.
+            readonly TrajectoryBuffer _trajectory = new TrajectoryBuffer(PeakInterval);
+
             /// 지금 패스가 시작한 시점의 횟수.
             int _mark;
+
+            /// 지금 패스에 허락된 횟수.
+            int _budget;
 
             float _best = float.PositiveInfinity;
             Solution _closest;
@@ -180,18 +189,31 @@ namespace PPS.Solver
             public Attempts(bool stopAtClear) => _stopAtClear = stopAtClear;
 
             /// 새 패스를 연다. 예산은 여기서부터 다시 센다.
-            public void Begin() => _mark = Tries;
+            public void Begin(int budget)
+            {
+                _mark = Tries;
+                _budget = budget;
+            }
 
             /// 이 패스의 예산을 다 썼는가.
-            public bool Spent => Tries - _mark >= MaxTriesPerPass;
+            public bool Spent => Tries - _mark >= _budget;
 
             /// 더 굴려 볼 이유가 없는가. 답을 찾았고 거기서 멈추기로 했을 때다.
             public bool Stop => _won != null && _stopAtClear;
 
+            /// <summary>
+            /// 방금 굴린 판에서 공이 가장 높았던 시점.
+            /// 샘플이 하나도 없었으면 Step 이 0 이다 — 샘플은 첫 스텝보다
+            /// 뒤에서만 찍히므로 0 은 나올 수 없는 값이다.
+            /// </summary>
+            public BallSample Peak { get; private set; }
+
             /// 한 판 굴린다. 목표에 닿았으면 참이다.
             public bool Run(SolvePass pass, StageData stage, Solution solution)
             {
-                SimResult result = SimRunner.Run(stage, solution);
+                SimResult result = SimRunner.RunSampled(
+                    stage.Level, solution, stage.Seed, _trajectory);
+                Peak = Highest(_trajectory);
                 Tries++;
 
                 _log.Add(new Attempt(
@@ -214,9 +236,26 @@ namespace PPS.Solver
                 return result.Cleared;
             }
 
+            static BallSample Highest(TrajectoryBuffer trajectory)
+            {
+                var top = default(BallSample);
+
+                for (int i = 0; i < trajectory.Count; i++)
+                    if (i == 0 || trajectory[i].Position.y > top.Position.y) top = trajectory[i];
+
+                return top;
+            }
+
             public SolveReport Done()
                 => new SolveReport(_wonPass, _won, _closest, Tries, _best, _log);
         }
+
+        /// <summary>
+        /// 궤적을 몇 스텝마다 찍는지.
+        /// 꼭짓점 언저리는 수직 속도가 0 에 가까워 평평하므로,
+        /// 성기게 찍어도 높이가 크게 어긋나지 않는다.
+        /// </summary>
+        const int PeakInterval = 4;
 
         /// <summary>
         /// 이 그림까지 담으려면 플레이 영역이 얼마나 되어야 하는지.
@@ -259,34 +298,74 @@ namespace PPS.Solver
         }
 
         /// <summary>
-        /// 주어진 벽에 지렛대를 하나 더해 본다.
+        /// 표에 있는 지렛대를 하나씩 굴려 본다. 잉크가 적은 것부터다.
+        /// 도달 조회로 후보를 추리지 않는다 — 어디로 날아갈지 어긋나는 것이
+        /// 이 패스가 다루려는 일인데, 예측으로 걸러 내면 어긋난 것부터 빠진다.
         /// 공의 출발 자리에만 놓는다 — 프리셋의 발사 상태는 공이 판에
         /// 얹힌 채 추가 떨어지는 것을 잰 값이라, 공이 나중에 도착하는
         /// 자리에 놓으면 추가 이미 떨어진 뒤다.
-        /// 목표는 통로의 지점들이고, 먼 곳부터 본다 — 멀리 갈수록 이득이다.
         /// </summary>
-        void WithLever(StageData stage, Vector2[] path, Attempts attempts)
+        void WithLever(StageData stage, Attempts attempts)
         {
             LevelData level = stage.Level;
             Vector2 seat = level.BallStart;
 
-            for (int at = path.Length - 1; at >= 1; at--)
+            // 표는 오른쪽으로만 잰 것이라 방향은 여기서 정한다.
+            bool right = level.GoalPosition.x >= seat.x;
+
+            // 이미 통로를 이어 본 꼭짓점 칸들. 패스 내내 이어 쓴다.
+            var peaks = new HashSet<long>();
+
+            for (int i = 0; i < _presets.Count; i++)
             {
-                Vector2 target = path[at] - seat;
-                _presets.Reaching(target, _reaching);
+                if (attempts.Spent || attempts.Stop) return;
 
-                for (int i = 0; i < _reaching.Count; i++)
-                {
-                    if (attempts.Spent || attempts.Stop) return;
+                Lever lever = _presets[i].ToLever(seat, right);
+                if (!Fits(level, lever)) continue;
 
-                    Lever lever = _reaching[i].ToLever(seat, target.x >= 0f);
-                    if (!Fits(level, lever)) continue;
+                var solution = new Solution();
+                lever.AppendTo(solution);
 
-                    var solution = new Solution();
-                    lever.AppendTo(solution);
+                if (!attempts.Run(SolvePass.Lever, stage, solution))
+                    FromPeak(stage, lever, attempts.Peak, peaks, attempts);
+            }
+        }
 
-                    attempts.Run(SolvePass.Lever, stage, solution);
-                }
+        /// <summary>
+        /// 지렛대가 실제로 공을 올려놓은 꼭짓점에서 통로를 이어 본다.
+        /// 겨눈 자리와 공이 간 자리는 어긋난다 — 판이 미는 힘은 공이
+        /// 얹힌 자리와 맞물린 상태에 따라 달라서 프리셋대로 날지 않는다.
+        /// 어긋난 자리라도 목표보다 높으면 거기서부터는 굴려서 갈 수 있다.
+        /// </summary>
+        void FromPeak(
+            StageData stage, in Lever lever, in BallSample peak,
+            HashSet<long> peaks, Attempts attempts)
+        {
+            LevelData level = stage.Level;
+
+            // 목표보다 낮은 자리에 올려놓은 것은 아무 이득이 없다.
+            if (peak.Step == 0 || peak.Position.y <= level.GoalPosition.y) return;
+
+            // 비슷한 프리셋은 거의 같은 자리에 떨어진다. 통로를 다시
+            // 찾는 것이 비싸므로 같은 칸은 한 번만 본다.
+            var cell = new Vector2(
+                Mathf.Round(peak.Position.x / LandingCell) * LandingCell,
+                Mathf.Round(peak.Position.y / LandingCell) * LandingCell);
+
+            if (!peaks.Add(Key(cell))) return;
+
+            List<Vector2[]> onward = BallPath.Find(Rebased(level, peak.Position));
+
+            for (int o = 0; o < onward.Count; o++)
+            {
+                if (attempts.Spent || attempts.Stop) return;
+
+                Solution solution = Corridor(stage, onward[o]);
+
+                OpenEntry(solution, peak.Position, peak.Velocity);
+                lever.AppendTo(solution);
+
+                attempts.Run(SolvePass.LeverThenCorridor, stage, solution);
             }
         }
 
@@ -448,10 +527,18 @@ namespace PPS.Solver
                          - preset.LaunchStep;
             if (flight <= 0) return;
 
-            Vector2 coming = Ballistic.VelocityAt(preset.LaunchVelocity, flight);
+            OpenEntry(
+                corridor,
+                seat + Ballistic.At(preset.LaunchOffset, preset.LaunchVelocity, flight),
+                Ballistic.VelocityAt(preset.LaunchVelocity, flight));
+        }
+
+        /// <param name="at">공이 통로에 들어오는 자리.</param>
+        /// <param name="coming">그 자리에서의 진입 속도.</param>
+        static void OpenEntry(Solution corridor, Vector2 at, Vector2 coming)
+        {
             if (coming.sqrMagnitude <= 1e-6f) return;
 
-            Vector2 at = seat + Ballistic.At(preset.LaunchOffset, preset.LaunchVelocity, flight);
             Vector2 mouth = at - coming.normalized * EntryDepth;
 
             float clear = LevelData.BallRadius + ColliderFactory.FreeBodyHalfWidth;
