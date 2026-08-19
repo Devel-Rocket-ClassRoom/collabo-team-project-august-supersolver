@@ -68,6 +68,16 @@ namespace PPS.Core
                     }
                 });
         }
+
+        public void SignInWithGoogle(string googleIdToken)
+        {
+            // Google에서 받은 ID Token을 Firebase 인증 정보로 바꾼다.
+            Credential credential = GoogleAuthProvider.GetCredential(googleIdToken, null);
+
+            // 변환한 인증 정보로 Firebase에 로그인한다.
+            _auth.SignInWithCredentialAsync(credential);
+        }
+
         // 입력 받은 이메일과 비밀번호로 새로운 Firebase 계정을 만든다.
         public void SignUp(string email, string password)
         {
