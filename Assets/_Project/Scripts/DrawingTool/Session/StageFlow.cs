@@ -37,8 +37,8 @@ namespace PPS.DrawingTool
                     OnClickRetry(); 
                     ServiceLocator.Get<IRewardView>().Hide(); 
                 },
-                home: null,
-                next: null);
+                home: null,  // DI 때문에 StageSceneLoaderOnClick.cs 에서 주입
+                next: null); // DI 때문에 StageSceneLoaderOnClick.cs 에서 주입
         }
         /// <summary>
         /// 판이 갈렸다. 그림·시뮬·모드가 전부 이전 판의

@@ -48,9 +48,6 @@ public class RewardView : UIPopup, IRewardView
 
     private RewardViewModel _vm;
 
-    private Action _retryAction;
-    private Action _homeAction;
-    private Action _nextStageAction;
     public void Show(RewardViewModel vm)
     {
         _vm = vm;
