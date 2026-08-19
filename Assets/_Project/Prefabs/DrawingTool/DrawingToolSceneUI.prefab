@@ -4953,6 +4953,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: PPS.DrawingTool::PPS.DrawingTool.ResultBanner
   _driver: {fileID: 2487151381449205098}
+  _session: {fileID: 8860626864616630411}
   _banner: {fileID: 1683656292986877368}
   _label: {fileID: 1108063907814056867}
 --- !u!1 &8279939822960021732
