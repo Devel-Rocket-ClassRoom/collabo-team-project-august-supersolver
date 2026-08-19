@@ -15,7 +15,10 @@ namespace PPS.MapEditor
     {
         [SerializeField] MapEditSession _session;
         [SerializeField] MapEditHandles _handles;
-        [SerializeField] GameSimDriver _driver;
+
+        /// 편집 중인 판을 돌리는 드라이버. 씬에 컴포넌트로
+        /// 두지 않아 스텝과 화면 갱신의 순서가 여기서 정해진다.
+        readonly GameSimDriver _driver = new GameSimDriver();
 
         [SerializeField] MapSimView _view;
         [SerializeField] StarStacker _stars;
@@ -36,7 +39,7 @@ namespace PPS.MapEditor
 
         void Begin()
         {
-            if (_session == null || _driver == null) return;
+            if (_session == null) return;
 
             // 그린 것 없이 레벨만 돌린다. 도구는 아직 없다.
             _driver.StartSimulation(_session.Current, Solution.Empty);
@@ -68,7 +71,10 @@ namespace PPS.MapEditor
 
         void Update()
         {
-            if (!_running || !_driver.HasWorld) return;
+            if (!_running) return;
+
+            _driver.Tick(Time.deltaTime);
+            if (!_driver.HasWorld) return;
 
             SimWorld world = _driver.World;
 
@@ -92,7 +98,7 @@ namespace PPS.MapEditor
 
         void OnDestroy()
         {
-            if (_driver != null) _driver.Stop();
+            _driver.Dispose();
         }
     }
 }

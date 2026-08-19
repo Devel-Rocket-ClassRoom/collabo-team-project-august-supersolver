@@ -13,11 +13,17 @@ namespace PPS.DrawingTool
     [DisallowMultipleComponent]
     public sealed class ResultBanner : MonoBehaviour
     {
-        [SerializeField] GameSimDriver _driver;
+        GameSimDriver _driver;
         [SerializeField] GameObject _banner;
         [SerializeField] TMP_Text _label;
 
         bool _shown;
+
+        /// <summary>
+        /// 드라이버를 물린다. UI 프리팹은 월드보다 먼저
+        /// 깨어나 첫 프레임에는 비어 있다.
+        /// </summary>
+        public void Bind(GameSimDriver driver) => _driver = driver;
 
         /// 첫 프레임의 상태는 파생이 아니라 강제한다.
         /// 씬에 켜진 채 저장돼 있으면 폴링은 못 고친다.
@@ -26,10 +32,12 @@ namespace PPS.DrawingTool
             _banner.SetActive(false);
         }
 
-        // 드라이버가 Update 에서 스텝을 돌린다. 여기가
+        // 조립자가 Update 에서 스텝을 돌린다. 여기가
         // Update 면 실행 순서에 따라 한 프레임 늦는다.
         void LateUpdate()
         {
+            if (_driver == null) return;
+
             SimWorld world = _driver.World;
             bool decided = world != null && world.IsTerminal;
 

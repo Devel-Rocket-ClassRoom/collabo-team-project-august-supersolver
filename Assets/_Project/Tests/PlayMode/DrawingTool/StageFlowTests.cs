@@ -33,14 +33,17 @@ namespace PPS.DrawingTool.Tests
             yield return null;   // Awake·Start
             yield return null;   // 카메라 fit 은 LateUpdate 에서 풀린다
 
-            _flow = Object.FindFirstObjectByType<StageFlow>();
-            _stage = Object.FindFirstObjectByType<StageLoader>();
-            _session = Object.FindFirstObjectByType<DrawingSession>();
-            _input = Object.FindFirstObjectByType<DrawInputBehaviour>();
-            _driver = Object.FindFirstObjectByType<GameSimDriver>();
+            // 코어는 MonoBehaviour 가 아니라 타입으로 못 찾는다.
+            var world = Object.FindFirstObjectByType<DrawingToolComposite>();
+            Assert.IsNotNull(world, "씬에 DrawingToolComposite 가 없다 — 배선이 빠졌다");
+
+            _flow = world.Flow;
+            _stage = world.Stages;
+            _session = world.Session;
+            _input = world.Input;
+            _driver = world.Driver;
             _camera = Object.FindFirstObjectByType<CanvasCameraFitter>().GetComponent<Camera>();
 
-            Assert.IsNotNull(_flow, "씬에 StageFlow 가 없다 — 배선이 빠졌다");
             Assert.IsNotNull(_stage.Stage, "스테이지 파일이 안 물렸다");
         }
 
@@ -49,7 +52,7 @@ namespace PPS.DrawingTool.Tests
         {
             _session.AddStroke(Bar());
 
-            _flow.OnClickPlay();
+            _flow.Play();
             yield return null;
 
             Assert.AreEqual(StageMode.Simulate, _flow.Mode);
@@ -62,13 +65,13 @@ namespace PPS.DrawingTool.Tests
             _session.AddStroke(Bar());
             float ink = _session.Solution.TotalInk();
 
-            _flow.OnClickPlay();
+            _flow.Play();
 
             // 공이 실제로 움직인 뒤에 되돌린다. 첫 프레임에
             // 재시도하면 아무것도 안 움직여도 통과한다.
             for (int i = 0; i < 30; i++) yield return null;
 
-            _flow.OnClickRetry();
+            _flow.Retry();
             yield return null;
 
             Assert.AreEqual(StageMode.Draw, _flow.Mode);
@@ -82,15 +85,15 @@ namespace PPS.DrawingTool.Tests
         {
             Assert.IsTrue(_input.enabled, "그리기인데 입력이 죽어 있다");
 
-            _flow.OnClickPlay();
+            _flow.Play();
             yield return null;
             Assert.IsFalse(_input.enabled, "시뮬레이션 중에 획이 그려진다");
 
-            _flow.OnClickPauseResume();
+            _flow.PauseResume();
             yield return null;
             Assert.IsFalse(_input.enabled, "일시정지 중에 획이 그려진다");
 
-            _flow.OnClickRetry();
+            _flow.Retry();
             yield return null;
             Assert.IsTrue(_input.enabled, "그리기로 돌아왔는데 입력이 안 살아났다");
         }
@@ -102,11 +105,11 @@ namespace PPS.DrawingTool.Tests
             float size = _camera.orthographicSize;
             Vector3 position = _camera.transform.position;
 
-            _flow.OnClickPlay();
+            _flow.Play();
             yield return null;
             AssertCamera(size, position, "플레이");
 
-            _flow.OnClickRetry();
+            _flow.Retry();
             yield return null;
             AssertCamera(size, position, "재시도");
         }

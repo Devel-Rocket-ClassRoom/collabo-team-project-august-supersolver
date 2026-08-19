@@ -43,10 +43,9 @@ public class StageButton : MonoBehaviour
         {
             var StageData = repo.Asset.Stages[stageIdx];
 
-            await UIManager.Instance.ShowScene<DrawingToolSceneUI>();
+            var ui = await UIManager.Instance.ShowScene<DrawingToolSceneUI>();
 
-            StageLoader.SetStage(StageData);
-            TutorialViewer.SetStage(stageIdx);
+            ui.EnterStage(StageData, stageIdx);
         }
         locked = false;
     }

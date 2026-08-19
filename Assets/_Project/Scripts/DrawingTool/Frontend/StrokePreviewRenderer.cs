@@ -27,9 +27,9 @@ namespace PPS.DrawingTool
         /// 프로퍼티 블록으로 _BaseColor 만 덮는다.
         static readonly int BaseColor = Shader.PropertyToID("_BaseColor");
 
-        [SerializeField] DrawInputBehaviour _input;
-        [SerializeField] DrawingSession _session;
-        [SerializeField] ToolSelection _tools;
+        DrawInputBehaviour _input;
+        DrawingSession _session;
+        ToolSelection _tools;
         [SerializeField] Material _material;
 
         LineRenderer _preview;
@@ -42,6 +42,25 @@ namespace PPS.DrawingTool
         /// 시뮬 중에는 SimStageView 가 바디에 얹는다.
         public IReadOnlyList<LineRenderer> Lines => _lines;
 
+        /// <summary>
+        /// 코어를 물린다. 조립자와 이 컴포넌트 중 어느 쪽이
+        /// 먼저 깨어나는지는 정해져 있지 않아, 구독은 배선과
+        /// 활성화 양쪽에서 건다.
+        /// </summary>
+        public void Bind(DrawInputBehaviour input, DrawingSession session, ToolSelection tools)
+        {
+            if (_session != null) _session.Changed -= Rebuild;
+
+            _input = input;
+            _session = session;
+            _tools = tools;
+
+            if (!isActiveAndEnabled) return;
+
+            _session.Changed += Rebuild;
+            Rebuild();
+        }
+
         void Awake()
         {
             _preview = CreateLine("Preview");
@@ -53,17 +72,23 @@ namespace PPS.DrawingTool
 
         void OnEnable()
         {
+            if (_session == null) return;
+
             _session.Changed += Rebuild;
             Rebuild();
         }
 
         void OnDisable()
         {
+            if (_session == null) return;
+
             _session.Changed -= Rebuild;
         }
 
         void LateUpdate()
         {
+            if (_input == null) return;
+
             IReadOnlyList<Vector2> points = _input.PreviewPoints;
             bool visible = _input.IsDrawing && points.Count >= 2;
 

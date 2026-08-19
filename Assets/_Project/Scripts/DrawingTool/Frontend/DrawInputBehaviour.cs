@@ -21,8 +21,8 @@ namespace PPS.DrawingTool
         const int MouseId = 0;
 
         CanvasCameraFitter _fitter;
-        [SerializeField] ToolSelection _tools;
-        [SerializeField] DrawingSession _session;
+        ToolSelection _tools;
+        DrawingSession _session;
 
         /// 잉크 상한이 나오는 판. 상한을 float 로 복사해
         /// 두면 원본과 갈라질 자리가 생겨 판을 통째로 든다.
@@ -60,6 +60,21 @@ namespace PPS.DrawingTool
             (_recognizer.IsDrawing ? _recognizer.PreviewRemainingInk : RemainingInk)
             / _level.InkLimit);
 
+        /// <summary>
+        /// 코어를 물린다. 조립자와 이 컴포넌트 중 어느 쪽이
+        /// 먼저 깨어나는지는 정해져 있지 않아, 구독은 배선과
+        /// 활성화 양쪽에서 건다.
+        /// </summary>
+        public void Bind(ToolSelection tools, DrawingSession session)
+        {
+            if (_session != null) Unsubscribe();
+
+            _tools = tools;
+            _session = session;
+
+            if (isActiveAndEnabled) Subscribe();
+        }
+
         private void Awake()
         {
             _fitter = CanvasCameraFitter.Instance;
@@ -68,17 +83,28 @@ namespace PPS.DrawingTool
         {
             // 안 부르면 activeTouches 가 항상 비어 있다.
             EnhancedTouchSupport.Enable();
+
+            if (_session != null) Subscribe();
+        }
+
+        void OnDisable()
+        {
+            if (_session != null) Unsubscribe();
+            EnhancedTouchSupport.Disable();
+        }
+
+        void Subscribe()
+        {
             _recognizer.StrokeConfirmed += _session.AddStroke;
             _recognizer.PivotRequested += PlacePivot;
             _recognizer.EraseRequested += Erase;
         }
 
-        void OnDisable()
+        void Unsubscribe()
         {
             _recognizer.StrokeConfirmed -= _session.AddStroke;
             _recognizer.PivotRequested -= PlacePivot;
             _recognizer.EraseRequested -= Erase;
-            EnhancedTouchSupport.Disable();
         }
 
         /// <summary>
@@ -118,7 +144,7 @@ namespace PPS.DrawingTool
         void Update()
         {
             // fit 이 아직 안 풀린 프레임의 좌표는 쓰레기다.
-            if (_fitter == null || !_fitter.IsReady) return;
+            if (_fitter == null || !_fitter.IsReady || _session == null) return;
 
             // 터치를 먼저 읽는다. 시뮬레이터는 마우스와 터치를
             // 같이 내보내는데, 먼저 잡은 쪽이 획을 가져간다.

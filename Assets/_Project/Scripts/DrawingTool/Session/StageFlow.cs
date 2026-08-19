@@ -1,34 +1,51 @@
+using System;
+using PPS.Core;
 using PPS.Game;
-using UnityEngine;
 
 namespace PPS.DrawingTool
 {
     /// <summary>
     /// 그리기 ↔ 시뮬레이션 ↔ 일시정지 전이의 유일한 주인.
-    /// 버튼 onClick 이 여기로 들어온다 — 핸들러마다 전이를
-    /// 흩뿌리면 재시도×일시정지 조합에서 추적이 끊긴다.
+    /// 핸들러마다 전이를 흩뿌리면 재시도×일시정지 조합에서
+    /// 추적이 끊긴다.
+    /// 모드별로 무엇을 보일지는 모른다 — 모드만 알리고
+    /// 화면 구성은 듣는 쪽이 정한다.
     /// </summary>
-    [DisallowMultipleComponent]
-    public sealed class StageFlow : MonoBehaviour
+    public sealed class StageFlow
     {
-        [SerializeField] StageLoader _stage;
-        [SerializeField] DrawingSession _session;
-        [SerializeField] GameSimDriver _driver;
-        [SerializeField] DrawInputBehaviour _input;
-        [SerializeField] SimStageView _simView;
-
-        [Header("모드별 UI")]
-        [SerializeField] GameObject _drawPanel;
-        [SerializeField] GameObject _simPanel;
-        [SerializeField] GameObject _play;
-        [SerializeField] GameObject _pauseResume;
-        [SerializeField] GameObject _speed;
-
         readonly StageStateMachine _flow = new StageStateMachine();
+
+        readonly DrawingSession _session;
+        readonly GameSimDriver _driver;
+        readonly DrawInputBehaviour _input;
+        readonly SimStageView _simView;
+
+        /// 지금 판. StageLoader 가 물려 준다.
+        StageData _stage;
 
         public StageMode Mode => _flow.Mode;
 
-        void Start() => Apply();
+        /// 모드가 바뀔 때마다. UI 가 듣고 패널을 고른다.
+        public event Action<StageMode> ModeChanged;
+
+        public StageFlow(
+            DrawingSession session, GameSimDriver driver,
+            DrawInputBehaviour input, SimStageView simView)
+        {
+            _session = session;
+            _driver = driver;
+            _input = input;
+            _simView = simView;
+
+            Apply();
+        }
+
+        /// <summary>
+        /// 새 판을 물린다. 전이가 아니라 배선이라 모드를
+        /// 건드리지 않는다 — 판을 갈아 끼우는 일은
+        /// EnterStage 가 한다.
+        /// </summary>
+        public void SetStage(StageData stage) => _stage = stage;
 
         /// <summary>
         /// 판이 갈렸다. 그림·시뮬·모드가 전부 이전 판의
@@ -48,7 +65,7 @@ namespace PPS.DrawingTool
             Apply();
         }
 
-        public void OnClickPlay()
+        public void Play()
         {
             if (!_flow.Play()) return;
 
@@ -59,7 +76,7 @@ namespace PPS.DrawingTool
             // 여기서 아무것도 저장하지 않는다. 그림을 파일로
             // 뽑는 일은 에디터 도구 몫이다(StageFlowInspector) —
             // 게임에는 그 파일을 읽는 코드가 없다.
-            _driver.StartSimulation(_stage.Stage, _session.Solution);
+            _driver.StartSimulation(_stage, _session.Solution);
 
             // 스텝이 돌기 전에 잡아야 획이 제자리에서 출발한다.
             _simView.Begin();
@@ -67,7 +84,7 @@ namespace PPS.DrawingTool
             Apply();
         }
 
-        public void OnClickPauseResume()
+        public void PauseResume()
         {
             if (!_flow.PauseResume()) return;
 
@@ -78,10 +95,10 @@ namespace PPS.DrawingTool
         /// <summary>
         /// 되감기가 아니라 전파괴다. 되돌리기 스택은 건드리지
         /// 않는다 — 재시도 뒤에도 되돌릴 수 있어야 한다.
-        /// 도구도 그대로다. ToolSelection 이 씬에 살아 있어
+        /// 도구도 그대로다. ToolSelection 이 코어에 살아 있어
         /// 패널을 껐다 켜면 마지막에 고른 것이 돌아온다.
         /// </summary>
-        public void OnClickRetry()
+        public void Retry()
         {
             if (!_flow.Retry()) return;
 
@@ -93,21 +110,10 @@ namespace PPS.DrawingTool
 
         void Apply()
         {
-            bool drawing = _flow.Mode == StageMode.Draw;
-
             // 캔버스 입력은 그리기에서만 산다.
-            _input.enabled = drawing;
+            _input.enabled = _flow.Mode == StageMode.Draw;
 
-            // 하단은 높이를 유지한 채 내용만 바뀐다.
-            _drawPanel.SetActive(drawing);
-            _simPanel.SetActive(!drawing);
-
-            // 상단 슬롯의 두 버튼은 겹쳐 있다. 한쪽을 끄지
-            // 않으면 위엣것이 클릭을 전부 먹는다.
-            _play.SetActive(drawing);
-            _pauseResume.SetActive(!drawing);
-
-            _speed.SetActive(!drawing);
+            ModeChanged?.Invoke(_flow.Mode);
         }
     }
 }

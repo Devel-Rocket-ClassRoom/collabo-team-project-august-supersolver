@@ -13,18 +13,10 @@ namespace PPS.DrawingTool.Tests
     {
         static readonly Vector2 Anchor = new Vector2(9f, 9f);
 
-        GameObject _go;
         DrawingSession _session;
 
         [SetUp]
-        public void 세션을_만든다()
-        {
-            _go = new GameObject("Session");
-            _session = _go.AddComponent<DrawingSession>();
-        }
-
-        [TearDown]
-        public void 세션을_치운다() => Object.DestroyImmediate(_go);
+        public void 세션을_만든다() => _session = new DrawingSession();
 
         /// <summary>x 자리 세로 막대. 길이가 1 이라 잉크도 1 이다.</summary>
         static Stroke Bar(float x) =>
@@ -81,7 +73,7 @@ namespace PPS.DrawingTool.Tests
             _session.EraseStroke(1);
             Assert.AreEqual(1, _session.Solution.Pivots[0].StrokeB, "핀이 재매핑되지 않았다");
 
-            _session.OnClickUndo();
+            _session.Undo();
 
             Assert.AreEqual(3, _session.Solution.Strokes.Count, "획이 안 돌아왔다");
             Assert.AreEqual(2, _session.Solution.Pivots[0].StrokeB, "핀 인덱스가 안 돌아왔다");

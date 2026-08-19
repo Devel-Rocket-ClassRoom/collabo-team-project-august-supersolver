@@ -13,11 +13,25 @@ namespace PPS.DrawingTool
     [DisallowMultipleComponent]
     public sealed class SimStageView : MonoBehaviour
     {
-        [SerializeField] GameSimDriver _driver;
-        [SerializeField] DrawingSession _session;
-        [SerializeField] LevelView _levelView;
-        [SerializeField] StrokePreviewRenderer _strokes;
-        [SerializeField] PivotMarkerView _pivots;
+        GameSimDriver _driver;
+        DrawingSession _session;
+        LevelView _levelView;
+        StrokePreviewRenderer _strokes;
+        PivotMarkerView _pivots;
+
+        /// <summary>
+        /// 코어와 이웃 뷰를 물린다. 조립자가 활성화 전에 부른다.
+        /// </summary>
+        public void Bind(
+            GameSimDriver driver, DrawingSession session, LevelView levelView,
+            StrokePreviewRenderer strokes, PivotMarkerView pivots)
+        {
+            _driver = driver;
+            _session = session;
+            _levelView = levelView;
+            _strokes = strokes;
+            _pivots = pivots;
+        }
 
         /// 테마 그림이 없을 때 쓰는 파편 색. 닿으면 실패라
         /// 킬라인과 같은 붉은색을 쓴다.
@@ -78,6 +92,8 @@ namespace PPS.DrawingTool
         {
             // 재시도가 월드를 버리면 화면도 멈춘다. 되돌리는
             // 것은 Reset 이고 여기서 할 일은 없다.
+            if (_driver == null) return;
+
             SimWorld world = _driver.World;
             if (world == null) return;
 

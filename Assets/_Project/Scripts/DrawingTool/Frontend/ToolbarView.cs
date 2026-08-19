@@ -19,7 +19,7 @@ namespace PPS.DrawingTool
         static readonly Color SelectedIcon = new Color32(0x1B, 0x1E, 0x24, 0xFF);
         static readonly Color NormalIcon = new Color32(0xE8, 0xEA, 0xEE, 0xFF);
 
-        [SerializeField] ToolSelection _tools;
+        ToolSelection _tools;
 
         [Header("선택 표시")]
         [SerializeField] GameObject _fixedLineSelected;
@@ -39,14 +39,33 @@ namespace PPS.DrawingTool
         [SerializeField] GameObject _justPivot;
         [SerializeField] GameObject _worldPivot;
 
+        /// <summary>
+        /// 도구 선택을 물린다. UI 프리팹은 월드보다 먼저
+        /// 깨어나므로 첫 OnEnable 때는 아직 비어 있다 —
+        /// 구독은 여기서도 한 번 건다.
+        /// </summary>
+        public void Bind(ToolSelection tools)
+        {
+            _tools = tools;
+
+            if (!isActiveAndEnabled) return;
+
+            _tools.Changed += Apply;
+            Apply();
+        }
+
         void OnEnable()
         {
+            if (_tools == null) return;
+
             _tools.Changed += Apply;
             Apply();
         }
 
         void OnDisable()
         {
+            if (_tools == null) return;
+
             _tools.Changed -= Apply;
         }
 

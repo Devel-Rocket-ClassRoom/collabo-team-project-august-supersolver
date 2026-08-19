@@ -21,31 +21,7 @@ public class TutorialViewer : MonoBehaviour
         public RectTransform Rect;
     }
 
-    static TutorialViewer Instance;
-
     CancellationTokenSource _cts;
-
-    void Awake()
-    {
-        if (Instance != null) return;
-        Instance = this;
-    }
-
-    void OnDestroy()
-    {
-        if (Instance == this) Instance = null;
-    }
-
-    public static void SetStage(int stageIndex)
-    {
-        if (Instance == null)
-        {
-            Debug.LogError("[TutorialViewer] 씬에 뷰어가 없다.");
-            return;
-        }
-
-        Instance.Play(stageIndex);
-    }
 
     public void Play(int stageIndex)
     {

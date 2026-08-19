@@ -1,5 +1,4 @@
 using PPS.Core;
-using UnityEngine;
 
 namespace PPS.DrawingTool
 {
@@ -7,37 +6,34 @@ namespace PPS.DrawingTool
     /// 스테이지 파일 하나를 읽어 화면에 물린다.
     /// 목록에서 고르는 것은 나중 문제다.
     /// </summary>
-    [DisallowMultipleComponent]
-    public sealed class StageLoader : MonoBehaviour
+    public sealed class StageLoader
     {
-        [SerializeField] DrawInputBehaviour _input;
-        [SerializeField] LevelView _levelView;
-        [SerializeField] StageFlow _flow;
-        CanvasCameraFitter _fitter;
+        readonly DrawInputBehaviour _input;
+        readonly LevelView _levelView;
+        readonly StageFlow _flow;
+        readonly CanvasCameraFitter _fitter;
 
-        static StageLoader Instance;
         /// 읽어 들인 판. 저장 경로가 StageId 를 쓴다.
         public StageData Stage { get; private set; }
-        private void Awake()
+
+        public StageLoader(DrawInputBehaviour input, LevelView levelView, StageFlow flow)
         {
-            if (Instance != null) return;
-            Instance = this;
+            _input = input;
+            _levelView = levelView;
+            _flow = flow;
             _fitter = CanvasCameraFitter.Instance;
         }
-        private void OnDestroy()
-        {
-            if(Instance == this)
-                Instance = null;
-        }
-        public static void SetStage(StageData stage)
+
+        public void SetStage(StageData stage)
         {
             // 이전 판의 그림·시뮬을 먼저 버리고 새 판을 세운다.
-            Instance._flow.EnterStage();
+            _flow.EnterStage();
 
-            Instance.Stage = stage;
-            Instance._fitter.SetLevel(stage.Level);
-            Instance._input.SetLevel(stage.Level);
-            Instance._levelView.SetLevel(stage.Level);
+            Stage = stage;
+            _flow.SetStage(stage);
+            _fitter.SetLevel(stage.Level);
+            _input.SetLevel(stage.Level);
+            _levelView.SetLevel(stage.Level);
         }
         //void Start()
         //{

@@ -39,12 +39,15 @@ namespace PPS.DrawingTool.Tests
             yield return null;   // Awake·Start
             yield return null;   // 카메라 fit 은 LateUpdate 에서 풀린다
 
-            _flow = Object.FindFirstObjectByType<StageFlow>();
-            _stage = Object.FindFirstObjectByType<StageLoader>();
-            _session = Object.FindFirstObjectByType<DrawingSession>();
-            _driver = Object.FindFirstObjectByType<GameSimDriver>();
+            // 코어는 MonoBehaviour 가 아니라 타입으로 못 찾는다.
+            var world = Object.FindFirstObjectByType<DrawingToolComposite>();
+            Assert.IsNotNull(world, "씬에 DrawingToolComposite 가 없다 — 배선이 빠졌다");
 
-            Assert.IsNotNull(_flow, "씬에 StageFlow 가 없다 — 배선이 빠졌다");
+            _flow = world.Flow;
+            _stage = world.Stages;
+            _session = world.Session;
+            _driver = world.Driver;
+
             Assert.IsNotNull(_stage.Stage, "스테이지 파일이 안 물렸다");
         }
 
@@ -57,7 +60,7 @@ namespace PPS.DrawingTool.Tests
 
             for (int attempt = 0; attempt < Attempts; attempt++)
             {
-                _flow.OnClickPlay();
+                _flow.Play();
 
                 // 누산기를 얼리고 스텝을 직접 돌린다. Time.deltaTime
                 // 이 섞이면 회차마다 스텝 수가 달라져 비교가 성립하지
@@ -66,7 +69,7 @@ namespace PPS.DrawingTool.Tests
 
                 List<ulong> trace = StepAndHash(_driver.World);
 
-                _flow.OnClickRetry();
+                _flow.Retry();
                 yield return null;
 
                 if (first == null)
@@ -90,20 +93,20 @@ namespace PPS.DrawingTool.Tests
 
             for (int round = 0; round < 3; round++)
             {
-                for (int i = 0; i < ActionCount; i++) _session.OnClickUndo();
-                for (int i = 0; i < ActionCount; i++) _session.OnClickRedo();
+                for (int i = 0; i < ActionCount; i++) _session.Undo();
+                for (int i = 0; i < ActionCount; i++) _session.Redo();
             }
 
             AssertSame(reference, expected, "되돌리기 왕복");
 
             // 초기화도 액션 하나라 되돌리기 한 번에 돌아온다.
-            _session.OnClickClear();
-            _session.OnClickUndo();
+            _session.Clear();
+            _session.Undo();
 
             AssertSame(reference, expected, "초기화 후 되돌리기");
 
             // 「다시 그려도」 — 지운 자리에 같은 그림을 다시 만든다.
-            _session.OnClickClear();
+            _session.Clear();
             Draw();
 
             AssertSame(reference, expected, "초기화 후 재작화");

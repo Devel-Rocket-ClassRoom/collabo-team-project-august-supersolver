@@ -12,11 +12,11 @@ namespace PPS.DrawingTool.Dev
     /// 인스펙터 버튼과 메뉴 둘 다에서 부른다. 에디터
     /// 어셈블리라 빌드에는 흔적이 없다.
     /// </summary>
-    [CustomEditor(typeof(StageFlow))]
-    public class StageFlowInspector : Editor
+    [CustomEditor(typeof(DrawingToolComposite))]
+    public class DrawingToolCompositeInspector : Editor
     {
         /// <summary>
-        /// Game 오브젝트를 찾아 고르지 않아도 되게 메뉴에도
+        /// 조립자를 찾아 고르지 않아도 되게 메뉴에도
         /// 둔다. 저장은 무엇을 선택했느냐와 상관없는 일이다.
         /// </summary>
         [MenuItem("Tools/드로잉툴/리플레이 저장")]
@@ -31,8 +31,8 @@ namespace PPS.DrawingTool.Dev
             DrawDefaultInspector();
             EditorGUILayout.Space();
 
-            // 판도 그림도 재생 중에만 있다. StageLoader 가
-            // Start 에서 파일을 읽는다.
+            // 판도 그림도 재생 중에만 있다. 코어는 Awake 에서
+            // 서고 판은 스테이지를 고를 때 물린다.
             using (new EditorGUI.DisabledScope(!Application.isPlaying))
             {
                 if (GUILayout.Button("리플레이 저장 → Assets/_Project/Replays"))
@@ -44,22 +44,21 @@ namespace PPS.DrawingTool.Dev
         }
 
         /// <summary>
-        /// 씬에서 직접 찾는다. StageFlow 의 직렬화 필드를
-        /// 이름으로 들추면 필드를 바꿀 때 조용히 끊긴다.
+        /// 씬에서 조립자를 직접 찾는다. 코어는 MonoBehaviour 가
+        /// 아니라 타입으로 못 찾는다 — 주인을 거쳐 든다.
         /// </summary>
         static void SaveReplay()
         {
-            var stage = FindFirstObjectByType<StageLoader>();
-            var session = FindFirstObjectByType<DrawingSession>();
+            var world = FindFirstObjectByType<DrawingToolComposite>();
 
-            if (stage == null || session == null || stage.Stage == null)
+            if (world == null || world.Stages == null || world.Stages.Stage == null)
             {
                 Debug.LogWarning("저장할 판이나 그림이 없다.");
                 return;
             }
 
             // 저장 경로는 ReplayStorage 가 직접 로그로 남긴다.
-            ReplayStorage.Save(stage.Stage, session.Solution);
+            ReplayStorage.Save(world.Stages.Stage, world.Session.Solution);
         }
     }
 }

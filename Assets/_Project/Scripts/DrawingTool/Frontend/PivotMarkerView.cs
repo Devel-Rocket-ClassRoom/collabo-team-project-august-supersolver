@@ -29,7 +29,7 @@ namespace PPS.DrawingTool
         /// 월드 고정을 두르는 바깥 원. 안쪽 점의 배수다.
         const float WorldRingScale = 1.8f;
 
-        [SerializeField] DrawingSession _session;
+        DrawingSession _session;
         CanvasCameraFitter _fitter;
 
         // 핀은 대개 어두운 획 위에 놓여 실제 배경이 크림이
@@ -45,17 +45,41 @@ namespace PPS.DrawingTool
         /// 인덱스가 Solution.Pivots 와 같다.
         /// 시뮬 중에는 SimStageView 가 host 바디에 얹는다.
         public IReadOnlyList<Transform> Markers => _markers;
+        /// <summary>
+        /// 코어를 물린다. 조립자와 이 컴포넌트 중 어느 쪽이
+        /// 먼저 깨어나는지는 정해져 있지 않아, 구독은 배선과
+        /// 활성화 양쪽에서 건다.
+        /// </summary>
+        public void Bind(DrawingSession session)
+        {
+            if (_session != null) _session.Changed -= Refresh;
+
+            _session = session;
+
+            if (!isActiveAndEnabled) return;
+
+            _session.Changed += Refresh;
+            Refresh();
+        }
+
         private void Awake()
         {
             _fitter = CanvasCameraFitter.Instance;
         }
         void OnEnable()
         {
+            if (_session == null) return;
+
             _session.Changed += Refresh;
             Refresh();
         }
 
-        void OnDisable() => _session.Changed -= Refresh;
+        void OnDisable()
+        {
+            if (_session == null) return;
+
+            _session.Changed -= Refresh;
+        }
 
         /// <summary>
         /// 그림을 기준으로 다시 세운다. 되돌리기로 핀

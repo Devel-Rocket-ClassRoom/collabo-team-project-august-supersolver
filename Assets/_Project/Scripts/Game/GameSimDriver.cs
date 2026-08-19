@@ -1,5 +1,5 @@
+using System;
 using PPS.Core;
-using UnityEngine;
 
 namespace PPS.Game
 {
@@ -8,7 +8,7 @@ namespace PPS.Game
     /// 경과 시간을 누적기에 넘기는 일만 한다.
     /// 여기 계산이 늘면 솔버와 경로가 갈라진다.
     /// </summary>
-    public sealed class GameSimDriver : MonoBehaviour
+    public sealed class GameSimDriver : IDisposable
     {
         readonly SimAccumulator _accumulator = new SimAccumulator();
 
@@ -40,7 +40,7 @@ namespace PPS.Game
         /// </summary>
         public void StartSimulation(StageData stage, Solution solution)
         {
-            if (stage == null) throw new System.ArgumentNullException(nameof(stage));
+            if (stage == null) throw new ArgumentNullException(nameof(stage));
 
             Stop();
             _accumulator.Reset();
@@ -61,12 +61,18 @@ namespace PPS.Game
                 ? new SimResult(SimOutcome.Timeout, 0, 0, inkUsed, float.PositiveInfinity)
                 : _world.ToResult(inkUsed);
 
-        void Update()
+        /// <summary>
+        /// 소유자가 프레임마다 부른다. 스스로 Time 을 읽지
+        /// 않아 뷰가 그리기 전에 스텝을 돌릴지 뒤에 돌릴지를
+        /// 부르는 쪽이 정한다 — 실행 순서가 컴포넌트 정렬에
+        /// 좌우되지 않는다.
+        /// </summary>
+        public void Tick(float deltaTime)
         {
-            _accumulator.Advance(_world, Time.deltaTime);
+            _accumulator.Advance(_world, deltaTime);
         }
 
-        void OnDestroy()
+        public void Dispose()
         {
             Stop();
         }
