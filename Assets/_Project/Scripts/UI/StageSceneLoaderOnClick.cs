@@ -4,7 +4,7 @@ using UnityEngine.UI;
 public class StageSceneLoaderOnClick : MonoBehaviour
 {
     bool locked;
-    public async void OnClicked()
+    public async void OnClickedHome()
     {
         if (locked) return;
         locked = true;
