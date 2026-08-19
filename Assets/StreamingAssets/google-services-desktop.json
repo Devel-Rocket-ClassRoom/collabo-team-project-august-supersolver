@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "718962946739",
+    "project_id": "yummy-drawer",
+    "storage_bucket": "yummy-drawer.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:718962946739:android:d7d115b8614e22fd20b6c6",
+        "android_client_info": {
+          "package_name": "com.UnityTechnologies.com.unity.template.urpblank"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyASln_Im7hngdRInJYPsQCMoc3v8tuXVJg"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
