@@ -1,3 +1,4 @@
+using PPS.Core;
 using PPS.Game;
 using UnityEngine;
 
@@ -28,8 +29,17 @@ namespace PPS.DrawingTool
 
         public StageMode Mode => _flow.Mode;
 
-        void Start() => Apply();
-
+        void Start()
+        {
+            Apply();
+            ServiceLocator.Get<IRewardView>().BindButtonListener(
+                retry: () => { 
+                    OnClickRetry(); 
+                    ServiceLocator.Get<IRewardView>().Hide(); 
+                },
+                home: null,  // DI 때문에 StageSceneLoaderOnClick.cs 에서 주입
+                next: null); // DI 때문에 StageSceneLoaderOnClick.cs 에서 주입
+        }
         /// <summary>
         /// 판이 갈렸다. 그림·시뮬·모드가 전부 이전 판의
         /// 것이라 통째로 버린다 — 남겨 두면 스테이지 2 에서

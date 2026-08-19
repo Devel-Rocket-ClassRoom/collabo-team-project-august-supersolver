@@ -47,6 +47,7 @@ public class StageButton : MonoBehaviour
 
             StageLoader.SetStage(StageData);
             TutorialViewer.SetStage(stageIdx);
+            CurrentStageIndex.CurrentStage = stageIdx;
         }
         locked = false;
     }

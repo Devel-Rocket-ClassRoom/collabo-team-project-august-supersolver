@@ -4867,6 +4867,7 @@ GameObject:
   - component: {fileID: 5266486316885008130}
   - component: {fileID: 8646197309606334596}
   - component: {fileID: 4242659831386256946}
+  - component: {fileID: 8039607343141610814}
   m_Layer: 0
   m_Name: Game
   m_TagString: Untagged
@@ -4953,8 +4954,21 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: PPS.DrawingTool::PPS.DrawingTool.ResultBanner
   _driver: {fileID: 2487151381449205098}
+  _session: {fileID: 8860626864616630411}
   _banner: {fileID: 1683656292986877368}
   _label: {fileID: 1108063907814056867}
+--- !u!114 &8039607343141610814
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8160753180668085176}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 33ba3b3caa63aae4faee76827f6c4388, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::StageSceneLoaderOnClick
 --- !u!1 &8279939822960021732
 GameObject:
   m_ObjectHideFlags: 0

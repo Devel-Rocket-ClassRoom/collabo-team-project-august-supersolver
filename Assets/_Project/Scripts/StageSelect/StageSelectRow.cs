@@ -1,9 +1,10 @@
+using PPS.Core;
 using System;
 using UnityEngine;
 
 public class StageSelectRow : MonoBehaviour
 {
-    public const int StagePerRow = 3;
+    public const int StagePerRow = CurrentStageIndex.StagePerRow;
     [SerializeField] StageButton[] buttons;
 
     private void OnValidate()
