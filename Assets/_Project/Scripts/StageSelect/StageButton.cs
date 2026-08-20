@@ -22,7 +22,7 @@ public class StageButton : MonoBehaviour
     public void OnUpdate(int stageIdx, int maxStageIdx, int lastCleared)
     {
         if (stageIdx < 0 || stageIdx >= maxStageIdx 
-            || stageIdx > CurrentStageIndex.GetStageAndThemeIndex(lastCleared).Item2 + 1)
+            || stageIdx >= CurrentStageIndex.GetStageAndThemeIndex(lastCleared).Item2)
         {
             img.sprite = Spr_Locked;
             stageNumText.text = "";
