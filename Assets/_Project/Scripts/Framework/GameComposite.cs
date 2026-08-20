@@ -14,21 +14,24 @@ public sealed class GameComposite : MonoSingleton<GameComposite>
         Debug.Log($"로딩 화면 띄우기 완료 elapsed: {Time.time - elapsed}");
 
         // 유저 데이터 레포지토리
-        IUserDataStorage userDataStorage = new PlayerPrefsUserDataStorage();
+        // 조회: IUserDataRepository
+        // 세이브로드: IUserDataService
+        IUserDataStorage userDataStorage = new FakeUserDataStorage();
         IUserDataService userDataService = new UserDataService(userDataStorage);
-        ServiceLocator.Register(userDataService);   // 세이브 로드용
+        ServiceLocator.Register(userDataService);
         Debug.Log($"유저 데이터 서비스 등록 완료 elapsed: {Time.time - elapsed}");
         UserDataLoadResult result = await userDataService.LoadAsync();
         if(result.Success == false)
         {
-            Debug.LogWarning("유저 데이터 로드 실패: " + result.ErrorMessage);
-        }else
+            Debug.LogError("유저 데이터 로드 실패: " + result.ErrorMessage);
+        }
+        else
         {
             Debug.Log($"유저 데이터 로드 완료 elapsed: {Time.time - elapsed}");
+            IUserDataRepository userrepo = new UserDataRepository(result.Data);
+            ServiceLocator.Register(userrepo);
+            Debug.Log($"유저 데이터 서비스 등록 완료 elapsed: {Time.time - elapsed}");
         }
-        IUserDataRepository userrepo = new UserDataRepository(result.Data);
-        ServiceLocator.Register(userrepo); // 조회용
-        Debug.Log($"유저 데이터 서비스 등록 완료 elapsed: {Time.time - elapsed}");
 
         // 리소스 로더
         IResourceLoader loader = new AddressableLoader();
