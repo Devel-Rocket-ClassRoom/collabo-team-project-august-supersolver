@@ -6,7 +6,8 @@
         "PPS.Game",
         "Unity.InputSystem",
         "UnityEngine.UI",
-        "Unity.TextMeshPro"
+        "Unity.TextMeshPro",
+        "UniTask"
     ],
     "includePlatforms": [],
     "excludePlatforms": [],

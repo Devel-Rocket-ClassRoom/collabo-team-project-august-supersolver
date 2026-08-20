@@ -70,14 +70,15 @@ namespace PPS.Core
         }
 
         /// <summary>
-        /// 선분마다 사각형으로 부풀려 경로로 넣는다.
+        /// 선분마다 사각형으로 부풀려 콜라이더를 따로 붙인다.
+        /// 한 PolygonCollider2D 에 경로를 모으면 겹친 경로가
+        /// 통째로 볼록 분해되어, 자기교차가 많은 획에서
+        /// fixture 가 선분 수의 십수 배로 불어난다.
         /// 자식을 안 만들어야 해시 순서가 그대로다.
         /// 양 끝을 늘여 꺾이는 지점의 틈을 막는다.
         /// </summary>
         static void AddThickCollider(GameObject go, Vector2[] points)
         {
-            var paths = new List<Vector2[]>(Mathf.Max(points.Length - 1, 1));
-
             for (int i = 1; i < points.Length; i++)
             {
                 Vector2 a = points[i - 1];
@@ -92,12 +93,9 @@ namespace PPS.Core
                 Vector2 start = a - cap;
                 Vector2 end = points[i] + cap;
 
-                paths.Add(new[] { start - normal, start + normal, end + normal, end - normal });
+                var poly = go.AddComponent<PolygonCollider2D>();
+                poly.SetPath(0, new[] { start - normal, start + normal, end + normal, end - normal });
             }
-
-            var poly = go.AddComponent<PolygonCollider2D>();
-            poly.pathCount = paths.Count;
-            for (int i = 0; i < paths.Count; i++) poly.SetPath(i, paths[i]);
         }
 
         public static Rigidbody2D CreateSegment(Scene scene, in StaticSegment segment, string name)

@@ -257,14 +257,14 @@ namespace PPS.Tools
             // 자유 물체 — 외곽이 아니라 원래 그은 선을 그린다.
             // 두께는 충돌을 성립시키려고 붙인 것이지
             // 유저가 그린 것이 아니다.
-            var polygon = body.GetComponent<PolygonCollider2D>();
-            if (polygon != null)
+            var polygons = body.GetComponents<PolygonCollider2D>();
+            if (polygons.Length > 0)
             {
                 var transform = body.transform;
 
-                for (int p = 0; p < polygon.pathCount; p++)
+                for (int p = 0; p < polygons.Length; p++)
                 {
-                    var path = polygon.GetPath(p);
+                    var path = polygons[p].GetPath(0);
                     if (path.Length != 4) continue;
 
                     Vector2 start = (path[0] + path[1]) * 0.5f;

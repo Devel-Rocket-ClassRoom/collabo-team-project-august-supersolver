@@ -15,8 +15,18 @@ MonoBehaviour:
   m_GroupName: Default Local Group
   m_GUID: 5e72da14fcadd664a8a97f50fdabd2ff
   m_SerializeEntries:
+  - m_GUID: 6a9da34b903c10648878310fac96be6c
+    m_Address: HomeConfirmPopup
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 83cb548f708637a40a2df616f9f9754f
     m_Address: RewardPopupUI
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 84dd56a5a1dfd4447a79ef211ae1d461
+    m_Address: SettingsPopup
     m_ReadOnly: 0
     m_SerializedLabels: []
     FlaggedDuringContentUpdateRestriction: 0

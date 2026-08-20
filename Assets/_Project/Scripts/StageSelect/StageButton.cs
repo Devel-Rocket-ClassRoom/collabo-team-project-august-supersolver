@@ -19,9 +19,10 @@ public class StageButton : MonoBehaviour
     [SerializeField] TextMeshProUGUI stageNumText;
     int stageIdx = -1;
 
-    public void OnUpdate(int stageIdx, int maxStageIdx)
+    public void OnUpdate(int stageIdx, int maxStageIdx, int lastCleared)
     {
-        if(stageIdx < 0 || stageIdx >= maxStageIdx)
+        if (stageIdx < 0 || stageIdx >= maxStageIdx 
+            || stageIdx > CurrentStageIndex.GetStageAndThemeIndex(lastCleared).Item2)
         {
             img.sprite = Spr_Locked;
             stageNumText.text = "";

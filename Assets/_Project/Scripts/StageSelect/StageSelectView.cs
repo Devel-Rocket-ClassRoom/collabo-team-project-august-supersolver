@@ -48,7 +48,11 @@ public class StageSelectView : UIScene
         base.OnBeforeShow();
         for (int i = 0; i < MaxRow; i++)
         {
-            rowPool[i].OnUpdate(i * StagePerRow, _repo.Asset.Stages.Count);
+            rowPool[i].OnUpdate(
+                startIdx:       i * StagePerRow,
+                maxStageIdx:    _repo.Asset.Stages.Count,
+                lastCleared:    ServiceLocator.Get<IUserDataRepository>().Data.LastClearedStageIndex
+                );
         }
     }
     void UpdateTheme()
