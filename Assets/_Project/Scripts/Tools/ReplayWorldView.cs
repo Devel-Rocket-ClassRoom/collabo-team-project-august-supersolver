@@ -280,18 +280,18 @@ namespace PPS.Tools
             }
 
             // 다각형 Collider가 있는지 확인한다.
-            PolygonCollider2D polygon = body.GetComponent<PolygonCollider2D>();
+            PolygonCollider2D[] polygons = body.GetComponents<PolygonCollider2D>();
 
-            if (polygon != null)
+            if (polygons.Length > 0)
             {
                 // 지역 좌표를 월드 좌표로 바꾸기 위한 Transform을 가져온다.
                 Transform bodyTransform = body.transform;
 
-                // PolygonCollider2D의 모든 경로를 확인한다.
-                for (int pathIndex = 0; pathIndex < polygon.pathCount; pathIndex++)
+                // 선분마다 붙은 PolygonCollider2D를 모두 확인한다.
+                for (int pathIndex = 0; pathIndex < polygons.Length; pathIndex++)
                 {
                     // 현재 다각형 경로의 점들을 가져온다.
-                    Vector2[] path = polygon.GetPath(pathIndex);
+                    Vector2[] path = polygons[pathIndex].GetPath(0);
 
                     // 마지막 점과 첫 번째 점까지 연결해 닫힌 도형으로 만든다.
                     for (int i = 0; i < path.Length; i++)
