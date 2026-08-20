@@ -12,7 +12,7 @@ using UnityEngine.UI;
 public class RewardView : UIPopup, IRewardView
 {
     /// 한 챕터에 들어가는 스테이지 수. 1-1 ~ 1-20 표기용.
-    private const int StagesPerChapter = 20;
+    private const int StagesPerChapter = CurrentStageIndex.StagePerTheme;
 
     [Header("Content")]
     [SerializeField] private RectTransform content;
@@ -147,8 +147,7 @@ public class RewardView : UIPopup, IRewardView
     /// 스테이지 인덱스는 0 부터 시작한다고 본다.
     private static string FormatStage(int stageIndex)
     {
-        int chapter = stageIndex / StagesPerChapter + 1;
-        int number = stageIndex % StagesPerChapter + 1;
+        (int chapter, int number) = CurrentStageIndex.GetStageAndThemeIndex(stageIndex);
         return $"{chapter} - {number}";
     }
 
