@@ -45,9 +45,6 @@ namespace PPS.DrawingTool
         /// 확정된 획만 센 잔량. 획을 시작할 때 쓰는 값이다.
         public float RemainingInk => _level.InkLimit - _session.Solution.TotalInk();
 
-        /// <summary>그리던 획을 버린다. 시뮬레이션 진입이 부른다.</summary>
-        public void CancelStroke() => _recognizer.Abort();
-
         /// <summary>
         /// 잉크 상한이 나오는 판을 물린다. 획을 그린 뒤에
         /// 바뀌면 잔량이 음수가 되므로 레벨을 붙일 때
@@ -75,6 +72,12 @@ namespace PPS.DrawingTool
 
         void OnDisable()
         {
+            // 버튼을 누른 손이 그 프레임에 이 층을 끈다.
+            // 뗀 것을 못 본 채 꺼지므로 잡고 있던 id 가 남아
+            // first-touch-wins 가 다음 손가락을 계속 막는다.
+            _recognizer.Abort();
+            _consumed.Clear();
+
             _recognizer.StrokeConfirmed -= _session.AddStroke;
             _recognizer.PivotRequested -= PlacePivot;
             _recognizer.EraseRequested -= Erase;
