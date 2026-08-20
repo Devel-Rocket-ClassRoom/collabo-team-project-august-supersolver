@@ -24,6 +24,7 @@ namespace PPS.DrawingTool
         [SerializeField] GameObject _play;
         [SerializeField] GameObject _pauseResume;
         [SerializeField] GameObject _speed;
+        [SerializeField] GameObject _retry;
 
         readonly StageStateMachine _flow = new StageStateMachine();
 
@@ -118,6 +119,7 @@ namespace PPS.DrawingTool
             _pauseResume.SetActive(!drawing);
 
             _speed.SetActive(!drawing);
+            _retry.SetActive(!drawing);
         }
     }
 }
