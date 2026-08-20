@@ -1,3 +1,4 @@
+using Cysharp.Threading.Tasks;
 using PPS.Core;
 using PPS.Game;
 using TMPro;
@@ -41,8 +42,12 @@ namespace PPS.DrawingTool
             _banner.SetActive(decided);
             if(decided)
             {
+                // 클리어에 대한 처리만 하고, Stalled와 Failed는 일부러 처리를 누락해서 유저가 직접 재시작 버튼을 누르도록 한다.
+                // Todo: Stalled와 Failed의 경우 재시작 버튼 깜빡임 등 피드백 처리
                 if(world.Judge.Cleared)
                 {
+                    SaveThatStageCleared(world.Judge.Stars);
+
                     RewardViewModel vm = new RewardViewModel()
                     {
                         InkUsed = _session.Solution.TotalInk(),
@@ -56,7 +61,21 @@ namespace PPS.DrawingTool
                 _label.text = TextOf(world.Judge);
             }
         }
+        void SaveThatStageCleared(int stars)
+        {
+            var data = ServiceLocator.Get<IUserDataRepository>().Data;
+            data.StageClears.Add(new StageClearData()
+            {
+                BestStars = stars,
+                IsCleared = true,
+                StageIndex = CurrentStageIndex.CurrentStage,
+            });
 
+            // 이전에 클리어한 스테이지를 다시 플레이해 클리어해도, 저장되는 데이터는 가장 많이 진척된 시점
+            data.LastClearedStageIndex = Mathf.Max(CurrentStageIndex.CurrentStage, data.LastClearedStageIndex);
+            
+            ServiceLocator.Get<IUserDataService>().SaveAsync(data).Forget();
+        }
         /// <summary>
         /// 클리어 문구가 별을 함께 알린다 — 보상 화면이
         /// 붙기 전까지 이게 결과 표시의 전부다.
