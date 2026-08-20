@@ -87,6 +87,17 @@ namespace PPS.DrawingTool
         }
 
         /// <summary>
+        /// 팝업이 화면을 덮는 동안 공이 굴러가면 손해다.
+        /// 닫을 때 되돌리지 않는다 — 재개는 플레이어가 정한다.
+        /// </summary>
+        public void PauseForPopup()
+        {
+            if (_flow.Mode != StageMode.Simulate) return;
+
+            OnClickPauseResume();
+        }
+
+        /// <summary>
         /// 되감기가 아니라 전파괴다. 되돌리기 스택은 건드리지
         /// 않는다 — 재시도 뒤에도 되돌릴 수 있어야 한다.
         /// 도구도 그대로다. ToolSelection 이 씬에 살아 있어
