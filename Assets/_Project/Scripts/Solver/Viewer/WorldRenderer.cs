@@ -72,14 +72,14 @@ namespace PPS.Solver.Viewer
                 return;
             }
 
-            var polygon = body.GetComponent<PolygonCollider2D>();
-            if (polygon != null)
+            var polygons = body.GetComponents<PolygonCollider2D>();
+            if (polygons.Length > 0)
             {
                 var at = body.transform;
 
-                for (int p = 0; p < polygon.pathCount; p++)
+                for (int p = 0; p < polygons.Length; p++)
                 {
-                    var path = polygon.GetPath(p);
+                    var path = polygons[p].GetPath(0);
                     for (int i = 0; i < path.Length; i++)
                         GLDraw.Line(at.TransformPoint(path[i]),
                                     at.TransformPoint(path[(i + 1) % path.Length]));
