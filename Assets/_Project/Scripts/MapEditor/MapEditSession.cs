@@ -67,10 +67,36 @@ namespace PPS.MapEditor
         public void Save()
         {
             Bake();
-            MapFile.Save(_stage, _shapes);
-            _path = MapFile.PathOf(_stage.StageId);
+
+            if (_path.Length == 0) _path = MapFile.PathOf(_stage.StageId);
+            MapFile.Save(_stage, _shapes, _path);
 
             Debug.Log($"[맵 에디터] 저장: {_path}");
+        }
+
+        /// <summary>
+        /// 이름을 새로 받아 저장한다.
+        /// 판 이름은 파일 이름을 따라간다 — 둘이 어긋나면
+        /// 도형 파일이 짝을 못 찾는다.
+        /// </summary>
+        public void SaveAs()
+        {
+#if UNITY_EDITOR
+            string picked = UnityEditor.EditorUtility.SaveFilePanel(
+                "다른 이름으로 저장", MapFile.Folder, _stage.StageId, "json");
+
+            if (string.IsNullOrEmpty(picked)) return;
+
+            _stage.StageId = System.IO.Path.GetFileNameWithoutExtension(picked);
+
+            Bake();
+            MapFile.Save(_stage, _shapes, picked);
+            _path = picked;
+
+            Debug.Log($"[맵 에디터] 다른 이름으로 저장: {_path}");
+#else
+            Debug.LogWarning("[맵 에디터] 다른 이름으로 저장은 에디터에서만 된다.");
+#endif
         }
 
         public void Load()

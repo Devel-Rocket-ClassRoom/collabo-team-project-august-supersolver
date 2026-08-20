@@ -13,24 +13,33 @@ namespace PPS.MapEditor
     {
         public const string Folder = "Assets/_Project/Levels";
 
+        /// 도형 파일만 모아 두는 하위 폴더 이름.
+        public const string ShapeFolderName = "EditorJson";
+
         public static string PathOf(string stageId) => $"{Folder}/{stageId}.json";
 
         /// <summary>
-        /// 도형 그룹은 에디터만 읽는다. 레벨 파일에
-        /// 섞으면 게임·솔버가 쓰지 않는 값을 지고 간다.
+        /// 도형 그룹은 에디터만 읽는다. 레벨 파일과
+        /// 섞이면 게임·솔버가 쓰지 않는 값이 눈에 걸린다.
         /// </summary>
-        public static string ShapePathOf(string stageId) => $"{Folder}/{stageId}.edit.json";
+        public static string ShapePathOf(string stageId)
+            => $"{Folder}/{ShapeFolderName}/{stageId}.edit.json";
 
-        public static void Save(StageData stage, MapShapes shapes)
+        /// <param name="stagePath">쓸 레벨 파일 경로. 비우면 기본 폴더.</param>
+        public static void Save(StageData stage, MapShapes shapes, string stagePath = null)
         {
-            Directory.CreateDirectory(Folder);
+            if (string.IsNullOrEmpty(stagePath)) stagePath = PathOf(stage.StageId);
 
-            File.WriteAllText(PathOf(stage.StageId), stage.ToJson());
+            Directory.CreateDirectory(Path.GetDirectoryName(stagePath) ?? Folder);
+            File.WriteAllText(stagePath, stage.ToJson());
 
             if (shapes != null)
             {
                 shapes.StageId = stage.StageId;
-                File.WriteAllText(ShapePathOf(stage.StageId), shapes.ToJson());
+
+                string shapePath = ShapePathFor(stagePath);
+                Directory.CreateDirectory(Path.GetDirectoryName(shapePath));
+                File.WriteAllText(shapePath, shapes.ToJson());
             }
 
 #if UNITY_EDITOR
@@ -57,6 +66,9 @@ namespace PPS.MapEditor
         {
             string path = ShapePathFor(stagePath);
 
+            // 하위 폴더로 옮기기 전에 저장한 파일은 레벨 옆에 있다.
+            if (!File.Exists(path)) path = LegacyShapePathFor(stagePath);
+
             if (File.Exists(path))
             {
                 var shapes = MapShapes.FromJson(File.ReadAllText(path));
@@ -71,6 +83,14 @@ namespace PPS.MapEditor
         }
 
         static string ShapePathFor(string stagePath)
+        {
+            string directory = Path.GetDirectoryName(stagePath);
+            string name = Path.GetFileNameWithoutExtension(stagePath);
+
+            return Path.Combine(directory ?? Folder, ShapeFolderName, name + ".edit.json");
+        }
+
+        static string LegacyShapePathFor(string stagePath)
         {
             string directory = Path.GetDirectoryName(stagePath);
             string name = Path.GetFileNameWithoutExtension(stagePath);
