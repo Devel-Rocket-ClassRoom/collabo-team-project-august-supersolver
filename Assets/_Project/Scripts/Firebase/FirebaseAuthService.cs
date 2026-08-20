@@ -2,6 +2,7 @@ using Firebase;
 using Firebase.Auth;
 using Firebase.Extensions;
 using UnityEngine;
+using System;
 
 namespace PPS.Core
 {
@@ -15,6 +16,9 @@ namespace PPS.Core
 
         // 현재 로그인된 사용자를 외부에서 확인할 수 있게 한다.
         public FirebaseUser CurrentUser => _auth?.CurrentUser;
+
+        // Firebase 로그인이 성공하면 로그인된 사용자와 함께 발생한다.
+        public event Action<FirebaseUser> SignedIn;
 
         void Start()
         {
@@ -75,7 +79,29 @@ namespace PPS.Core
             Credential credential = GoogleAuthProvider.GetCredential(googleIdToken, null);
 
             // 변환한 인증 정보로 Firebase에 로그인한다.
-            _auth.SignInWithCredentialAsync(credential);
+            _auth.SignInWithCredentialAsync(credential).ContinueWithOnMainThread(task =>
+            {
+                // 로그인 요청이 취소된 경우
+                if (task.IsCanceled)
+                {
+                    Debug.LogWarning("Firebase Google 로그인이 취소되었습니다.");
+                    return;
+                }
+                // 토큰 오류나 Firebase 설정 문제로 로그인이 실패한 경우
+                if (task.IsFaulted)
+                {
+                    Debug.LogError($"Firebase Google 로그인 실패: {task.Exception}");
+                    return;
+                }
+                // Firebase 로그인이 완료된 사용자 정보를 가져온다.
+                FirebaseUser user = task.Result;
+
+                // 성공한 계정의 이메일과 UID를 확인한다.
+                Debug.Log($"Firebase Google 로그인 성공: Email = {user.Email}, UID = {user.UserId}");
+
+                // 로그인 성공 사실을 데이터 로더와 UI 등에 전달한다.
+                SignedIn?.Invoke(user);
+            });
         }
 
         // 입력 받은 이메일과 비밀번호로 새로운 Firebase 계정을 만든다.

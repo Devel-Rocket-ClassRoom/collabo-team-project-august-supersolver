@@ -6,7 +6,10 @@ apply from: '../shared/common.gradle'
 dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
 // Android Resolver Dependencies Start
+    implementation 'androidx.credentials:credentials:1.3.0' // Assets/_Project/Scripts/Firebase/Editor/GoogleSignInDependencies.xml:6
+    implementation 'androidx.credentials:credentials-play-services-auth:1.3.0' // Assets/_Project/Scripts/Firebase/Editor/GoogleSignInDependencies.xml:9
     implementation 'com.google.android.gms:play-services-base:18.10.0' // Packages/com.google.firebase.app/Firebase/Editor/AppDependencies.xml:20
+    implementation 'com.google.android.libraries.identity.googleid:googleid:1.1.1' // Assets/_Project/Scripts/Firebase/Editor/GoogleSignInDependencies.xml:12
     implementation 'com.google.firebase:firebase-analytics:23.2.0' // Packages/com.google.firebase.auth/Firebase/Editor/AuthDependencies.xml:18
     implementation 'com.google.firebase:firebase-app-unity:13.15.0' // Packages/com.google.firebase.app/Firebase/Editor/AppDependencies.xml:25
     implementation 'com.google.firebase:firebase-auth:24.2.0' // Packages/com.google.firebase.auth/Firebase/Editor/AuthDependencies.xml:16

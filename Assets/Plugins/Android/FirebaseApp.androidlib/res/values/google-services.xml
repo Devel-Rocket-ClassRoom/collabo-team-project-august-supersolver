@@ -1,9 +1,11 @@
 <?xml version='1.0' encoding='utf-8'?>
-<resources xmlns:tools="http://schemas.android.com/tools" tools:keep="@string/gcm_defaultSenderId,@string/google_storage_bucket,@string/project_id,@string/google_api_key,@string/google_crash_reporting_api_key,@string/google_app_id">
+<resources xmlns:tools="http://schemas.android.com/tools" tools:keep="@string/gcm_defaultSenderId,@string/google_storage_bucket,@string/project_id,@string/google_api_key,@string/google_crash_reporting_api_key,@string/google_app_id,@string/default_android_client_id,@string/default_web_client_id">
   <string name="gcm_defaultSenderId" translatable="false">718962946739</string>
   <string name="google_storage_bucket" translatable="false">yummy-drawer.firebasestorage.app</string>
   <string name="project_id" translatable="false">yummy-drawer</string>
   <string name="google_api_key" translatable="false">AIzaSyASln_Im7hngdRInJYPsQCMoc3v8tuXVJg</string>
   <string name="google_crash_reporting_api_key" translatable="false">AIzaSyASln_Im7hngdRInJYPsQCMoc3v8tuXVJg</string>
   <string name="google_app_id" translatable="false">1:718962946739:android:d7d115b8614e22fd20b6c6</string>
+  <string name="default_android_client_id" translatable="false">718962946739-69do4eecjb2e0d888rgt7bjb3t67kseo.apps.googleusercontent.com</string>
+  <string name="default_web_client_id" translatable="false">718962946739-6i2q5hd8ffcukn4v9gqo8ac6atfj9koe.apps.googleusercontent.com</string>
 </resources>
