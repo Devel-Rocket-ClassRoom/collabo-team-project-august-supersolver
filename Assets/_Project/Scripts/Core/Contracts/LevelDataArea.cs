@@ -30,6 +30,28 @@ namespace PPS.Core
                 //지형 선분의 끝점 B를 영역에 포함한다.
                 Include(level.Terrain[i].B, ref min, ref max);
             }
+
+            // 장치도 화면에 보이고 플레이어가 대응해야 하는
+            // 대상이라 영역이 품는다. 폭탄·바람은 반경이
+            // 곧 영향 범위라 점이 아니라 반경으로 넣는다.
+            for (int i = 0; i < level.Devices.Count; i++)
+            {
+                Vector2 center = level.Devices[i].Position;
+                Vector2 reach = Vector2.one * level.Devices[i].Radius;
+
+                Include(center - reach, ref min, ref max);
+                Include(center + reach, ref min, ref max);
+            }
+
+            // 별은 먹는 판정 반경만큼 자리를 차지한다.
+            for (int i = 0; i < level.Stars.Count; i++)
+            {
+                Vector2 reach = Vector2.one * LevelData.StarCaptureRadius;
+
+                Include(level.Stars[i] - reach, ref min, ref max);
+                Include(level.Stars[i] + reach, ref min, ref max);
+            }
+
             return Rect.MinMaxRect(
                 min.x - AreaMargin,
                 min.y - AreaMargin,

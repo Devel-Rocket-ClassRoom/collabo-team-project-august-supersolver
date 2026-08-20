@@ -41,5 +41,36 @@ namespace PPS.Core.Tests
             // 목표의 위쪽에서 Margin만큼 확장 됐는지 확인한다.
             Assert.AreEqual(0.5f + margin, area.yMax, Eps);
         }
+
+        [Test]
+        public void 영역은_장치와_별도_반경까지_담는다()
+        {
+            var level = new LevelData
+            {
+                BallStart = Vector2.zero,
+                GoalPosition = Vector2.zero,
+            };
+
+            // 아래로 반경 2를 뻗은 장치. 바닥이 -5가 된다.
+            level.Devices.Add(new DeviceData
+            {
+                Type = DeviceType.Wind,
+                Position = new Vector2(0f, -3f),
+                Radius = 2f,
+            });
+
+            // 오른쪽 끝의 별. 판정 반경만큼 더 나간다.
+            level.Stars.Add(new Vector2(4f, 0f));
+
+            Rect area = LevelDataArea.Calculate(level);
+            float margin = LevelDataArea.AreaMargin;
+
+            // 장치의 반경 아래끝에서 Margin만큼 확장 됐는지 확인한다.
+            Assert.AreEqual(-5f - margin, area.yMin, Eps);
+
+            // 별의 판정 반경 오른쪽 끝을 담았는지 확인한다.
+            Assert.AreEqual(
+                4f + LevelData.StarCaptureRadius + margin, area.xMax, Eps);
+        }
     }
 }
