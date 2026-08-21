@@ -85,7 +85,8 @@ namespace PPS.DrawingTool.Tests
 
             Assert.AreEqual(3, _session.Solution.Strokes.Count, "획이 안 돌아왔다");
             Assert.AreEqual(2, _session.Solution.Pivots[0].StrokeB, "핀 인덱스가 안 돌아왔다");
-            Assert.AreEqual(3f, _session.Solution.TotalInk(), 0f, "잉크가 안 돌아왔다");
+            Assert.AreEqual(3f + PivotJoint.InkCost, _session.Solution.TotalInk(), 0f,
+                "잉크가 안 돌아왔다");
         }
 
         [Test]
@@ -98,6 +99,9 @@ namespace PPS.DrawingTool.Tests
 
             Assert.AreEqual(0, _session.Solution.Pivots.Count);
             Assert.AreEqual(2, _session.Solution.Strokes.Count, "핀을 지웠는데 획이 없어졌다");
+
+            // 핀 잉크도 잔량 재계산이라 환급 로직이 없다.
+            Assert.AreEqual(2f, _session.Solution.TotalInk(), 0f, "핀 잉크가 안 돌아왔다");
         }
 
         [Test]

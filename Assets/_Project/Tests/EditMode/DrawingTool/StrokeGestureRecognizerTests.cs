@@ -207,17 +207,32 @@ namespace PPS.DrawingTool.Tests
         }
 
         [Test]
-        public void 잔량이_0_이어도_회전축_탭은_핀을_요청한다()
+        public void 핀_값만큼_잔량이_있으면_회전축_탭이_핀을_요청한다()
         {
             _tool = DrawTool.PivotSingle;
-            _ink = 0f;
+            _ink = PivotJoint.InkCost;
 
             // 이동 0.02wu 는 탭 임계값(0.08wu) 안이다.
             Drag(V(1f, 2f), V(1f, 2.02f));
 
-            Assert.AreEqual(1, _pivots.Count, "핀은 잉크를 쓰지 않는다");
+            Assert.AreEqual(1, _pivots.Count);
             Assert.AreEqual(0, _confirmed.Count, "핀 도구가 획을 만들었다");
             Assert.AreEqual(V(1f, 2f), _pivots[0], "앵커는 손가락을 누른 자리다");
+        }
+
+        /// <summary>
+        /// 월드 고정은 빈 곳에도 항상 찍힌다. 잉크가 안 막으면
+        /// 탭 반복만으로 핀과 되돌리기 스냅샷이 무한히 쌓인다.
+        /// </summary>
+        [Test]
+        public void 잔량이_핀_값에_모자라면_회전축_탭이_헛돈다()
+        {
+            _tool = DrawTool.PivotWorld;
+            _ink = PivotJoint.InkCost - 0.01f;
+
+            Drag(V(1f, 2f), V(1f, 2.02f));
+
+            Assert.AreEqual(0, _pivots.Count, "잔량이 모자란데 핀이 생겼다");
         }
 
         [Test]
