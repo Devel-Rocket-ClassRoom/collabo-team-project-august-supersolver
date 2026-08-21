@@ -9,6 +9,11 @@ namespace PPS.MapEditor
     /// </summary>
     public sealed class MapEditSession : MonoBehaviour
     {
+        /// 킬라인이 플레이 영역 아래 변보다 더 내려가는 만큼.
+        /// 변에 붙여 두면 죽는 자리가 경계선과 겹쳐 낙하가
+        /// 안 보이고 이펙트가 화면 끝에 걸린다.
+        const float KillDrop = 1f;
+
         StageData _stage = NewStage();
 
         /// <summary>
@@ -48,9 +53,11 @@ namespace PPS.MapEditor
         {
             ShapeBaker.Bake(_shapes, _stage.Level);
 
-            // 킬라인은 플레이 영역의 아래 변이다. 저장 때만
-            // 잡으면 테스트 플레이가 옛 자리에서 죽는다.
-            _stage.Level.KillY = LevelDataArea.Calculate(_stage.Level).yMin;
+            // 킬라인은 플레이 영역 아래 변에서 더 내려간다.
+            // 저장 때만 잡으면 테스트 플레이가 옛 자리에서
+            // 죽는다.
+            _stage.Level.KillY =
+                LevelDataArea.Calculate(_stage.Level).yMin - KillDrop;
         }
 
         /// <summary>빈 맵으로 새로 시작한다.</summary>

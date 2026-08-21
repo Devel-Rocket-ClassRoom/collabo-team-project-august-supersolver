@@ -23,6 +23,11 @@ namespace PPS.DrawingTool
         readonly Vector3[] _corners = new Vector3[4];
 
         Rect _levelPlayArea;
+
+        /// 카메라가 담아야 할 곳. 그릴 수 있는 곳에 죽는
+        /// 선까지 더한 값이다.
+        Rect _levelViewArea;
+
         bool _hasLevel;
         bool _warnedFallback;
         CameraFrame _frame;
@@ -30,12 +35,16 @@ namespace PPS.DrawingTool
 
         Rect _appliedCanvas;
         Vector2 _appliedScreen;
-        Rect _appliedPlayArea;
+        Rect _appliedViewArea;
 
         /// 화면 픽셀 ↔ 월드 환산 계수. dp 판정이 쓴다.
         public float PixelsPerUnit => _frame.PixelsPerUnit;
 
+        /// 그릴 수 있는 곳. 획 클램프가 쓴다.
         public Rect PlayArea => _hasLevel ? _levelPlayArea : _fallbackPlayArea;
+
+        /// fit 기준. 레벨이 없으면 킬라인도 없다.
+        Rect ViewArea => _hasLevel ? _levelViewArea : _fallbackPlayArea;
 
         public bool IsReady => _solved;
 
@@ -60,13 +69,24 @@ namespace PPS.DrawingTool
 
         /// <summary>
         /// 레벨이 정해지면 그리기 영역도 정해진다.
-        /// 영역은 레벨 내용물에서 나오는 값이라
-        /// 여기서 계산하지 않는다.
+        /// 영역은 레벨 내용물에서 나오는 값이라 여기서
+        /// 계산하지 않는다 — 킬라인을 더해 fit 기준을
+        /// 만드는 것만 여기 몫이다.
         /// </summary>
         public void SetLevel(LevelData level)
         {
             _hasLevel = level != null;
-            if (_hasLevel) _levelPlayArea = LevelDataArea.Calculate(level);
+            if (!_hasLevel) return;
+
+            _levelPlayArea = LevelDataArea.Calculate(level);
+
+            // 죽는 자리가 화면 밖이면 왜 죽었는지 알 수 없다.
+            // 그릴 수 있는 곳은 그대로 두고 보는 만큼만 넓힌다.
+            _levelViewArea = Rect.MinMaxRect(
+                _levelPlayArea.xMin,
+                Mathf.Min(_levelPlayArea.yMin, level.KillY),
+                _levelPlayArea.xMax,
+                _levelPlayArea.yMax);
         }
 
         /// <summary>
@@ -79,17 +99,17 @@ namespace PPS.DrawingTool
 
             Rect canvas = CanvasPixelRect();
             var screen = new Vector2(Screen.width, Screen.height);
-            Rect playArea = PlayArea;
+            Rect viewArea = ViewArea;
 
             if (canvas == _appliedCanvas
                 && screen == _appliedScreen
-                && playArea == _appliedPlayArea) return;
+                && viewArea == _appliedViewArea) return;
 
-            if (!CanvasFit.TrySolve(canvas, screen, playArea, out _frame)) return;
+            if (!CanvasFit.TrySolve(canvas, screen, viewArea, out _frame)) return;
 
             _appliedCanvas = canvas;
             _appliedScreen = screen;
-            _appliedPlayArea = playArea;
+            _appliedViewArea = viewArea;
             _solved = true;
 
             // 임시 영역은 그럴듯해 보여서 더 위험하다.
@@ -97,7 +117,7 @@ namespace PPS.DrawingTool
             if (!_hasLevel && !_warnedFallback)
             {
                 _warnedFallback = true;
-                Debug.LogWarning($"레벨이 없어 임시 영역 {playArea} 을 쓴다.", this);
+                Debug.LogWarning($"레벨이 없어 임시 영역 {viewArea} 을 쓴다.", this);
             }
 
             _camera.orthographic = true;
