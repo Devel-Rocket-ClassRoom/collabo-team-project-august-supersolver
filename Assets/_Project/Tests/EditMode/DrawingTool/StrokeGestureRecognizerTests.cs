@@ -27,6 +27,8 @@ namespace PPS.DrawingTool.Tests
         StrokeGestureRecognizer _recognizer;
         List<Stroke> _confirmed;
         List<Vector2> _pivots;
+        List<Vector2> _erased;
+        float _eraseRadius;
         DrawTool _tool;
         float _ink;
         float _offsetDp;
@@ -44,9 +46,16 @@ namespace PPS.DrawingTool.Tests
         {
             _confirmed = new List<Stroke>();
             _pivots = new List<Vector2>();
+            _erased = new List<Vector2>();
+            _eraseRadius = 0f;
             _recognizer = new StrokeGestureRecognizer(new StrokeProcessor());
             _recognizer.StrokeConfirmed += _confirmed.Add;
             _recognizer.PivotRequested += (tool, anchor, radius) => _pivots.Add(anchor);
+            _recognizer.EraseRequested += (anchor, radius) =>
+            {
+                _erased.Add(anchor);
+                _eraseRadius = radius;
+            };
         }
 
         void Feed(PointerPhase phase, Vector2 world, bool overUI = false, int id = FirstFinger) =>
@@ -220,6 +229,90 @@ namespace PPS.DrawingTool.Tests
 
             Assert.AreEqual(0, _pivots.Count, "탭이 아니라 드래그다");
             Assert.AreEqual(0, _confirmed.Count, "핀 도구가 획을 만들었다");
+        }
+
+        [Test]
+        public void 지우개_탭은_누른_자리를_한_번만_지운다()
+        {
+            _tool = DrawTool.Erase;
+
+            Drag(V(1f, 2f), V(1f, 2.02f));
+
+            Assert.AreEqual(1, _erased.Count, "탭 한 번이 두 개를 지운다");
+            Assert.AreEqual(V(1f, 2f), _erased[0], "누른 자리가 아니다");
+        }
+
+        [Test]
+        public void 지우개로_끌면_지나간_자리마다_지운다()
+        {
+            _tool = DrawTool.Erase;
+
+            Drag(V(0f, 0f), V(0f, 0.3f), V(0f, 0.6f), V(0f, 0.9f));
+
+            // 뗀 자리는 안 센다 — 누른 자리에서 이미 한 번
+            // 지웠고, 뗄 때 또 지우면 탭이 두 번이 된다.
+            Assert.AreEqual(3, _erased.Count);
+            Assert.AreEqual(V(0f, 0f), _erased[0]);
+            Assert.AreEqual(V(0f, 0.3f), _erased[1]);
+            Assert.AreEqual(V(0f, 0.6f), _erased[2]);
+        }
+
+        [Test]
+        public void 지우개_드래그는_획도_핀도_만들지_않는다()
+        {
+            _tool = DrawTool.Erase;
+
+            Drag(V(0f, 0f), V(0f, 0.3f), V(0f, 0.6f), V(0f, 0.9f));
+
+            Assert.AreEqual(0, _confirmed.Count, "지우개가 획을 만들었다");
+            Assert.AreEqual(0, _pivots.Count, "지우개가 핀을 만들었다");
+        }
+
+        [Test]
+        public void 중단된_지우기는_뒤늦은_Up_으로_더_지우지_않는다()
+        {
+            _tool = DrawTool.Erase;
+
+            Feed(PointerPhase.Down, V(0f, 0f));
+            Feed(PointerPhase.Move, V(0f, 0.3f));
+            Assert.AreEqual(2, _erased.Count, "누른 자리와 지나간 자리를 지웠어야 한다");
+
+            _recognizer.Abort();
+
+            // 손가락은 인식기가 손을 뗀 뒤에 떨어진다.
+            Feed(PointerPhase.Up, V(0f, 0.6f));
+
+            Assert.AreEqual(2, _erased.Count, "중단했는데 더 지웠다");
+        }
+
+        /// <summary>
+        /// 탭 임계값(8dp)은 "안 움직였다" 를 가르는 값이라
+        /// 붓 굵기로 쓰면 획을 스쳐도 안 지워진다.
+        /// </summary>
+        [Test]
+        public void 지우개_반경은_탭_임계값과_다른_상수다()
+        {
+            _tool = DrawTool.Erase;
+
+            Drag(V(1f, 2f), V(1f, 2.02f));
+
+            float tap = new DeviceUnits(Dpi).ToPixels(ScreenConstants.TapThresholdDp) / PixelsPerUnit;
+            float erase = new DeviceUnits(Dpi).ToPixels(ScreenConstants.EraseRadiusDp) / PixelsPerUnit;
+
+            Assert.AreEqual(erase, _eraseRadius, 1e-4f);
+            Assert.Greater(_eraseRadius, tap, "붓이 탭 임계값만 하면 스쳐도 안 지워진다");
+        }
+
+        [Test]
+        public void UI에서_시작한_지우기는_캔버스로_끌어도_안_지운다()
+        {
+            _tool = DrawTool.Erase;
+
+            Feed(PointerPhase.Down, V(0f, 0f), overUI: true);
+            Feed(PointerPhase.Move, V(0f, 0.3f));
+            Feed(PointerPhase.Up, V(0f, 0.6f));
+
+            Assert.AreEqual(0, _erased.Count, "툴바에서 시작한 손이 그림을 지웠다");
         }
 
         [Test]

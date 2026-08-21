@@ -25,6 +25,10 @@ namespace PPS.DrawingTool
         /// 빌더를 안 열어 이 값이 false 다.
         bool _buildingStroke;
 
+        /// 지우개로 끄는 중인가. 이 동안은 탭 판정도
+        /// 프리뷰도 없어 그리기 경로를 통째로 비켜 간다.
+        bool _erasing;
+
         DrawContext _context;
         Vector2 _downWorld;
         float _maxTravel;
@@ -44,8 +48,9 @@ namespace PPS.DrawingTool
         public event Action<DrawTool, Vector2, float> PivotRequested;
 
         /// <summary>
-        /// 지우기 탭. 앵커·히트 반경(월드)을 준다.
-        /// 무엇이 걸리는지는 Solution 을 아는 쪽이 정한다.
+        /// 지우개가 닿은 자리. 앵커·반경(월드)을 준다.
+        /// 끄는 동안 표본마다 오므로 한 제스처에 여러 번
+        /// 온다. 무엇이 걸리는지는 Solution 을 아는 쪽이 정한다.
         /// </summary>
         public event Action<Vector2, float> EraseRequested;
 
@@ -83,7 +88,16 @@ namespace PPS.DrawingTool
             _downWorld = sample.World;
             _maxTravel = 0f;
 
-            // 핀·지우개는 잉크도 프리뷰도 쓰지 않는다.
+            // 누른 자리부터 바로 지운다. 뗄 때 지우면
+            // 끄는 동안 아무 반응이 없다.
+            if (context.Tool == DrawTool.Erase)
+            {
+                _erasing = true;
+                EraseAt(sample.World);
+                return;
+            }
+
+            // 핀은 잉크도 프리뷰도 쓰지 않는다.
             if (context.Tool.IsTap()) return;
 
             _buildingStroke = true;
@@ -94,14 +108,19 @@ namespace PPS.DrawingTool
         void Move(in PointerSample sample)
         {
             if (sample.PointerId != _pointerId || !_ownedByCanvas) return;
-            Track(sample.World);
+
+            if (_erasing) EraseAt(sample.World);
+            else Track(sample.World);
         }
 
         void Up(in PointerSample sample)
         {
             if (sample.PointerId != _pointerId) return;
 
-            if (_ownedByCanvas)
+            // 지우개는 뗀 자리를 안 본다. 누른 자리에서 이미
+            // 한 번 지웠으므로 여기서 또 지우면 탭 한 번이
+            // 두 개를 지운다.
+            if (_ownedByCanvas && !_erasing)
             {
                 // 뗀 자리도 실제 샘플이다. 버리면 Down·Up 만
                 // 오는 빠른 획이 이동 0 으로 잡혀 탭이 된다.
@@ -136,7 +155,7 @@ namespace PPS.DrawingTool
         }
 
         /// <summary>
-        /// 핀·지우개는 탭만 받는다. 끌었으면 아무것도 하지
+        /// 핀은 탭만 받는다. 끌었으면 아무것도 하지
         /// 않는다 — 획을 그으려다 도구를 잘못 고른 손이다.
         /// 히트 반경은 탭 임계값과 같은 값을 쓴다.
         /// </summary>
@@ -145,11 +164,15 @@ namespace PPS.DrawingTool
             float radius = _context.ToWorld(ScreenConstants.TapThresholdDp);
             if (_maxTravel >= radius) return;
 
-            Vector2 anchor = Adjust(_downWorld);
-
-            if (_context.Tool == DrawTool.Erase) EraseRequested?.Invoke(anchor, radius);
-            else PivotRequested?.Invoke(_context.Tool, anchor, radius);
+            PivotRequested?.Invoke(_context.Tool, Adjust(_downWorld), radius);
         }
+
+        /// <summary>
+        /// 지우개 반경은 탭 임계값이 아니라 제 상수를 쓴다 —
+        /// 끌면서 지우려면 손가락 폭만 한 붓이어야 한다.
+        /// </summary>
+        void EraseAt(Vector2 world) => EraseRequested?.Invoke(
+            Adjust(world), _context.ToWorld(ScreenConstants.EraseRadiusDp));
 
         /// <summary>
         /// 그리던 것을 버린다. 획 진행 중에 두 번째 손가락으로
@@ -163,6 +186,7 @@ namespace PPS.DrawingTool
             _pointerId = NoPointer;
             _ownedByCanvas = false;
             _buildingStroke = false;
+            _erasing = false;
         }
 
         /// <summary>
