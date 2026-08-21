@@ -63,10 +63,6 @@ namespace PPS.DrawingTool
         {
             if (!_flow.Play()) return;
 
-            // 획을 그리는 중에도 두 번째 손가락이 버튼을 누른다.
-            // 남겨두면 프리뷰 선이 화면에 박힌다.
-            _input.CancelStroke();
-
             // 여기서 아무것도 저장하지 않는다. 그림을 파일로
             // 뽑는 일은 에디터 도구 몫이다(StageFlowInspector) —
             // 게임에는 그 파일을 읽는 코드가 없다.
