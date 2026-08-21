@@ -38,6 +38,10 @@ namespace PPS.Core
         /// 에셋이라 사본을 만들어 재생한다.
         public ParticleSystem KillEffect;
 
+        /// 킬라인을 따라 까는 그림. 가로로 반복해 판 너비를
+        /// 채운다 — 길쭉해도 되므로 1wu 인 Shapes 와 따로 둔다.
+        public Sprite KillLine;
+
         /// 지형 선분. 코드가 만든 흰 사각형이라 색이 있어야 한다.
         public Color Terrain = new Color32(0x23, 0x25, 0x2B, 0xFF);
 

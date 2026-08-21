@@ -44,8 +44,8 @@ namespace PPS.DrawingTool.Tests
         {
             _view.SetLevel(MakeLevel());
 
-            // 영역 점선 · 지형 2 · 장치 2 · 목표 · 별 · 공
-            Assert.AreEqual(8, _go.transform.childCount);
+            // 영역 점선 · 킬라인 · 지형 2 · 장치 2 · 목표 · 별 · 공
+            Assert.AreEqual(9, _go.transform.childCount);
 
             Assert.AreEqual(2, CountStartingWith("Terrain_"), "지형 선분 수가 다르다");
             Assert.AreEqual(1, CountStartingWith("Star_"), "별 수가 다르다");
@@ -107,6 +107,58 @@ namespace PPS.DrawingTool.Tests
             }
 
             return bounds;
+        }
+
+        /// <summary>
+        /// 죽는 선은 그릴 수 있는 곳의 아래 변이 아니다.
+        /// 판정이 보는 KillY 와 갈라지면 그린 선 위에서
+        /// 안 죽는다.
+        /// </summary>
+        [Test]
+        public void 킬라인이_KillY_높이에_선다()
+        {
+            LevelData level = MakeLevel();
+            Rect area = LevelDataArea.Calculate(level);
+
+            // 둘이 같은 픽스처면 자리를 어디서 뽑았는지
+            // 구분이 안 돼 검사가 헛돈다.
+            Assert.Less(level.KillY, area.yMin, "픽스처의 킬라인이 아래 변에 붙어 있다");
+
+            _view.SetLevel(level);
+            Transform line = _go.transform.Find("KillLine");
+
+            Assert.IsNotNull(line, "킬라인이 없다");
+            Assert.AreEqual(level.KillY, line.position.y, 1e-4f);
+            Assert.AreEqual(area.center.x, line.position.x, 1e-4f);
+            Assert.AreEqual(area.width, line.localScale.x, 1e-4f,
+                "킬라인이 판 너비를 안 채운다");
+        }
+
+        /// <summary>
+        /// 그림을 깔면 윗변이 죽는 선이다. 가운데를 맞추면
+        /// 띠의 위 절반이 아직 살아 있는 자리를 덮는다.
+        /// </summary>
+        [Test]
+        public void 킬라인_그림은_윗변이_KillY_에_붙는다()
+        {
+            var style = ScriptableObject.CreateInstance<SimStyle>();
+
+            // 가운데 피벗 1wu. 아트가 오기 전의 대역이다.
+            style.KillLine = ShapeSprites.Quad;
+
+            LevelData level = MakeLevel();
+            _view.SetStyle(style);
+            _view.SetLevel(level);
+
+            var line = _go.transform.Find("KillLine").GetComponent<SpriteRenderer>();
+            float top = line.transform.position.y + line.size.y * 0.5f;
+
+            Assert.AreEqual(SpriteDrawMode.Tiled, line.drawMode, "그림을 늘려 깔았다");
+            Assert.AreEqual(level.KillY, top, 1e-4f, "그림 윗변이 죽는 선에 안 붙었다");
+            Assert.AreEqual(LevelDataArea.Calculate(level).width, line.size.x, 1e-4f,
+                "킬라인이 판 너비를 안 채운다");
+
+            Object.DestroyImmediate(style);
         }
 
         /// <summary>

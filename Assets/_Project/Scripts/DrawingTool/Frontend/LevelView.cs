@@ -25,6 +25,9 @@ namespace PPS.DrawingTool
 
         const float DashWidth = 0.06f;
 
+        /// 죽는 선의 두께. 테마 그림이 없을 때만 쓴다.
+        const float KillLineWidth = 0.08f;
+
         /// 테마 그림이 없을 때 쓰는 장치 본체 지름.
         /// 그림이 있으면 몸집은 SimStyle 이 안다.
         const float DeviceSize = 0.6f;
@@ -38,6 +41,10 @@ namespace PPS.DrawingTool
         /// 아트가 무엇일지 몰라 밝은 그림에도 남게 어둡되,
         /// 지형과 같은 색이면 지형처럼 읽혀 한 단계 옅다.
         static readonly Color PlayAreaColor = new Color32(0x4A, 0x51, 0x60, 0xE0);
+
+        /// 죽는 선. 끊기지 않는 실선이라 색을 못 가려도
+        /// 그릴 수 있는 곳의 점선과 갈린다.
+        static readonly Color KillLineColor = new Color32(0xD8, 0x2C, 0x2C, 0xF0);
 
         // 테마 그림이 없을 때만 쓰는 색. 맵 에디터 값
         // 그대로라 그림이 빠져도 저작자가 보던 화면에 가깝다.
@@ -99,6 +106,7 @@ namespace PPS.DrawingTool
 
             Rect area = LevelDataArea.Calculate(level);
             AddPlayAreaOutline(area);
+            AddKillLine(area, level.KillY);
 
             for (int i = 0; i < level.Terrain.Count; i++)
                 AddSegment(level.Terrain[i], i);
@@ -255,6 +263,44 @@ namespace PPS.DrawingTool
                 renderer.color = PlayAreaColor;
                 renderer.sortingOrder = RenderOrder.PlayArea;
             }
+        }
+
+        /// <summary>
+        /// 죽는 선을 긋는다. 자리는 그릴 수 있는 곳의 아래
+        /// 변이 아니라 KillY 다 — 판정이 보는 값과 갈라지면
+        /// 선 위에서 안 죽는다.
+        /// </summary>
+        void AddKillLine(Rect area, float killY)
+        {
+            var part = new GameObject("KillLine");
+            part.transform.SetParent(transform, false);
+            _parts.Add(part);
+
+            var renderer = part.AddComponent<SpriteRenderer>();
+            renderer.sortingOrder = RenderOrder.PlayArea;
+
+            Sprite art = _style == null ? null : _style.KillLine;
+            if (art == null)
+            {
+                renderer.sprite = ShapeSprites.Quad;
+                renderer.color = KillLineColor;
+                part.transform.position = new Vector3(area.center.x, killY, 0f);
+                part.transform.localScale =
+                    new Vector3(area.width, KillLineWidth, 1f);
+                return;
+            }
+
+            // 늘리면 그림이 찌그러진다. 가로로만 반복해
+            // 채우고 세로는 원본 크기 그대로다.
+            renderer.sprite = art;
+            renderer.drawMode = SpriteDrawMode.Tiled;
+            renderer.size = new Vector2(area.width, art.bounds.size.y);
+
+            // 죽는 선은 그림의 아랫변이다. 위로 세워야
+            // 불길이 선에서 피어오르는 것으로 읽힌다.
+            // bounds 는 피벗 기준이라 어디 잡아도 맞는다.
+            part.transform.position =
+                new Vector3(area.center.x, killY - art.bounds.min.y, 0f);
         }
 
         void AddQuad(string name, Vector2 center, Vector2 size, float angle,
