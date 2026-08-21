@@ -5,11 +5,20 @@ namespace PPS.Core
 {
     /// <summary>
     /// 회전축. 두 스트로크를 한 점에서 잇는다.
-    /// 연결 정보라 잉크를 쓰지 않는다.
+    /// 길이가 없지만 잉크는 쓴다 — InkCost 를 본다.
     /// </summary>
     [Serializable]
     public struct PivotJoint
     {
+        /// <summary>
+        /// 핀 하나가 쓰는 잉크. 길이에서 나오는 값이 아니라
+        /// 개수를 묶으려고 매긴 값이다 — 공짜면 월드 고정이
+        /// 빈 곳에도 항상 찍혀 개수에 상한이 없어진다.
+        /// 최소 획(0.25wu)의 두 배다. 기획 근거가 없는 우리
+        /// 값이라 흔한 2~3개 풀이가 예산의 2~7% 만 쓰게 잡았다.
+        /// </summary>
+        public const float InkCost = 0.5f;
+
         /// 스트로크 인덱스. -1 이면 월드 고정.
         public int StrokeA;
 

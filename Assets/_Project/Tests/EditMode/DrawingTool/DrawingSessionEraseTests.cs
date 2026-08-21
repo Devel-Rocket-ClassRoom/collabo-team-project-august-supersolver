@@ -85,7 +85,8 @@ namespace PPS.DrawingTool.Tests
 
             Assert.AreEqual(3, _session.Solution.Strokes.Count, "획이 안 돌아왔다");
             Assert.AreEqual(2, _session.Solution.Pivots[0].StrokeB, "핀 인덱스가 안 돌아왔다");
-            Assert.AreEqual(3f, _session.Solution.TotalInk(), 0f, "잉크가 안 돌아왔다");
+            Assert.AreEqual(3f + PivotJoint.InkCost, _session.Solution.TotalInk(), 0f,
+                "잉크가 안 돌아왔다");
         }
 
         [Test]
@@ -98,6 +99,9 @@ namespace PPS.DrawingTool.Tests
 
             Assert.AreEqual(0, _session.Solution.Pivots.Count);
             Assert.AreEqual(2, _session.Solution.Strokes.Count, "핀을 지웠는데 획이 없어졌다");
+
+            // 핀 잉크도 잔량 재계산이라 환급 로직이 없다.
+            Assert.AreEqual(2f, _session.Solution.TotalInk(), 0f, "핀 잉크가 안 돌아왔다");
         }
 
         [Test]
@@ -110,6 +114,57 @@ namespace PPS.DrawingTool.Tests
             _session.EraseStroke(0);
 
             Assert.AreEqual(1, fired, "렌더러가 못 듣는다 — 지운 획이 화면에 남는다");
+        }
+
+        /// <summary>
+        /// 끌어서 여럿을 지워도 삭제 하나가 액션 하나다.
+        /// 한 제스처를 통째로 묶으면 마지막에 지운 것만
+        /// 되살릴 수 없다.
+        /// </summary>
+        [Test]
+        public void 여럿을_지우면_되돌리기가_지운_역순으로_하나씩_살린다()
+        {
+            Draw(0f, 5f, 10f);
+
+            // 붓이 지나간 순서. 뒤엣것부터 걷힌다.
+            _session.EraseStroke(2);
+            _session.EraseStroke(1);
+            _session.EraseStroke(0);
+            Assert.AreEqual(0, _session.Solution.Strokes.Count, "안 지워졌다 — 검사가 헛돈다");
+
+            _session.OnClickUndo();
+            Assert.AreEqual(1, _session.Solution.Strokes.Count, "한 번에 하나만 살아나야 한다");
+            Assert.AreEqual(0f, _session.Solution.Strokes[0].Points[0].x,
+                "마지막에 지운 것이 먼저 돌아와야 한다");
+
+            _session.OnClickUndo();
+            Assert.AreEqual(2, _session.Solution.Strokes.Count);
+            Assert.AreEqual(5f, _session.Solution.Strokes[1].Points[0].x);
+
+            _session.OnClickUndo();
+            Assert.AreEqual(3, _session.Solution.Strokes.Count);
+            Assert.AreEqual(10f, _session.Solution.Strokes[2].Points[0].x);
+            Assert.AreEqual(3f, _session.Solution.TotalInk(), 0f, "잉크가 안 돌아왔다");
+        }
+
+        /// <summary>
+        /// 핀 재매핑은 지울 때마다 돌아야 한다. 끌어서
+        /// 연속으로 지울 때 몰아서 하면 중간 인덱스가 어긋난다.
+        /// </summary>
+        [Test]
+        public void 연속으로_지우는_동안_핀이_그때그때_재매핑된다()
+        {
+            Draw(0f, 5f, 10f);
+            _session.AddPivot(new PivotJoint(0, 2, Anchor));
+
+            _session.EraseStroke(1);
+            Assert.AreEqual(1, _session.Solution.Pivots[0].StrokeB, "지우는 즉시 안 당겨졌다");
+
+            _session.EraseStroke(0);
+
+            Assert.AreEqual(PivotJoint.Unbound, _session.Solution.Pivots[0].StrokeA,
+                "지운 획을 문 칸이 안 비었다");
+            Assert.AreEqual(0, _session.Solution.Pivots[0].StrokeB, "남은 획으로 안 당겨졌다");
         }
     }
 }

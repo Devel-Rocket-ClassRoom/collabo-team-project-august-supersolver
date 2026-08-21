@@ -11,6 +11,14 @@ namespace PPS.DrawingTool
         /// 탭을 무시한다 — 미세 콜라이더가 물리를 흔든다.
         public const float TapThresholdDp = 8f;
 
+        /// <summary>
+        /// 지우개가 닿는 반경. 탭 임계값과 갈라 둔다 —
+        /// 그 값은 "안 움직였다" 를 가르는 8dp(1.3mm)라
+        /// 지우개가 쓰면 획을 스쳐도 안 지워진다.
+        /// 지름이 손가락 하나(MinTouchTargetDp)다.
+        /// </summary>
+        public const float EraseRadiusDp = 24f;
+
         /// 그리기 지점을 손가락보다 위로 띄우는 거리.
         public const float DrawOffsetDp = 0f;
 
