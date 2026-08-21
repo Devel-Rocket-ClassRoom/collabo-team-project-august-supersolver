@@ -19,6 +19,15 @@ namespace PPS.Core
         // 사용자 문서를 저장할 컬렉션 이름이다.
         const string UsersCollection = "users";
 
+        // 로그인 성공 시 전달받은 사용자를 보관한다.
+        readonly FirebaseUser _user;
+
+        // 사용할 Firebase 사용자를 전달받는다.
+        public FirebaseUserDataStorage(FirebaseUser user = null)
+        {
+            _user = user;
+        }
+
         // 로그인한 사용자의 UserData를 저장한다.
         public async UniTask<UserDataOperationResult> SaveAsync(UserData data)
         {
@@ -28,7 +37,7 @@ namespace PPS.Core
                 return UserDataOperationResult.Failed("저장할 유저 데이터가 없습니다.");
             }
             // 현재 로그인한 사용자를 가져온다.
-            FirebaseUser user = FirebaseAuth.DefaultInstance.CurrentUser;
+            FirebaseUser user = _user ?? FirebaseAuth.DefaultInstance.CurrentUser;
 
             // 사용자별 문서를 만들려면 로그인이 필요하다.
             if (user == null)
@@ -68,58 +77,49 @@ namespace PPS.Core
         public async UniTask<UserDataLoadResult> LoadAsync()
         {
             // 현재 로그인한 사용자를 가져온다.
-            FirebaseUser user = FirebaseAuth.DefaultInstance.CurrentUser;
+            FirebaseUser user = _user ?? FirebaseAuth.DefaultInstance.CurrentUser;
 
             // 사용자별 문서를 찾으려면 로그인이 필요하다.
             if (user == null)
             {
-                return UserDataLoadResult.Failed("로그인한 사용자가 없습니다.");
+                return UserDataLoadResult.Failed("NO_CURRENT_USER");
             }
 
             try
             {
                 // users/{UID} 문서를 선택한다.
-                DocumentReference document =
-                    FirebaseFirestore.DefaultInstance
-                        .Collection(UsersCollection)
-                        .Document(user.UserId);
-
+                DocumentReference document =FirebaseFirestore.DefaultInstance.
+                    Collection(UsersCollection) .Document(user.UserId);
+                    
                 // 선택한 문서의 현재 내용을 불러온다.
-                DocumentSnapshot snapshot =
-                    await document.GetSnapshotAsync();
+                DocumentSnapshot snapshot = await document.GetSnapshotAsync();
+                   
 
                 // 아직 저장된 문서가 없는 사용자다.
                 if (!snapshot.Exists)
                 {
-                    return UserDataLoadResult.Failed(
-                        "저장된 유저 데이터가 없습니다.");
+                    return UserDataLoadResult.Failed("DOCUMENT_NOT_FOUND");
                 }
 
                 // 문서에서 UserData JSON을 가져온다.
-                if (!snapshot.TryGetValue(
-                        "payloadJson",
-                        out string json))
+                if (!snapshot.TryGetValue("payloadJson",out string json))
                 {
-                    return UserDataLoadResult.Failed(
-                        "유저 데이터 JSON이 없습니다.");
+                    return UserDataLoadResult.Failed("PAYLOAD_JSON_MISSING");  
                 }
 
                 // 비어 있는 JSON은 복원할 수 없다.
                 if (string.IsNullOrWhiteSpace(json))
                 {
-                    return UserDataLoadResult.Failed(
-                        "유저 데이터 JSON이 비어 있습니다.");
+                    return UserDataLoadResult.Failed("PAYLOAD_JSON_EMPTY");  
                 }
 
                 // JSON을 기존 UserData 객체로 복원한다.
-                UserData data =
-                    JsonUtility.FromJson<UserData>(json);
-
+                UserData data =JsonUtility.FromJson<UserData>(json);
+                  
                 // JSON 형식이 잘못됐다면 실패 처리한다.
                 if (data == null)
                 {
-                    return UserDataLoadResult.Failed(
-                        "유저 데이터를 복원하지 못했습니다.");
+                    return UserDataLoadResult.Failed("JSON_DESERIALIZE_FAILED");  
                 }
 
                 // 복원된 UserData와 성공 결과를 반환한다.
