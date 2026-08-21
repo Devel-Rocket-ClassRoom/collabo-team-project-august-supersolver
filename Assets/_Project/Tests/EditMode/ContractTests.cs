@@ -33,7 +33,7 @@ namespace PPS.Core.Tests
         }
 
         [Test]
-        public void 총_잉크는_스트로크_길이의_합이고_회전축은_잉크를_쓰지_않는다()
+        public void 총_잉크는_스트로크_길이의_합에_회전축_개수만큼_더한_값이다()
         {
             var solution = new Solution();
             solution.Strokes.Add(new Stroke(ToolType.FixedLine, new List<Vector2>
@@ -44,9 +44,12 @@ namespace PPS.Core.Tests
             {
                 Vector2.zero, new Vector2(0f, 3f),
             }));
+            Assert.AreEqual(5f, solution.TotalInk(), 0.0001f, "획만 있을 때는 길이의 합이다");
+
             solution.Pivots.Add(new PivotJoint(0, 1, Vector2.zero));
 
-            Assert.AreEqual(5f, solution.TotalInk(), 0.0001f);
+            Assert.AreEqual(5f + PivotJoint.InkCost, solution.TotalInk(), 0.0001f,
+                "핀이 잉크를 안 쓰면 개수에 상한이 없어진다");
         }
 
         [Test]

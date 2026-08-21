@@ -164,6 +164,10 @@ namespace PPS.DrawingTool
             float radius = _context.ToWorld(ScreenConstants.TapThresholdDp);
             if (_maxTravel >= radius) return;
 
+            // 핀도 잉크를 쓴다. 못 낼 잔량이면 탭이 헛돈다 —
+            // 잔량이 모자란 획을 아예 시작하지 않는 것과 같다.
+            if (_context.RemainingInk < PivotJoint.InkCost) return;
+
             PivotRequested?.Invoke(_context.Tool, Adjust(_downWorld), radius);
         }
 
