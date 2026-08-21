@@ -1,37 +1,25 @@
 using PPS.Core;
+using System;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
 public class StageSelectView : UIScene
 {
-    const int StagePerRow = StageSelectRow.StagePerRow;
-    const int MaxRow = CurrentStageIndex.StagePerTheme / StageSelectRow.StagePerRow + 1;
-
+    const int MaxStageNum = CurrentStageIndex.StagePerTheme;
     [SerializeField] Transform parent;
-    [SerializeField] ScrollRect scroll;
     [SerializeField] Image background;
+    [SerializeField] StageButton prefab;
 
-    [Header("Prefab")]
-    [SerializeField] StageSelectRow RowLR;
-    [SerializeField] StageSelectRow RowRL;
-
-    List<StageSelectRow> rowPool;
+    private List<StageButton> buttons;
     IThemeRepository _repo;
     public override void Initialize()
     {
         base.Initialize();
-        rowPool = new();
-
-        for (int i = 0; i < MaxRow; i++)
+        buttons = new();
+        for (int i = 0; i < MaxStageNum; i++)
         {
-            bool isL2R = i % 2 == 0;
-
-            var item = isL2R
-                ? Instantiate(RowLR.gameObject, parent)
-                : Instantiate(RowRL.gameObject, parent);
-
-            rowPool.Add(item.GetComponent<StageSelectRow>());
+            buttons.Add(Instantiate(prefab, parent));
         }
         _repo = ServiceLocator.Get<IThemeRepository>();
         _repo.OnLoaded -= UpdateTheme;
@@ -46,13 +34,15 @@ public class StageSelectView : UIScene
     public override void OnBeforeShow()
     {
         base.OnBeforeShow();
-        for (int i = 0; i < MaxRow; i++)
+        int maxStageIndex = _repo.Asset.Stages.Count;
+        int lastClearedStageIndex = ServiceLocator.Get<IUserDataRepository>().Data.LastClearedStageIndex;
+        for (int i = 0; i < MaxStageNum; i++)
         {
-            rowPool[i].OnUpdate(
-                startIdx:       i * StagePerRow,
-                maxStageIdx:    _repo.Asset.Stages.Count,
-                lastCleared:    ServiceLocator.Get<IUserDataRepository>().Data.LastClearedStageIndex
-                );
+            buttons[i].OnUpdate(
+                stageIdx:    i,
+                maxStageIdx: maxStageIndex,
+                lastCleared: lastClearedStageIndex
+            );
         }
     }
     void UpdateTheme()
