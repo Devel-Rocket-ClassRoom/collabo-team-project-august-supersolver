@@ -19,7 +19,8 @@ namespace PPS.DrawingTool
         /// 반경 안의 최근 한 획을 월드에 고정하는 핀.
         PivotWorld = 3,
 
-        /// 반경 안의 최근 핀 하나, 없으면 획 하나를 지운다.
+        /// 지나가는 자리의 최근 핀 하나, 없으면 획 하나를
+        /// 지운다. 끄는 동안 계속 지운다.
         Erase = 4,
     }
 
@@ -28,8 +29,7 @@ namespace PPS.DrawingTool
         /// <summary>탭으로 쓰는 도구. 잉크도 프리뷰도 안 쓴다.</summary>
         public static bool IsTap(this DrawTool tool) =>
             tool == DrawTool.PivotSingle
-            || tool == DrawTool.PivotWorld
-            || tool == DrawTool.Erase;
+            || tool == DrawTool.PivotWorld;
 
         /// <summary>획을 만드는 두 도구만 계약 타입을 갖는다.</summary>
         public static ToolType ToToolType(this DrawTool tool) =>
