@@ -135,11 +135,11 @@ namespace PPS.DrawingTool.Tests
         }
 
         /// <summary>
-        /// 그림을 깔면 윗변이 죽는 선이다. 가운데를 맞추면
-        /// 띠의 위 절반이 아직 살아 있는 자리를 덮는다.
+        /// 그림을 깔면 아랫변이 죽는 선이다. 가운데를 맞추면
+        /// 띠의 아래 절반이 이미 죽은 자리에 깔린다.
         /// </summary>
         [Test]
-        public void 킬라인_그림은_윗변이_KillY_에_붙는다()
+        public void 킬라인_그림은_아랫변이_KillY_에_붙는다()
         {
             var style = ScriptableObject.CreateInstance<SimStyle>();
 
@@ -151,10 +151,10 @@ namespace PPS.DrawingTool.Tests
             _view.SetLevel(level);
 
             var line = _go.transform.Find("KillLine").GetComponent<SpriteRenderer>();
-            float top = line.transform.position.y + line.size.y * 0.5f;
+            float bottom = line.transform.position.y - line.size.y * 0.5f;
 
             Assert.AreEqual(SpriteDrawMode.Tiled, line.drawMode, "그림을 늘려 깔았다");
-            Assert.AreEqual(level.KillY, top, 1e-4f, "그림 윗변이 죽는 선에 안 붙었다");
+            Assert.AreEqual(level.KillY, bottom, 1e-4f, "그림 아랫변이 죽는 선에 안 붙었다");
             Assert.AreEqual(LevelDataArea.Calculate(level).width, line.size.x, 1e-4f,
                 "킬라인이 판 너비를 안 채운다");
 

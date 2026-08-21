@@ -22,4 +22,5 @@ MonoBehaviour:
     Spike: {fileID: 1380786320, guid: a829e51a37e0dc148b87a468c29520fa, type: 3}
     Wind: {fileID: 1407274763, guid: a829e51a37e0dc148b87a468c29520fa, type: 3}
   KillEffect: {fileID: 4593157221764657688, guid: b211ce208ee793949a55bc7dead08380, type: 3}
+  KillLine: {fileID: 0}
   Terrain: {r: 0.13725491, g: 0.14509805, b: 0.16862746, a: 1}
