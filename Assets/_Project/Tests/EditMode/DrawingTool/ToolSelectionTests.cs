@@ -4,8 +4,9 @@ using UnityEngine;
 namespace PPS.DrawingTool.Tests
 {
     /// <summary>
-    /// 회전축 슬롯 하나가 두 모드를 쥔다.
-    /// 나머지 도구는 값 대입뿐이라 여기서 재지 않는다.
+    /// 회전축은 탭 둘로 갈라져 저마다 제 모드를 고른다.
+    /// 한 슬롯을 다시 눌러 넘기던 토글을 지운 자리라
+    /// 되살아나지 않게 여기서 못 박는다.
     /// </summary>
     public class ToolSelectionTests
     {
@@ -23,32 +24,24 @@ namespace PPS.DrawingTool.Tests
         public void 툴바를_치운다() => Object.DestroyImmediate(_go);
 
         [Test]
-        public void 회전축_슬롯은_다시_누르면_다른_모드로_넘어간다()
+        public void 회전축_탭은_저마다_제_모드를_고른다()
         {
             _tools.OnClickSelectPivotSingle();
-            Assert.AreEqual(DrawTool.PivotSingle, _tools.Current,
-                "안 고른 슬롯을 처음 누르면 내보이던 모드를 고른다");
+            Assert.AreEqual(DrawTool.PivotSingle, _tools.Current);
 
-            _tools.OnClickSelectPivotSingle();
+            _tools.OnClickSelectPivotWorld();
             Assert.AreEqual(DrawTool.PivotWorld, _tools.Current,
-                "이미 고른 모드를 또 눌렀는데 안 넘어갔다");
-            Assert.AreEqual(DrawTool.PivotWorld, _tools.PivotMode);
+                "월드 고정 탭이 제 모드를 못 골랐다");
         }
 
         [Test]
-        public void 다른_도구를_거쳐_와도_슬롯은_마지막_모드를_기억한다()
+        public void 같은_탭을_다시_눌러도_모드가_안_넘어간다()
         {
             _tools.OnClickSelectPivotSingle();
-            _tools.OnClickSelectPivotSingle();   // 월드 고정으로 넘어간다
+            _tools.OnClickSelectPivotSingle();
 
-            _tools.OnClickSelectFixedLine();
-            Assert.AreEqual(DrawTool.PivotWorld, _tools.PivotMode,
-                "도구를 바꿨다고 슬롯 아이콘이 되돌아갔다");
-
-            // 슬롯이 내보이는 건 월드 고정이라 그 버튼이 눌린다.
-            _tools.OnClickSelectPivotWorld();
-            Assert.AreEqual(DrawTool.PivotWorld, _tools.Current,
-                "돌아온 첫 탭이 모드를 넘겨버렸다");
+            Assert.AreEqual(DrawTool.PivotSingle, _tools.Current,
+                "탭이 갈라졌는데 옛 토글이 살아 있다");
         }
     }
 }
