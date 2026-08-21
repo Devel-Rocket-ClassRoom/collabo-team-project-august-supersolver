@@ -52,6 +52,9 @@ namespace PPS.DrawingTool
         /// </summary>
         public void SetLevel(LevelData level) => _level = level;
 
+        /// 이 판의 잉크 상한. 게이지 표기용이다.
+        public float InkLimit => _level.InkLimit;
+
         /// 게이지용. 그리는 중에는 프리뷰 근사를 보여준다.
         public float InkRatio => Mathf.Clamp01(
             (_recognizer.IsDrawing ? _recognizer.PreviewRemainingInk : RemainingInk)
