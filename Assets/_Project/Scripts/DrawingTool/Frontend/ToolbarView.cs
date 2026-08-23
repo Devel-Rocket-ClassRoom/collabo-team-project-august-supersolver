@@ -15,6 +15,14 @@ namespace PPS.DrawingTool
         /// 도구 하나에 탭 하나. 순서는 표시에 쓰이지 않는다.
         [SerializeField] ToolTab[] _tabs;
 
+        // 패널이 껐다 켜질 때마다 이으면 리스너가 쌓인다.
+        // Awake 는 살아 있는 동안 한 번만 돈다.
+        void Awake()
+        {
+            foreach (ToolTab tab in _tabs)
+                tab.Bind(_tools);
+        }
+
         void OnEnable()
         {
             _tools.Changed += Apply;

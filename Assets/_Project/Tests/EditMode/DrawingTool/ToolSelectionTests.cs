@@ -26,10 +26,10 @@ namespace PPS.DrawingTool.Tests
         [Test]
         public void 회전축_탭은_저마다_제_모드를_고른다()
         {
-            _tools.OnClickSelectPivotSingle();
+            _tools.Select(DrawTool.PivotSingle);
             Assert.AreEqual(DrawTool.PivotSingle, _tools.Current);
 
-            _tools.OnClickSelectPivotWorld();
+            _tools.Select(DrawTool.PivotWorld);
             Assert.AreEqual(DrawTool.PivotWorld, _tools.Current,
                 "월드 고정 탭이 제 모드를 못 골랐다");
         }
@@ -37,8 +37,8 @@ namespace PPS.DrawingTool.Tests
         [Test]
         public void 같은_탭을_다시_눌러도_모드가_안_넘어간다()
         {
-            _tools.OnClickSelectPivotSingle();
-            _tools.OnClickSelectPivotSingle();
+            _tools.Select(DrawTool.PivotSingle);
+            _tools.Select(DrawTool.PivotSingle);
 
             Assert.AreEqual(DrawTool.PivotSingle, _tools.Current,
                 "탭이 갈라졌는데 옛 토글이 살아 있다");
