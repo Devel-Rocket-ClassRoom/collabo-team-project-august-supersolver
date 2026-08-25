@@ -12,7 +12,7 @@ namespace PPS.Core
 
         // 플레이어가 마지막으로 클리어한 스테이지의 순서다.
         // 아직 아무 스테이지도 클리어하지 않았다면 -1을 사용한다.
-        public int LastClearedStageIndex = -1;
+        public int LastClearedStageIndex = 0;
 
         // 각 스테이지의 클리어 결과를 보관한다.
         public List<StageClearData> StageClears = new List<StageClearData>();
