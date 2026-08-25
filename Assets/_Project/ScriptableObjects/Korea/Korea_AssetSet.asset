@@ -16,14 +16,24 @@ MonoBehaviour:
   stageSelectBackground: {fileID: 21300000, guid: 206730cc370921645bb7fde8f019db38, type: 3}
   playBackground: {fileID: 21300000, guid: 206730cc370921645bb7fde8f019db38, type: 3}
   stages:
-  - {fileID: 4900000, guid: a6e01f5293fbb5c4aabcf2e31e6d9f9d, type: 3}
-  - {fileID: 4900000, guid: 4691f60f84f2a1e4384b68ee8716cf1c, type: 3}
-  - {fileID: 4900000, guid: 713147bbb3e3411468aea36e7dd4c43f, type: 3}
+  - {fileID: 4900000, guid: b23f2b6f255a394428a144e6a0a418f9, type: 3}
   - {fileID: 4900000, guid: 208d6033161fea44bb5fbd06ef046dd4, type: 3}
   - {fileID: 4900000, guid: 7c5a86c474b2e64469a49943a5fd71bd, type: 3}
   - {fileID: 4900000, guid: b3a95257b39dec143903b438ee670efb, type: 3}
   - {fileID: 4900000, guid: 30ca65c0e28c84341bfc2ab06196e3aa, type: 3}
   - {fileID: 4900000, guid: 16ff1732e29cc8c48a36637b78e8b234, type: 3}
   - {fileID: 4900000, guid: 3dbe95bc8b2229342beac39b83b95875, type: 3}
+  - {fileID: 4900000, guid: a6e01f5293fbb5c4aabcf2e31e6d9f9d, type: 3}
+  - {fileID: 4900000, guid: 4691f60f84f2a1e4384b68ee8716cf1c, type: 3}
+  - {fileID: 4900000, guid: 713147bbb3e3411468aea36e7dd4c43f, type: 3}
   tutorials:
   - {fileID: 11400000, guid: 9a8ea099c82a98649aadc64b62beac64, type: 2}
+  - {fileID: 11400000, guid: 9ca468246d0c46cd81c41d1e7a124f22, type: 2}
+  - {fileID: 11400000, guid: 54d5a88b830d4d648b8842a1a50a07c7, type: 2}
+  - {fileID: 11400000, guid: 846c2f0104b34164a12e5d5308f44b45, type: 2}
+  - {fileID: 11400000, guid: d3da26047761435c91b3dce3ff949a11, type: 2}
+  - {fileID: 11400000, guid: eb923fd6ed44408b9b37357efcd38338, type: 2}
+  - {fileID: 11400000, guid: c0f1bcc22f634ca39705d72813e1bb3e, type: 2}
+  - {fileID: 11400000, guid: 826cef8b83ee4485a583fa1f3b81a11a, type: 2}
+  - {fileID: 11400000, guid: 250d5505b7b642c2a9689e9023aa13fb, type: 2}
+  - {fileID: 11400000, guid: ec10aca9e54a4b9eaae06e8a43a05e25, type: 2}
