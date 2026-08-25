@@ -1,5 +1,6 @@
 using UnityEngine;
 using Firebase.Auth;
+using System;
 
 namespace PPS.Core
 {
@@ -12,6 +13,12 @@ namespace PPS.Core
         // 현재 불러온 유저 데이터를 보관한다.
         public UserData CurrentData { get; private set; }
 
+        // UserData 불러오기 또는 신규 생성이 완료됐을 때 외부에 알린다.
+        public event Action<UserData> DataLoaded;
+
+        // UserData 처리에 실패했을 때 오류 내용을 외부에 알린다.
+        public event Action<string> DataLoadFailed;
+
         void OnEnable()
         {
             // 인증 서비스가 연결되어 있다면 로그인 성공 이벤트를 구독한다.
@@ -23,6 +30,19 @@ namespace PPS.Core
             // 오브젝트가 꺼질 때 이벤트 구독을 해제한다.
             if (_authService != null)
                 _authService.SignedIn -= OnSignedIn;
+        }
+
+        // 외부에서 현재 로그인한 사용자의 데이터를 불러오도록 요청한다.
+        public void LoadCurrentUserData()
+        {
+            // Firebase 초기화가 완료되지 않았거나 로그인 사용자가 없다면 불러올 수 없다.
+            if (_authService == null || _authService.CurrentUser == null)
+            {
+                Debug.LogWarning("UserData를 불러올 로그인 사용자가 없습니다.");
+                return;
+            }
+            // 기존에 작성한 로그인 후 데이터 불러오기 로직을 재사용한다.
+            OnSignedIn(_authService.CurrentUser);
         }
         async void OnSignedIn (FirebaseUser user)
         {
@@ -46,6 +66,9 @@ namespace PPS.Core
                     Debug.LogWarning(
                         $"Google 사용자 데이터 불러오기 실패: {result.ErrorMessage}");
 
+                    // 외부에 불러오기 실패 사실과 원인을 전달한다.
+                    DataLoadFailed ?.Invoke(result.ErrorMessage);
+
                     return;
                 }
 
@@ -63,6 +86,9 @@ namespace PPS.Core
                     Debug.LogError(
                         $"신규 Google 사용자 데이터 저장 실패: {saveResult.ErrorMessage}");
 
+                    // 외부에 신규 데이터 저장 실패 사실을 전달한다.
+                    DataLoadFailed ?. Invoke(saveResult.ErrorMessage);
+
                     return;
                 }
 
@@ -73,6 +99,8 @@ namespace PPS.Core
                     $"신규 Google 사용자 데이터 생성 완료: " +
                     $"UID={user.UserId}, " +
                     $"LastClearedStageIndex={CurrentData.LastClearedStageIndex}");
+                // 신규 UserData 준비가 끝났다고 외부에 알린다.
+                DataLoaded?.Invoke(CurrentData);
 
                 return;
             }
@@ -81,6 +109,9 @@ namespace PPS.Core
 
             // 주요 값을 확인한다.
             Debug.Log($"Google 사용자 데이터 불러오기 완료:" + $"LastClearedStageIndex = {CurrentData.LastClearedStageIndex}");
+
+            // 기존 UserData를 정상적으로 불러왔다고 외부에 알린다.
+            DataLoaded?.Invoke(CurrentData );
         }
     }
 }
