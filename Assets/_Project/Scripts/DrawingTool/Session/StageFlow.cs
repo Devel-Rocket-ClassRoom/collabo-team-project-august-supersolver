@@ -25,6 +25,9 @@ namespace PPS.DrawingTool
         [SerializeField] GameObject _pauseResume;
         [SerializeField] GameObject _speed;
         [SerializeField] GameObject _retry;
+        [SerializeField] GameObject _reset;
+        [SerializeField] GameObject _undo;
+        [SerializeField] GameObject _redo;
 
         readonly StageStateMachine _flow = new StageStateMachine();
 
@@ -127,6 +130,13 @@ namespace PPS.DrawingTool
 
             _speed.SetActive(!drawing);
             _retry.SetActive(!drawing);
+
+            // 편집 버튼은 DrawPanel 밖에 있어 패널을
+            // 따라 꺼지지 않는다. 시뮬 중에 초기화가
+            // 살아 있으면 그림이 지워진다.
+            _reset.SetActive(drawing);
+            _undo.SetActive(drawing);
+            _redo.SetActive(drawing);
         }
     }
 }
