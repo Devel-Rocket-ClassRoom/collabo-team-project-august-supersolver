@@ -2001,13 +2001,13 @@ MonoBehaviour:
   - Anchor: 4
     Rect: {fileID: 5300666781850269090}
   - Anchor: 5
-    Rect: {fileID: 0}
+    Rect: {fileID: 1352786372336909631}
   - Anchor: 6
-    Rect: {fileID: 0}
+    Rect: {fileID: 3682027525839789201}
   - Anchor: 7
-    Rect: {fileID: 0}
+    Rect: {fileID: 1245969674545220427}
   - Anchor: 8
-    Rect: {fileID: 0}
+    Rect: {fileID: 7865761546954010406}
   - Anchor: 9
     Rect: {fileID: 8535769941057962211}
   - Anchor: 10
@@ -2016,6 +2016,10 @@ MonoBehaviour:
     Rect: {fileID: 4977755223481874626}
   - Anchor: 12
     Rect: {fileID: 2732677133399216067}
+  - Anchor: 13
+    Rect: {fileID: 3589857688529559033}
+  - Anchor: 14
+    Rect: {fileID: 5659013810104026367}
 --- !u!1 &6044023438426501113
 GameObject:
   m_ObjectHideFlags: 0
@@ -2836,6 +2840,7 @@ GameObject:
   - component: {fileID: 8646197309606334596}
   - component: {fileID: 4242659831386256946}
   - component: {fileID: 8039607343141610814}
+  - component: {fileID: 7100000000000000001}
   m_Layer: 0
   m_Name: Game
   m_TagString: Untagged
@@ -2941,6 +2946,20 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 33ba3b3caa63aae4faee76827f6c4388, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::StageSceneLoaderOnClick
+--- !u!114 &7100000000000000001
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8160753180668085176}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8cb2c7ef646b4bb4b4b90e2312a38db7, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: PPS.DrawingTool::PPS.DrawingTool.TutorialSignals
+  _session: {fileID: 8860626864616630411}
+  _driver: {fileID: 2487151381449205098}
 --- !u!1 &8279939822960021732
 GameObject:
   m_ObjectHideFlags: 0
@@ -3688,6 +3707,10 @@ PrefabInstance:
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 3553339824433481478, guid: f5dae64b5f99af54ab8b1799eabcf85e, type: 3}
+      propertyPath: m_LocalScale.x
+      value: -1
+      objectReference: {fileID: 0}
+    - target: {fileID: 3553339824433481478, guid: f5dae64b5f99af54ab8b1799eabcf85e, type: 3}
       propertyPath: m_AnchoredPosition.x
       value: 0
       objectReference: {fileID: 0}
@@ -3847,6 +3870,10 @@ PrefabInstance:
     - target: {fileID: 3553339824433481478, guid: f5dae64b5f99af54ab8b1799eabcf85e, type: 3}
       propertyPath: m_AnchorMin.y
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3553339824433481478, guid: f5dae64b5f99af54ab8b1799eabcf85e, type: 3}
+      propertyPath: m_LocalScale.y
+      value: -1
       objectReference: {fileID: 0}
     - target: {fileID: 3553339824433481478, guid: f5dae64b5f99af54ab8b1799eabcf85e, type: 3}
       propertyPath: m_AnchoredPosition.x
