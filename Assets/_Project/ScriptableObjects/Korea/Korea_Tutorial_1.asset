@@ -18,4 +18,4 @@ MonoBehaviour:
   Prefab: {fileID: 0}
   Offset: {x: 0, y: 0}
   Drag: {x: 0, y: 0}
-  Advance: 3
+  Condition: 3
