@@ -8,7 +8,7 @@ using UnityEngine.UI;
 
 /// <summary>
 /// 스테이지에 걸린 튜토리얼 프리팹을 순서대로 Instantiate한다.
-/// 컷마다 걸린 조건(Advance)이 채워지면 프리팹은 파괴되고
+/// 컷마다 걸린 조건(Condition)이 채워지면 프리팹은 파괴되고
 /// 다음 컷으로 넘어간다. 모드 전이는 StageFlow 몫이고
 /// 여기는 그것을 지켜보기만 한다.
 /// </summary>
@@ -141,12 +141,21 @@ public class TutorialViewer : MonoBehaviour
 
     UniTask WaitFor(Tutorial tutorial, CancellationToken token)
     {
-        switch (tutorial.Advance)
+        switch (tutorial.Condition)
         {
-            case TutorialAdvance.Press: return WaitForPress(tutorial, token);
-            case TutorialAdvance.Stroke: return WaitForStroke(token);
-            case TutorialAdvance.SimDecided: return WaitForSimDecision(token);
-            default: return WaitForTime(tutorial, token);
+            case TutorialAdvanceCondition.Press: return WaitForPress(tutorial, token);
+            case TutorialAdvanceCondition.DrawingChanged: return WaitForDrawingChange(token);
+            case TutorialAdvanceCondition.SimDecided: return WaitForSimDecision(token);
+            case TutorialAdvanceCondition.Time: return WaitForTime(tutorial, token);
+
+            // 조건을 늘리고 case 를 빠뜨리면 컴파일은 통과한다.
+            // 짚어 주지 않으면 그 컷이 조용히 시간 대기가 된다.
+            default:
+                Debug.LogError(
+                    $"[TutorialViewer] 모르는 조건이라 시간으로 넘긴다: " +
+                    $"{tutorial.name} → {tutorial.Condition}", this);
+
+                return WaitForTime(tutorial, token);
         }
     }
 
@@ -176,8 +185,8 @@ public class TutorialViewer : MonoBehaviour
         await button.OnClickAsync(token);
     }
 
-    /// 그림이 달라질 때까지. 이 자리에서 오는 변화는 새 획뿐이다.
-    async UniTask WaitForStroke(CancellationToken token)
+    /// 그림이 달라질 때까지.
+    async UniTask WaitForDrawingChange(CancellationToken token)
     {
         if (!ServiceLocator.TryGet<ITutorialSignals>(out var signals))
         {
@@ -185,16 +194,15 @@ public class TutorialViewer : MonoBehaviour
             return;
         }
 
-        var drawn = new UniTaskCompletionSource();
-        Action listener = () => drawn.TrySetResult();
+        var changed = new UniTaskCompletionSource();
+        Action listener = () => changed.TrySetResult();
 
         signals.DrawingChanged += listener;
-        try { await drawn.Task.AttachExternalCancellation(token); }
+        try { await changed.Task.AttachExternalCancellation(token); }
         finally { signals.DrawingChanged -= listener; }
     }
 
-    /// 판정이 날 때까지. 클리어로 끝나도 넘어간다 —
-    /// 막다른 골목을 만들지 않는다.
+
     UniTask WaitForSimDecision(CancellationToken token)
     {
         if (!ServiceLocator.TryGet<ITutorialSignals>(out var signals))

@@ -2,6 +2,7 @@ using PPS.Core;
 using UnityEditor;
 using UnityEditor.SceneManagement;
 using UnityEngine;
+using UnityEngine.UI;
 
 /// <summary>
 /// 컷의 손가락 자리를 씬 뷰에서 끌어 잡는다. Offset·Drag
@@ -20,11 +21,32 @@ public sealed class TutorialInspector : Editor
     {
         DrawDefaultInspector();
 
-        if (Anchor() == null)
+        var cut = (Tutorial)target;
+        RectTransform anchor = Anchor();
+
+        if (anchor == null)
+        {
             EditorGUILayout.HelpBox(
                 "앵커를 못 찾았다. DrawingToolSceneUI 프리팹을 열면 " +
                 "씬 뷰에서 손가락 자리를 끌어 잡을 수 있다.",
                 MessageType.Info);
+            return;
+        }
+
+        // 버튼이 없으면 런타임에 Duration 으로 조용히
+        // 흘러간다. 로그를 놓치면 원인을 못 찾는다.
+        if (cut.Condition == TutorialAdvanceCondition.Press
+            && anchor.GetComponent<Button>() == null)
+            EditorGUILayout.HelpBox(
+                $"고른 앵커에 Button 이 없다. 누를 것이 없어 " +
+                $"{cut.Duration}초 뒤에 그냥 넘어간다.",
+                MessageType.Warning);
+
+        // 판정을 기다리는 컷은 원래 띄울 것이 없다.
+        if (cut.Prefab == null && cut.Condition != TutorialAdvanceCondition.SimDecided)
+            EditorGUILayout.HelpBox(
+                "띄울 것이 없다. 화면에 아무것도 안 나온 채 조건만 기다린다.",
+                MessageType.Warning);
     }
 
     /// 이 컷이 붙을 자리. 뷰어가 없으면 잡을 기준도 없다.
