@@ -10,11 +10,11 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: b9fd1099fd60c764cae6f98e9fa3b190, type: 3}
-  m_Name: Korea_Tutorial_0
+  m_Name: Korea_Tutorial_6
   m_EditorClassIdentifier: PPS.Core::PPS.Core.Tutorial
   StageIndex: 0
   Duration: 2.5
-  Target: 1
+  Target: 11
   Prefab: {fileID: 4277221789647200637, guid: 416bd55ea8b958c42a7364f681961661, type: 3}
   Offset: {x: 0, y: 0}
   Drag: {x: 0, y: 0}
