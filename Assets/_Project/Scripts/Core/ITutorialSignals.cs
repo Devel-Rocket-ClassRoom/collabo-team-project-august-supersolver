@@ -10,9 +10,12 @@ namespace PPS.Core
     /// </summary>
     public interface ITutorialSignals
     {
-        /// 캔버스의 그림이 달라졌다. 
+        /// 플레이어가 고른 도구로 무언가 했다. 되돌리기·
+        /// 초기화는 판을 되돌리는 것이지 도구를 쓴 것이
+        /// 아니라 여기 안 온다 — 안 거르면 되돌리기 버튼에
+        /// "선을 그어라" 컷이 넘어간다.
         /// WaitForDrawingChange 가 씀
-        event Action DrawingChanged;
+        event Action ToolActed;
 
         /// 시뮬레이션 판정이 났다. 이벤트가 아니라 상태다 —
         /// 판정은 한 번 나면 안 뒤집힌다.
