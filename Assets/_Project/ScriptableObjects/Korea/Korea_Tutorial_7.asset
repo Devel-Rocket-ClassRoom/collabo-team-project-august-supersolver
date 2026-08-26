@@ -14,8 +14,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: PPS.Core::PPS.Core.Tutorial
   StageIndex: 0
   Duration: 2.5
-  Target: 9
-  Prefab: {fileID: 4277221789647200637, guid: 416bd55ea8b958c42a7364f681961661, type: 3}
-  Offset: {x: 0, y: 0}
-  Drag: {x: 0, y: 0}
-  Condition: 1
+  Target: 14
+  Prefab: {fileID: 6300000000000000001, guid: 77fb6f0048584acaa560b94882bbdbd7, type: 3}
+  Offset: {x: -105, y: -323}
+  Drag: {x: 223, y: 5}
+  Condition: 2
