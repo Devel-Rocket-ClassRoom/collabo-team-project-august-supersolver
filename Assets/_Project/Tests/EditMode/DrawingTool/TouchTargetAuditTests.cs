@@ -3,6 +3,7 @@ using NUnit.Framework;
 using UnityEditor.SceneManagement;
 using UnityEngine;
 using UnityEngine.SceneManagement;
+using UnityEngine.UI;
 
 namespace PPS.DrawingTool.Tests
 {
@@ -25,8 +26,8 @@ namespace PPS.DrawingTool.Tests
         static readonly string[] TouchTargets =
         {
             "Btn_Settings", "Btn_Play", "Btn_PauseResume", "Btn_Speed",
-            "Btn_FixedLine", "Btn_FreeBody", "Btn_PivotGroup", "Btn_Erase",
-            "Btn_Reset", "Btn_Undo", "Btn_Redo", "Btn_Retry",
+            "Btn_FixedLine", "Btn_FreeBody", "Btn_LinkPivot", "Btn_WorldPivot",
+            "Btn_Erase", "Btn_Reset", "Btn_Undo", "Btn_Redo", "Btn_Retry",
         };
 
         Scene _scene;
@@ -42,6 +43,13 @@ namespace PPS.DrawingTool.Tests
 
             if (_openedHere)
                 _scene = EditorSceneManager.OpenScene(ScenePath, OpenSceneMode.Additive);
+
+            // 레이아웃 그룹이 잡는 크기는 씬에 저장되지
+            // 않는다. 리빌드 전에는 도구 탭이 0 으로
+            // 읽혀 감사가 헛돈다.
+            foreach (GameObject root in _scene.GetRootGameObjects())
+                foreach (LayoutGroup group in root.GetComponentsInChildren<LayoutGroup>(true))
+                    LayoutRebuilder.ForceRebuildLayoutImmediate((RectTransform)group.transform);
 
             _rects = new Dictionary<string, RectTransform>();
 
