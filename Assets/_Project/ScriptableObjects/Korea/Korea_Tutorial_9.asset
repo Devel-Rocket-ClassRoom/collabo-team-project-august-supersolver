@@ -16,6 +16,6 @@ MonoBehaviour:
   Duration: 2.5
   Target: 14
   Prefab: {fileID: 6300000000000000001, guid: 77fb6f0048584acaa560b94882bbdbd7, type: 3}
-  Offset: {x: -122, y: -158}
-  Drag: {x: 325, y: -302}
+  Offset: {x: 120, y: -427}
+  Drag: {x: 317, y: -120}
   Condition: 2
