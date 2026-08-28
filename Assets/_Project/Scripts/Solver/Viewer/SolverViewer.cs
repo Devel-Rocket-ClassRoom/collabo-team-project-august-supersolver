@@ -75,6 +75,8 @@ namespace PPS.Solver.Viewer
 
         Vector2 _fileScroll;
 
+        Vector2 _catalogScroll;
+
         /// 실측이 남긴 표. 파일이 없으면 null 이고 프리셋 항목도 안 생긴다.
         List<LeverPreset> _presets;
 
@@ -360,6 +362,9 @@ namespace PPS.Solver.Viewer
 
         void DrawCatalogTab()
         {
+            // 레벨이 늘면 목록이 패널을 넘친다. 넘친 만큼 스크롤한다.
+            _catalogScroll = GUILayout.BeginScrollView(_catalogScroll);
+
             // 파일에서 온 것은 제 탭에서 고른다.
             var names = new string[_fileFrom];
             Array.Copy(_catalogNames, names, _fileFrom);
@@ -402,6 +407,8 @@ namespace PPS.Solver.Viewer
             }
 
             DrawTopologyPanel();
+
+            GUILayout.EndScrollView();
         }
 
         /// <summary>
