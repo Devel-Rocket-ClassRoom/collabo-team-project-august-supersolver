@@ -185,7 +185,7 @@ public class TutorialViewer : MonoBehaviour
         await button.OnClickAsync(token);
     }
 
-    /// 그림이 달라질 때까지.
+    /// 플레이어가 도구로 무언가 할 때까지.
     async UniTask WaitForDrawingChange(CancellationToken token)
     {
         if (!ServiceLocator.TryGet<ITutorialSignals>(out var signals))
@@ -197,9 +197,9 @@ public class TutorialViewer : MonoBehaviour
         var changed = new UniTaskCompletionSource();
         Action listener = () => changed.TrySetResult();
 
-        signals.DrawingChanged += listener;
+        signals.ToolActed += listener;
         try { await changed.Task.AttachExternalCancellation(token); }
-        finally { signals.DrawingChanged -= listener; }
+        finally { signals.ToolActed -= listener; }
     }
 
 
