@@ -76,6 +76,8 @@ namespace PPS.Solver.Viewer
 
         Vector2 _fileScroll;
 
+        Vector2 _legendScroll;
+
         /// 실측이 남긴 표. 파일이 없으면 null 이고 프리셋 항목도 안 생긴다.
         List<LeverPreset> _presets;
 
@@ -365,10 +367,18 @@ namespace PPS.Solver.Viewer
         /// </summary>
         void DrawLegendPanel()
         {
+            const float top = 136f;
+
+            // 창이 낮으면 패널부터 줄인다. 화면 밖으로 나가면 스크롤도 못 잡는다.
+            float height = Mathf.Clamp(Screen.height - top - 10f, 60f, 282f);
+
             GUILayout.BeginArea(
-                new Rect(Screen.width - RightWidth - 10f, 136f, RightWidth, 282f), GUI.skin.box);
+                new Rect(Screen.width - RightWidth - 10f, top, RightWidth, height), GUI.skin.box);
 
             GUILayout.Label("색인");
+
+            // 창이 낮으면 아래쪽 줄이 잘린다. 잘린 만큼 스크롤한다.
+            _legendScroll = GUILayout.BeginScrollView(_legendScroll);
 
             LegendRow(TerrainColor, "지형 (붙박이)");
             LegendRow(FreeBodyColor, "자유 물체");
@@ -383,6 +393,7 @@ namespace PPS.Solver.Viewer
             LegendRow(PathColor, "통로");
             LegendRow(SolutionColor, "솔버가 그린 선");
 
+            GUILayout.EndScrollView();
             GUILayout.EndArea();
         }
 
