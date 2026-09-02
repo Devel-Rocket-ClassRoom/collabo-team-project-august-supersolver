@@ -104,7 +104,7 @@ namespace PPS.DrawingTool
             SimWorld world = _driver.World;
             if (world == null) return;
 
-            _levelView.MoveBall(world.Ball.position);
+            _levelView.MoveBall(world.Ball.position, world.Ball.rotation);
             FollowStrokes(world.StrokeBodies);
             FollowPivots();
             FollowStars(world);
