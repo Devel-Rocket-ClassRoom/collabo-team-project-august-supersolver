@@ -23,6 +23,8 @@ namespace PPS.DrawingTool
         [SerializeField] GameObject _simPanel;
         [SerializeField] GameObject _play;
         [SerializeField] GameObject _pauseResume;
+        [SerializeField] GameObject _pauseIcon;
+        [SerializeField] GameObject _replayIcon;
         [SerializeField] GameObject _speed;
         [SerializeField] GameObject _retry;
         [SerializeField] GameObject _reset;
@@ -127,6 +129,13 @@ namespace PPS.DrawingTool
             // 않으면 위엣것이 클릭을 전부 먹는다.
             _play.SetActive(drawing);
             _pauseResume.SetActive(!drawing);
+
+            // 한 버튼에 아이콘 둘이 겹쳐 있다. 지금 누르면
+            // 무엇이 되는지를 보인다 — 굴러가는 중이면 멈춤,
+            // 멈춰 있으면 재개.
+            bool paused = _flow.Mode == StageMode.Paused;
+            _pauseIcon.SetActive(!paused);
+            _replayIcon.SetActive(paused);
 
             _speed.SetActive(!drawing);
             _retry.SetActive(!drawing);

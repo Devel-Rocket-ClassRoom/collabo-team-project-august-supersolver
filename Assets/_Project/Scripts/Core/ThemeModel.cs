@@ -15,18 +15,30 @@ namespace PPS.Core
         public readonly Sprite StageSelectBackground;
         public readonly Sprite PlayBackground;
         public readonly IReadOnlyList<Tutorial> Tutorials;
+        public readonly Sprite SprLocked;
+        public readonly Sprite SprStarBronze;
+        public readonly Sprite SprStarSilver;
+        public readonly Sprite SprStarGold;
         public ThemeModel(
             IReadOnlyList<StageData> stages,
             Sprite stageSelectBackground,
             Sprite playBackground,
             MapEditStyle MapStyle,
-            IReadOnlyList<Tutorial> tutorials)
+            IReadOnlyList<Tutorial> tutorials,
+            Sprite sprLocked,
+            Sprite sprStarBronze,
+            Sprite sprStarSilver,
+            Sprite sprStarGold)
         {
             Stages = stages;
             StageSelectBackground = stageSelectBackground;
             PlayBackground = playBackground;
             this.MapStyle = MapStyle;
             Tutorials = tutorials;
+            SprLocked = sprLocked;
+            SprStarBronze = sprStarBronze;
+            SprStarSilver = sprStarSilver;
+            SprStarGold = sprStarGold;
         }
     }
 

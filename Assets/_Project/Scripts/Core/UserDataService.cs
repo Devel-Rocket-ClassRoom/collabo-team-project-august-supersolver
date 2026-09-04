@@ -44,6 +44,9 @@ namespace PPS.Core
             // 실제 저장을 시작하기 전에 구독자에게 알린다.
             BeforeSave?.Invoke();
 
+            // 저장물에는 항상 지금 코드의 형식 번호를 박는다.
+            if (data != null) data.Version = UserData.CurrentVersion;
+
             // 연결된 저장 구현체에 유저 데이터 저장을 요청한다.
             UserDataOperationResult result = await _storage.SaveAsync(data);
 
@@ -62,6 +65,20 @@ namespace PPS.Core
 
             // 연결된 저장 구현체에 유저 데이터 불러오기를 요청한다.
             UserDataLoadResult result = await _storage.LoadAsync();
+
+            // 구독자가 보는 데이터는 항상 현재 형식이어야 한다.
+            if (result.Success && result.Data != null)
+            {
+                // 신버전 저장물은 모르는 값을 지운 채 되저장할 위험이 있어 막는다.
+                if (result.Data.Version > UserData.CurrentVersion)
+                {
+                    result = UserDataLoadResult.Failed("VERSION_TOO_NEW");
+                }
+                else
+                {
+                    UserDataMigration.Migrate(result.Data);
+                }
+            }
 
             // 불러오기가 끝난 후 결과와 복원된 데이터를 구독자에게 전달한다.
             AfterLoad?.Invoke(result);

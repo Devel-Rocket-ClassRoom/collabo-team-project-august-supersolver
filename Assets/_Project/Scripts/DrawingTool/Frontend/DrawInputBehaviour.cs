@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using PPS.Core;
 using UnityEngine;
@@ -38,6 +39,11 @@ namespace PPS.DrawingTool
 
         PointerEventData _probe;
 
+        /// 고른 도구로 그림을 실제로 고쳤다. 되돌리기·초기화는
+        /// 버튼에서 세션으로 바로 가 여기를 안 거친다 — 튜토리얼이
+        /// 판이 달라진 것과 도구를 쓴 것을 갈라 보는 자리다.
+        public event Action ToolActed;
+
         public bool IsDrawing => _recognizer.IsDrawing;
 
         public IReadOnlyList<Vector2> PreviewPoints => _recognizer.PreviewPoints;
@@ -68,7 +74,7 @@ namespace PPS.DrawingTool
         {
             // 안 부르면 activeTouches 가 항상 비어 있다.
             EnhancedTouchSupport.Enable();
-            _recognizer.StrokeConfirmed += _session.AddStroke;
+            _recognizer.StrokeConfirmed += PlaceStroke;
             _recognizer.PivotRequested += PlacePivot;
             _recognizer.EraseRequested += Erase;
         }
@@ -81,10 +87,16 @@ namespace PPS.DrawingTool
             _recognizer.Abort();
             _consumed.Clear();
 
-            _recognizer.StrokeConfirmed -= _session.AddStroke;
+            _recognizer.StrokeConfirmed -= PlaceStroke;
             _recognizer.PivotRequested -= PlacePivot;
             _recognizer.EraseRequested -= Erase;
             EnhancedTouchSupport.Disable();
+        }
+
+        void PlaceStroke(Stroke stroke)
+        {
+            _session.AddStroke(stroke);
+            ToolActed?.Invoke();
         }
 
         /// <summary>
@@ -97,7 +109,10 @@ namespace PPS.DrawingTool
             if (PivotPlacement.TryResolve(
                     _session.Solution, anchor, radius,
                     tool == DrawTool.PivotWorld, out PivotJoint pivot))
+            {
                 _session.AddPivot(pivot);
+                ToolActed?.Invoke();
+            }
         }
 
         /// <summary>
@@ -113,12 +128,16 @@ namespace PPS.DrawingTool
             if (pivot >= 0)
             {
                 _session.ErasePivot(pivot);
+                ToolActed?.Invoke();
                 return;
             }
 
             int stroke = PivotPlacement.PickStroke(
                 solution.Strokes, anchor, radius, solution.Strokes.Count - 1);
-            if (stroke >= 0) _session.EraseStroke(stroke);
+            if (stroke < 0) return;
+
+            _session.EraseStroke(stroke);
+            ToolActed?.Invoke();
         }
 
         void Update()

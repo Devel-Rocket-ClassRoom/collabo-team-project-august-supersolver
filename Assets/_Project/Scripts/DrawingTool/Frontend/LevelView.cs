@@ -132,10 +132,14 @@ namespace PPS.DrawingTool
         /// <summary>
         /// 시뮬 중 공을 옮긴다. 물리 오브젝트에는 렌더러가
         /// 없어 화면 쪽 공이 바디를 따라가야 한다.
+        /// 각도까지 받아야 구르는 것이 구르는 것으로 보인다.
         /// </summary>
-        public void MoveBall(Vector2 position)
+        /// <param name="degrees">바디의 회전. Rigidbody2D 와 같은 도 단위다.</param>
+        public void MoveBall(Vector2 position, float degrees)
         {
-            if (_ball != null) _ball.position = position;
+            if (_ball == null) return;
+
+            _ball.SetPositionAndRotation(position, Quaternion.Euler(0f, 0f, degrees));
         }
 
         /// <summary>
@@ -150,7 +154,7 @@ namespace PPS.DrawingTool
         /// <summary>재시도가 부른다. 공만 출발점으로 되돌린다.</summary>
         public void ResetBall()
         {
-            if (_level != null) MoveBall(_level.BallStart);
+            if (_level != null) MoveBall(_level.BallStart, 0f);
         }
 
         void AddSegment(in StaticSegment segment, int index)

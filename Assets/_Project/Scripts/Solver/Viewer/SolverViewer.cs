@@ -1,13 +1,11 @@
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using PPS.Core;
 using UnityEngine;
 
-#if UNITY_INCLUDE_TESTS
-// 픽스처 어셈블리의 제약과 같은 심볼이어야 한다.
-// 테스트 없는 빌드에서는 아예 컴파일되지 않는다.
-using PPS.Core.Tests;
-#endif
+// UnityEngine 에도 같은 이름이 있다.
+using DeviceType = PPS.Core.DeviceType;
 
 namespace PPS.Solver.Viewer
 {
@@ -27,10 +25,12 @@ namespace PPS.Solver.Viewer
         static readonly Color FreeBodyColor = new Color32(0x1B, 0x4F, 0xA0, 0xFF);  // 진한 파랑
         static readonly Color BallColor = new Color32(0xC0, 0x14, 0x3C, 0xFF);      // 크림슨
         static readonly Color GoalColor = new Color32(0x0E, 0x7A, 0x3C, 0xFF);      // 진한 초록
+        static readonly Color StarColor = new Color32(0xB8, 0x7A, 0x00, 0xFF);      // 진한 금색
         static readonly Color KillLineColor = new Color32(0x8A, 0x1C, 0x1C, 0xFF);  // 어두운 벽돌
         static readonly Color BombIdleColor = new Color32(0x6B, 0x3F, 0xA0, 0xFF);  // 진한 보라
         static readonly Color BombFiredColor = new Color32(0xC4, 0x00, 0x6B, 0xFF); // 진한 마젠타
         static readonly Color HazardColor = new Color32(0xD4, 0x4A, 0x00, 0xFF);    // 진한 주황 — 닿으면 실패
+        static readonly Color WindColor = new Color32(0x00, 0x6E, 0x8A, 0xFF);      // 진한 하늘 — 미는 쪽으로 선
         static readonly Color PathColor = new Color32(0x0B, 0x3F, 0x7A, 0xFF);      // 진한 감청
         static readonly Color SolutionColor = new Color32(0x0B, 0x6E, 0x6E, 0xFF);  // 진한 청록 — 솔버가 그린 것
 
@@ -52,10 +52,11 @@ namespace PPS.Solver.Viewer
         /// 공이 지날 통로들. 레벨을 바꿀 때만 다시 짓는다. 시뮬과 무관하다.
         List<Vector2[]> _paths;
 
-        /// 통로마다 하나씩. 지금 굴리고 있는 것은 _index 번이다.
-        List<Solution> _solutions;
-        Solution _solution;
+        /// 지금 그리고 있는 통로. _paths 의 자리다.
         int _index;
+
+        /// 굴리고 있는 그림. 연산 결과가 없으면 비어 있다.
+        Solution _solution;
 
         bool _showPath = true;
 
@@ -75,6 +76,8 @@ namespace PPS.Solver.Viewer
 
         Vector2 _fileScroll;
 
+        Vector2 _legendScroll;
+
         /// 실측이 남긴 표. 파일이 없으면 null 이고 프리셋 항목도 안 생긴다.
         List<LeverPreset> _presets;
 
@@ -83,14 +86,22 @@ namespace PPS.Solver.Viewer
         int _clusterCount = 4;
         int _presetAt;
 
-        /// 지금 펼친 탭. 0 = 카탈로그, 1 = 프리셋.
+        /// 지금 펼친 탭. 0 = 레벨 파일, 1 = 시도, 2 = 프리셋.
         int _tab;
 
         /// <summary>
-        /// 레벨을 세 패스로 풀어 볼지. 끄면 통로만 그려 준다 —
-        /// 통로를 하나씩 넘겨 보려면 탐색이 낸 답 하나로는 안 된다.
+        /// 탐색은 레벨을 고를 때가 아니라 버튼으로만 돈다 —
+        /// 수백 번 굴리는 일이라 목록을 훑기만 해도 멈춰 버린다.
+        /// 아직 안 돌린 레벨은 통로만 그린다.
         /// </summary>
-        bool _useSearch = true;
+        bool HasSearched => _stage != null && _searched.ContainsKey(_stage.StageId);
+
+        /// 돌고 있는 연산. null 이면 놀고 있다.
+        Coroutine _search;
+
+        /// 진행 막대에 쓸 값. 연산이 도는 동안만 뜻이 있다.
+        float _searchProgress;
+        int _searchTries;
 
         /// 시도 목록에서 고른 판. -1 이면 답(없으면 가장 가까웠던 것)을 본다.
         int _attemptAt = -1;
@@ -151,7 +162,7 @@ namespace PPS.Solver.Viewer
 
             // 프레임당 한 번만. OnGUI 는 한 프레임에
             // 여러 번 돌아 월드가 여러 번 재구축된다.
-            if (_targetStep < _world.CurrentStep) Rebuild();
+            if (_targetStep < _world.CurrentStep) ResetWorld();
 
             while (_world.CurrentStep < _targetStep && !_world.IsTerminal)
                 _world.Step();
@@ -168,39 +179,44 @@ namespace PPS.Solver.Viewer
 
         void Rebuild()
         {
-            _world?.Dispose();
-
             var entry = _catalog[_levelIndex];
             _stage = entry.MakeStage();
 
             _paths = BallPath.Find(_stage.Level);
+            _index = Mathf.Clamp(_index, 0, Mathf.Max(0, _paths.Count - 1));
 
-            // 풀이를 직접 주는 항목이라도 지금은 안 낼 수 있다 — 탐색을 끈 경우다.
-            Solution given = entry.MakeSolution?.Invoke();
+            // 연산 전에는 아무것도 안 그린다 — 통로에 벽을 세워 보는 것은
+            // 연산이 할 일이고, 그것까지 여기서 지으면 레벨을 고르는 데 값이 든다.
+            _solution = entry.MakeSolution?.Invoke() ?? Solution.Empty;
 
-            _solutions = given == null
-                ? new SolutionBuilder().Build(_stage)
-                : new List<Solution> { given };
+            ResetWorld();
+        }
 
-            _index = Mathf.Clamp(_index, 0, Mathf.Max(0, _solutions.Count - 1));
-            _solution = _solutions.Count == 0 ? Solution.Empty : _solutions[_index];
+        /// <summary>
+        /// 판만 처음으로 되돌린다. 되감기가 곧 재구축이라
+        /// 스텝을 뒤로 옮길 때마다 여기를 지난다 — 통로 탐색까지
+        /// 같이 하면 슬라이더를 미는 동안 프레임이 멈춘다.
+        /// </summary>
+        void ResetWorld()
+        {
+            _world?.Dispose();
 
             // 스테이지를 매번 새로 만든다.
             // 장치가 발동 여부를 들고 있는 상태 객체다.
             _world = WorldBuilder.Build(_stage, _solution);
         }
 
-        /// 굴릴 통로를 바꾼다. 끝에서 넘어가면 반대쪽으로 돈다.
-        void Show(int index)
-        {
-            _index = (index + _solutions.Count) % _solutions.Count;
-            _targetStep = 0;
-            _stepInput = "0";
-            Rebuild();
-        }
+        /// <summary>
+        /// 그릴 통로를 바꾼다. 끝에서 넘어가면 반대쪽으로 돈다.
+        /// 선만 갈아 끼우므로 굴리던 판은 건드리지 않는다.
+        /// </summary>
+        void Show(int index) => _index = (index + _paths.Count) % _paths.Count;
 
         void ApplyLevel(int index)
         {
+            // 돌던 연산은 다른 레벨의 것이 된다.
+            CancelSearch();
+
             _levelIndex = index;
             _targetStep = 0;
             _stepInput = "0";
@@ -233,6 +249,12 @@ namespace PPS.Solver.Viewer
         /// 고른 칸의 지렛대를 굴린다.
         void ApplyPreset(int index)
         {
+            // 프리셋을 바꾸면 굴릴 판도 바뀐다. 돌던 연산은 뜻을 잃는다.
+            CancelSearch();
+
+            // 표 항목을 고른 상태여야 이 지렛대가 굴러간다.
+            _levelIndex = 0;
+
             _presetAt = index;
             _targetStep = 0;
             _stepInput = "0";
@@ -246,22 +268,12 @@ namespace PPS.Solver.Viewer
         // ── 탐색 ──
 
         /// <summary>
-        /// 두 패스를 돌려 나온 그림. 스테이지마다 한 번만 돈다.
-        /// 프리셋이 없으면 통로 패스만으로도 볼 것이 있으므로 그대로 진행한다.
+        /// 연산이 남긴 그림. 아직 안 돌린 스테이지에는 부르지 않는다 —
+        /// HasSearched 가 참일 때만 쓰인다.
         /// </summary>
         Solution Searched(StageData stage)
         {
-            if (!_searched.TryGetValue(stage.StageId, out SolveReport report))
-            {
-                var search = new SolutionSearch(
-                    LeverPresetFile.Exists
-                        ? LeverPresets.Load()
-                        : new LeverPresets(new List<LeverPreset>()));
-
-                // 첫 답에서 멈추지 않는다. 어떤 답들이 있었는지를 보는 자리다.
-                report = search.Solve(stage, stopAtClear: false);
-                _searched[stage.StageId] = report;
-            }
+            SolveReport report = _searched[stage.StageId];
 
             // 시도 목록에서 고른 것이 있으면 그것이 우선이다.
             if (_attemptAt >= 0 && report.Log != null && _attemptAt < report.Log.Count)
@@ -270,6 +282,69 @@ namespace PPS.Solver.Viewer
             // 못 풀었으면 가장 가까이 갔던 것을 대신 보여준다.
             // 빈 화면보다는 어디서 어긋났는지가 보이는 편이 낫다.
             return report.Solution ?? report.Closest ?? Solution.Empty;
+        }
+
+        /// <summary>
+        /// 지금 고른 레벨을 연산에 건다.
+        /// 이미 돌린 레벨이면 결과를 버리고 다시 돌린다.
+        /// </summary>
+        void RunSearch()
+        {
+            CancelSearch();
+
+            _searched.Remove(_stage.StageId);
+            _search = StartCoroutine(SearchRoutine(_stage));
+        }
+
+        /// 돌던 연산을 버린다. 굴리던 판은 결과로 남기지 않는다 —
+        /// 예산을 다 안 쓴 보고는 "못 풀었다"와 구분이 안 된다.
+        void CancelSearch()
+        {
+            if (_search == null) return;
+
+            StopCoroutine(_search);
+            _search = null;
+        }
+
+        /// <summary>
+        /// 한 프레임에 붙잡고 있을 시간. 판 수로 끊으면 레벨마다
+        /// 프레임이 들쭉날쭉하다 — 판 하나 굴리는 값이 제각각이다.
+        /// </summary>
+        const float FrameBudget = 0.02f;
+
+        /// 프레임을 나눠 굴린다. 다 굴린 뒤에야 결과를 남긴다.
+        IEnumerator SearchRoutine(StageData stage)
+        {
+            var search = new SolutionSearch(
+                LeverPresetFile.Exists
+                    ? LeverPresets.Load()
+                    : new LeverPresets(new List<LeverPreset>()));
+
+            // 첫 답에서 멈추지 않는다. 어떤 답들이 있었는지를 보는 자리다.
+            SolutionSearch.Run run = search.Begin(stage, stopAtClear: false);
+
+            float until = Time.realtimeSinceStartup + FrameBudget;
+
+            while (run.Step())
+            {
+                _searchProgress = run.Progress;
+                _searchTries = run.Tries;
+
+                if (Time.realtimeSinceStartup < until) continue;
+
+                yield return null;
+                until = Time.realtimeSinceStartup + FrameBudget;
+            }
+
+            _searched[stage.StageId] = run.Report;
+            _search = null;
+
+            _attemptAt = -1;
+            _targetStep = 0;
+            _stepInput = "0";
+
+            Rebuild();
+            RefreshAttemptView();
         }
 
         /// 고른 시도를 굴린다.
@@ -288,7 +363,109 @@ namespace PPS.Solver.Viewer
             if (_world == null) return;
 
             DrawMainPanel();
+            DrawSearchPanel();
+            DrawLegendPanel();
             DrawPlaybackPanel();
+        }
+
+        /// 우측 패널의 가로. 연산기와 색인이 같이 쓴다.
+        const float RightWidth = 260f;
+
+        /// <summary>
+        /// 무슨 색이 무엇인지. 화면의 선은 전부 이 표에서 온 것이다 —
+        /// 색만 다른 원이 여럿이라 표 없이는 가려낼 수 없다.
+        /// </summary>
+        void DrawLegendPanel()
+        {
+            const float top = 136f;
+
+            // 창이 낮으면 패널부터 줄인다. 화면 밖으로 나가면 스크롤도 못 잡는다.
+            float height = Mathf.Clamp(Screen.height - top - 10f, 60f, 282f);
+
+            GUILayout.BeginArea(
+                new Rect(Screen.width - RightWidth - 10f, top, RightWidth, height), GUI.skin.box);
+
+            GUILayout.Label("색인");
+
+            // 창이 낮으면 아래쪽 줄이 잘린다. 잘린 만큼 스크롤한다.
+            _legendScroll = GUILayout.BeginScrollView(_legendScroll);
+
+            LegendRow(TerrainColor, "지형 (붙박이)");
+            LegendRow(FreeBodyColor, "자유 물체");
+            LegendRow(BallColor, "공");
+            LegendRow(GoalColor, "골");
+            LegendRow(StarColor, "별");
+            LegendRow(BombIdleColor, "폭탄 — 대기");
+            LegendRow(BombFiredColor, "폭탄 — 발동");
+            LegendRow(HazardColor, "스파이크 · 위험 바디");
+            LegendRow(WindColor, "바람 (선은 미는 쪽)");
+            LegendRow(KillLineColor, "킬 라인");
+            LegendRow(PathColor, "통로");
+            LegendRow(SolutionColor, "솔버가 그린 선");
+
+            GUILayout.EndScrollView();
+            GUILayout.EndArea();
+        }
+
+        static void LegendRow(Color color, string name)
+        {
+            GUILayout.BeginHorizontal();
+
+            Rect chip = GUILayoutUtility.GetRect(18f, 14f, GUILayout.Width(18f));
+
+            Color was = GUI.color;
+            GUI.color = color;
+            GUI.DrawTexture(chip, Texture2D.whiteTexture);
+            GUI.color = was;
+
+            GUILayout.Label(name);
+            GUILayout.EndHorizontal();
+        }
+
+        /// <summary>
+        /// 연산기. 우상단에 따로 둔다 — 목록 옆에 있으면
+        /// 레벨을 고르다 잘못 눌러 수백 번 굴리게 된다.
+        /// </summary>
+        void DrawSearchPanel()
+        {
+            GUILayout.BeginArea(
+                new Rect(Screen.width - RightWidth - 10f, 10f, RightWidth, 116f), GUI.skin.box);
+
+            GUILayout.Label(_catalogNames[_levelIndex]);
+
+            if (_search != null)
+            {
+                DrawProgressBar(_searchProgress);
+                GUILayout.Label($"{_searchProgress * 100f:F0}%   {_searchTries}판 굴림");
+
+                if (GUILayout.Button("취소", GUILayout.Height(26f))) CancelSearch();
+            }
+            else
+            {
+                GUILayout.Label(HasSearched ? "연산 완료" : "연산 전 — 통로만 그린다");
+
+                GUILayout.Space(4f);
+
+                if (GUILayout.Button(HasSearched ? "다시 연산" : "연산", GUILayout.Height(26f)))
+                    RunSearch();
+            }
+
+            GUILayout.EndArea();
+        }
+
+        /// IMGUI 에는 진행 막대가 없다. 틀을 그리고 안을 채운다.
+        static void DrawProgressBar(float filled)
+        {
+            Rect line = GUILayoutUtility.GetRect(0f, 18f, GUILayout.ExpandWidth(true));
+            GUI.Box(line, GUIContent.none);
+
+            Color was = GUI.color;
+            GUI.color = new Color32(0x0B, 0x6E, 0x6E, 0xFF);
+            GUI.DrawTexture(
+                new Rect(line.x + 2f, line.y + 2f,
+                    (line.width - 4f) * Mathf.Clamp01(filled), line.height - 4f),
+                Texture2D.whiteTexture);
+            GUI.color = was;
         }
 
         /// <summary>
@@ -304,18 +481,17 @@ namespace PPS.Solver.Viewer
 
             GUILayout.Space(6f);
 
-            if (_tab == 0) DrawCatalogTab();
-            else if (_tab == 1) DrawFileTab();
-            else if (_tab == 2) DrawAttemptTab();
+            if (_tab == 0) DrawFileTab();
+            else if (_tab == 1) DrawAttemptTab();
             else DrawPresetTab();
 
             GUILayout.EndArea();
         }
 
-        static readonly string[] TabNames = { "카탈로그", "레벨 파일", "시도", "프리셋" };
+        static readonly string[] TabNames = { "레벨 파일", "시도", "프리셋" };
 
         /// <summary>
-        /// Levels 폴더에서 읽어 온 레벨들.
+        /// Levels 폴더에서 읽어 온 레벨들과 지금 고른 레벨의 정보.
         /// 못 읽은 파일도 이유와 함께 보여준다 — 목록에서 조용히
         /// 빠지면 파일을 잘못 뒀는지 형식이 틀렸는지 알 길이 없다.
         /// </summary>
@@ -327,6 +503,9 @@ namespace PPS.Solver.Viewer
             GUILayout.EndHorizontal();
 
             GUILayout.Space(4f);
+
+            // 레벨이 늘면 목록이 패널을 넘친다. 넘친 만큼 스크롤한다.
+            _fileScroll = GUILayout.BeginScrollView(_fileScroll);
 
             int count = _catalog.Length - _fileFrom;
 
@@ -345,38 +524,16 @@ namespace PPS.Solver.Viewer
                 if (picked != at) ApplyLevel(_fileFrom + picked);
             }
 
-            if (_fileProblems.Count == 0) return;
-
-            GUILayout.Space(8f);
-            GUILayout.Label($"읽지 못한 파일 {_fileProblems.Count}개");
-
-            _fileScroll = GUILayout.BeginScrollView(_fileScroll, GUILayout.Height(160f));
-
-            for (int i = 0; i < _fileProblems.Count; i++)
-                GUILayout.Label(_fileProblems[i]);
-
-            GUILayout.EndScrollView();
-        }
-
-        void DrawCatalogTab()
-        {
-            // 파일에서 온 것은 제 탭에서 고른다.
-            var names = new string[_fileFrom];
-            Array.Copy(_catalogNames, names, _fileFrom);
-
-            int picked = GUILayout.SelectionGrid(Mathf.Min(_levelIndex, _fileFrom - 1), names, 2);
-            if (picked != _levelIndex) ApplyLevel(picked);
-
-            GUILayout.Space(6f);
-
-            bool search = GUILayout.Toggle(_useSearch, " 탐색으로 풀기 (끄면 통로만)");
-            if (search != _useSearch)
+            if (_fileProblems.Count > 0)
             {
-                _useSearch = search;
-                ApplyLevel(_levelIndex);
+                GUILayout.Space(8f);
+                GUILayout.Label($"읽지 못한 파일 {_fileProblems.Count}개");
+
+                for (int i = 0; i < _fileProblems.Count; i++)
+                    GUILayout.Label(_fileProblems[i]);
             }
 
-            GUILayout.Space(6f);
+            GUILayout.Space(8f);
 
             int devices = _world.Level.Devices == null ? 0 : _world.Level.Devices.Count;
 
@@ -402,6 +559,8 @@ namespace PPS.Solver.Viewer
             }
 
             DrawTopologyPanel();
+
+            GUILayout.EndScrollView();
         }
 
         /// <summary>
@@ -453,8 +612,8 @@ namespace PPS.Solver.Viewer
         {
             if (!_searched.TryGetValue(_stage.StageId, out SolveReport report) || report.Log == null)
             {
-                GUILayout.Label("탐색을 거치지 않은 스테이지다.");
-                GUILayout.Label("카탈로그 탭에서 '탐색으로 풀기'를 켠 뒤 레벨을 고른다.");
+                GUILayout.Label("연산을 거치지 않은 스테이지다.");
+                GUILayout.Label("레벨을 고른 뒤 우상단 '연산'을 누른다.");
                 return;
             }
 
@@ -777,7 +936,7 @@ namespace PPS.Solver.Viewer
 
             _showPath = GUILayout.Toggle(_showPath, " 통로", GUILayout.Width(100f));
 
-            if (_solutions.Count == 0)
+            if (_paths.Count == 0)
             {
                 GUILayout.Label("통로 없음 — 공이 목표까지 갈 길이 지형에 막혀 있다");
                 return;
@@ -785,8 +944,8 @@ namespace PPS.Solver.Viewer
 
             GUILayout.BeginHorizontal();
             if (GUILayout.Button("◀", GUILayout.Width(30f))) Show(_index - 1);
-            GUILayout.Label($"통로 {_index + 1} / {_solutions.Count}   " +
-                            $"선 {_solution.Strokes.Count}개   잉크 {_solution.TotalInk():F1}",
+            GUILayout.Label($"통로 {_index + 1} / {_paths.Count}   " +
+                            $"점 {_paths[_index].Length}개",
                             GUILayout.Width(260f));
             if (GUILayout.Button("▶", GUILayout.Width(30f))) Show(_index + 1);
             GUILayout.EndHorizontal();
@@ -948,25 +1107,54 @@ namespace PPS.Solver.Viewer
             GL.Color(GoalColor);
             Circle(level.GoalPosition, LevelData.GoalRadius);
 
+            var stars = level.Stars;
+            if (stars != null)
+            {
+                GL.Color(StarColor);
+
+                for (int i = 0; i < stars.Count; i++)
+                    Circle(stars[i], LevelData.StarCaptureRadius);
+            }
+
             GL.Color(KillLineColor);
             Line(new Vector2(-30f, level.KillY), new Vector2(30f, level.KillY));
 
-            // 대기 중이면 보라, 터지면 마젠타.
             var devices = level.Devices;
-            if (devices != null && devices.Count > 0)
+            if (devices == null) return;
+
+            for (int i = 0; i < devices.Count; i++)
             {
-                GL.Color(_world.AnyPendingWork() ? BombIdleColor : BombFiredColor);
+                DeviceData device = devices[i];
+                Vector2 at = device.Position;
 
-                for (int i = 0; i < devices.Count; i++)
+                GL.Color(DeviceColor(device.Type, i));
+
+                Circle(at, 0.3f);
+                Circle(at, device.Radius);
+
+                if (device.Type == DeviceType.Wind)
                 {
-                    Vector2 at = devices[i].Position;
-
-                    Circle(at, 0.3f);
-                    Circle(at, devices[i].Radius);
-                    Line(at + new Vector2(-0.45f, 0f), at + new Vector2(0.45f, 0f));
-                    Line(at + new Vector2(0f, -0.45f), at + new Vector2(0f, 0.45f));
+                    // 바람만 방향이 있다. 미는 쪽으로 선을 하나 뻗는다.
+                    float rad = device.Angle * Mathf.Deg2Rad;
+                    Line(at, at + new Vector2(Mathf.Cos(rad), Mathf.Sin(rad)) * device.Radius);
+                    continue;
                 }
+
+                Line(at + new Vector2(-0.45f, 0f), at + new Vector2(0.45f, 0f));
+                Line(at + new Vector2(0f, -0.45f), at + new Vector2(0f, 0.45f));
             }
+        }
+
+        /// <summary>
+        /// 장치 하나의 색. 폭탄만 상태가 갈린다 —
+        /// 터진 폭탄은 몸이 사라져 자리만 남는다.
+        /// </summary>
+        Color DeviceColor(DeviceType type, int index)
+        {
+            if (type == DeviceType.Spike) return HazardColor;
+            if (type == DeviceType.Wind) return WindColor;
+
+            return _world.GetDevice(index).body != null ? BombIdleColor : BombFiredColor;
         }
 
         /// <summary>선분 하나를 사각형으로 그린다.</summary>
@@ -1033,6 +1221,15 @@ namespace PPS.Solver.Viewer
             Vector2 min = level.BallStart;
             Vector2 max = level.BallStart;
 
+            // 골과 별은 지형 밖에 떠 있을 수 있다. 빼면 화면 밖으로 잘린다.
+            Encapsulate(ref min, ref max, level.GoalPosition);
+
+            if (level.Stars != null)
+            {
+                for (int i = 0; i < level.Stars.Count; i++)
+                    Encapsulate(ref min, ref max, level.Stars[i]);
+            }
+
             if (level.Terrain != null)
             {
                 for (int i = 0; i < level.Terrain.Count; i++)
@@ -1082,8 +1279,8 @@ namespace PPS.Solver.Viewer
             public readonly Func<StageData> MakeStage;
 
             /// <summary>
-            /// 풀이를 직접 주는 자리. 없거나 null 을 내면 SolutionBuilder 가 낸다.
-            /// 낼 때마다 물어보는 것은 탐색을 껐다 켰다 할 수 있어야 해서다.
+            /// 풀이를 직접 주는 자리. 없거나 null 을 내면 빈 판을 굴린다.
+            /// 낼 때마다 물어보는 것은 연산 전후로 답이 달라져서다.
             /// </summary>
             public readonly Func<Solution> MakeSolution;
 
@@ -1126,7 +1323,7 @@ namespace PPS.Solver.Viewer
                 entries.Add(new Entry(
                     file.Name,
                     () => stage,
-                    () => _useSearch ? Searched(_stage) : null));
+                    () => HasSearched ? Searched(_stage) : null));
             }
         }
 
@@ -1143,62 +1340,23 @@ namespace PPS.Solver.Viewer
         }
 
         /// <summary>
-        /// 레벨 하나. 탐색이 켜져 있으면 세 패스를 거친 그림을,
-        /// 꺼져 있으면 SolutionBuilder 가 낸 통로들을 보여준다.
-        /// </summary>
-        Entry Stage(string name, Func<LevelData> makeLevel, int seed = 0)
-            => new Entry(
-                name,
-                () => new StageData { StageId = name, Seed = seed, Level = makeLevel() },
-                () => _useSearch ? Searched(_stage) : null);
-
-        /// <summary>
-        /// 레벨은 전부 픽스처 어셈블리에서 온다.
-        /// 목록의 레벨과 시드는 테스트가 돌리는 것과
-        /// 같아야 눈으로 본 것이 근거가 된다.
-        /// 풀이를 안 그리므로 레벨마다 한 줄이다.
+        /// 레벨은 Levels 폴더의 json 에서만 온다.
+        /// 프리셋 표가 있으면 그것만 맨 앞에 따로 둔다 —
+        /// 레벨이 아니라 실측한 지렛대를 굴려 보는 자리다.
         /// </summary>
         Entry[] BuildCatalog()
         {
-#if UNITY_INCLUDE_TESTS
             var entries = new List<Entry>();
 
-            // 표가 있으면 맨 앞에 둔다. 격자에서 고른 칸을 그대로 굴린다.
             if (_presets != null && _presets.Count > 0)
                 entries.Add(new Entry(
                     "지렛대 프리셋 (표)",
                     () => ViewerLevers.Stage(CurrentLever()),
                     () => ViewerLevers.Build(CurrentLever())));
 
-            // 패스를 가르는 최소 레벨들. 테스트가 쓰는 것과 같다.
-            entries.Add(Stage("비탈", SearchLevels.Slope));
-            entries.Add(Stage("오르막", SearchLevels.Uphill));
-
-            entries.AddRange(new[]
-            {
-                Stage("뷰어 기본 (폭탄)", ViewerLevels.BombRamp, seed: 3),
-                Stage("자유 물체 전시장", ViewerLevels.Showcase),
-                Stage("퍼즐", TestLevels.GapPuzzle),
-                Stage("기둥 셋 (수평)", TestLevels.PillarRun),
-                Stage("기둥 셋 (골이 위)", TestLevels.PillarRunUp),
-                Stage("기둥 셋 (골이 아래)", TestLevels.PillarRunDown),
-                Stage("L001 (JSON 파일)", SampleLevelFile.Load),
-                Stage("L002 전 피처 (JSON)", FeatureLevelFile.LoadLevel),
-                Stage("Ramp", TestLevels.RampToGoal),
-
-                // 시드 7 = FragBombPitStage 의 기본값.
-                Stage("파편 구덩이", TestLevels.FragBombPit, seed: 7),
-                Stage("파편 멀리", TestLevels.FragBombFarAway, seed: 7),
-            });
-
             AddLevelFiles(entries);
 
             return entries.ToArray();
-#else
-            // 픽스처가 없는 빌드. 가드를 빼면
-            // 없는 타입을 참조해 빌드가 깨진다.
-            return Array.Empty<Entry>();
-#endif
         }
     }
 }

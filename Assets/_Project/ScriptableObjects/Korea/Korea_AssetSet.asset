@@ -15,23 +15,42 @@ MonoBehaviour:
   MapStyle: {fileID: 11400000, guid: 59d72269ab1cff14b987d2aa4dd75eb9, type: 2}
   stageSelectBackground: {fileID: 21300000, guid: 206730cc370921645bb7fde8f019db38, type: 3}
   playBackground: {fileID: 21300000, guid: 206730cc370921645bb7fde8f019db38, type: 3}
+  SprLocked: {fileID: 21300000, guid: 0c73e7f80c51d49c9a6ccf732ab7ee81, type: 3}
+  SprStarBronze: {fileID: 21300000, guid: dfacf97c2070640b2ac36776465ab16c, type: 3}
+  SprStarSilver: {fileID: 21300000, guid: f55cc1216ac1e4e8b9bb7d48fbd16de2, type: 3}
+  SprStarGold: {fileID: 21300000, guid: aa35b9366fbd140bfbeabb55f5391aaa, type: 3}
   stages:
-  - {fileID: 4900000, guid: b23f2b6f255a394428a144e6a0a418f9, type: 3}
-  - {fileID: 4900000, guid: 208d6033161fea44bb5fbd06ef046dd4, type: 3}
-  - {fileID: 4900000, guid: 7c5a86c474b2e64469a49943a5fd71bd, type: 3}
-  - {fileID: 4900000, guid: b3a95257b39dec143903b438ee670efb, type: 3}
-  - {fileID: 4900000, guid: 30ca65c0e28c84341bfc2ab06196e3aa, type: 3}
-  - {fileID: 4900000, guid: 16ff1732e29cc8c48a36637b78e8b234, type: 3}
-  - {fileID: 4900000, guid: 3dbe95bc8b2229342beac39b83b95875, type: 3}
-  - {fileID: 4900000, guid: a6e01f5293fbb5c4aabcf2e31e6d9f9d, type: 3}
-  - {fileID: 4900000, guid: 4691f60f84f2a1e4384b68ee8716cf1c, type: 3}
-  - {fileID: 4900000, guid: 713147bbb3e3411468aea36e7dd4c43f, type: 3}
+  - {fileID: 4900000, guid: 9d2b316eca989dc4d8264d985d95dd10, type: 3}
+  - {fileID: 4900000, guid: 478885bab6d71bf41be385915f887663, type: 3}
+  - {fileID: 4900000, guid: 2b396c35c01937142a4c9ae74b287507, type: 3}
+  - {fileID: 4900000, guid: dac9bba735025f548890b3200a4ecfab, type: 3}
+  - {fileID: 4900000, guid: 03f4a3bb7dab6dd4cb8582c4d91bcc2e, type: 3}
+  - {fileID: 4900000, guid: c9e386701bc1e8f4dbdacd81356487a9, type: 3}
+  - {fileID: 4900000, guid: 7f0c05b6d1a7b054ab741fb7bb36253c, type: 3}
+  - {fileID: 4900000, guid: 05ff445e891cca5499b1ba7d971c0349, type: 3}
+  - {fileID: 4900000, guid: 2cc1a001642692345a8a19dc08f8db57, type: 3}
+  - {fileID: 4900000, guid: d3766e3b3d3822c42aab7c2903f2056b, type: 3}
+  - {fileID: 4900000, guid: 36c5777fca625054e9ea2f4c57b5f426, type: 3}
+  - {fileID: 4900000, guid: 62ff6b0c625033341bd34de07061c9e4, type: 3}
+  - {fileID: 4900000, guid: 9e7cebdadbb29d247854e2917b2a6cd7, type: 3}
+  - {fileID: 4900000, guid: 6766535734637304fb52522326a57ad0, type: 3}
+  - {fileID: 4900000, guid: 4efe586fd1e70fc4c8ff12f26fa87b02, type: 3}
+  - {fileID: 4900000, guid: 78dc64eae4d58f5499c588e270ed9243, type: 3}
+  - {fileID: 4900000, guid: 7a710667ded2fa146b40199d711913fc, type: 3}
+  - {fileID: 4900000, guid: 3091b5019983cac42990a9c6ced9998b, type: 3}
+  - {fileID: 4900000, guid: a3d6962c26abfef41bb58ba1250e3749, type: 3}
+  - {fileID: 4900000, guid: cfc4e45d358497b4f9e7c8c3eca2e041, type: 3}
   tutorials:
   - {fileID: 11400000, guid: 9a8ea099c82a98649aadc64b62beac64, type: 2}
   - {fileID: 11400000, guid: 9ca468246d0c46cd81c41d1e7a124f22, type: 2}
   - {fileID: 11400000, guid: 54d5a88b830d4d648b8842a1a50a07c7, type: 2}
   - {fileID: 11400000, guid: 846c2f0104b34164a12e5d5308f44b45, type: 2}
   - {fileID: 11400000, guid: d3da26047761435c91b3dce3ff949a11, type: 2}
+  - {fileID: 11400000, guid: 72112a0d44ae40d48533fb1a54f7afe9, type: 2}
+  - {fileID: 11400000, guid: 79486476459f4d8294cd4f9769b8a65c, type: 2}
+  - {fileID: 11400000, guid: e581dcda388d490bbeb1677be7338e36, type: 2}
+  - {fileID: 11400000, guid: 5123bdc57bdb4095b0aa8229ebff3aa3, type: 2}
+  - {fileID: 11400000, guid: 11c7c7d158274eddbdf60ad0f6cbdd46, type: 2}
   - {fileID: 11400000, guid: eb923fd6ed44408b9b37357efcd38338, type: 2}
   - {fileID: 11400000, guid: c0f1bcc22f634ca39705d72813e1bb3e, type: 2}
   - {fileID: 11400000, guid: 826cef8b83ee4485a583fa1f3b81a11a, type: 2}
