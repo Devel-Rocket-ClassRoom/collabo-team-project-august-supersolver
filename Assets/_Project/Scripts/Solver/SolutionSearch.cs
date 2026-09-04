@@ -1,3 +1,4 @@
+using System.Collections;
 using System.Collections.Generic;
 using PPS.Core;
 using UnityEngine;
@@ -129,20 +130,75 @@ namespace PPS.Solver
         /// 어떤 답들이 있었는지를 보고 싶을 때다.</param>
         public SolveReport Solve(StageData stage, bool stopAtClear = true)
         {
+            Run run = Begin(stage, stopAtClear);
+
+            while (run.Step()) { }
+
+            return run.Report;
+        }
+
+        /// <summary>
+        /// 한 판씩 끊어 굴린다. 프레임을 나눠 돌리려는 쪽에서 쓴다 —
+        /// 통째로 굴리면 수백 판 도는 동안 화면이 멈춘다.
+        /// </summary>
+        public Run Begin(StageData stage, bool stopAtClear = true)
+            => new Run(this, stage, stopAtClear);
+
+        /// <summary>돌고 있는 탐색 하나. Step 이 거짓을 내면 끝난 것이다.</summary>
+        public sealed class Run
+        {
+            readonly Attempts _attempts;
+            readonly IEnumerator _steps;
+
+            internal Run(SolutionSearch search, StageData stage, bool stopAtClear)
+            {
+                _attempts = new Attempts(stopAtClear);
+                _steps = search.Steps(stage, _attempts);
+            }
+
+            /// 0~1. 패스 셋을 고르게 나눈 어림값이다 — 실제로 쓰는 예산은
+            /// 레벨마다 달라서 굴린 판 수로는 끝을 가늠할 수 없다.
+            public float Progress => _attempts.Progress;
+
+            public int Tries => _attempts.Tries;
+
+            /// 한 판 굴린다. 더 굴릴 것이 없으면 거짓.
+            public bool Step() => _steps.MoveNext();
+
+            /// 도중에 읽으면 그때까지 굴린 것만 담긴다.
+            public SolveReport Report => _attempts.Report();
+        }
+
+        /// 패스 하나가 끝날 때마다 진행도가 이만큼씩 찬다.
+        const int PassCount = 3;
+
+        static float PassProgress(int pass, int at, int of)
+            => (pass + (of == 0 ? 0f : (float)at / of)) / PassCount;
+
+        /// 한 판 굴릴 때마다 멈춘다.
+        IEnumerator Steps(StageData stage, Attempts attempts)
+        {
             List<Vector2[]> paths = BallPath.Find(stage.Level);
-            var attempts = new Attempts(stopAtClear);
 
             // 통로 수가 곧 상한이라 이 패스만 예산을 안 연다.
             for (int i = 0; i < paths.Count && !attempts.Satisfied; i++)
+            {
+                attempts.Progress = PassProgress(0, i, paths.Count);
                 attempts.Run(SolvePass.Corridor, stage, Corridor(stage, paths[i]), out _);
+                yield return null;
+            }
 
             attempts.BeginPass(LeverTries);
-            ByLever(stage, attempts);
+
+            IEnumerator lever = ByLever(stage, attempts);
+            while (lever.MoveNext()) yield return null;
 
             attempts.BeginPass(HighGroundTries);
-            FromHighGround(stage, attempts);
 
-            return attempts.Report();
+            IEnumerator high = FromHighGround(stage, attempts);
+            while (high.MoveNext()) yield return null;
+
+            attempts.Progress = 1f;
         }
 
         static Solution Corridor(StageData stage, Vector2[] path)
@@ -166,7 +222,7 @@ namespace PPS.Solver
         /// 얹힌 채 추가 떨어지는 것을 잰 값이라, 공이 나중에 도착하는
         /// 자리에 놓으면 추가 이미 떨어진 뒤다.
         /// </summary>
-        void ByLever(StageData stage, Attempts attempts)
+        IEnumerator ByLever(StageData stage, Attempts attempts)
         {
             LevelData level = stage.Level;
             Vector2 seat = level.BallStart;
@@ -178,7 +234,9 @@ namespace PPS.Solver
 
             for (int i = 0; i < _presets.Count; i++)
             {
-                if (attempts.Spent || attempts.Satisfied) return;
+                if (attempts.Spent || attempts.Satisfied) yield break;
+
+                attempts.Progress = PassProgress(1, i, _presets.Count);
 
                 Lever lever = _presets[i].ToLever(seat, towardGoal);
                 if (!Fits(level, lever)) continue;
@@ -186,8 +244,13 @@ namespace PPS.Solver
                 var solution = new Solution();
                 lever.AppendTo(solution);
 
-                if (!attempts.Run(SolvePass.Lever, stage, solution, out BallSample peak))
-                    FromPeak(stage, lever, peak, reachedPeaks, attempts);
+                bool cleared = attempts.Run(SolvePass.Lever, stage, solution, out BallSample peak);
+                yield return null;
+
+                if (cleared) continue;
+
+                IEnumerator onward = FromPeak(stage, lever, peak, reachedPeaks, attempts);
+                while (onward.MoveNext()) yield return null;
             }
         }
 
@@ -199,21 +262,21 @@ namespace PPS.Solver
         /// </summary>
         /// <param name="reachedPeaks">이미 통로를 이어 본 칸들. 비슷한 프리셋은
         /// 거의 같은 자리로 가는데 통로를 다시 찾는 것이 비싸다.</param>
-        void FromPeak(
-            StageData stage, in Lever lever, in BallSample peak,
+        IEnumerator FromPeak(
+            StageData stage, Lever lever, BallSample peak,
             HashSet<long> reachedPeaks, Attempts attempts)
         {
             LevelData level = stage.Level;
 
             // 목표보다 낮은 자리에 올려놓은 것은 아무 이득이 없다.
-            if (peak.Step == 0 || peak.Position.y <= level.GoalPosition.y) return;
-            if (!reachedPeaks.Add(CellKey(peak.Position))) return;
+            if (peak.Step == 0 || peak.Position.y <= level.GoalPosition.y) yield break;
+            if (!reachedPeaks.Add(CellKey(peak.Position))) yield break;
 
             List<Vector2[]> onward = BallPath.Find(Rebased(level, peak.Position));
 
             for (int o = 0; o < onward.Count; o++)
             {
-                if (attempts.Spent || attempts.Satisfied) return;
+                if (attempts.Spent || attempts.Satisfied) yield break;
 
                 Solution solution = Corridor(stage, onward[o]);
 
@@ -221,6 +284,7 @@ namespace PPS.Solver
                 lever.AppendTo(solution);
 
                 attempts.Run(SolvePass.LeverThenCorridor, stage, solution, out _);
+                yield return null;
             }
         }
 
@@ -233,9 +297,9 @@ namespace PPS.Solver
         /// 통로는 착지점에서 다시 찾는다 — 공의 출발점에서 낸 통로는
         /// 착지점과 상관이 없다.
         /// </summary>
-        void FromHighGround(StageData stage, Attempts attempts)
+        IEnumerator FromHighGround(StageData stage, Attempts attempts)
         {
-            if (attempts.Satisfied) return;
+            if (attempts.Satisfied) yield break;
 
             LevelData level = stage.Level;
             Vector2 seat = level.BallStart;
@@ -244,6 +308,8 @@ namespace PPS.Solver
 
             for (int p = 0; p < landings.Count; p++)
             {
+                attempts.Progress = PassProgress(2, p, landings.Count);
+
                 Vector2 landing = landings[p];
 
                 // 통로는 착지점에만 달렸다. 프리셋마다 다시 찾을 이유가 없다.
@@ -261,7 +327,7 @@ namespace PPS.Solver
 
                     for (int o = 0; o < onward.Count; o++)
                     {
-                        if (attempts.Spent || attempts.Satisfied) return;
+                        if (attempts.Spent || attempts.Satisfied) yield break;
 
                         Solution solution = Corridor(stage, onward[o]);
 
@@ -269,6 +335,7 @@ namespace PPS.Solver
                         lever.AppendTo(solution);
 
                         attempts.Run(SolvePass.LeverThenCorridor, stage, solution, out _);
+                        yield return null;
                     }
                 }
             }
@@ -487,6 +554,9 @@ namespace PPS.Solver
             Solution _answer;
 
             public Attempts(bool stopAtClear) => _stopAtClear = stopAtClear;
+
+            /// 0~1. 굴리는 쪽이 패스 진행에 맞춰 채운다.
+            public float Progress;
 
             public int Tries { get; private set; }
 
