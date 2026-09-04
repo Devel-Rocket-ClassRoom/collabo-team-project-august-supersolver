@@ -15,6 +15,10 @@ MonoBehaviour:
   MapStyle: {fileID: 11400000, guid: 59d72269ab1cff14b987d2aa4dd75eb9, type: 2}
   stageSelectBackground: {fileID: 21300000, guid: 206730cc370921645bb7fde8f019db38, type: 3}
   playBackground: {fileID: 21300000, guid: 206730cc370921645bb7fde8f019db38, type: 3}
+  SprLocked: {fileID: 21300000, guid: 0c73e7f80c51d49c9a6ccf732ab7ee81, type: 3}
+  SprStar1: {fileID: 21300000, guid: dfacf97c2070640b2ac36776465ab16c, type: 3}
+  SprStar2: {fileID: 21300000, guid: f55cc1216ac1e4e8b9bb7d48fbd16de2, type: 3}
+  SprStar3: {fileID: 21300000, guid: aa35b9366fbd140bfbeabb55f5391aaa, type: 3}
   stages:
   - {fileID: 4900000, guid: 9d2b316eca989dc4d8264d985d95dd10, type: 3}
   - {fileID: 4900000, guid: 478885bab6d71bf41be385915f887663, type: 3}
