@@ -55,7 +55,7 @@ public class ThemeRepository : IThemeRepository
 
         Asset = new ThemeModel(
             Stages, stageSelectBackground, playBackground, mapEditStyle, _asset.tutorials,
-            _asset.SprLocked, _asset.SprStar1, _asset.SprStar2, _asset.SprStar3);
+            _asset.SprLocked, _asset.SprStarBronze, _asset.SprStarSilver, _asset.SprStarGold);
 
 
         currentTheme = theme;

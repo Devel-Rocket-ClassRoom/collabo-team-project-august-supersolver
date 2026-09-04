@@ -14,10 +14,11 @@ public class ThemeAssetSet : ScriptableObject
     /// 스테이지 버튼 위에 덮이는 자물쇠 그림.
     public Sprite SprLocked;
 
-    /// 스테이지 버튼이 획득한 별을 왼쪽부터 채울 때 쓰는 그림.
-    public Sprite SprStar1;
-    public Sprite SprStar2;
-    public Sprite SprStar3;
+    /// 잉크를 아낀 등급별 별 그림. 스테이지 버튼이
+    /// 채우는 별은 전부 같은 등급 그림을 쓴다.
+    public Sprite SprStarBronze;
+    public Sprite SprStarSilver;
+    public Sprite SprStarGold;
 
     public TextAsset[] stages;
     public Tutorial[] tutorials;

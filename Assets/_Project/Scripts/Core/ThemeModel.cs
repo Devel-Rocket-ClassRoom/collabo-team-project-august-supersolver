@@ -16,9 +16,9 @@ namespace PPS.Core
         public readonly Sprite PlayBackground;
         public readonly IReadOnlyList<Tutorial> Tutorials;
         public readonly Sprite SprLocked;
-        public readonly Sprite SprStar1;
-        public readonly Sprite SprStar2;
-        public readonly Sprite SprStar3;
+        public readonly Sprite SprStarBronze;
+        public readonly Sprite SprStarSilver;
+        public readonly Sprite SprStarGold;
         public ThemeModel(
             IReadOnlyList<StageData> stages,
             Sprite stageSelectBackground,
@@ -26,9 +26,9 @@ namespace PPS.Core
             MapEditStyle MapStyle,
             IReadOnlyList<Tutorial> tutorials,
             Sprite sprLocked,
-            Sprite sprStar1,
-            Sprite sprStar2,
-            Sprite sprStar3)
+            Sprite sprStarBronze,
+            Sprite sprStarSilver,
+            Sprite sprStarGold)
         {
             Stages = stages;
             StageSelectBackground = stageSelectBackground;
@@ -36,9 +36,9 @@ namespace PPS.Core
             this.MapStyle = MapStyle;
             Tutorials = tutorials;
             SprLocked = sprLocked;
-            SprStar1 = sprStar1;
-            SprStar2 = sprStar2;
-            SprStar3 = sprStar3;
+            SprStarBronze = sprStarBronze;
+            SprStarSilver = sprStarSilver;
+            SprStarGold = sprStarGold;
         }
     }
 

@@ -46,7 +46,8 @@ namespace PPS.DrawingTool
                 // Todo: Stalled와 Failed의 경우 재시작 버튼 깜빡임 등 피드백 처리
                 if(world.Judge.Cleared)
                 {
-                    SaveThatStageCleared(world.Judge.Stars);
+                    SaveThatStageCleared(world.Judge.Stars,
+                        InkGrade.Of(_session.Solution.TotalInk(), world.Level.InkLimit));
 
                     RewardViewModel vm = new RewardViewModel()
                     {
@@ -61,7 +62,7 @@ namespace PPS.DrawingTool
                 _label.text = TextOf(world.Judge);
             }
         }
-        void SaveThatStageCleared(int stars)
+        void SaveThatStageCleared(int stars, int starGrade)
         {
             var data = ServiceLocator.Get<IUserDataRepository>().Data;
             data.StageClears.Add(new StageClearData()
@@ -69,6 +70,7 @@ namespace PPS.DrawingTool
                 BestStars = stars,
                 IsCleared = true,
                 StageIndex = CurrentStageIndex.CurrentStage,
+                StarGrade = starGrade,
             });
 
             // 이전에 클리어한 스테이지를 다시 플레이해 클리어해도, 저장되는 데이터는 가장 많이 진척된 시점
