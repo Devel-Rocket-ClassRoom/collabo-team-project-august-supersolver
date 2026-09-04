@@ -162,7 +162,7 @@ namespace PPS.Solver.Viewer
 
             // 프레임당 한 번만. OnGUI 는 한 프레임에
             // 여러 번 돌아 월드가 여러 번 재구축된다.
-            if (_targetStep < _world.CurrentStep) Rebuild();
+            if (_targetStep < _world.CurrentStep) ResetWorld();
 
             while (_world.CurrentStep < _targetStep && !_world.IsTerminal)
                 _world.Step();
@@ -179,8 +179,6 @@ namespace PPS.Solver.Viewer
 
         void Rebuild()
         {
-            _world?.Dispose();
-
             var entry = _catalog[_levelIndex];
             _stage = entry.MakeStage();
 
@@ -190,6 +188,18 @@ namespace PPS.Solver.Viewer
             // 연산 전에는 아무것도 안 그린다 — 통로에 벽을 세워 보는 것은
             // 연산이 할 일이고, 그것까지 여기서 지으면 레벨을 고르는 데 값이 든다.
             _solution = entry.MakeSolution?.Invoke() ?? Solution.Empty;
+
+            ResetWorld();
+        }
+
+        /// <summary>
+        /// 판만 처음으로 되돌린다. 되감기가 곧 재구축이라
+        /// 스텝을 뒤로 옮길 때마다 여기를 지난다 — 통로 탐색까지
+        /// 같이 하면 슬라이더를 미는 동안 프레임이 멈춘다.
+        /// </summary>
+        void ResetWorld()
+        {
+            _world?.Dispose();
 
             // 스테이지를 매번 새로 만든다.
             // 장치가 발동 여부를 들고 있는 상태 객체다.
