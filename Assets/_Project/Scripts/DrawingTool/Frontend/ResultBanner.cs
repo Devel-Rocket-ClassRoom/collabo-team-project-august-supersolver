@@ -65,18 +65,32 @@ namespace PPS.DrawingTool
         void SaveThatStageCleared(int stars, int starGrade)
         {
             var data = ServiceLocator.Get<IUserDataRepository>().Data;
-            data.StageClears.Add(new StageClearData()
+            var record = FindClear(data, CurrentStageIndex.CurrentStage);
+
+            if (record == null)
             {
-                BestStars = stars,
-                IsCleared = true,
-                StageIndex = CurrentStageIndex.CurrentStage,
-                StarGrade = starGrade,
-            });
+                record = new StageClearData() { StageIndex = CurrentStageIndex.CurrentStage };
+                data.StageClears.Add(record);
+            }
+
+            // 다시 깨서 더 못한 결과가 나와도 기록은 최고치를 유지한다.
+            record.IsCleared = true;
+            record.BestStars = Mathf.Max(stars, record.BestStars);
+            record.StarGrade = Mathf.Max(starGrade, record.StarGrade);
 
             // 이전에 클리어한 스테이지를 다시 플레이해 클리어해도, 저장되는 데이터는 가장 많이 진척된 시점
             data.LastClearedStageIndex = Mathf.Max(CurrentStageIndex.CurrentStage, data.LastClearedStageIndex);
             
             ServiceLocator.Get<IUserDataService>().SaveAsync(data).Forget();
+        }
+
+        static StageClearData FindClear(UserData data, int stageIndex)
+        {
+            for (int i = 0; i < data.StageClears.Count; i++)
+            {
+                if (data.StageClears[i].StageIndex == stageIndex) return data.StageClears[i];
+            }
+            return null;
         }
         /// <summary>
         /// 클리어 문구가 별을 함께 알린다 — 보상 화면이
