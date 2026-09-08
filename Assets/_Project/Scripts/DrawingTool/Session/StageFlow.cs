@@ -1,4 +1,4 @@
-using PPS.Core;
+﻿using PPS.Core;
 using PPS.Game;
 using UnityEngine;
 
@@ -40,7 +40,7 @@ namespace PPS.DrawingTool
             Apply();
             ServiceLocator.Get<IRewardView>().BindButtonListener(
                 retry: () => { 
-                    OnClickRetry(); 
+                    Retry(); 
                     ServiceLocator.Get<IRewardView>().Hide(); 
                 },
                 home: null,  // DI 때문에 StageSceneLoaderOnClick.cs 에서 주입
@@ -99,12 +99,19 @@ namespace PPS.DrawingTool
         }
 
         /// <summary>
+        /// 재시도 버튼의 onClick 이름. 프리팹이 이 이름을
+        /// 문자열로 쥐고 있어 바꾸면 조용히 끊긴다.
+        /// </summary>
+        public void OnClickRetry() => Retry();
+
+        /// <summary>
         /// 되감기가 아니라 전파괴다. 되돌리기 스택은 건드리지
         /// 않는다 — 재시도 뒤에도 되돌릴 수 있어야 한다.
         /// 도구도 그대로다. ToolSelection 이 씬에 살아 있어
         /// 패널을 껐다 켜면 마지막에 고른 것이 돌아온다.
+        /// 버튼 말고 사망 자동 재시작도 여기로 들어온다.
         /// </summary>
-        public void OnClickRetry()
+        public void Retry()
         {
             if (!_flow.Retry()) return;
 
