@@ -85,11 +85,14 @@ public class StageButton : MonoBehaviour
         {
             var StageData = repo.Asset.Stages[stageIdx];
 
+            // 툴바 잠금이 이것을 읽는다. 패널을 먼저 띄우면
+            // 직전 스테이지 번호로 잠금을 계산한다.
+            CurrentStageIndex.CurrentStage = stageIdx;
+
             await UIManager.Instance.ShowScene<DrawingToolSceneUI>();
 
             StageLoader.SetStage(StageData);
             TutorialViewer.SetStage(stageIdx);
-            CurrentStageIndex.CurrentStage = stageIdx;
         }
         locked = false;
     }

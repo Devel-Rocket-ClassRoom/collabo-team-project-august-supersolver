@@ -43,6 +43,10 @@ namespace PPS.DrawingTool
         /// 156 이 비어 있어 넉넉하다.
         [SerializeField] float _riseY = 14f;
 
+        /// 잠긴 도구를 덮는 판. 배경 세 장과 아이콘 위에
+        /// 겹쳐 있어 SetSelected 의 색칠에 지워지지 않는다.
+        [SerializeField] GameObject _lock;
+
         /// 아직 한 번도 표시하지 않았으면 null. 첫 표시는
         /// 연출 없이 자리만 잡는다.
         bool? _shown;
@@ -65,6 +69,17 @@ namespace PPS.DrawingTool
             _innerShadow.color = selected ? SelectedShadow : NormalShadow;
             _label.SetActive(selected);
             Rise(selected);
+        }
+
+        /// <summary>
+        /// 잠긴 탭은 누를 수 없고 자물쇠 판에 덮인다.
+        /// 숨기지는 않는다 — 앞으로 열릴 도구가 보여야
+        /// 열려는 동기가 된다.
+        /// </summary>
+        public void SetUnlocked(bool unlocked)
+        {
+            GetComponent<Button>().interactable = unlocked;
+            _lock.SetActive(!unlocked);
         }
 
         // 패널을 다시 열 때마다 처음부터 다시 표시한다.
