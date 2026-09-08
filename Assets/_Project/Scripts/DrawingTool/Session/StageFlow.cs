@@ -17,6 +17,7 @@ namespace PPS.DrawingTool
         [SerializeField] GameSimDriver _driver;
         [SerializeField] DrawInputBehaviour _input;
         [SerializeField] SimStageView _simView;
+        [SerializeField] ToolbarView _toolbar;
 
         [Header("모드별 UI")]
         [SerializeField] GameObject _drawPanel;
@@ -60,6 +61,9 @@ namespace PPS.DrawingTool
             _session.ResetForStage();
             _simView.Reset();
             _flow.Retry();
+
+            // 스테이지가 갈렸으니 열린 도구도 갈렸다.
+            _toolbar.ApplyUnlock();
 
             Apply();
         }

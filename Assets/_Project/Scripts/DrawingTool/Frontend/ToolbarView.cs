@@ -1,3 +1,4 @@
+using PPS.Core;
 using UnityEngine;
 
 namespace PPS.DrawingTool
@@ -32,6 +33,27 @@ namespace PPS.DrawingTool
         void OnDisable()
         {
             _tools.Changed -= Apply;
+        }
+
+        /// <summary>
+        /// 판이 갈릴 때마다 잠금을 다시 계산한다. StageFlow 가
+        /// 부른다 — OnEnable 은 그리기↔시뮬 전이마다 돌아
+        /// 스테이지가 갈리는 시점과 맞지 않는다.
+        /// </summary>
+        public void ApplyUnlock()
+        {
+            int stage = CurrentStageIndex.CurrentStage
+                + CurrentStageIndex.CurrentTheme * CurrentStageIndex.StagePerTheme
+                + 1;
+
+            foreach (ToolTab tab in _tabs)
+                tab.SetUnlocked(ToolUnlock.IsUnlocked(tab.Tool, stage));
+
+            // 잠긴 도구가 선택된 채 남으면 탭은 잠겨 보이는데
+            // 캔버스에서는 그대로 그려진다. 고정선은 1스테이지
+            // 부터 열려 있어 언제 돌아가도 안전하다.
+            if (!ToolUnlock.IsUnlocked(_tools.Current, stage))
+                _tools.Select(DrawTool.FixedLine);
         }
 
         void Apply()
