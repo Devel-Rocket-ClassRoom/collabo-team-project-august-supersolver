@@ -3613,11 +3613,10 @@ MonoBehaviour:
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: edd57890ec054bc39e8824e9d15070ea, type: 3}
   m_Name: 
-  m_EditorClassIdentifier: PPS.DrawingTool::PPS.DrawingTool.ResultBanner
+  m_EditorClassIdentifier: PPS.DrawingTool::PPS.DrawingTool.StageOutcomeHandler
   _driver: {fileID: 2487151381449205098}
   _session: {fileID: 8860626864616630411}
-  _banner: {fileID: 1683656292986877368}
-  _label: {fileID: 1108063907814056867}
+  _flow: {fileID: 5266486316885008130}
 --- !u!114 &8039607343141610814
 MonoBehaviour:
   m_ObjectHideFlags: 0
