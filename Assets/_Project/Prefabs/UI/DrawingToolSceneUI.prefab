@@ -2626,6 +2626,7 @@ GameObject:
   - component: {fileID: 628329796030153586}
   - component: {fileID: 1178813334583132260}
   - component: {fileID: 4221126597738762293}
+  - component: {fileID: 4811574238840012102}
   m_Layer: 5
   m_Name: Btn_Retry
   m_TagString: Untagged
@@ -2747,6 +2748,18 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 2
+--- !u!114 &4811574238840012102
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6964478124159420834}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ef3760d89ad070a4d9f6d1860ae95020, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: PPS.DrawingTool::PPS.DrawingTool.RetryBlink
 --- !u!1 &7420089488341394756
 GameObject:
   m_ObjectHideFlags: 0
@@ -3353,6 +3366,7 @@ MonoBehaviour:
   _driver: {fileID: 2487151381449205098}
   _session: {fileID: 8860626864616630411}
   _flow: {fileID: 5266486316885008130}
+  _retryBlink: {fileID: 4811574238840012102}
 --- !u!114 &8039607343141610814
 MonoBehaviour:
   m_ObjectHideFlags: 0
