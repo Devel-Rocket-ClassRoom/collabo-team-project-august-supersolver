@@ -33,7 +33,8 @@ public class StageSceneLoaderOnClick : MonoBehaviour
         if (CurrentStageIndex.CurrentStage >= CurrentStageIndex.StagePerTheme - 1) return;
         locked = true;
 
-        var stageIdx = ++CurrentStageIndex.CurrentStage;
+        int stageIdx = CurrentStageIndex.CurrentStage + 1;
+        CurrentStageIndex.SelectStage(stageIdx);
         if (ServiceLocator.TryGet<IThemeRepository>(out var repo))
         {
             var StageData = repo.Asset.Stages[stageIdx];
