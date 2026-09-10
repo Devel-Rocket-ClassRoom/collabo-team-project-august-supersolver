@@ -15,6 +15,7 @@ namespace PPS.Core
         public readonly Sprite StageSelectBackground;
         public readonly Sprite PlayBackground;
         public readonly IReadOnlyList<Tutorial> Tutorials;
+        public readonly IReadOnlyList<FixedTutorial> FixedTutorials;
         public readonly Sprite SprLocked;
         public readonly Sprite SprStarBronze;
         public readonly Sprite SprStarSilver;
@@ -25,6 +26,7 @@ namespace PPS.Core
             Sprite playBackground,
             MapEditStyle MapStyle,
             IReadOnlyList<Tutorial> tutorials,
+            IReadOnlyList<FixedTutorial> fixedTutorials,
             Sprite sprLocked,
             Sprite sprStarBronze,
             Sprite sprStarSilver,
@@ -35,6 +37,7 @@ namespace PPS.Core
             PlayBackground = playBackground;
             this.MapStyle = MapStyle;
             Tutorials = tutorials;
+            FixedTutorials = fixedTutorials;
             SprLocked = sprLocked;
             SprStarBronze = sprStarBronze;
             SprStarSilver = sprStarSilver;

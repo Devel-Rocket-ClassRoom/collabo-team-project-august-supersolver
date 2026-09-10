@@ -28,6 +28,10 @@ public class TutorialViewer : MonoBehaviour
 
     CancellationTokenSource _cts;
 
+    /// 스테이지 내내 떠 있는 표시들. 컷과 달리
+    /// 조건이 없어 파괴 시점을 여기서 쥔다.
+    readonly List<GameObject> _fixed = new();
+
     void Awake()
     {
         if (Instance != null) return;
@@ -58,6 +62,7 @@ public class TutorialViewer : MonoBehaviour
         _cts = CancellationTokenSource.CreateLinkedTokenSource(
             this.GetCancellationTokenOnDestroy());
 
+        ShowFixed(repo.Asset.FixedTutorials, stageIndex);
         PlayAll(repo.Asset.Tutorials, stageIndex, _cts.Token).Forget();
     }
 
@@ -66,7 +71,18 @@ public class TutorialViewer : MonoBehaviour
         _cts?.Cancel();
         _cts?.Dispose();
         _cts = null;
+
+        foreach (var spawned in _fixed)
+            if (spawned != null) Destroy(spawned);
+
+        _fixed.Clear();
     }
+
+    /// <summary>
+    /// 스테이지에서 나갈 때. 패널은 꺼질 뿐 파괴되지
+    /// 않아 여기서 지우지 않으면 표시가 살아 남는다.
+    /// </summary>
+    public static void StopAll() => Instance?.Stop();
 
     async UniTaskVoid PlayAll(
         IReadOnlyList<Tutorial> tutorials, int stageIndex, CancellationToken token)
@@ -82,6 +98,32 @@ public class TutorialViewer : MonoBehaviour
             // 갈아 끼우기 전에 돌아온다. 한 프레임 늦춰야
             // 다음 컷이 살아 있는 자리에 붙는다.
             await UniTask.NextFrame(token);
+        }
+    }
+
+    /// <summary>
+    /// 스테이지 것을 한꺼번에 띄운다. 순서가 없어
+    /// 기다리지 않고, 캔버스 영역 한가운데에 붙는다 —
+    /// 모드가 갈려도 그 자리는 안 꺼진다.
+    /// </summary>
+    void ShowFixed(IReadOnlyList<FixedTutorial> fixedTutorials, int stageIndex)
+    {
+        if (fixedTutorials == null) return;
+
+        var center = Find(TutorialAnchor.CanvasArea);
+        if (center == null)
+        {
+            Debug.LogError("[TutorialViewer] 캔버스 영역이 안 물려 있다.", this);
+            return;
+        }
+
+        foreach (var fixedTutorial in fixedTutorials)
+        {
+            if (fixedTutorial == null) continue;
+            if (fixedTutorial.StageIndex != stageIndex) continue;
+            if (fixedTutorial.Prefab == null) continue;
+
+            _fixed.Add(Instantiate(fixedTutorial.Prefab, center));
         }
     }
 

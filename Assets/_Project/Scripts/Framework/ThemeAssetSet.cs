@@ -22,4 +22,8 @@ public class ThemeAssetSet : ScriptableObject
 
     public TextAsset[] stages;
     public Tutorial[] tutorials;
+
+    /// 스테이지 내내 떠 있는 표시. 순서가 없어
+    /// tutorials 와 따로 담는다.
+    public FixedTutorial[] fixedTutorials;
 }

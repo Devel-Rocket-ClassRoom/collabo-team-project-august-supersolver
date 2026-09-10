@@ -32,6 +32,14 @@ public class DrawingToolSceneUI : UIScene
         managers.gameObject.SetActive(true);
     }
 
-    /// 부모가 갈라져 패널을 따라 꺼지지 않는다.
-    public override void OnAfterHide() => managers.gameObject.SetActive(false);
+    /// <summary>
+    /// managers 는 부모가 갈라져 패널을 따라 꺼지지
+    /// 않는다. 고정 표시는 패널 안에 있지만 패널이
+    /// 파괴되지 않아 스테이지를 나가도 살아 남는다.
+    /// </summary>
+    public override void OnAfterHide()
+    {
+        managers.gameObject.SetActive(false);
+        TutorialViewer.StopAll();
+    }
 }
