@@ -1,4 +1,4 @@
-
+using System;
 namespace PPS.Core
 {
     public static class CurrentStageIndex
@@ -36,6 +36,17 @@ namespace PPS.Core
         public static int ThemeOf(int globalIndex) => globalIndex / StagePerTheme;
 
         public static int StageOf(int globalIndex) => globalIndex % StagePerTheme;
+
+        /// 테마 개수. 해금·진입 판정에서 테마 축을 벗어나지
+        /// 않게 자를 때 쓴다.
+        public static readonly int ThemeCount = Enum.GetValues(typeof(ThemeLabel)).Length;
+
+        /// <summary>
+        /// 테마 인덱스를 에셋 라벨로 바꾼다. ThemeLabel 의 선언
+        /// 순서가 곧 테마 순서다 — 전역 번호가 그 순서를 전제하니
+        /// 이미 나간 테마의 자리는 바꾸지 않는다.
+        /// </summary>
+        public static ThemeLabel ThemeLabelOf(int themeIdx) => (ThemeLabel)themeIdx;
 
         /// <summary>
         /// 전역 번호를 화면 표기용 1-base 로 바꾼다.

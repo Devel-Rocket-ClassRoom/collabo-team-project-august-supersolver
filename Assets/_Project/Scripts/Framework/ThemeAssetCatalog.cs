@@ -1,4 +1,3 @@
-using PPS.Core;
 using System;
 using System.Collections.Generic;
 using UnityEngine;
@@ -11,6 +10,5 @@ public class ThemeAssetCatalog : ScriptableObject
 [Serializable]
 public struct ThemeAssetEntry
 {
-    public ThemeLabel label;
     public Sprite Spr_SelectButton;
 }

@@ -44,7 +44,7 @@ public class ThemeSelectView : UIScene
             ThemeAssetEntry entry = catalog.Asset[i];
 
             GetButton(i).Init(entry.Spr_SelectButton, i < unlocked,
-                () => EnterTheme(idx, entry.label).Forget());
+                () => EnterTheme(idx).Forget());
         }
     }
 
@@ -55,7 +55,7 @@ public class ThemeSelectView : UIScene
         int lastCleared = ServiceLocator.Get<IUserDataRepository>().Data.LastClearedStageIndex;
         return CurrentStageIndex.ThemeOf(lastCleared + 1) + 1;
     }
-    async UniTask EnterTheme(int themeIdx, ThemeLabel label)
+    async UniTask EnterTheme(int themeIdx)
     {
         if (loading) return;
 
@@ -64,7 +64,8 @@ public class ThemeSelectView : UIScene
         try
         {
             CurrentStageIndex.SelectTheme(themeIdx);
-            await ServiceLocator.Get<IThemeRepository>().LoadAsync(label);
+            await ServiceLocator.Get<IThemeRepository>().LoadAsync(
+                CurrentStageIndex.ThemeLabelOf(themeIdx));
             await UIManager.Instance.ShowScene<StageSelectView>();
         }
         finally
