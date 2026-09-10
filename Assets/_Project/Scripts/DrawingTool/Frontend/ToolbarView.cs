@@ -42,9 +42,7 @@ namespace PPS.DrawingTool
         /// </summary>
         public void ApplyUnlock()
         {
-            int stage = CurrentStageIndex.CurrentStage
-                + CurrentStageIndex.CurrentTheme * CurrentStageIndex.StagePerTheme
-                + 1;
+            int stage = CurrentStageIndex.CurrentGlobalIndex + 1;
 
             foreach (ToolTab tab in _tabs)
                 tab.SetUnlocked(ToolUnlock.IsUnlocked(tab.Tool, stage));

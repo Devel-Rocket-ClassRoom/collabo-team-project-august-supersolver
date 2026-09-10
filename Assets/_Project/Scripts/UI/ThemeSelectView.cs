@@ -37,16 +37,23 @@ public class ThemeSelectView : UIScene
     }
     void UpdateThemeButton()
     {
+        int unlocked = UnlockedThemeCount();
         for (int i = 0; i < catalog.Asset.Count; i++)
         {
             int idx = i;
             ThemeAssetEntry entry = catalog.Asset[i];
 
-            // 해금 판정은 진척도 저장 규약이 정리될 때까지 미룬다.
-            // LastClearedStageIndex 로는 테마를 구분할 수 없다.
-            GetButton(i).Init(entry.Spr_SelectButton, true,
+            GetButton(i).Init(entry.Spr_SelectButton, i < unlocked,
                 () => SelectTheme(idx, entry.label).Forget());
         }
+    }
+
+    /// 다음 테마는 앞 테마를 끝까지 깨야 열린다. 지금 열려
+    /// 있는 다음 스테이지가 속한 테마가 곧 마지막 해금 테마다.
+    int UnlockedThemeCount()
+    {
+        int lastCleared = ServiceLocator.Get<IUserDataRepository>().Data.LastClearedStageIndex;
+        return CurrentStageIndex.ThemeOf(lastCleared + 1) + 1;
     }
     async UniTask SelectTheme(int themeIdx, ThemeLabel label)
     {
