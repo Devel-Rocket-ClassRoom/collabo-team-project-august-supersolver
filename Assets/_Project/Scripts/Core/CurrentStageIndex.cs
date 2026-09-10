@@ -9,7 +9,9 @@ namespace PPS.Core
         public static int CurrentStage;
         public static int CurrentTheme;
 
-        // return (theme, stage) index.
+        /// <summary>
+        /// return (1, 1) as Min
+        /// </summary>
         public static (int, int) GetStageAndThemeIndex(int stageIndex)
         {
             return (stageIndex / StagePerTheme + 1, stageIndex % StagePerTheme + 1);

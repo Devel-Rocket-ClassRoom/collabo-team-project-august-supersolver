@@ -55,6 +55,6 @@ public sealed class GameComposite : MonoSingleton<GameComposite>
         ServiceLocator.Register<IRewardView>(UIManager.Instance.GetPanel<RewardView>());
 
         await UIManager.Instance.HideInitialLoading();
-        await UIManager.Instance.ShowScene<StageSelectView>();
+        await UIManager.Instance.ShowScene<ThemeSelectView>();
     }
 }
