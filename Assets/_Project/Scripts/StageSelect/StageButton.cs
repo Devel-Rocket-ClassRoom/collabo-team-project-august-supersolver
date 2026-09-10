@@ -19,14 +19,18 @@ public class StageButton : MonoBehaviour
 
     public void OnUpdate(int stageIdx, int maxStageIdx, int lastCleared)
     {
+        // stageIdx 는 테마 안에서의 번호고 저장된 진척도는
+        // 전역 번호다. 같은 축으로 올려서 비교한다.
+        int globalIdx = CurrentStageIndex.GlobalIndexOf(CurrentStageIndex.CurrentTheme, stageIdx);
+
         bool isLocked = stageIdx < 0 || stageIdx >= maxStageIdx
-            || stageIdx > CurrentStageIndex.GetStageAndThemeIndex(lastCleared).Item2;
+            || globalIdx > lastCleared + 1;
 
         Img_Locked.gameObject.SetActive(isLocked);
         this.stageIdx = isLocked ? -1 : stageIdx;
         stageNumText.text = isLocked ? "" : (stageIdx + 1).ToString();
 
-        var best = isLocked ? (stars: 0, grade: InkGrade.Bronze) : BestClearOf(stageIdx);
+        var best = isLocked ? (stars: 0, grade: InkGrade.Bronze) : BestClearOf(globalIdx);
         ApplyThemeSprites(best.grade);
 
         Img_Star1.gameObject.SetActive(best.stars >= 1);
@@ -59,7 +63,7 @@ public class StageButton : MonoBehaviour
     }
 
     // 같은 스테이지 기록이 여러 번 쌓일 수 있어 가장 좋은 값을 고른다.
-    static (int stars, int grade) BestClearOf(int stageIdx)
+    static (int stars, int grade) BestClearOf(int globalIdx)
     {
         if (!ServiceLocator.TryGet<IUserDataRepository>(out var repo))
             return (0, InkGrade.Bronze);
@@ -69,7 +73,7 @@ public class StageButton : MonoBehaviour
         var clears = repo.Data.StageClears;
         for (int i = 0; i < clears.Count; i++)
         {
-            if (clears[i].StageIndex != stageIdx || !clears[i].IsCleared) continue;
+            if (clears[i].StageIndex != globalIdx || !clears[i].IsCleared) continue;
             stars = Mathf.Max(stars, clears[i].BestStars);
             grade = Mathf.Max(grade, clears[i].StarGrade);
         }
@@ -87,7 +91,7 @@ public class StageButton : MonoBehaviour
 
             // 툴바 잠금이 이것을 읽는다. 패널을 먼저 띄우면
             // 직전 스테이지 번호로 잠금을 계산한다.
-            CurrentStageIndex.CurrentStage = stageIdx;
+            CurrentStageIndex.SelectStage(stageIdx);
 
             await UIManager.Instance.ShowScene<DrawingToolSceneUI>();
 

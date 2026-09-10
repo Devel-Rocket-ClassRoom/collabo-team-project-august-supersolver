@@ -80,7 +80,7 @@ namespace PPS.DrawingTool
                 InkUsed = _session.Solution.TotalInk(),
                 InkLimit = world.Level.InkLimit,
                 EndStep = world.Judge.DecidedStep,
-                StageIndex = CurrentStageIndex.CurrentStage + CurrentStageIndex.CurrentTheme * CurrentStageIndex.StagePerTheme,
+                StageIndex = CurrentStageIndex.CurrentGlobalIndex,
                 StarCount = world.Judge.Stars,
             };
             ServiceLocator.Get<IRewardView>().Show(vm);
@@ -89,11 +89,15 @@ namespace PPS.DrawingTool
         void SaveThatStageCleared(int stars, int starGrade)
         {
             var data = ServiceLocator.Get<IUserDataRepository>().Data;
-            var record = FindClear(data, CurrentStageIndex.CurrentStage);
+
+            // 기록은 테마를 넘어 한 축으로 센다. 테마 안에서의
+            // 번호로 적으면 다른 테마의 같은 번호와 겹친다.
+            int globalIdx = CurrentStageIndex.CurrentGlobalIndex;
+            var record = FindClear(data, globalIdx);
 
             if (record == null)
             {
-                record = new StageClearData() { StageIndex = CurrentStageIndex.CurrentStage };
+                record = new StageClearData() { StageIndex = globalIdx };
                 data.StageClears.Add(record);
             }
 
@@ -103,7 +107,7 @@ namespace PPS.DrawingTool
             record.StarGrade = Mathf.Max(starGrade, record.StarGrade);
 
             // 이전에 클리어한 스테이지를 다시 플레이해 클리어해도, 저장되는 데이터는 가장 많이 진척된 시점
-            data.LastClearedStageIndex = Mathf.Max(CurrentStageIndex.CurrentStage, data.LastClearedStageIndex);
+            data.LastClearedStageIndex = Mathf.Max(globalIdx, data.LastClearedStageIndex);
             
             ServiceLocator.Get<IUserDataService>().SaveAsync(data).Forget();
         }

@@ -34,33 +34,41 @@ public class ThemeRepository : IThemeRepository
         Debug.Log("[테마 에셋 로드] 로딩시작");
 
         // 재진입 가드, 같은 에셋 로드, 테마 라벨 등록 여부 검사
-        EnsureLoad(theme, out var label);
+        if (!EnsureLoad(theme, out var label)) return;
 
-        if (_handle != null)
-            await _loader.Unload(_handle);
+        // 로드가 터져도 잠금은 풀어야 한다. 남으면 이후
+        // 모든 테마 로드가 재진입 가드에 막힌다.
+        try
+        {
+            if (_handle != null)
+                await _loader.Unload(_handle);
 
-        _handle = await _loader.LoadAsync(label);
+            _handle = await _loader.LoadAsync(label);
 
-        // 텍스트 에셋은 전부 스테이지 데이터임! 구분하려면 prefix 추가 필요해짐!
-        _asset = _handle.Assets.OfType<ThemeAssetSet>().Single();
-
-
-        // Adapter
-        var Stages = _asset.stages
-            .Select(stageText => StageData.FromJson(stageText.text))
-            .ToList();
-        var stageSelectBackground = _asset.stageSelectBackground;
-        var playBackground = _asset.playBackground;
-        var mapEditStyle = _asset.MapStyle;
-
-        Asset = new ThemeModel(
-            Stages, stageSelectBackground, playBackground, mapEditStyle,
-            _asset.tutorials, _asset.fixedTutorials,
-            _asset.SprLocked, _asset.SprStarBronze, _asset.SprStarSilver, _asset.SprStarGold);
+            // 텍스트 에셋은 전부 스테이지 데이터임! 구분하려면 prefix 추가 필요해짐!
+            _asset = _handle.Assets.OfType<ThemeAssetSet>().Single();
 
 
-        currentTheme = theme;
-        _locked = false;
+            // Adapter
+            var Stages = _asset.stages
+                .Select(stageText => StageData.FromJson(stageText.text))
+                .ToList();
+            var stageSelectBackground = _asset.stageSelectBackground;
+            var playBackground = _asset.playBackground;
+            var mapEditStyle = _asset.MapStyle;
+
+            Asset = new ThemeModel(
+                Stages, stageSelectBackground, playBackground, mapEditStyle,
+                _asset.tutorials, _asset.fixedTutorials,
+                _asset.SprLocked, _asset.SprStarBronze, _asset.SprStarSilver, _asset.SprStarGold);
+
+
+            currentTheme = theme;
+        }
+        finally
+        {
+            _locked = false;
+        }
         Debug.Log("[테마 에셋 로드] 로딩종료");
     }
 

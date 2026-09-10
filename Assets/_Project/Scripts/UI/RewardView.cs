@@ -197,7 +197,7 @@ public class RewardView : UIPopup, IRewardView
     /// 스테이지 인덱스는 0 부터 시작한다고 본다.
     private static string FormatStage(int stageIndex)
     {
-        (int chapter, int number) = CurrentStageIndex.GetStageAndThemeIndex(stageIndex);
+        (int chapter, int number) = CurrentStageIndex.GetThemeAndStageNumber(stageIndex);
         return $"{chapter} - {number}";
     }
 

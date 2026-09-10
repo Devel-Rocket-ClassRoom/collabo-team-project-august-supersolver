@@ -45,8 +45,11 @@ public sealed class GameComposite : MonoSingleton<GameComposite>
         ServiceLocator.Register(themerepo);
         Debug.Log($"테마 레포지토리 등록 완료 elapsed: {Time.time - elapsed}");
 
-        await themerepo.LoadAsync(ThemeLabel.KOREA);
-        //(ThemeLabel)(Mathf.Clamp(userrepo.Data.LastClearedStageIndex / 20, 0, 1))
+        // 진척도가 가리키는 테마로 바로 들어간다. StageSelectView
+        // 가 초기화될 때 이미 로드된 테마를 읽어야 한다.
+        int themeIdx = EntryThemeIndex();
+        CurrentStageIndex.SelectTheme(themeIdx);
+        await themerepo.LoadAsync(CurrentStageIndex.ThemeLabelOf(themeIdx));
         Debug.Log($"테마 로딩 완료 elapsed: {Time.time - elapsed}");
 
 
@@ -56,5 +59,15 @@ public sealed class GameComposite : MonoSingleton<GameComposite>
 
         await UIManager.Instance.HideInitialLoading();
         await UIManager.Instance.ShowScene<StageSelectView>();
+    }
+
+    /// 다음에 풀 스테이지가 속한 테마. 유저 데이터를 못 읽었으면
+    /// 첫 테마로 둔다 — 진척도를 모르는 채로 뒤 테마를 열 수 없다.
+    static int EntryThemeIndex()
+    {
+        if (!ServiceLocator.TryGet<IUserDataRepository>(out var repo)) return 0;
+
+        int next = repo.Data.LastClearedStageIndex + 1;
+        return Mathf.Clamp(CurrentStageIndex.ThemeOf(next), 0, CurrentStageIndex.ThemeCount - 1);
     }
 }
