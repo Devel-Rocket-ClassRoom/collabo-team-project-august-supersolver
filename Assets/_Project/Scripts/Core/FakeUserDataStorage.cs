@@ -11,9 +11,9 @@ namespace PPS.Core
         {
             fakeData = new UserData()
             {
-                LastClearedStageIndex = 0,
+                LastClearedStageIndex = 19,
                 StageClears = new(),
-                Version = 0
+                Version = UserData.CurrentVersion   // 마이그레이션 건너뜀
             };
         }
         public UniTask<UserDataLoadResult> LoadAsync()
