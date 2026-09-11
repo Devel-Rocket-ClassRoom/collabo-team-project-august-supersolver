@@ -8,7 +8,7 @@ namespace PPS.DrawingTool
     /// <summary>
     /// 판정이 확정되면 판정별로 뒤처리를 한다.
     /// 클리어는 보상 화면, 사망은 자동 재시작, 정지는
-    /// 아무것도 하지 않는다 — 판정을 글로 알리지 않아야
+    /// 재시도 버튼 반짝임 — 판정을 글로 알리지 않아야
     /// 플레이어가 무엇이 막혔는지 화면에서 직접 읽는다.
     /// </summary>
     [DisallowMultipleComponent]
@@ -21,6 +21,7 @@ namespace PPS.DrawingTool
         [SerializeField] GameSimDriver _driver;
         [SerializeField] DrawingSession _session;
         [SerializeField] StageFlow _flow;
+        [SerializeField] RetryBlink _retryBlink;
 
         /// 이번 판의 판정을 이미 처리했는가.
         bool _handled;
@@ -49,9 +50,10 @@ namespace PPS.DrawingTool
                 _sinceDecided = 0f;
 
                 if (world.Judge.Cleared) ShowReward(world);
+                else if (world.Judge.Stalled) _retryBlink.Play();
             }
 
-            // 정지(Stalled)는 일부러 비운다. 유저가 직접
+            // 정지(Stalled)는 되돌리지 않는다. 유저가 직접
             // 재시도를 눌러 무엇이 멈췄는지 보게 한다.
             if (world.Judge.Failed) RestartAfterDeath();
         }
@@ -78,7 +80,7 @@ namespace PPS.DrawingTool
                 InkUsed = _session.Solution.TotalInk(),
                 InkLimit = world.Level.InkLimit,
                 EndStep = world.Judge.DecidedStep,
-                StageIndex = CurrentStageIndex.CurrentStage + CurrentStageIndex.CurrentTheme * CurrentStageIndex.StagePerTheme,
+                StageIndex = CurrentStageIndex.CurrentGlobalIndex,
                 StarCount = world.Judge.Stars,
             };
             ServiceLocator.Get<IRewardView>().Show(vm);
@@ -87,11 +89,15 @@ namespace PPS.DrawingTool
         void SaveThatStageCleared(int stars, int starGrade)
         {
             var data = ServiceLocator.Get<IUserDataRepository>().Data;
-            var record = FindClear(data, CurrentStageIndex.CurrentStage);
+
+            // 기록은 테마를 넘어 한 축으로 센다. 테마 안에서의
+            // 번호로 적으면 다른 테마의 같은 번호와 겹친다.
+            int globalIdx = CurrentStageIndex.CurrentGlobalIndex;
+            var record = FindClear(data, globalIdx);
 
             if (record == null)
             {
-                record = new StageClearData() { StageIndex = CurrentStageIndex.CurrentStage };
+                record = new StageClearData() { StageIndex = globalIdx };
                 data.StageClears.Add(record);
             }
 
@@ -101,7 +107,7 @@ namespace PPS.DrawingTool
             record.StarGrade = Mathf.Max(starGrade, record.StarGrade);
 
             // 이전에 클리어한 스테이지를 다시 플레이해 클리어해도, 저장되는 데이터는 가장 많이 진척된 시점
-            data.LastClearedStageIndex = Mathf.Max(CurrentStageIndex.CurrentStage, data.LastClearedStageIndex);
+            data.LastClearedStageIndex = Mathf.Max(globalIdx, data.LastClearedStageIndex);
             
             ServiceLocator.Get<IUserDataService>().SaveAsync(data).Forget();
         }

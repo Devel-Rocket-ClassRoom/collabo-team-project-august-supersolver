@@ -8,6 +8,7 @@ namespace PPS.Core
         public static void Migrate(UserData data)
         {
             if (data.Version < 2) ToV2(data);
+            if (data.Version < 3) ToV3(data);
 
             data.Version = UserData.CurrentVersion;
         }
@@ -20,6 +21,16 @@ namespace PPS.Core
             {
                 data.StageClears[i].StarGrade = InkGrade.Bronze;
             }
+        }
+
+        // v2 의 스테이지 번호는 테마 안에서의 번호였다. 그때는
+        // 테마가 하나뿐이어서 전역 번호와 값이 같다 — 번호는
+        // 손대지 않는다. 다만 클리어가 없는 상태를 0 으로 적어
+        // 0번 클리어와 구분할 수 없었고, 그것만 되돌린다.
+        static void ToV3(UserData data)
+        {
+            if (data.StageClears.Count == 0)
+                data.LastClearedStageIndex = UserData.NoStageCleared;
         }
     }
 }
