@@ -11,7 +11,7 @@ namespace PPS.Core
         {
             fakeData = new UserData()
             {
-                LastClearedStageIndex = 19,
+                LastClearedStageIndex = UserData.NoStageCleared,
                 StageClears = new(),
                 Version = UserData.CurrentVersion   // 마이그레이션 건너뜀
             };
