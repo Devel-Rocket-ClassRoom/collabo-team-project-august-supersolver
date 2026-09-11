@@ -5,7 +5,7 @@
   <string name="project_id" translatable="false">yummy-drawer</string>
   <string name="google_api_key" translatable="false">AIzaSyASln_Im7hngdRInJYPsQCMoc3v8tuXVJg</string>
   <string name="google_crash_reporting_api_key" translatable="false">AIzaSyASln_Im7hngdRInJYPsQCMoc3v8tuXVJg</string>
-  <string name="google_app_id" translatable="false">1:718962946739:android:d7d115b8614e22fd20b6c6</string>
-  <string name="default_android_client_id" translatable="false">718962946739-69do4eecjb2e0d888rgt7bjb3t67kseo.apps.googleusercontent.com</string>
+  <string name="google_app_id" translatable="false">1:718962946739:android:7fd0bfc9f02682e020b6c6</string>
+  <string name="default_android_client_id" translatable="false">718962946739-mp5pd1bolj5obgjsldkgmr6ils1f87pf.apps.googleusercontent.com</string>
   <string name="default_web_client_id" translatable="false">718962946739-6i2q5hd8ffcukn4v9gqo8ac6atfj9koe.apps.googleusercontent.com</string>
 </resources>
