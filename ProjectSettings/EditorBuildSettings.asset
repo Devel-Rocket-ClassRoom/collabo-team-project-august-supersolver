@@ -6,6 +6,9 @@ EditorBuildSettings:
   serializedVersion: 2
   m_Scenes:
   - enabled: 1
+    path: Assets/_Project/Scenes/RePlay.unity
+    guid: a806ee0c8e2e71a49b5a9d0a4821e836
+  - enabled: 1
     path: Assets/_Project/Scenes/StageSelect.unity
     guid: e9d232c9b8541c1478c4bdf6e6ca29dd
   m_configObjects:

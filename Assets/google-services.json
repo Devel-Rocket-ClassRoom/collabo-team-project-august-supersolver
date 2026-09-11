@@ -7,6 +7,43 @@
   "client": [
     {
       "client_info": {
+        "mobilesdk_app_id": "1:718962946739:android:7fd0bfc9f02682e020b6c6",
+        "android_client_info": {
+          "package_name": "com.Supersolver.YummyDrawer"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "718962946739-mp5pd1bolj5obgjsldkgmr6ils1f87pf.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.Supersolver.YummyDrawer",
+            "certificate_hash": "998d1845bba277c0f31b1b8ce19273b00c4b7e95"
+          }
+        },
+        {
+          "client_id": "718962946739-6i2q5hd8ffcukn4v9gqo8ac6atfj9koe.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyASln_Im7hngdRInJYPsQCMoc3v8tuXVJg"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "718962946739-6i2q5hd8ffcukn4v9gqo8ac6atfj9koe.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
         "mobilesdk_app_id": "1:718962946739:android:d7d115b8614e22fd20b6c6",
         "android_client_info": {
           "package_name": "com.UnityTechnologies.com.unity.template.urpblank"
