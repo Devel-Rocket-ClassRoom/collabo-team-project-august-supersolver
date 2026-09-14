@@ -19,7 +19,6 @@ MonoBehaviour:
   SprStarBronze: {fileID: 21300000, guid: 0267fd0ee54df5542af78306d8655e75, type: 3}
   SprStarSilver: {fileID: 21300000, guid: 80c5a1105146a8b4d91643ae3d50ae58, type: 3}
   SprStarGold: {fileID: 21300000, guid: 192373c8d58bfdb4287ee6a15c6b8368, type: 3}
-  stages:
-  - {fileID: 4900000, guid: 9d2b316eca989dc4d8264d985d95dd10, type: 3}
+  stages: []
   tutorials: []
   fixedTutorials: []

@@ -1,4 +1,5 @@
 using NUnit.Framework;
+using PPS.Core;
 using UnityEngine;
 
 namespace PPS.DrawingTool.Tests

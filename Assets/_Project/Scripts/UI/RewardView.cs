@@ -11,9 +11,6 @@ using UnityEngine.UI;
 /// 
 public class RewardView : UIPopup, IRewardView
 {
-    /// 한 챕터에 들어가는 스테이지 수. 1-1 ~ 1-20 표기용.
-    private const int StagesPerChapter = CurrentStageIndex.StagePerTheme;
-
     [Header("Content")]
     [SerializeField] private RectTransform content;
 
@@ -118,7 +115,7 @@ public class RewardView : UIPopup, IRewardView
 
     private void Bind(RewardViewModel vm)
     {
-        stageLabel.text = FormatStage(vm.StageIndex);
+        stageLabel.text = FormatStage(vm.Entry);
         clearTimeLabel.text = FormatTime(vm.EndStep);
 
         float left = Mathf.Max(0f, vm.InkLimit - vm.InkUsed);
@@ -194,12 +191,9 @@ public class RewardView : UIPopup, IRewardView
         return $"{seconds / 60}:{seconds % 60:00}";
     }
 
-    /// 스테이지 인덱스는 0 부터 시작한다고 본다.
-    private static string FormatStage(int stageIndex)
-    {
-        (int chapter, int number) = CurrentStageIndex.GetThemeAndStageNumber(stageIndex);
-        return $"{chapter} - {number}";
-    }
+    /// 표기는 1 부터 세고 StageEntry 는 0 부터 센다.
+    private static string FormatStage(StageEntry entry)
+        => $"{entry.Theme + 1} - {entry.Stage + 1}";
 
     private void SetButtonsInteractable(bool value)
     {

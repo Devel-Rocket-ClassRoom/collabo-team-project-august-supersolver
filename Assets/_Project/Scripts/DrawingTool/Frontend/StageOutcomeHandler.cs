@@ -80,7 +80,7 @@ namespace PPS.DrawingTool
                 InkUsed = _session.Solution.TotalInk(),
                 InkLimit = world.Level.InkLimit,
                 EndStep = world.Judge.DecidedStep,
-                StageIndex = CurrentStageIndex.CurrentGlobalIndex,
+                Entry = StageSelection.Current,
                 StarCount = world.Judge.Stars,
             };
             ServiceLocator.Get<IRewardView>().Show(vm);
@@ -90,14 +90,12 @@ namespace PPS.DrawingTool
         {
             var data = ServiceLocator.Get<IUserDataRepository>().Data;
 
-            // 기록은 테마를 넘어 한 축으로 센다. 테마 안에서의
-            // 번호로 적으면 다른 테마의 같은 번호와 겹친다.
-            int globalIdx = CurrentStageIndex.CurrentGlobalIndex;
-            var record = FindClear(data, globalIdx);
+            StageEntry entry = StageSelection.Current;
+            var record = FindClear(data, entry);
 
             if (record == null)
             {
-                record = new StageClearData() { StageIndex = globalIdx };
+                record = new StageClearData() { Entry = entry };
                 data.StageClears.Add(record);
             }
 
@@ -107,16 +105,18 @@ namespace PPS.DrawingTool
             record.StarGrade = Mathf.Max(starGrade, record.StarGrade);
 
             // 이전에 클리어한 스테이지를 다시 플레이해 클리어해도, 저장되는 데이터는 가장 많이 진척된 시점
-            data.LastClearedStageIndex = Mathf.Max(globalIdx, data.LastClearedStageIndex);
-            
+            if (entry > data.LastCleared) data.LastCleared = entry;
+
+            data.HasPlayed = true;
+
             ServiceLocator.Get<IUserDataService>().SaveAsync(data).Forget();
         }
 
-        static StageClearData FindClear(UserData data, int stageIndex)
+        static StageClearData FindClear(UserData data, StageEntry entry)
         {
             for (int i = 0; i < data.StageClears.Count; i++)
             {
-                if (data.StageClears[i].StageIndex == stageIndex) return data.StageClears[i];
+                if (data.StageClears[i].Entry == entry) return data.StageClears[i];
             }
             return null;
         }

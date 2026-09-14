@@ -1,4 +1,5 @@
 using NUnit.Framework;
+using PPS.Core;
 
 namespace PPS.DrawingTool.Tests
 {
@@ -14,32 +15,32 @@ namespace PPS.DrawingTool.Tests
         [Test]
         public void 첫_스테이지에는_고정선과_지우개만_열린다()
         {
-            Assert.IsTrue(ToolUnlock.IsUnlocked(DrawTool.FixedLine, 1));
-            Assert.IsTrue(ToolUnlock.IsUnlocked(DrawTool.Erase, 1));
+            Assert.IsTrue(ToolUnlock.IsUnlocked(DrawTool.FixedLine, new StageEntry(0, 0)));
+            Assert.IsTrue(ToolUnlock.IsUnlocked(DrawTool.Erase, new StageEntry(0, 0)));
 
-            Assert.IsFalse(ToolUnlock.IsUnlocked(DrawTool.FreeBody, 1));
-            Assert.IsFalse(ToolUnlock.IsUnlocked(DrawTool.PivotSingle, 1));
-            Assert.IsFalse(ToolUnlock.IsUnlocked(DrawTool.PivotWorld, 1));
+            Assert.IsFalse(ToolUnlock.IsUnlocked(DrawTool.FreeBody, new StageEntry(0, 0)));
+            Assert.IsFalse(ToolUnlock.IsUnlocked(DrawTool.PivotSingle, new StageEntry(0, 0)));
+            Assert.IsFalse(ToolUnlock.IsUnlocked(DrawTool.PivotWorld, new StageEntry(0, 0)));
         }
 
         [Test]
         public void 자유물체는_11스테이지에_열린다()
         {
-            Assert.IsFalse(ToolUnlock.IsUnlocked(DrawTool.FreeBody, 10));
-            Assert.IsTrue(ToolUnlock.IsUnlocked(DrawTool.FreeBody, 11));
+            Assert.IsFalse(ToolUnlock.IsUnlocked(DrawTool.FreeBody, new StageEntry(0, 9)));
+            Assert.IsTrue(ToolUnlock.IsUnlocked(DrawTool.FreeBody, new StageEntry(0, 10)));
         }
 
         [Test]
         public void 월드핀은_2챕터_7스테이지에_열린다()
         {
-            Assert.IsFalse(ToolUnlock.IsUnlocked(DrawTool.PivotWorld, 26));
-            Assert.IsTrue(ToolUnlock.IsUnlocked(DrawTool.PivotWorld, 27));
+            Assert.IsFalse(ToolUnlock.IsUnlocked(DrawTool.PivotWorld, new StageEntry(1, 5)));
+            Assert.IsTrue(ToolUnlock.IsUnlocked(DrawTool.PivotWorld, new StageEntry(1, 6)));
         }
 
         [Test]
         public void 한번_열린_도구는_뒤_스테이지에서도_열려_있다()
         {
-            Assert.IsTrue(ToolUnlock.IsUnlocked(DrawTool.FreeBody, 20));
+            Assert.IsTrue(ToolUnlock.IsUnlocked(DrawTool.FreeBody, new StageEntry(0, 19)));
         }
     }
 }

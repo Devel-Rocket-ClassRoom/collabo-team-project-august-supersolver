@@ -98,7 +98,7 @@ namespace PPS.Core
                 Debug.Log(
                     $"신규 Google 사용자 데이터 생성 완료: " +
                     $"UID={user.UserId}, " +
-                    $"LastClearedStageIndex={CurrentData.LastClearedStageIndex}");
+                    $"LastCleared={CurrentData.LastCleared}");
                 // 신규 UserData 준비가 끝났다고 외부에 알린다.
                 DataLoaded?.Invoke(CurrentData);
 
@@ -108,7 +108,7 @@ namespace PPS.Core
             CurrentData = result.Data;
 
             // 주요 값을 확인한다.
-            Debug.Log($"Google 사용자 데이터 불러오기 완료:" + $"LastClearedStageIndex = {CurrentData.LastClearedStageIndex}");
+            Debug.Log($"Google 사용자 데이터 불러오기 완료:" + $"LastCleared = {CurrentData.LastCleared}");
 
             // 기존 UserData를 정상적으로 불러왔다고 외부에 알린다.
             DataLoaded?.Invoke(CurrentData );

@@ -52,8 +52,9 @@ public class ThemeSelectView : UIScene
     /// 있는 다음 스테이지가 속한 테마가 곧 마지막 해금 테마다.
     int UnlockedThemeCount()
     {
-        int lastCleared = ServiceLocator.Get<IUserDataRepository>().Data.LastClearedStageIndex;
-        return CurrentStageIndex.ThemeOf(lastCleared + 1) + 1;
+        var manifest = ServiceLocator.Get<AssetManifest>();
+        return ServiceLocator.Get<IUserDataRepository>().Data
+            .LastCleared.Next(manifest).Theme + 1;
     }
     async UniTask EnterTheme(int themeIdx)
     {
@@ -63,9 +64,9 @@ public class ThemeSelectView : UIScene
         SetButtonsInteractable(false);
         try
         {
-            CurrentStageIndex.SelectTheme(themeIdx);
+            StageSelection.SelectTheme(themeIdx);
             await ServiceLocator.Get<IThemeRepository>().LoadAsync(
-                CurrentStageIndex.ThemeLabelOf(themeIdx));
+                ServiceLocator.Get<AssetManifest>().GetThemeLabel(themeIdx));
             await UIManager.Instance.ShowScene<StageSelectView>();
         }
         finally

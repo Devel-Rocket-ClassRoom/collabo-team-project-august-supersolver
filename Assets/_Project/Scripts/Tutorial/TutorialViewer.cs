@@ -17,6 +17,9 @@ public class TutorialViewer : MonoBehaviour
     /// TutorialAnchor(Enum)과 실제 UI 자리를 짝지은 표
     [SerializeField] List<AnchorBinding> targets = new();
 
+    /// 컷이 든 키를 프리팹 실물로 바꾸는 표.
+    [SerializeField] TutorialPrefabTable _prefabs;
+
     [Serializable]
     public struct AnchorBinding
     {
@@ -43,7 +46,7 @@ public class TutorialViewer : MonoBehaviour
         if (Instance == this) Instance = null;
     }
 
-    public static void SetStage(int stageIndex)
+    public static void SetStage(StageEntry entry)
     {
         if (Instance == null)
         {
@@ -51,10 +54,10 @@ public class TutorialViewer : MonoBehaviour
             return;
         }
 
-        Instance.Play(stageIndex);
+        Instance.Play(entry);
     }
 
-    public void Play(int stageIndex)
+    public void Play(StageEntry entry)
     {
         if (!ServiceLocator.TryGet<IThemeRepository>(out var repo)) return;
 
@@ -62,8 +65,8 @@ public class TutorialViewer : MonoBehaviour
         _cts = CancellationTokenSource.CreateLinkedTokenSource(
             this.GetCancellationTokenOnDestroy());
 
-        ShowFixed(repo.Asset.FixedTutorials, stageIndex);
-        PlayAll(repo.Asset.Tutorials, stageIndex, _cts.Token).Forget();
+        ShowFixed(repo.Asset.FixedTutorials, entry);
+        PlayAll(repo.Asset.Tutorials, entry, _cts.Token).Forget();
     }
 
     public void Stop()
@@ -84,14 +87,19 @@ public class TutorialViewer : MonoBehaviour
     /// </summary>
     public static void StopAll() => Instance?.Stop();
 
+    /// 해금 튜토리얼은 SO 의 Entry 를 무시한다 — 도구가
+    /// 열리는 자리가 바뀌면 튜토리얼도 따라가야 한다.
+    static StageEntry EntryOf(TutorialBase t) =>
+        t.IsUnlockTutorial ? ToolUnlock.EntryOf(t.Tool) : t.Entry;
+
     async UniTaskVoid PlayAll(
-        IReadOnlyList<Tutorial> tutorials, int stageIndex, CancellationToken token)
+        IReadOnlyList<Tutorial> tutorials, StageEntry entry, CancellationToken token)
     {
         if (tutorials == null) return;
 
         foreach (var tutorial in tutorials)
         {
-            if (tutorial == null || tutorial.StageIndex != stageIndex) continue;
+            if (tutorial == null || EntryOf(tutorial) != entry) continue;
             await PlayOne(tutorial, token);
 
             // 버튼을 눌러 넘어온 컷은 StageFlow 가 패널을
@@ -106,7 +114,7 @@ public class TutorialViewer : MonoBehaviour
     /// 기다리지 않고, 캔버스 영역 한가운데에 붙는다 —
     /// 모드가 갈려도 그 자리는 안 꺼진다.
     /// </summary>
-    void ShowFixed(IReadOnlyList<FixedTutorial> fixedTutorials, int stageIndex)
+    void ShowFixed(IReadOnlyList<FixedTutorial> fixedTutorials, StageEntry entry)
     {
         if (fixedTutorials == null) return;
 
@@ -120,10 +128,13 @@ public class TutorialViewer : MonoBehaviour
         foreach (var fixedTutorial in fixedTutorials)
         {
             if (fixedTutorial == null) continue;
-            if (fixedTutorial.StageIndex != stageIndex) continue;
-            if (fixedTutorial.Prefab == null) continue;
+            if (EntryOf(fixedTutorial) != entry) continue;
+            if (fixedTutorial.PrefabKey == TutorialPrefabKey.None) continue;
 
-            _fixed.Add(Instantiate(fixedTutorial.Prefab, center));
+            var prefab = FindPrefab(fixedTutorial.PrefabKey, fixedTutorial.name);
+            if (prefab == null) continue;
+
+            _fixed.Add(Instantiate(prefab, center));
         }
     }
 
@@ -160,7 +171,10 @@ public class TutorialViewer : MonoBehaviour
     /// </summary>
     GameObject Show(Tutorial tutorial)
     {
-        if (tutorial.Prefab == null) return null;
+        if (tutorial.PrefabKey == TutorialPrefabKey.None) return null;
+
+        var prefab = FindPrefab(tutorial.PrefabKey, tutorial.name);
+        if (prefab == null) return null;
 
         var target = Find(tutorial.Target);
         if (target == null)
@@ -171,7 +185,7 @@ public class TutorialViewer : MonoBehaviour
             return null;
         }
 
-        var spawned = Instantiate(tutorial.Prefab, target);
+        var spawned = Instantiate(prefab, target);
         if (spawned.transform is RectTransform rect)
             rect.anchoredPosition += tutorial.Offset;
 
@@ -179,6 +193,19 @@ public class TutorialViewer : MonoBehaviour
         if (gesture != null) gesture.Play(tutorial.Drag);
 
         return spawned;
+    }
+
+    /// 표에 없는 키는 에셋을 손보다 어긋난 것이라
+    /// 조용히 넘기지 않고 짚어 준다.
+    GameObject FindPrefab(TutorialPrefabKey key, string owner)
+    {
+        var prefab = _prefabs == null ? null : _prefabs.Find(key);
+        if (prefab == null)
+            Debug.LogWarning(
+                $"[TutorialViewer] 프리팹 표에 없는 키다: " +
+                $"{owner} → {key}", this);
+
+        return prefab;
     }
 
     UniTask WaitFor(Tutorial tutorial, CancellationToken token)

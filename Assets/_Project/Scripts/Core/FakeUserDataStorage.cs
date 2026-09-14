@@ -9,12 +9,7 @@ namespace PPS.Core
         private readonly string _errorMessage = "가짜 데이터인데 에러가 왜나요";
         public FakeUserDataStorage()
         {
-            fakeData = new UserData()
-            {
-                LastClearedStageIndex = UserData.NoStageCleared,
-                StageClears = new(),
-                Version = UserData.CurrentVersion   // 마이그레이션 건너뜀
-            };
+            fakeData = new UserData();   // HasPlayed = false, LastCleared = (0,0)
         }
         public UniTask<UserDataLoadResult> LoadAsync()
         {

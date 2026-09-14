@@ -1,9 +1,7 @@
-using PPS.Core;
-
-namespace PPS.DrawingTool
+namespace PPS.Core
 {
     /// <summary>
-    /// 툴바의 5상태. 프론트엔드 전용이다 —
+    /// 툴바의 5상태.
     /// 핀은 Stroke 가 아니라 PivotJoint 라서
     /// ToolType 에 넣으면 ColliderFactory·WorldBuilder 가
     /// 처리 못 하는 값이 Core 계약에 생긴다.

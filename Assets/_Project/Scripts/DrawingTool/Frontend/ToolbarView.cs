@@ -42,15 +42,15 @@ namespace PPS.DrawingTool
         /// </summary>
         public void ApplyUnlock()
         {
-            int stage = CurrentStageIndex.CurrentGlobalIndex + 1;
+            StageEntry at = StageSelection.Current;
 
             foreach (ToolTab tab in _tabs)
-                tab.SetUnlocked(ToolUnlock.IsUnlocked(tab.Tool, stage));
+                tab.SetUnlocked(ToolUnlock.IsUnlocked(tab.Tool, at));
 
             // 잠긴 도구가 선택된 채 남으면 탭은 잠겨 보이는데
-            // 캔버스에서는 그대로 그려진다. 고정선은 1스테이지
-            // 부터 열려 있어 언제 돌아가도 안전하다.
-            if (!ToolUnlock.IsUnlocked(_tools.Current, stage))
+            // 캔버스에서는 그대로 그려진다. 고정선은 첫
+            // 스테이지부터 열려 있어 언제 돌아가도 안전하다.
+            if (!ToolUnlock.IsUnlocked(_tools.Current, at))
                 _tools.Select(DrawTool.FixedLine);
         }
 

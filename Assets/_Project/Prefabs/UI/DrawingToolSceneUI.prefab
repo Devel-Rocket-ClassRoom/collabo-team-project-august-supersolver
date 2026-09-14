@@ -2283,6 +2283,7 @@ MonoBehaviour:
     Rect: {fileID: 2732677133399216067}
   - Anchor: 14
     Rect: {fileID: 5659013810104026367}
+  _prefabs: {fileID: 11400000, guid: bfbcfecbafa546d0938c083ea6ce8cd9, type: 2}
 --- !u!1 &6044023438426501113
 GameObject:
   m_ObjectHideFlags: 0

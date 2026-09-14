@@ -9,7 +9,7 @@ using UnityEngine.UI;
 /// 를 숫자로 넣으면 캔버스 어디에 얹히는지 플레이 전에는
 /// 알 수 없어서, 앵커 위에 그대로 띄워 보여 준다.
 /// </summary>
-[CustomEditor(typeof(Tutorial))]
+[CustomEditor(typeof(TutorialBase), editorForChildClasses: true)]
 public sealed class TutorialInspector : Editor
 {
     const float HandleRatio = 0.08f;
@@ -21,7 +21,17 @@ public sealed class TutorialInspector : Editor
     {
         DrawDefaultInspector();
 
-        var cut = (Tutorial)target;
+        // 해금 튜토리얼은 Tool 로 걸린다. Entry 가 남아
+        // 있으면 어느 쪽으로 걸리는지 읽는 사람이 갈린다.
+        var self = (TutorialBase)target;
+        if (self.IsUnlockTutorial && self.Entry != new StageEntry(0, 0))
+            EditorGUILayout.HelpBox(
+                $"해금 튜토리얼인데 Entry 가 {self.Entry} 다. " +
+                "Entry 는 (0, 0) 으로 둔다.",
+                MessageType.Warning);
+
+        if (target is not Tutorial cut) return;
+
         RectTransform anchor = Anchor();
 
         if (anchor == null)
@@ -43,7 +53,8 @@ public sealed class TutorialInspector : Editor
                 MessageType.Warning);
 
         // 판정을 기다리는 컷은 원래 띄울 것이 없다.
-        if (cut.Prefab == null && cut.Condition != TutorialAdvanceCondition.SimDecided)
+        if (cut.PrefabKey == TutorialPrefabKey.None
+            && cut.Condition != TutorialAdvanceCondition.SimDecided)
             EditorGUILayout.HelpBox(
                 "띄울 것이 없다. 화면에 아무것도 안 나온 채 조건만 기다린다.",
                 MessageType.Warning);
@@ -52,8 +63,10 @@ public sealed class TutorialInspector : Editor
     /// 이 컷이 붙을 자리. 뷰어가 없으면 잡을 기준도 없다.
     RectTransform Anchor()
     {
+        if (target is not Tutorial cut) return null;
+
         TutorialViewer viewer = Viewer();
-        return viewer == null ? null : viewer.Find(((Tutorial)target).Target);
+        return viewer == null ? null : viewer.Find(cut.Target);
     }
 
     /// 프리팹 스테이지가 열려 있으면 그 안을 먼저 본다.
@@ -71,7 +84,9 @@ public sealed class TutorialInspector : Editor
     {
         if (target == null) return;
 
-        var cut = (Tutorial)target;
+        // Offset·Drag·Target 은 FixedTutorial 에 없다.
+        if (target is not Tutorial cut) return;
+
         RectTransform anchor = Anchor();
         if (anchor == null) return;
 
@@ -82,8 +97,7 @@ public sealed class TutorialInspector : Editor
         Vector3 end = anchor.TransformPoint(center + cut.Offset + cut.Drag);
 
         // 끄는 연출이 없는 컷은 끝점이 뜻이 없다.
-        bool drags = cut.Prefab != null
-            && cut.Prefab.GetComponent<TutorialGesture>() != null;
+        bool drags = cut.PrefabKey == TutorialPrefabKey.DrawGesture;
 
         if (drags)
         {
