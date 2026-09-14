@@ -89,8 +89,10 @@ public class TutorialViewer : MonoBehaviour
 
     /// 해금 튜토리얼은 SO 의 Entry 를 무시한다 — 도구가
     /// 열리는 자리가 바뀌면 튜토리얼도 따라가야 한다.
-    static StageEntry EntryOf(TutorialBase t) =>
-        t.IsUnlockTutorial ? ToolUnlock.EntryOf(t.Tool) : t.Entry;
+    StageEntry EntryOf(TutorialBase t) =>
+        t.IsUnlockTutorial
+            ? ServiceLocator.Get<ToolUnlockTable>().EntryOf(t.Tool)
+            : t.Entry;
 
     async UniTaskVoid PlayAll(
         IReadOnlyList<Tutorial> tutorials, StageEntry entry, CancellationToken token)

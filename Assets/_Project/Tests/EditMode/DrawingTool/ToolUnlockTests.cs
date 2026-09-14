@@ -1,46 +1,71 @@
 using NUnit.Framework;
 using PPS.Core;
+using UnityEngine;
+using UnityEngine.TestTools;
 
 namespace PPS.DrawingTool.Tests
 {
     /// <summary>
-    /// 해금 스테이지 번호는 기획이 준 세 개(고정선·자유물체·
-    /// 월드핀)와 우리가 채운 두 개가 섞여 있다. 값이 바뀌면
-    /// 여기가 먼저 깨져 어디를 고쳐야 하는지 드러난다.
+    /// 해금 규칙만 본다. 어느 도구가 어디서 열리는지는
+    /// ToolUnlockTable.asset 의 기획값이라 여기서 고정하지
+    /// 않는다 — 값이 바뀔 때마다 깨지면 쓸모가 없다.
     /// </summary>
     public class ToolUnlockTests
     {
-        /// 지우개가 같이 열려 있는 것은 1스테이지
-        /// 튜토리얼이 그 탭을 누르게 시키기 때문이다.
-        [Test]
-        public void 첫_스테이지에는_고정선과_지우개만_열린다()
-        {
-            Assert.IsTrue(ToolUnlock.IsUnlocked(DrawTool.FixedLine, new StageEntry(0, 0)));
-            Assert.IsTrue(ToolUnlock.IsUnlocked(DrawTool.Erase, new StageEntry(0, 0)));
+        ToolUnlockTable _table;
 
-            Assert.IsFalse(ToolUnlock.IsUnlocked(DrawTool.FreeBody, new StageEntry(0, 0)));
-            Assert.IsFalse(ToolUnlock.IsUnlocked(DrawTool.PivotSingle, new StageEntry(0, 0)));
-            Assert.IsFalse(ToolUnlock.IsUnlocked(DrawTool.PivotWorld, new StageEntry(0, 0)));
+        [SetUp]
+        public void SetUp()
+        {
+            _table = ScriptableObject.CreateInstance<ToolUnlockTable>();
+            _table.Entries = new[]
+            {
+                new ToolUnlockTable.Entry
+                {
+                    Tool = DrawTool.FreeBody,
+                    At = new StageEntry(1, 5),
+                },
+            };
+        }
+
+        [TearDown]
+        public void TearDown()
+        {
+            Object.DestroyImmediate(_table);
         }
 
         [Test]
-        public void 자유물체는_11스테이지에_열린다()
+        public void 해금_자리에_정확히_서면_열린다()
         {
-            Assert.IsFalse(ToolUnlock.IsUnlocked(DrawTool.FreeBody, new StageEntry(0, 9)));
-            Assert.IsTrue(ToolUnlock.IsUnlocked(DrawTool.FreeBody, new StageEntry(0, 10)));
+            Assert.IsTrue(_table.IsUnlocked(DrawTool.FreeBody, new StageEntry(1, 5)));
         }
 
         [Test]
-        public void 월드핀은_2챕터_7스테이지에_열린다()
+        public void 해금_자리_한_칸_앞은_잠겨_있다()
         {
-            Assert.IsFalse(ToolUnlock.IsUnlocked(DrawTool.PivotWorld, new StageEntry(1, 5)));
-            Assert.IsTrue(ToolUnlock.IsUnlocked(DrawTool.PivotWorld, new StageEntry(1, 6)));
+            Assert.IsFalse(_table.IsUnlocked(DrawTool.FreeBody, new StageEntry(1, 4)));
+        }
+
+        /// 앞 테마의 뒤 스테이지가 뒤 테마를 앞지르지
+        /// 않는다는 것까지 같이 본다.
+        [Test]
+        public void 앞_테마에서는_스테이지가_커도_잠겨_있다()
+        {
+            Assert.IsFalse(_table.IsUnlocked(DrawTool.FreeBody, new StageEntry(0, 99)));
         }
 
         [Test]
-        public void 한번_열린_도구는_뒤_스테이지에서도_열려_있다()
+        public void 한번_열린_도구는_뒤_테마에서도_열려_있다()
         {
-            Assert.IsTrue(ToolUnlock.IsUnlocked(DrawTool.FreeBody, new StageEntry(0, 19)));
+            Assert.IsTrue(_table.IsUnlocked(DrawTool.FreeBody, new StageEntry(2, 0)));
+        }
+
+        [Test]
+        public void 표에_없는_도구는_경고만_남기고_0_0_을_준다()
+        {
+            LogAssert.Expect(LogType.Warning, "ToolUnlockTable: 도구 Erase 가 표에 없다");
+
+            Assert.AreEqual(new StageEntry(0, 0), _table.EntryOf(DrawTool.Erase));
         }
     }
 }

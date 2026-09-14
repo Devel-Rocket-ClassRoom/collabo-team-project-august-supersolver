@@ -45,6 +45,10 @@ public sealed class GameComposite : MonoSingleton<GameComposite>
         ServiceLocator.Register(manifest);
         Debug.Log($"에셋 매니페스트 등록 완료 elapsed: {Time.time - elapsed}");
 
+        var toolUnlock = await loader.LoadAssetAsync<ToolUnlockTable>("ToolUnlockTable");
+        ServiceLocator.Register(toolUnlock);
+        Debug.Log($"도구 해금표 등록 완료 elapsed: {Time.time - elapsed}");
+
         // 테마 리소스 레포지토리
         IThemeRepository themerepo = new ThemeRepository();
         themerepo.Init(loader);
