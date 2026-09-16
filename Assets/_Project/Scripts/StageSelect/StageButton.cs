@@ -14,77 +14,37 @@ public class StageButton : MonoBehaviour
 
     [Header("txt")]
     [SerializeField] TextMeshProUGUI stageNumText;
-    int stageIdx = -1;
 
-    public void OnUpdate(int stageIdx, int maxStageIdx, StageEntry lastCleared)
+    /// 눌렀을 때 들어갈 자리.
+    StageEntry entry;
+
+    /// 잠긴 칸은 눌러도 들어가지 않는다.
+    bool isLocked = true;
+
+    public void ApplyView(StageButtonViewModel vm)
     {
-        var entry = new StageEntry(StageSelection.Current.Theme, stageIdx);
-        var manifest = ServiceLocator.Get<AssetManifest>();
+        entry = vm.Entry;
+        isLocked = vm.IsLocked;
 
-        // 깬 자리와 그 다음 한 칸만 연다.
-        bool isLocked = stageIdx < 0 || stageIdx >= maxStageIdx
-            || (entry > lastCleared && entry != lastCleared.Next(manifest));
+        Img_Locked.sprite = vm.LockedSprite;
+        Img_Locked.gameObject.SetActive(vm.IsLocked);
+        stageNumText.text = vm.IsLocked ? "" : (vm.Entry.Stage + 1).ToString();
 
-        Img_Locked.gameObject.SetActive(isLocked);
-        this.stageIdx = isLocked ? -1 : stageIdx;
-        stageNumText.text = isLocked ? "" : (stageIdx + 1).ToString();
+        Img_Star1.sprite = vm.StarSprite;
+        Img_Star2.sprite = vm.StarSprite;
+        Img_Star3.sprite = vm.StarSprite;
 
-        var best = isLocked ? (stars: 0, grade: InkGrade.Bronze) : BestClearOf(entry);
-        ApplyThemeSprites(best.grade);
-
-        Img_Star1.gameObject.SetActive(best.stars >= 1);
-        Img_Star2.gameObject.SetActive(best.stars >= 2);
-        Img_Star3.gameObject.SetActive(best.stars >= 3);
-    }
-
-    // 스프라이트는 테마마다 달라져서 갱신 시점마다 다시 받아온다.
-    // 별 세 개는 개수만 나타내고, 그림은 등급 하나로 통일한다.
-    void ApplyThemeSprites(int grade)
-    {
-        if (!ServiceLocator.TryGet<IThemeRepository>(out var repo)) return;
-
-        Img_Locked.sprite = repo.Asset.SprLocked;
-
-        Sprite star = StarOf(repo.Asset, grade);
-        Img_Star1.sprite = star;
-        Img_Star2.sprite = star;
-        Img_Star3.sprite = star;
-    }
-
-    static Sprite StarOf(ThemeModel theme, int grade)
-    {
-        switch (grade)
-        {
-            case InkGrade.Gold: return theme.SprStarGold;
-            case InkGrade.Silver: return theme.SprStarSilver;
-            default: return theme.SprStarBronze;
-        }
-    }
-
-    // 같은 스테이지 기록이 여러 번 쌓일 수 있어 가장 좋은 값을 고른다.
-    static (int stars, int grade) BestClearOf(StageEntry entry)
-    {
-        if (!ServiceLocator.TryGet<IUserDataRepository>(out var repo))
-            return (0, InkGrade.Bronze);
-
-        int stars = 0;
-        int grade = InkGrade.Bronze;
-        var clears = repo.Data.StageClears;
-        for (int i = 0; i < clears.Count; i++)
-        {
-            if (clears[i].Entry != entry || !clears[i].IsCleared) continue;
-            stars = Mathf.Max(stars, clears[i].BestStars);
-            grade = Mathf.Max(grade, clears[i].StarGrade);
-        }
-        return (stars, grade);
+        Img_Star1.gameObject.SetActive(vm.Stars >= 1);
+        Img_Star2.gameObject.SetActive(vm.Stars >= 2);
+        Img_Star3.gameObject.SetActive(vm.Stars >= 3);
     }
 
     public async void OnClicked()
     {
-        if (stageIdx == -1) return;
+        if (isLocked) return;
         if (locked) return;
         locked = true;
-        await StageLauncher.Enter(new StageEntry(StageSelection.Current.Theme, stageIdx));
+        await StageLauncher.Enter(entry);
         locked = false;
     }
 }
