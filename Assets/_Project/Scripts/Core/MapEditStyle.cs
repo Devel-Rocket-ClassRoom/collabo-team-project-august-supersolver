@@ -1,9 +1,6 @@
 using PPS.Core;
 using UnityEngine;
 
-// UnityEngine 에도 같은 이름이 있다(SystemInfo.deviceType).
-using DeviceType = PPS.Core.DeviceType;
-
 namespace PPS.MapEditor
 {
     /// <summary>
@@ -33,7 +30,7 @@ namespace PPS.MapEditor
         /// 미치는 범위를 따로 그릴 것인가.
         /// 가시는 몸이 곧 범위라 겹쳐 그리면 뜻이 없다.
         /// </summary>
-        public static bool HasReach(in DeviceData device) =>
-            device.Type != DeviceType.Spike && device.Radius > 0f;
+        public static bool HasReach(IDeviceData device) =>
+            device is IHasReach reach && reach.Reach > 0f;
     }
 }

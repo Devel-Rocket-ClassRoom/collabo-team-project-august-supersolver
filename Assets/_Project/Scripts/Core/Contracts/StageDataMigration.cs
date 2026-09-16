@@ -11,6 +11,49 @@ namespace PPS.Core
     public static class StageDataMigration
     {
         /// <summary>
+        /// 읽어 온 판의 장치 목록을 현재 형식으로 세운다.
+        /// 단계는 순서대로 적용되고 버전은 끝에서 한 번만 올린다.
+        /// </summary>
+        /// <param name="json">읽어 온 원본 문자열. 옛 값이 여기 남아 있다.</param>
+        public static void Migrate(StageData stage, string json)
+        {
+            if (stage.Level == null) return;
+
+            // 현재 형식의 자리를 먼저 편다. 옛 판은 이 자리가 비어 있다.
+            stage.Level.UnpackDevices();
+
+            if (stage.Version < 1) ToV1(stage.Level, ToV1Devices(json));
+
+            stage.Version = StageData.CurrentVersion;
+        }
+
+        /// <summary>
+        /// 리플레이 안에 든 판도 같은 길을 탄다.
+        /// 중첩이 한 겹 더 있어 옛 값을 꺼내는 자리가 다르다.
+        /// </summary>
+        public static void MigrateReplay(ReplayData replay, string json)
+        {
+            if (replay?.Stage?.Level == null) return;
+
+            replay.Stage.Level.UnpackDevices();
+
+            if (replay.Stage.Version < 1)
+            {
+                var legacy = JsonUtility.FromJson<LegacyReplayV0>(json);
+                ToV1(replay.Stage.Level, Convert(legacy?.Stage));
+            }
+
+            replay.Stage.Version = StageData.CurrentVersion;
+        }
+
+        /// 공통 DeviceData 하나가 장치별 데이터로 갈라졌다.
+        static void ToV1(LevelData level, List<IDeviceData> devices)
+        {
+            level.Devices.Clear();
+            level.Devices.AddRange(devices);
+        }
+
+        /// <summary>
         /// 공통 DeviceData 하나로 저장된 장치들을 장치별 데이터로 가른다.
         /// 원본 문자열을 받는 이유는 JsonUtility 가 새 형식에 없는 필드를
         /// 이미 버려서, 옛 값은 여기서 다시 읽어야만 되찾을 수 있기 때문이다.
@@ -20,7 +63,13 @@ namespace PPS.Core
         {
             var devices = new List<IDeviceData>();
 
-            var legacy = JsonUtility.FromJson<LegacyStageV0>(json);
+            return Convert(JsonUtility.FromJson<LegacyStageV0>(json));
+        }
+
+        static List<IDeviceData> Convert(LegacyStageV0 legacy)
+        {
+            var devices = new List<IDeviceData>();
+
             var old = legacy?.Level?.Devices;
             if (old == null) return devices;
 
@@ -80,6 +129,12 @@ namespace PPS.Core
         }
 
         // 옛 형식은 더 이상 바뀌지 않는다. 이 복제는 얼어붙는다.
+
+        [Serializable]
+        class LegacyReplayV0
+        {
+            public LegacyStageV0 Stage;
+        }
 
         [Serializable]
         class LegacyStageV0

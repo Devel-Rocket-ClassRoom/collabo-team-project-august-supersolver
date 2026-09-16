@@ -131,13 +131,13 @@ namespace PPS.DrawingTool
         /// </summary>
         void FollowDevices(SimWorld world)
         {
-            IReadOnlyList<DeviceData> devices = world.Level.Devices;
+            IReadOnlyList<IDeviceData> devices = world.Level.Devices;
 
             for (int i = 0; i < devices.Count; i++)
             {
-                (DeviceData data, Rigidbody2D body) = world.GetDevice(i);
+                (IDeviceData data, Rigidbody2D body) = world.GetDevice(i);
 
-                _levelView.SetDeviceVisible(i, body != null || !DeviceFactory.MakesBody(data.Type));
+                _levelView.SetDeviceVisible(i, body != null || !DeviceRegistry.MakesBody(data.Type));
             }
         }
 

@@ -10,10 +10,10 @@ namespace PPS.Core
     /// </summary>
     public sealed class BombDevice : IStepLogic
     {
-        /// 몸 크기. DeviceData.Radius 는 폭발 반경이다.
+        /// 몸 크기. BombData.Radius 는 폭발 반경이다.
         public const float BodyRadius = 0.28f;
 
-        readonly DeviceData _data;
+        readonly BombData _data;
 
         /// <summary>
         /// 폭발이 밀어낼 후보. 월드의 전 바디다.
@@ -31,7 +31,7 @@ namespace PPS.Core
         /// 정적 바디다. Position 이 "여기 있다"는
         /// 뜻이어야 레벨 디자인이 성립한다.
         /// </summary>
-        public static Rigidbody2D CreateBody(Scene scene, in DeviceData data, string name)
+        public static Rigidbody2D CreateBody(Scene scene, BombData data, string name)
         {
             var go = new GameObject(name);
             SceneManager.MoveGameObjectToScene(go, scene);
@@ -51,8 +51,22 @@ namespace PPS.Core
         /// 레벨의 장치 번호. 알릴 때 누구인지 밝힌다.
         readonly int _index;
 
-        public BombDevice(
-            in DeviceData data, Rigidbody2D body, IReadOnlyList<Rigidbody2D> bodies,
+        /// <summary>
+        /// 바디를 먼저 목록에 넣은 뒤 장치를 만든다.
+        /// 등록 순서를 정하는 곳을 여기 하나로 모은다.
+        /// </summary>
+        public static IStepLogic Build(IDeviceData data, in DeviceBuildContext ctx)
+        {
+            var bomb = (BombData)data;
+
+            var body = CreateBody(ctx.Scene, bomb, ctx.Name);
+            ctx.Bodies.Add(body);
+
+            return new BombDevice(bomb, body, ctx.Bodies, ctx.Events, ctx.Index);
+        }
+
+        BombDevice(
+            BombData data, Rigidbody2D body, IReadOnlyList<Rigidbody2D> bodies,
             SimEvents events, int index)
         {
             _data = data;

@@ -74,7 +74,7 @@ namespace PPS.Core.Tests
             using (var world = WorldBuilder.Build(FeatureLevelFile.LoadLevel(), FeatureLevelFile.LoadSolution(), 0))
             {
                 Assert.IsTrue(world.AnyPendingWork(),
-                    "파일에 장치가 있는데 대기 중인 로직이 없다 — DeviceFactory 까지 가지 못했다.");
+                    "파일에 장치가 있는데 대기 중인 로직이 없다 — DeviceRegistry 까지 가지 못했다.");
             }
         }
 

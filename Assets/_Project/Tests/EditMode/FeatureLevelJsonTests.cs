@@ -33,8 +33,8 @@ namespace PPS.Core.Tests
 
             Assert.AreEqual(FeatureLevelFile.ExpectedDeviceCount, level.Devices.Count);
 
-            var bomb = level.Devices[0];
-            Assert.AreEqual(DeviceType.Bomb, bomb.Type);
+            var bomb = level.Devices[0] as BombData;
+            Assert.IsNotNull(bomb, "첫 장치가 폭탄이 아니다.");
             Assert.Greater(bomb.Radius, 0f, "영향 반경이 비어 있다.");
             Assert.Greater(bomb.Power, 0f, "세기가 비어 있다.");
             Assert.Greater(bomb.JitterSteps, 0,

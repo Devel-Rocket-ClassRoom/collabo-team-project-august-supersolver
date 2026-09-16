@@ -32,12 +32,12 @@ namespace PPS.Core
             }
 
             // 장치도 화면에 보이고 플레이어가 대응해야 하는
-            // 대상이라 영역이 품는다. 폭탄·바람은 반경이
-            // 곧 영향 범위라 점이 아니라 반경으로 넣는다.
+            // 대상이라 영역이 품는다. 얼마를 차지하는지는
+            // 장치마다 달라 데이터가 스스로 답한다.
             for (int i = 0; i < level.Devices.Count; i++)
             {
                 Vector2 center = level.Devices[i].Position;
-                Vector2 reach = Vector2.one * level.Devices[i].Radius;
+                Vector2 reach = Vector2.one * AreaRadiusOf(level.Devices[i]);
 
                 Include(center - reach, ref min, ref max);
                 Include(center + reach, ref min, ref max);
@@ -58,6 +58,10 @@ namespace PPS.Core
                 max.x + AreaMargin,
                 max.y + AreaMargin);
         }
+
+        /// 영역을 모르는 장치는 점으로 본다.
+        static float AreaRadiusOf(IDeviceData device) =>
+            device is IOccupiesCameraArea area ? area.AreaRadius : 0f;
 
         static void Include(Vector2 point, ref Vector2 min, ref Vector2 max)
         {

@@ -23,7 +23,17 @@ namespace PPS.Core.Tests
         /// 최상위 자리를 StageData 에 넘기면서
         /// 진입점을 잃었다.
         /// </summary>
-        public static LevelData LoadLevel() => JsonUtility.FromJson<LevelData>(File.ReadAllText(LevelPath));
+        public static LevelData LoadLevel()
+        {
+            string json = File.ReadAllText(LevelPath);
+            var level = JsonUtility.FromJson<LevelData>(json);
+
+            // 장치는 옛 공통 형식으로 적혀 있다. 마이그레이션은
+            // 스테이지 모양을 받으므로 한 겹 씌워 태운다.
+            level.Devices.AddRange(StageDataMigration.ToV1Devices("{\"Level\":" + json + "}"));
+
+            return level;
+        }
 
         /// <summary>
         /// Solution 도 같은 이유로 직접 읽는다.

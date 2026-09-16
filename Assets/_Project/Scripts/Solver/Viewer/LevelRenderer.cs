@@ -84,7 +84,7 @@ namespace PPS.Solver.Viewer
                 {
                     Vector2 at = devices[i].Position;
                     GLDraw.Circle(at, 0.3f);
-                    GLDraw.Circle(at, devices[i].Radius);
+                    if (devices[i] is IHasReach reach) GLDraw.Circle(at, reach.Reach);
                 }
             }
 

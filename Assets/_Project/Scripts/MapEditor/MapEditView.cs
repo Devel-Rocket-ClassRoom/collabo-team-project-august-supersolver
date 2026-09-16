@@ -3,6 +3,9 @@ using PPS.Core;
 using PPS.Game;
 using UnityEngine;
 
+// UnityEngine 에도 같은 이름이 있다(SystemInfo.deviceType).
+using DeviceType = PPS.Core.DeviceType;
+
 namespace PPS.MapEditor
 {
     /// <summary>
@@ -154,7 +157,7 @@ namespace PPS.MapEditor
         {
             var devices = _model.Level.Devices;
 
-            Grow(_deviceHandles, devices.Count, "DeviceHandle", _style.Sim.Sprites.Bomb);
+            Grow(_deviceHandles, devices.Count, "DeviceHandle", _style.Sim.SpriteOf(DeviceType.Bomb));
 
             for (int i = 0; i < _deviceHandles.Count; i++)
             {
@@ -165,7 +168,7 @@ namespace PPS.MapEditor
                 _deviceHandles[i].sprite = _style.Sim.SpriteOf(devices[i].Type);
 
                 MapHandleGfx.PlaceDot(_deviceHandles[i], devices[i].Position,
-                    SimStyle.RadiusOf(devices[i]),
+                    devices[i].DrawRadius,
                     Tint(SimStyle.Plain, MapHandleKind.Device, i),
                     SimStyle.AngleOf(devices[i]));
             }
@@ -173,7 +176,7 @@ namespace PPS.MapEditor
             DrawReach(devices);
         }
 
-        void DrawReach(List<DeviceData> devices)
+        void DrawReach(List<IDeviceData> devices)
         {
             bool on = _model.Selection.Kind == MapHandleKind.Device
                 && _model.Selection.Index < devices.Count
@@ -182,8 +185,9 @@ namespace PPS.MapEditor
             _reachHandle.gameObject.SetActive(on);
             if (!on) return;
 
-            DeviceData device = devices[_model.Selection.Index];
-            MapHandleGfx.PlaceDot(_reachHandle, device.Position, device.Radius, _style.Reach);
+            var device = (IHasReach)devices[_model.Selection.Index];
+            MapHandleGfx.PlaceDot(
+                _reachHandle, devices[_model.Selection.Index].Position, device.Reach, _style.Reach);
         }
 
         /// <summary>

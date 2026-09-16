@@ -210,9 +210,8 @@ namespace PPS.Core.Tests
         public static LevelData FlatWithLateBomb()
         {
             var level = FlatRest();
-            level.Devices.Add(new DeviceData
+            level.Devices.Add(new BombData
             {
-                Type = DeviceType.Bomb,
                 // 공의 낙하 경로를 피한다.
                 // 바로 밑이면 공이 얹혀 불안정해진다.
                 Position = new Vector2(1.2f, BombDevice.BodyRadius),
@@ -231,9 +230,8 @@ namespace PPS.Core.Tests
         public static LevelData FlatWithJitteryBomb()
         {
             var level = FlatRest();
-            level.Devices.Add(new DeviceData
+            level.Devices.Add(new BombData
             {
-                Type = DeviceType.Bomb,
                 // 공의 낙하 경로를 피한다.
                 Position = new Vector2(1.2f, BombDevice.BodyRadius),
                 Radius = 3f,
@@ -266,13 +264,11 @@ namespace PPS.Core.Tests
                     new StaticSegment(new Vector2(-0.6f, 0f), new Vector2(-0.6f, 2.4f)), // 왼쪽 벽
                     new StaticSegment(new Vector2(0.6f, 0f), new Vector2(0.6f, 2.4f)),   // 오른쪽 벽
                 },
-                Devices = new List<DeviceData>
+                Devices = new List<IDeviceData>
                 {
-                    new DeviceData
+                    new FragBombData
                     {
-                        Type = DeviceType.FragBomb,
                         Position = new Vector2(0f, 1.4f),
-                        Radius = 0f,          // 밀어내기를 하지 않는다
                         Power = 6f,           // 파편 초기 속도
                         DelaySteps = FragBombFireStep,
                         JitterSteps = 0,      // 판정 시점을 읽기 쉽게 고정
@@ -289,12 +285,10 @@ namespace PPS.Core.Tests
         public static LevelData FragBombFarAway()
         {
             var level = FlatRest();
-            level.Devices.Add(new DeviceData
+            level.Devices.Add(new FragBombData
             {
-                Type = DeviceType.FragBomb,
                 // 파편 고리가 지면 아래로 안 가게 띄운다.
                 Position = new Vector2(4.2f, 0.6f),
-                Radius = 0f,
                 // 1.5m/s × 수명 1초 = 1.5m. 공까지는 4.2m.
                 Power = 1.5f,
                 DelaySteps = FragBombFireStep,

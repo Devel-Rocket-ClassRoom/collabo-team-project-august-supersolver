@@ -23,8 +23,10 @@ namespace PPS.Core
             set => Position = value;
         }
 
-        /// 바디가 서는 크기와 같아야 한다.
-        public float AreaRadius => Mathf.Max(Radius, SpikeDevice.MinRadius);
+        public float DrawRadius => Mathf.Max(Radius, SpikeDevice.MinRadius);
+
+        /// 몸이 곧 범위다.
+        public float AreaRadius => DrawRadius;
 
         public IDeviceData Clone() => (SpikeData)MemberwiseClone();
     }

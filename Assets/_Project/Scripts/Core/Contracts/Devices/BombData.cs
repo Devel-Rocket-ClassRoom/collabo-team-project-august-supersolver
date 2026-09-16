@@ -32,6 +32,9 @@ namespace PPS.Core
             set => Position = value;
         }
 
+        /// 폭발 반경이 아니라 몸 크기다.
+        public float DrawRadius => BombDevice.BodyRadius;
+
         public float AreaRadius => Radius;
 
         public float Reach => Radius;

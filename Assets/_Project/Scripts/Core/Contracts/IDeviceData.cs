@@ -13,6 +13,13 @@ namespace PPS.Core
         Vector2 Position { get; set; }
 
         /// <summary>
+        /// 화면에 그릴 반지름. 콜라이더 크기 그대로다 —
+        /// 보이는 것과 닿는 것이 어긋나면 레벨을 못 만든다.
+        /// 크기가 데이터에 달린 장치가 있어 표로 뺄 수 없다.
+        /// </summary>
+        float DrawRadius { get; }
+
+        /// <summary>
         /// 맵 에디터 붙여넣기가 쓴다. 참조를 공유하면
         /// 붙인 것을 옮길 때 원본이 따라 움직인다.
         /// </summary>

@@ -10,7 +10,7 @@ namespace PPS.Core
     /// </summary>
     public sealed class WindDevice : IStepLogic
     {
-        readonly DeviceData _data;
+        readonly WindData _data;
 
         /// <summary>
         /// 밀 후보. 월드의 전 바디다.
@@ -21,7 +21,14 @@ namespace PPS.Core
         /// 매 스텝 더할 속도. 미리 접어 둔다.
         readonly Vector2 _push;
 
-        public WindDevice(in DeviceData data, IReadOnlyList<Rigidbody2D> bodies)
+        /// <summary>
+        /// 바디가 없다. 등록 순서를 지키려고 자리만 비워 두지도
+        /// 않는다 — 바디 목록은 만든 것만 담는다는 규칙이 먼저다.
+        /// </summary>
+        public static IStepLogic Build(IDeviceData data, in DeviceBuildContext ctx)
+            => new WindDevice((WindData)data, ctx.Bodies);
+
+        WindDevice(WindData data, IReadOnlyList<Rigidbody2D> bodies)
         {
             _data = data;
             _bodies = bodies;

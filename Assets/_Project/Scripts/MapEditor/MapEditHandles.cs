@@ -5,9 +5,6 @@ using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.InputSystem;
 
-// UnityEngine 에도 같은 이름이 있다(SystemInfo.deviceType).
-using DeviceType = PPS.Core.DeviceType;
-
 namespace PPS.MapEditor
 {
     /// <summary>
@@ -117,7 +114,7 @@ namespace PPS.MapEditor
 
         Vector2 _clipStar;
         ShapeData _clipShape;
-        DeviceData _clipDevice;
+        IDeviceData _clipDevice;
 
         /// 도형을 선분으로 굽는 임시 버퍼.
         /// 매번 새로 만들면 프레임마다 할당이 생긴다.
@@ -269,7 +266,8 @@ namespace PPS.MapEditor
             }
             else if (_selected.Kind == MapHandleKind.Device)
             {
-                _clipDevice = level.Devices[_selected.Index];
+                // 복제해 둔다. 원본을 옮겨도 클립보드는 그대로여야 한다.
+                _clipDevice = level.Devices[_selected.Index].Clone();
                 _clipKind = MapHandleKind.Device;
             }
             else
@@ -308,7 +306,7 @@ namespace PPS.MapEditor
             {
                 Record();
 
-                DeviceData copy = _clipDevice;
+                IDeviceData copy = _clipDevice.Clone();
                 copy.Position += ClampDelta(PasteOffset, copy.Position, copy.Position);
 
                 level.Devices.Add(copy);
@@ -341,10 +339,7 @@ namespace PPS.MapEditor
             {
                 Record();
 
-                var devices = _session.Current.Level.Devices;
-                DeviceData device = devices[_selected.Index];
-                device.Angle += RotateStep;
-                devices[_selected.Index] = device;
+                Facing(_selected).FacingDegrees += RotateStep;
                 return;
             }
 
@@ -378,11 +373,14 @@ namespace PPS.MapEditor
         /// 고른 것이 방향을 가진 장치인가.
         /// 폭탄·가시는 돌려도 달라지는 것이 없다.
         /// </summary>
-        bool HasAngle(MapSelection selection)
-        {
-            if (selection.Kind != MapHandleKind.Device) return false;
+        bool HasAngle(MapSelection selection) => Facing(selection) != null;
 
-            return _session.Current.Level.Devices[selection.Index].Type == DeviceType.Wind;
+        /// 방향을 가진 장치면 그 얼굴, 아니면 null.
+        IHasFacing Facing(MapSelection selection)
+        {
+            if (selection.Kind != MapHandleKind.Device) return null;
+
+            return _session.Current.Level.Devices[selection.Index] as IHasFacing;
         }
 
         /// <summary>
@@ -396,12 +394,9 @@ namespace PPS.MapEditor
             {
                 Record();
 
-                var devices = _session.Current.Level.Devices;
-                DeviceData device = devices[_selected.Index];
-
                 // 좌우를 뒤집으면 오른쪽 성분만 부호가 바뀐다.
-                device.Angle = 180f - device.Angle;
-                devices[_selected.Index] = device;
+                IHasFacing facing = Facing(_selected);
+                facing.FacingDegrees = 180f - facing.FacingDegrees;
                 return;
             }
 
@@ -739,9 +734,8 @@ namespace PPS.MapEditor
                     return AddStar(world);
 
                 case 1: // 폭탄
-                    devices.Add(new DeviceData
+                    devices.Add(new BombData
                     {
-                        Type = DeviceType.Bomb,
                         Position = world,
 
                         // 좁고 세게. 넓고 약하면 어디에 놓아도
@@ -757,18 +751,16 @@ namespace PPS.MapEditor
                     break;
 
                 case 3: // 가시
-                    devices.Add(new DeviceData
+                    devices.Add(new SpikeData
                     {
-                        Type = DeviceType.Spike,
                         Position = world,
                         Radius = 0.3f,
                     });
                     break;
 
                 case 4: // 바람 구역
-                    devices.Add(new DeviceData
+                    devices.Add(new WindData
                     {
-                        Type = DeviceType.Wind,
                         Position = world,
                         Radius = 2f,
 
@@ -780,13 +772,9 @@ namespace PPS.MapEditor
                     break;
 
                 case 2: // 파편 폭탄
-                    devices.Add(new DeviceData
+                    devices.Add(new FragBombData
                     {
-                        Type = DeviceType.FragBomb,
-
-                        // 반경 0 이다. 파편만 뿌리고 밀어내지 않는다.
                         Position = world,
-                        Radius = 0f,
                         Power = 6f,
                         DelaySteps = 30,
                         JitterSteps = 0,
@@ -1007,10 +995,8 @@ namespace PPS.MapEditor
                     level.Stars[_selected.Index] = MovePoint(level.Stars[_selected.Index], ref delta);
                     break;
                 case MapHandleKind.Device:
-                    // 구조체라 꺼내 고치고 도로 넣는다.
-                    DeviceData device = level.Devices[_selected.Index];
+                    IDeviceData device = level.Devices[_selected.Index];
                     device.Position = MovePoint(device.Position, ref delta);
-                    level.Devices[_selected.Index] = device;
                     break;
                 case MapHandleKind.Terrain:
                     ShapeData shape = _session.Shapes.Shapes[_selected.Index];

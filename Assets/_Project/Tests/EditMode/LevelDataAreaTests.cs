@@ -52,9 +52,8 @@ namespace PPS.Core.Tests
             };
 
             // 아래로 반경 2를 뻗은 장치. 바닥이 -5가 된다.
-            level.Devices.Add(new DeviceData
+            level.Devices.Add(new WindData
             {
-                Type = DeviceType.Wind,
                 Position = new Vector2(0f, -3f),
                 Radius = 2f,
             });

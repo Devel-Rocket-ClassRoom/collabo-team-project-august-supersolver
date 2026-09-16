@@ -30,6 +30,8 @@ namespace PPS.Core
             set => Position = value;
         }
 
+        public float DrawRadius => FragBombDevice.BodyRadius;
+
         public float AreaRadius => FragBombDevice.BodyRadius;
 
         public IDeviceData Clone() => (FragBombData)MemberwiseClone();

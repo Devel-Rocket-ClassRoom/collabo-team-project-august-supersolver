@@ -29,6 +29,9 @@ namespace PPS.Core
             set => Position = value;
         }
 
+        /// 화살표라 몸 크기가 없다. 구역 안에 들어갈 만큼 그린다.
+        public float DrawRadius => Mathf.Max(Radius * 0.5f, 0.3f);
+
         public float AreaRadius => Radius;
 
         public float Reach => Radius;

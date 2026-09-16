@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using UnityEngine;
 
 using DeviceType = PPS.Core.DeviceType;
@@ -26,13 +27,23 @@ namespace PPS.Core
 
             public Sprite Goal;
             public Sprite Star;
-            public Sprite Bomb;
-            public Sprite FragBomb;
-            public Sprite Spike;
-            public Sprite Wind;
         }
 
         public Shapes Sprites = new Shapes();
+
+        /// <summary>장치 한 종류의 모양.</summary>
+        [System.Serializable]
+        public sealed class DeviceVisual
+        {
+            public DeviceType Type;
+            public Sprite Sprite;
+        }
+
+        /// <summary>
+        /// 장치 종류별 모양. 새 장치는 여기 항목 하나로 끝난다 —
+        /// 크기는 데이터가 든다(IDeviceData.DrawRadius).
+        /// </summary>
+        public List<DeviceVisual> Devices = new List<DeviceVisual>();
 
         /// 공이 킬라인 아래로 떨어졌을 때 터뜨릴 것.
         /// 에셋이라 사본을 만들어 재생한다.
@@ -51,41 +62,20 @@ namespace PPS.Core
         /// </summary>
         public static readonly Color Plain = Color.white;
 
+        /// <summary>
+        /// 안 꽂힌 종류는 null 이다. 아직 그리지 않은 장치까지
+        /// 막으면 아트를 기다리느라 작업이 선다.
+        /// </summary>
         public Sprite SpriteOf(DeviceType type)
         {
-            switch (type)
-            {
-                case DeviceType.FragBomb: return Sprites.FragBomb;
-                case DeviceType.Spike: return Sprites.Spike;
-                case DeviceType.Wind: return Sprites.Wind;
-                default: return Sprites.Bomb;
-            }
-        }
+            for (int i = 0; i < Devices.Count; i++)
+                if (Devices[i] != null && Devices[i].Type == type) return Devices[i].Sprite;
 
-        /// <summary>
-        /// 화면에 그릴 반지름. 콜라이더 크기 그대로다 —
-        /// 그림에 여백이 있으면 아틀라스 쪽에서 잘라야 한다.
-        /// 보이는 것과 닿는 것이 어긋나면 레벨을 못 만든다.
-        /// </summary>
-        public static float RadiusOf(in DeviceData device)
-        {
-            switch (device.Type)
-            {
-                case DeviceType.Spike:
-                    return Mathf.Max(device.Radius, SpikeDevice.MinRadius);
-
-                // 바람은 화살표라 몸 크기가 없다. 구역 안에
-                // 들어갈 만한 크기로 그린다.
-                case DeviceType.Wind:
-                    return Mathf.Max(device.Radius * 0.5f, 0.3f);
-
-                default:
-                    return BombDevice.BodyRadius;
-            }
+            return null;
         }
 
         /// 방향이 없는 장치는 돌리지 않는다.
-        public static float AngleOf(in DeviceData device) =>
-            device.Type == DeviceType.Wind ? device.Angle : 0f;
+        public static float AngleOf(IDeviceData device) =>
+            device is IHasFacing facing ? facing.FacingDegrees : 0f;
     }
 }

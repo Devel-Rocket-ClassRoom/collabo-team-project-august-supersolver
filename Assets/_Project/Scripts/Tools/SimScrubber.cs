@@ -316,7 +316,7 @@ namespace PPS.Tools
                     Vector2 at = devices[i].Position;
 
                     Circle(at, 0.3f);
-                    Circle(at, devices[i].Radius);
+                    if (devices[i] is IHasReach reach) Circle(at, reach.Reach);
                     Line(at + new Vector2(-0.45f, 0f), at + new Vector2(0.45f, 0f));
                     Line(at + new Vector2(0f, -0.45f), at + new Vector2(0f, 0.45f));
                 }
