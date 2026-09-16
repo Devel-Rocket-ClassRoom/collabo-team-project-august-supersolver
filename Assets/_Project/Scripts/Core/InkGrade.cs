@@ -11,8 +11,8 @@ namespace PPS.Core
         public const int Gold = 2;
 
         /// 상한 대비 사용량(%)이 이 값 이하면 그 등급이다.
-        const float GoldPercent = 50f;
-        const float SilverPercent = 75f;
+        public const float GoldPercent = 50f;
+        public const float SilverPercent = 75f;
 
         /// 상한이 없는 판은 아낄 여지가 없어 가장 낮은 등급이다.
         public static int Of(float inkUsed, float inkLimit)
