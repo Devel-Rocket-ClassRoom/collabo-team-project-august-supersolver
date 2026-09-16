@@ -12,5 +12,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3706053ae1e271f4bad30e94d09ebed6, type: 3}
   m_Name: FixedTutorial
   m_EditorClassIdentifier: PPS.Core::PPS.Core.FixedTutorial
-  StageIndex: 1
-  Prefab: {fileID: 825975647889700421, guid: 10d2041543c3a9744993b1955fc1db16, type: 3}
+  IsUnlockTutorial: 0
+  Entry:
+    Theme: 0
+    Stage: 1
+  Tool: 0
+  PrefabKey: 0

@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
+using UnityEngine.AddressableAssets;
 public class ThemeRepository : IThemeRepository
 {
     public event Action OnLoaded;
@@ -20,6 +21,11 @@ public class ThemeRepository : IThemeRepository
     private ThemeLabel currentTheme;
 
     private ThemeAssetSet _asset;
+    private ThemeStageSet _stageSet;
+
+    // 테마와 무관해서 한 번 받아 두고 계속 쓴다.
+    private TutorialSet _tutorials;
+    private FixedTutorialSet _fixedTutorials;
 
     private bool _locked = false;
 
@@ -41,16 +47,21 @@ public class ThemeRepository : IThemeRepository
         try
         {
             if (_handle != null)
+            {
                 await _loader.Unload(_handle);
+                Addressables.Release(_stageSet);
+            }
 
             _handle = await _loader.LoadAsync(label);
-
-            // 텍스트 에셋은 전부 스테이지 데이터임! 구분하려면 prefix 추가 필요해짐!
             _asset = _handle.Assets.OfType<ThemeAssetSet>().Single();
+
+            _stageSet = await _loader.LoadAssetAsync<ThemeStageSet>("StageSet_" + label);
+            _tutorials ??= await _loader.LoadAssetAsync<TutorialSet>("TutorialSet");
+            _fixedTutorials ??= await _loader.LoadAssetAsync<FixedTutorialSet>("FixedTutorialSet");
 
 
             // Adapter
-            var Stages = _asset.stages
+            var Stages = _stageSet.Stages
                 .Select(stageText => StageData.FromJson(stageText.text))
                 .ToList();
             var stageSelectBackground = _asset.stageSelectBackground;
@@ -59,7 +70,7 @@ public class ThemeRepository : IThemeRepository
 
             Asset = new ThemeModel(
                 Stages, stageSelectBackground, playBackground, mapEditStyle,
-                _asset.tutorials, _asset.fixedTutorials,
+                _tutorials.Tutorials, _fixedTutorials.FixedTutorials,
                 _asset.SprLocked, _asset.SprStarBronze, _asset.SprStarSilver, _asset.SprStarGold);
 
 

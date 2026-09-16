@@ -1,0 +1,19 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 385537c7e034498c8d43fca17a69bafa, type: 3}
+  m_Name: TutorialPrefabTable
+  m_EditorClassIdentifier: PPS.Core::PPS.Core.TutorialPrefabTable
+  _entries:
+  - Key: 1
+    Prefab: {fileID: 6300000000000000001, guid: 77fb6f0048584acaa560b94882bbdbd7, type: 3}
+  - Key: 2
+    Prefab: {fileID: 4277221789647200637, guid: 416bd55ea8b958c42a7364f681961661, type: 3}

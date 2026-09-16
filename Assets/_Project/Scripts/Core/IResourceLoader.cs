@@ -16,6 +16,9 @@ namespace PPS.Core
 
         public event Action AfterLoad;
         UniTask<IResourceHandle> LoadAsync(string key);
+
+        // 라벨 묶음이 아니라 주소 하나를 집어 읽는다.
+        UniTask<T> LoadAssetAsync<T>(string key) where T : UnityEngine.Object;
         UniTask Unload(IResourceHandle handle);
     }
 }

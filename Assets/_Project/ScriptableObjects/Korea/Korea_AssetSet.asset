@@ -19,33 +19,6 @@ MonoBehaviour:
   SprStarBronze: {fileID: 21300000, guid: 0267fd0ee54df5542af78306d8655e75, type: 3}
   SprStarSilver: {fileID: 21300000, guid: 80c5a1105146a8b4d91643ae3d50ae58, type: 3}
   SprStarGold: {fileID: 21300000, guid: 192373c8d58bfdb4287ee6a15c6b8368, type: 3}
-  stages:
-  - {fileID: 4900000, guid: 9d2b316eca989dc4d8264d985d95dd10, type: 3}
-  - {fileID: 4900000, guid: 478885bab6d71bf41be385915f887663, type: 3}
-  - {fileID: 4900000, guid: 2b396c35c01937142a4c9ae74b287507, type: 3}
-  - {fileID: 4900000, guid: dac9bba735025f548890b3200a4ecfab, type: 3}
-  - {fileID: 4900000, guid: 03f4a3bb7dab6dd4cb8582c4d91bcc2e, type: 3}
-  - {fileID: 4900000, guid: c9e386701bc1e8f4dbdacd81356487a9, type: 3}
-  - {fileID: 4900000, guid: 7f0c05b6d1a7b054ab741fb7bb36253c, type: 3}
-  - {fileID: 4900000, guid: 05ff445e891cca5499b1ba7d971c0349, type: 3}
-  - {fileID: 4900000, guid: 2cc1a001642692345a8a19dc08f8db57, type: 3}
-  - {fileID: 4900000, guid: d3766e3b3d3822c42aab7c2903f2056b, type: 3}
-  - {fileID: 4900000, guid: 36c5777fca625054e9ea2f4c57b5f426, type: 3}
-  - {fileID: 4900000, guid: 62ff6b0c625033341bd34de07061c9e4, type: 3}
-  - {fileID: 4900000, guid: 9e7cebdadbb29d247854e2917b2a6cd7, type: 3}
-  - {fileID: 4900000, guid: 6766535734637304fb52522326a57ad0, type: 3}
-  - {fileID: 4900000, guid: 4efe586fd1e70fc4c8ff12f26fa87b02, type: 3}
-  - {fileID: 4900000, guid: 78dc64eae4d58f5499c588e270ed9243, type: 3}
-  - {fileID: 4900000, guid: 7a710667ded2fa146b40199d711913fc, type: 3}
-  - {fileID: 4900000, guid: 3091b5019983cac42990a9c6ced9998b, type: 3}
-  - {fileID: 4900000, guid: a3d6962c26abfef41bb58ba1250e3749, type: 3}
-  - {fileID: 4900000, guid: cfc4e45d358497b4f9e7c8c3eca2e041, type: 3}
-  tutorials:
-  - {fileID: 11400000, guid: 9a8ea099c82a98649aadc64b62beac64, type: 2}
-  - {fileID: 11400000, guid: 9ca468246d0c46cd81c41d1e7a124f22, type: 2}
-  - {fileID: 11400000, guid: 7bfd6301d44f8bf32ab33279829af7bf, type: 2}
-  - {fileID: 11400000, guid: 96ca617863c3f5f4382e5522e50658bd, type: 2}
-  - {fileID: 11400000, guid: d3da26047761435c91b3dce3ff949a11, type: 2}
-  - {fileID: 11400000, guid: fa11160eb4245314388eb8d1b805debe, type: 2}
-  - {fileID: 11400000, guid: 004fb404f5c08df448d7b9e42ee40fa3, type: 2}
+  stages: []
+  tutorials: []
   fixedTutorials: []

@@ -27,6 +27,18 @@ MonoBehaviour:
     m_SerializedLabels:
     - Japan
     FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: ae0617ed89dd4e9bb27a7bb14b28a7c2
+    m_Address: StageSet_Korea
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Korea
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: b1f8ef2996984b259d05e89d3a37cabc
+    m_Address: StageSet_Japan
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Japan
+    FlaggedDuringContentUpdateRestriction: 0
   m_ReadOnly: 0
   m_Settings: {fileID: 11400000, guid: 159a3736949ee3944bc0e79342432c75, type: 2}
   m_SchemaSet:

@@ -24,13 +24,13 @@ public class UserDataSaveLoadTest : MonoBehaviour
         // 저장과 복원을 확인할 테스트 데이터를 만든다.
         UserData originalData = new UserData
         {
-            LastClearedStageIndex = 2
+            LastCleared = new StageEntry(0, 2)
         };
 
         // 두 번째 스테이지의 클리어 기록을 추가한다.
         originalData.StageClears.Add(new StageClearData
         {
-            StageIndex = 2,
+            Entry = new StageEntry(0, 2),
             IsCleared = true,
             BestStars = 3
         });
@@ -59,8 +59,8 @@ public class UserDataSaveLoadTest : MonoBehaviour
 
         // 복원된 주요 값을 Console에 출력한다.
         Debug.Log(
-            $"복원 완료: LastStage={loadResult.Data.LastClearedStageIndex}, " +
-            $"StageIndex={loadResult.Data.StageClears[0].StageIndex}, " +
+            $"복원 완료: LastCleared={loadResult.Data.LastCleared}, " +
+            $"Entry={loadResult.Data.StageClears[0].Entry}, " +
             $"Cleared={loadResult.Data.StageClears[0].IsCleared}, " +
             $"BestStars={loadResult.Data.StageClears[0].BestStars}");
     }

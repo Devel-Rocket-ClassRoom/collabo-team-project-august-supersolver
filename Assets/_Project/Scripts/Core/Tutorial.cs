@@ -50,11 +50,8 @@ namespace PPS.Core
     /// 소비자가 PPS.Core 안에 있어 여기 둔다.
     /// </summary>
     [CreateAssetMenu(fileName = "Tutorial", menuName = "Scriptable Objects/Tutorial")]
-    public class Tutorial : ScriptableObject
+    public class Tutorial : TutorialBase
     {
-        /// 이 컷이 붙는 스테이지. ThemeModel.Stages 의 인덱스다.
-        public int StageIndex;
-
         /// Time 조건일 때 컷이 버티는 시간.
         [Tooltip("Condition 이 Time 일 때만 쓰인다. 다른 조건에서는 " +
                  "대상 버튼을 못 찾았을 때 빠져나오는 값이다.")]
@@ -64,7 +61,7 @@ namespace PPS.Core
         public TutorialAnchor Target;
 
         /// 앵커 자리에 띄울 것. 사라질 때 같이 파괴된다.
-        public GameObject Prefab;
+        public TutorialPrefabKey PrefabKey;
 
         /// 앵커 자리에서 이만큼 민 곳에 손가락을 얹는다.
         public Vector2 Offset;

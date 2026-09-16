@@ -1,0 +1,16 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c287725c43ef42bc8bdd6499d94b9ec0, type: 3}
+  m_Name: Japan_StageSet
+  m_EditorClassIdentifier: Assembly-CSharp::ThemeStageSet
+  Stages:
+  - {fileID: 4900000, guid: 9d2b316eca989dc4d8264d985d95dd10, type: 3}

@@ -65,7 +65,7 @@ namespace PPS.Core
                 _loginResultText.text = string.Empty;
             }
             // 불러온 진행 정보를 Console에 출력
-            Debug.Log($"게임 시작 준비 완료: LastClearedStageIndex = {userData.LastClearedStageIndex}");
+            Debug.Log($"게임 시작 준비 완료: LastCleared = {userData.LastCleared}");
 
             // userData 준비가 끝났으므로 스테이지 선택 씬으로 이동한다.
             SceneManager.LoadScene("StageSelect");
