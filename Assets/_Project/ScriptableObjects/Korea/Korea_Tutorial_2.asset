@@ -12,10 +12,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b9fd1099fd60c764cae6f98e9fa3b190, type: 3}
   m_Name: Korea_Tutorial_2
   m_EditorClassIdentifier: PPS.Core::PPS.Core.Tutorial
-  StageIndex: 0
+  IsUnlockTutorial: 0
+  Entry:
+    Theme: 0
+    Stage: 0
+  Tool: 0
   Duration: 0.6
   Target: 13
-  Prefab: {fileID: 0}
+  PrefabKey: 0
   Offset: {x: 0, y: 0}
   Drag: {x: 0, y: 0}
   Condition: 0

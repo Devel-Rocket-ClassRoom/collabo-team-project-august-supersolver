@@ -1,5 +1,4 @@
 using PPS.Core;
-using PPS.DrawingTool;
 using UnityEngine;
 
 public class StageSceneLoaderOnClick : MonoBehaviour
@@ -30,22 +29,13 @@ public class StageSceneLoaderOnClick : MonoBehaviour
     public async void OnClickedNext()
     {
         if (locked) return;
-        if (CurrentStageIndex.CurrentStage >= CurrentStageIndex.StagePerTheme - 1) return;
+        var manifest = ServiceLocator.Get<AssetManifest>();
+        if (StageSelection.Current.Stage >= manifest.GetStageNum(StageSelection.Current.Theme) - 1) return;
         locked = true;
 
-        int stageIdx = CurrentStageIndex.CurrentStage + 1;
-        CurrentStageIndex.SelectStage(stageIdx);
-        if (ServiceLocator.TryGet<IThemeRepository>(out var repo))
-        {
-            var StageData = repo.Asset.Stages[stageIdx];
-
-            await UIManager.Instance.ShowScene<DrawingToolSceneUI>();
-
-            StageLoader.SetStage(StageData);
-            TutorialViewer.SetStage(stageIdx);
-
-            await UIManager.Instance.HidePopup(false);
-        }
+        await StageLauncher.Enter(new StageEntry(StageSelection.Current.Theme,
+                                                 StageSelection.Current.Stage + 1));
+        await UIManager.Instance.HidePopup(false);
         locked = false;
     }
 }

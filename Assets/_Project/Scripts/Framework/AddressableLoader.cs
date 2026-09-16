@@ -27,6 +27,11 @@ public class AddressableLoader : IResourceLoader
         AfterLoad?.Invoke();
         return new AddressableHandle(operation);
     }
+    // 이벤트는 라벨 묶음 로드 전용이라 여기선 안 쏜다.
+    public async UniTask<T> LoadAssetAsync<T>(string key) where T : UnityEngine.Object
+    {
+        return await Addressables.LoadAssetAsync<T>(key).Task;
+    }
     public UniTask Unload(IResourceHandle handle)
     {
         BeforeUnLoad?.Invoke();

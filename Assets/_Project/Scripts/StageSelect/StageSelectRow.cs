@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class StageSelectRow : MonoBehaviour
 {
-    public const int StagePerRow = CurrentStageIndex.StagePerRow;
+    public const int StagePerRow = 3;
     [SerializeField] StageButton[] buttons;
 
     private void OnValidate()
@@ -13,7 +13,7 @@ public class StageSelectRow : MonoBehaviour
         if(buttons.Length != 3)
             Array.Resize<StageButton>(ref buttons, StagePerRow);
     }
-    public void OnUpdate(int startIdx, int maxStageIdx, int lastCleared)
+    public void OnUpdate(int startIdx, int maxStageIdx, StageEntry lastCleared)
     {
         for(int i = 0; i < StagePerRow; i++)
         {

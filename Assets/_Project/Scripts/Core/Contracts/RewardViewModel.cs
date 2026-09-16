@@ -16,7 +16,7 @@ namespace PPS.Core
         /// 아낀 정도는 사용량이 아니라 비율로 본다.
         public float InkLimit;
 
-        /// 깬 스테이지 인덱스.
-        public int StageIndex;
+        /// 깬 스테이지 자리.
+        public StageEntry Entry;
     }
 }
