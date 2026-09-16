@@ -13,7 +13,7 @@ namespace PPS.Core.Tests
         [Test]
         public void JSON_왕복을_거친_그림이_같은_물리를_낸다()
         {
-            Solution original = FeatureLevelFile.LoadSolution();
+            Solution original = TestLevels.PivotSolution();
 
             ReplayData loaded = ReplayData.FromJson(
                 ReplayData.Create(new StageData(), original).ToJson());
@@ -23,10 +23,10 @@ namespace PPS.Core.Tests
             var a = new List<ulong>();
             var b = new List<ulong>();
 
-            // 레벨을 두 번 읽는다 — 한 인스턴스를 두 번
+            // 레벨을 두 번 만든다 — 한 인스턴스를 두 번
             // 돌리면 월드 구축이 남긴 흔적이 섞일 수 있다.
-            SimRunner.RunTraced(FeatureLevelFile.LoadLevel(), original, 11, a, 600);
-            SimRunner.RunTraced(FeatureLevelFile.LoadLevel(), loaded.Solution, 11, b, 600);
+            SimRunner.RunTraced(TestLevels.PivotSwingWithBomb(), original, 11, a, 600);
+            SimRunner.RunTraced(TestLevels.PivotSwingWithBomb(), loaded.Solution, 11, b, 600);
 
             Assert.Greater(a.Count, 0, "시뮬이 한 스텝도 진행되지 않았다.");
             CollectionAssert.AreEqual(a, b);

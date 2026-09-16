@@ -469,7 +469,6 @@ namespace PPS.Tools
                     TestLevels.GapPuzzle, TestLevels.GapPuzzleSolution),
 
                 Stage("L001 (JSON 파일)", SampleLevelFile.Load, () => null),
-                Stage("L002 전 피처 (JSON)", FeatureLevelFile.LoadLevel, FeatureLevelFile.LoadSolution),
                 Stage("Ramp → Clear", TestLevels.RampToGoal, () => null),
                 Stage("Gap 다리 없음 → Fail", TestLevels.Gap, () => null),
                 Stage("Gap + 다리 → Stalled", TestLevels.Gap, TestLevels.BridgeSolution),

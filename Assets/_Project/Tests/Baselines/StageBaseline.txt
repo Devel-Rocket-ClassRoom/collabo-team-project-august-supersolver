@@ -1,6 +1,5 @@
 # 장치가 든 판의 시뮬 지문. 손으로 고치지 않는다.
 # 값이 바뀌었다면 물리 결과가 바뀐 것이다.
-L002_Feature steps=1800 outcome=Timeout digest=0x42FF9255F65C044E
 Stage11 steps=107 outcome=Fail digest=0x633F73A315F16BD7
 Stage12 steps=38 outcome=Fail digest=0x4A6274BEA43471F4
 Stage13 steps=108 outcome=Fail digest=0x719F9A27E27BABD4

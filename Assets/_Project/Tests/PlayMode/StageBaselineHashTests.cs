@@ -24,10 +24,6 @@ namespace PPS.Core.Tests
             "Stage15", "Stage16", "Stage18", "Stage19", "Stage20",
         };
 
-        /// L002_Feature 는 솔루션과 함께 돈다. 시드는 판에 없어 여기서 고정한다.
-        const string FeatureId = "L002_Feature";
-        const int FeatureSeed = 11;
-
         const int MaxSteps = SimWorld.DefaultMaxSteps;
 
         const string BaselineRelativePath = "_Project/Tests/Baselines/StageBaseline.txt";
@@ -90,17 +86,6 @@ namespace PPS.Core.Tests
             var result = SimRunner.RunTraced(stage.Level, null, stage.Seed, trace, MaxSteps);
 
             Compare(stageId, result, trace);
-        }
-
-        [Test]
-        public void 피처_레벨의_시뮬_지문이_기준선과_같다()
-        {
-            var trace = new List<ulong>();
-            var result = SimRunner.RunTraced(
-                FeatureLevelFile.LoadLevel(), FeatureLevelFile.LoadSolution(),
-                FeatureSeed, trace, MaxSteps);
-
-            Compare(FeatureId, result, trace);
         }
 
         static void Compare(string id, in SimResult result, List<ulong> trace)

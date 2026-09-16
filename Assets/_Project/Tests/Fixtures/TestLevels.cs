@@ -373,6 +373,26 @@ namespace PPS.Core.Tests
             return solution;
         }
 
+        /// <summary>
+        /// 회전축 판에 흔들리는 폭탄을 하나 얹은 것.
+        /// 리플레이 왕복이 그림과 장치를 함께 거치는지 볼 때 쓴다 —
+        /// 흔들림이 있어야 난수 소비까지 결과에 섞인다.
+        /// </summary>
+        public static LevelData PivotSwingWithBomb()
+        {
+            var level = PivotSwing();
+            level.Devices.Add(new BombData
+            {
+                // 막대 아래. 터지면 막대와 공이 함께 밀린다.
+                Position = new Vector2(-2f, BombDevice.BodyRadius),
+                Radius = 4f,
+                Power = 5f,
+                DelaySteps = 20,
+                JitterSteps = 120,
+            });
+            return level;
+        }
+
         /// <summary>Gap 의 틈을 잇는 다리.</summary>
         public static Solution BridgeSolution()
         {
