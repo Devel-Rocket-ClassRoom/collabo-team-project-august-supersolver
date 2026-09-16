@@ -4,23 +4,51 @@ using UnityEngine;
 
 public sealed class GameComposite : MonoSingleton<GameComposite>
 {
+    enum GameMode
+    {
+        FromTitle,
+        EditorStandalone,
+    }
+    GameMode _mode;
+    UserData _userdata;
     protected override async void Awake()
     {
         float elapsed = Time.time;
         base.Awake();
         Debug.Log("로딩 시작");
         await UIManager.Instance.ShowInitialLoading();
-        
         Debug.Log($"로딩 화면 띄우기 완료 elapsed: {Time.time - elapsed}");
 
-        // 유저 데이터 레포지토리
-        // 조회: IUserDataRepository
-        // 세이브로드: IUserDataService
-        IUserDataStorage userDataStorage = new FakeUserDataStorage();
+
+        _userdata = UserDataHandoff.Take();
+
+        if (_userdata == null && !Application.isEditor)
+        {
+            Debug.LogError("타이틀에서 유저 데이터를 넘겨받지 못했습니다.");
+            // 빌드는 반드시 타이틀을 거쳐 들어온다. 
+            // 일반적으로 여기는 도달 불가능한 분기이므로
+            // 빌드시 무한 로딩화면. 에디터는 빨간 로그남는다.
+            return;
+        }
+
+        _mode = _userdata != null
+            ? GameMode.FromTitle
+            : GameMode.EditorStandalone;
+
+        IUserDataStorage userDataStorage = _mode switch
+        {
+            GameMode.FromTitle => new FirebaseUserDataStorage(),
+            _ => new FakeUserDataStorage(),
+        };
         IUserDataService userDataService = new UserDataService(userDataStorage);
         ServiceLocator.Register(userDataService);
         Debug.Log($"유저 데이터 서비스 등록 완료 elapsed: {Time.time - elapsed}");
-        UserDataLoadResult result = await userDataService.LoadAsync();
+
+
+        UserDataLoadResult result = _mode == GameMode.FromTitle
+            ? UserDataLoadResult.Succeeded(_userdata)
+            : await userDataService.LoadAsync();
+
         if(result.Success == false)
         {
             Debug.LogError("유저 데이터 로드 실패: " + result.ErrorMessage);

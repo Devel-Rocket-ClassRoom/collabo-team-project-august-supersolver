@@ -88,37 +88,11 @@ namespace PPS.DrawingTool
 
         void SaveThatStageCleared(int stars, int starGrade)
         {
-            var data = ServiceLocator.Get<IUserDataRepository>().Data;
+            var repo = ServiceLocator.Get<IUserDataRepository>();
 
-            StageEntry entry = StageSelection.Current;
-            var record = FindClear(data, entry);
+            repo.RecordClear(StageSelection.Current, stars, starGrade);
 
-            if (record == null)
-            {
-                record = new StageClearData() { Entry = entry };
-                data.StageClears.Add(record);
-            }
-
-            // 다시 깨서 더 못한 결과가 나와도 기록은 최고치를 유지한다.
-            record.IsCleared = true;
-            record.BestStars = Mathf.Max(stars, record.BestStars);
-            record.StarGrade = Mathf.Max(starGrade, record.StarGrade);
-
-            // 이전에 클리어한 스테이지를 다시 플레이해 클리어해도, 저장되는 데이터는 가장 많이 진척된 시점
-            if (entry > data.LastCleared) data.LastCleared = entry;
-
-            data.HasPlayed = true;
-
-            ServiceLocator.Get<IUserDataService>().SaveAsync(data).Forget();
-        }
-
-        static StageClearData FindClear(UserData data, StageEntry entry)
-        {
-            for (int i = 0; i < data.StageClears.Count; i++)
-            {
-                if (data.StageClears[i].Entry == entry) return data.StageClears[i];
-            }
-            return null;
+            ServiceLocator.Get<IUserDataService>().SaveAsync(repo.Data).Forget();
         }
     }
 }
