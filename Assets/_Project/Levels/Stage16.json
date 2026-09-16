@@ -1,4 +1,5 @@
 {
+    "Version": 1,
     "StageId": "Stage16",
     "Seed": 0,
     "Level": {
@@ -673,30 +674,14 @@
                 }
             }
         ],
-        "Devices": [
+        "DeviceEntries": [
             {
                 "Type": 2,
-                "Position": {
-                    "x": -3.438727617263794,
-                    "y": 2.593700885772705
-                },
-                "Radius": 0.30000001192092898,
-                "Power": 0.0,
-                "DelaySteps": 0,
-                "JitterSteps": 0,
-                "Angle": 0.0
+                "Json": "{\"Position\":{\"x\":-3.438727617263794,\"y\":2.593700885772705},\"Radius\":0.30000001192092898}"
             },
             {
                 "Type": 3,
-                "Position": {
-                    "x": 0.10882041603326798,
-                    "y": -1.8461754322052003
-                },
-                "Radius": 2.0,
-                "Power": 5.0,
-                "DelaySteps": 0,
-                "JitterSteps": 0,
-                "Angle": 0.0
+                "Json": "{\"Position\":{\"x\":0.10882041603326798,\"y\":-1.8461754322052003},\"Radius\":2.0,\"Power\":5.0,\"Angle\":0.0}"
             }
         ],
         "Stars": [

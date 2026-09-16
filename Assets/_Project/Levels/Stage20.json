@@ -1,4 +1,5 @@
 {
+    "Version": 1,
     "StageId": "Stage20",
     "Seed": 0,
     "Level": {
@@ -573,138 +574,50 @@
                 }
             }
         ],
-        "Devices": [
+        "DeviceEntries": [
             {
                 "Type": 0,
-                "Position": {
-                    "x": -2.8075685501098635,
-                    "y": 3.573085069656372
-                },
-                "Radius": 2.0,
-                "Power": 11.0,
-                "DelaySteps": 30,
-                "JitterSteps": 0,
-                "Angle": 0.0
+                "Json": "{\"Position\":{\"x\":-2.8075685501098635,\"y\":3.573085069656372},\"Radius\":2.0,\"Power\":11.0,\"DelaySteps\":30,\"JitterSteps\":0}"
             },
             {
                 "Type": 0,
-                "Position": {
-                    "x": -0.1958768367767334,
-                    "y": 1.3531460762023926
-                },
-                "Radius": 2.0,
-                "Power": 11.0,
-                "DelaySteps": 30,
-                "JitterSteps": 0,
-                "Angle": 0.0
+                "Json": "{\"Position\":{\"x\":-0.1958768367767334,\"y\":1.3531460762023926},\"Radius\":2.0,\"Power\":11.0,\"DelaySteps\":30,\"JitterSteps\":0}"
             },
             {
                 "Type": 0,
-                "Position": {
-                    "x": -0.7399793863296509,
-                    "y": -0.6273856163024902
-                },
-                "Radius": 2.0,
-                "Power": 11.0,
-                "DelaySteps": 30,
-                "JitterSteps": 0,
-                "Angle": 0.0
+                "Json": "{\"Position\":{\"x\":-0.7399793863296509,\"y\":-0.6273856163024902},\"Radius\":2.0,\"Power\":11.0,\"DelaySteps\":30,\"JitterSteps\":0}"
             },
             {
                 "Type": 0,
-                "Position": {
-                    "x": -3.046973705291748,
-                    "y": 1.4184398651123047
-                },
-                "Radius": 2.0,
-                "Power": 11.0,
-                "DelaySteps": 30,
-                "JitterSteps": 0,
-                "Angle": 0.0
+                "Json": "{\"Position\":{\"x\":-3.046973705291748,\"y\":1.4184398651123047},\"Radius\":2.0,\"Power\":11.0,\"DelaySteps\":30,\"JitterSteps\":0}"
             },
             {
                 "Type": 0,
-                "Position": {
-                    "x": 1.4581947326660157,
-                    "y": 0.26494187116622927
-                },
-                "Radius": 2.0,
-                "Power": 11.0,
-                "DelaySteps": 30,
-                "JitterSteps": 0,
-                "Angle": 0.0
+                "Json": "{\"Position\":{\"x\":1.4581947326660157,\"y\":0.26494187116622927},\"Radius\":2.0,\"Power\":11.0,\"DelaySteps\":30,\"JitterSteps\":0}"
             },
             {
                 "Type": 2,
-                "Position": {
-                    "x": -1.8934767246246338,
-                    "y": 1.7231366634368897
-                },
-                "Radius": 0.30000001192092898,
-                "Power": 0.0,
-                "DelaySteps": 0,
-                "JitterSteps": 0,
-                "Angle": 0.0
+                "Json": "{\"Position\":{\"x\":-1.8934767246246338,\"y\":1.7231366634368897},\"Radius\":0.30000001192092898}"
             },
             {
                 "Type": 2,
-                "Position": {
-                    "x": 0.21764042973518372,
-                    "y": 0.06906494498252869
-                },
-                "Radius": 0.30000001192092898,
-                "Power": 0.0,
-                "DelaySteps": 0,
-                "JitterSteps": 0,
-                "Angle": 0.0
+                "Json": "{\"Position\":{\"x\":0.21764042973518372,\"y\":0.06906494498252869},\"Radius\":0.30000001192092898}"
             },
             {
                 "Type": 3,
-                "Position": {
-                    "x": 2.9816815853118898,
-                    "y": -2.9561445713043215
-                },
-                "Radius": 2.0,
-                "Power": 5.0,
-                "DelaySteps": 0,
-                "JitterSteps": 0,
-                "Angle": 0.0
+                "Json": "{\"Position\":{\"x\":2.9816815853118898,\"y\":-2.9561445713043215},\"Radius\":2.0,\"Power\":5.0,\"Angle\":0.0}"
             },
             {
                 "Type": 3,
-                "Position": {
-                    "x": 0.369989275932312,
-                    "y": -5.001969814300537
-                },
-                "Radius": 2.0,
-                "Power": 5.0,
-                "DelaySteps": 0,
-                "JitterSteps": 0,
-                "Angle": 0.0
+                "Json": "{\"Position\":{\"x\":0.369989275932312,\"y\":-5.001969814300537},\"Radius\":2.0,\"Power\":5.0,\"Angle\":0.0}"
             },
             {
                 "Type": 1,
-                "Position": {
-                    "x": -1.741127848625183,
-                    "y": 2.9201624393463136
-                },
-                "Radius": 0.0,
-                "Power": 6.0,
-                "DelaySteps": 30,
-                "JitterSteps": 0,
-                "Angle": 0.0
+                "Json": "{\"Position\":{\"x\":-1.741127848625183,\"y\":2.9201624393463136},\"Power\":6.0,\"DelaySteps\":30,\"JitterSteps\":0}"
             },
             {
                 "Type": 1,
-                "Position": {
-                    "x": 0.8270354270935059,
-                    "y": 1.2007992267608643
-                },
-                "Radius": 0.0,
-                "Power": 6.0,
-                "DelaySteps": 30,
-                "JitterSteps": 0,
-                "Angle": 0.0
+                "Json": "{\"Position\":{\"x\":0.8270354270935059,\"y\":1.2007992267608643},\"Power\":6.0,\"DelaySteps\":30,\"JitterSteps\":0}"
             }
         ],
         "Stars": [
