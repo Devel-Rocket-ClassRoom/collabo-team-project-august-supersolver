@@ -10,6 +10,7 @@ namespace PPS.Core
         public FakeUserDataStorage()
         {
             fakeData = new UserData();   // HasPlayed = false, LastCleared = (0,0)
+            fakeData.LastCleared = new StageEntry(0, 18);
         }
         public UniTask<UserDataLoadResult> LoadAsync()
         {
