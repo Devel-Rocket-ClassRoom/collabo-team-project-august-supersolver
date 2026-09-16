@@ -17,6 +17,8 @@ namespace PPS.Core
         /// <param name="json">읽어 온 원본 문자열. 옛 값이 여기 남아 있다.</param>
         public static void Migrate(StageData stage, string json)
         {
+            RefuseNewer(stage.Version);
+
             if (stage.Level == null) return;
 
             // 현재 형식의 자리를 먼저 편다. 옛 판은 이 자리가 비어 있다.
@@ -35,6 +37,8 @@ namespace PPS.Core
         {
             if (replay?.Stage?.Level == null) return;
 
+            RefuseNewer(replay.Stage.Version);
+
             replay.Stage.Level.UnpackDevices();
 
             if (replay.Stage.Version < 1)
@@ -44,6 +48,19 @@ namespace PPS.Core
             }
 
             replay.Stage.Version = StageData.CurrentVersion;
+        }
+
+        /// <summary>
+        /// 모르는 형식은 읽지 않는다. 읽어 두면 모르는 값을
+        /// 지운 채 되저장해서, 새 형식으로 만든 판이 조용히 깎인다.
+        /// </summary>
+        static void RefuseNewer(int version)
+        {
+            if (version <= StageData.CurrentVersion) return;
+
+            throw new InvalidOperationException(
+                $"판의 저장 형식이 {version} 이다. " +
+                $"이 빌드는 {StageData.CurrentVersion} 까지만 안다.");
         }
 
         /// 공통 DeviceData 하나가 장치별 데이터로 갈라졌다.
