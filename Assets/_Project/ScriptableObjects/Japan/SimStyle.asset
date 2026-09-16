@@ -14,9 +14,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   Sprites:
     Dot: {fileID: -2003601947, guid: a829e51a37e0dc148b87a468c29520fa, type: 3}
-    Ball: {fileID: -59877914, guid: a829e51a37e0dc148b87a468c29520fa, type: 3}
+    Ball: {fileID: 21300000, guid: 0f633b91b2d149c0a9c3389245f11177, type: 3}
     Goal: {fileID: 1313371594, guid: a829e51a37e0dc148b87a468c29520fa, type: 3}
-    Star: {fileID: -1095445131, guid: a829e51a37e0dc148b87a468c29520fa, type: 3}
+    Star: {fileID: 21300000, guid: ad6b02fc55974ee7a0f4aaf1508974f1, type: 3}
   Devices:
   - Type: 0
     Sprite: {fileID: -1892451399, guid: a829e51a37e0dc148b87a468c29520fa, type: 3}
@@ -27,7 +27,7 @@ MonoBehaviour:
   - Type: 3
     Sprite: {fileID: 1407274763, guid: a829e51a37e0dc148b87a468c29520fa, type: 3}
   - Type: 4
-    Sprite: {fileID: 97325135, guid: a829e51a37e0dc148b87a468c29520fa, type: 3}
+    Sprite: {fileID: 21300000, guid: d9f8e77b7ddf4d79b01398490670e6a2, type: 3}
   KillEffect: {fileID: 4593157221764657688, guid: b211ce208ee793949a55bc7dead08380, type: 3}
   KillLine: {fileID: 21300000, guid: ff16c08b124e1944185fc6dae4abc9f1, type: 3}
   Terrain: {r: 0.13725491, g: 0.14509805, b: 0.16862746, a: 1}
