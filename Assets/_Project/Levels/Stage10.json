@@ -1,6 +1,5 @@
 {
-    "Version": 1,
-    "StageId": "M20260826_141729",
+    "StageId": "Stage10",
     "Seed": 0,
     "Level": {
         "InkLimit": 20.0,
@@ -1794,7 +1793,7 @@
                 }
             }
         ],
-        "DeviceEntries": [],
+        "Devices": [],
         "Stars": [
             {
                 "x": -2.6987485885620119,
