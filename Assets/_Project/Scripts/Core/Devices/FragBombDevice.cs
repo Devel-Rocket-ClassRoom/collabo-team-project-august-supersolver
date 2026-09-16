@@ -30,7 +30,7 @@ namespace PPS.Core
         /// 완전 균등이면 기계적으로 보인다.
         const float SpreadJitter = 0.35f;
 
-        readonly DeviceData _data;
+        readonly FragBombData _data;
         readonly Scene _scene;
         readonly string _name;
         readonly List<Rigidbody2D> _bodies;
@@ -52,7 +52,7 @@ namespace PPS.Core
         int _expireStep;
 
         /// <summary>정적 바디. BombDevice 와 같은 이유다.</summary>
-        public static Rigidbody2D CreateBody(Scene scene, in DeviceData data, string name)
+        public static Rigidbody2D CreateBody(Scene scene, FragBombData data, string name)
         {
             var go = new GameObject(name);
             SceneManager.MoveGameObjectToScene(go, scene);
@@ -67,8 +67,20 @@ namespace PPS.Core
             return body;
         }
 
-        public FragBombDevice(
-            in DeviceData data,
+        /// <summary>몸체는 위험하지 않다. 파편만 위험 목록에 든다.</summary>
+        public static IStepLogic Build(IDeviceData data, in DeviceBuildContext ctx)
+        {
+            var frag = (FragBombData)data;
+
+            var body = CreateBody(ctx.Scene, frag, ctx.Name);
+            ctx.Bodies.Add(body);
+
+            return new FragBombDevice(
+                frag, body, ctx.Scene, ctx.Name, ctx.Bodies, ctx.Hazards, ctx.Events, ctx.Index);
+        }
+
+        FragBombDevice(
+            FragBombData data,
             Rigidbody2D body,
             Scene scene,
             string name,

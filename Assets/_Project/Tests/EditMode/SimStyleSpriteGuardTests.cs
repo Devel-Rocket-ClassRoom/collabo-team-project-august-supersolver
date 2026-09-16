@@ -53,14 +53,13 @@ namespace PPS.Core.Tests
         static IEnumerable<Sprite> SpritesOf(SimStyle style)
         {
             SimStyle.Shapes shapes = style.Sprites;
-            Sprite[] all =
-            {
-                shapes.Dot, shapes.Ball, shapes.Goal, shapes.Star,
-                shapes.Bomb, shapes.FragBomb, shapes.Spike, shapes.Wind,
-            };
+            Sprite[] all = { shapes.Dot, shapes.Ball, shapes.Goal, shapes.Star };
 
             foreach (Sprite sprite in all)
                 if (sprite != null) yield return sprite;
+
+            for (int i = 0; i < style.Devices.Count; i++)
+                if (style.Devices[i]?.Sprite != null) yield return style.Devices[i].Sprite;
         }
     }
 }

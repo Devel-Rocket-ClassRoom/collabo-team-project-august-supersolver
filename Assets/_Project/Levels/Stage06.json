@@ -1,4 +1,5 @@
 {
+    "Version": 1,
     "StageId": "Stage06",
     "Seed": 0,
     "Level": {
@@ -323,7 +324,7 @@
                 }
             }
         ],
-        "Devices": [],
+        "DeviceEntries": [],
         "Stars": [
             {
                 "x": -1.714834213256836,

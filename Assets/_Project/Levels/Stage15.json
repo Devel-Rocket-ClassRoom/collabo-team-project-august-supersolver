@@ -1,4 +1,5 @@
 {
+    "Version": 1,
     "StageId": "Stage15",
     "Seed": 0,
     "Level": {
@@ -613,42 +614,18 @@
                 }
             }
         ],
-        "Devices": [
+        "DeviceEntries": [
             {
                 "Type": 0,
-                "Position": {
-                    "x": -3.177558422088623,
-                    "y": 2.7242846488952638
-                },
-                "Radius": 2.0,
-                "Power": 11.0,
-                "DelaySteps": 30,
-                "JitterSteps": 0,
-                "Angle": 0.0
+                "Json": "{\"Position\":{\"x\":-3.177558422088623,\"y\":2.7242846488952638},\"Radius\":2.0,\"Power\":11.0,\"DelaySteps\":30,\"JitterSteps\":0}"
             },
             {
                 "Type": 1,
-                "Position": {
-                    "x": 1.3058459758758546,
-                    "y": 1.5272600650787354
-                },
-                "Radius": 0.0,
-                "Power": 6.0,
-                "DelaySteps": 30,
-                "JitterSteps": 0,
-                "Angle": 0.0
+                "Json": "{\"Position\":{\"x\":1.3058459758758546,\"y\":1.5272600650787354},\"Power\":6.0,\"DelaySteps\":30,\"JitterSteps\":0}"
             },
             {
                 "Type": 2,
-                "Position": {
-                    "x": 2.7858047485351564,
-                    "y": 5.205392837524414
-                },
-                "Radius": 0.30000001192092898,
-                "Power": 0.0,
-                "DelaySteps": 0,
-                "JitterSteps": 0,
-                "Angle": 0.0
+                "Json": "{\"Position\":{\"x\":2.7858047485351564,\"y\":5.205392837524414},\"Radius\":0.30000001192092898}"
             }
         ],
         "Stars": [

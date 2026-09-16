@@ -45,10 +45,10 @@ namespace PPS.Core.Tests
             Assert.AreEqual(99, restored.Seed);
             Assert.AreEqual(stage.Level.Devices.Count, restored.Level.Devices.Count);
 
-            var original = stage.Level.Devices[0];
-            var copy = restored.Level.Devices[0];
+            var original = (FragBombData)stage.Level.Devices[0];
+            var copy = restored.Level.Devices[0] as FragBombData;
 
-            Assert.AreEqual(DeviceType.FragBomb, copy.Type);
+            Assert.IsNotNull(copy, "왕복에서 장치의 종류가 바뀌었다.");
             Assert.AreEqual(original.DelaySteps, copy.DelaySteps);
             Assert.AreEqual(original.Power, copy.Power, 1e-4f);
         }

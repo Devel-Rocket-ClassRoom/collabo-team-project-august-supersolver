@@ -434,6 +434,8 @@ namespace PPS.Solver
                 BallStart = start,
                 GoalPosition = level.GoalPosition,
                 Terrain = level.Terrain,
+                // 목록 참조를 나눠 쓴다. 솔버는 장치 데이터를 변형하지 않는다 —
+                // 참조 타입이라 고치면 원본 레벨이 함께 바뀐다.
                 Devices = level.Devices,
                 Stars = level.Stars,
                 KillY = level.KillY,

@@ -1,4 +1,5 @@
 {
+    "Version": 1,
     "StageId": "Stage13",
     "Seed": 0,
     "Level": {
@@ -133,18 +134,10 @@
                 }
             }
         ],
-        "Devices": [
+        "DeviceEntries": [
             {
                 "Type": 2,
-                "Position": {
-                    "x": 1.784656047821045,
-                    "y": 5.618910789489746
-                },
-                "Radius": 0.30000001192092898,
-                "Power": 0.0,
-                "DelaySteps": 0,
-                "JitterSteps": 0,
-                "Angle": 0.0
+                "Json": "{\"Position\":{\"x\":1.784656047821045,\"y\":5.618910789489746},\"Radius\":0.30000001192092898}"
             }
         ],
         "Stars": [],

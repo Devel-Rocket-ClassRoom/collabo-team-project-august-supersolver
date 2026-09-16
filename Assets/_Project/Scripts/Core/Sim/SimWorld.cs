@@ -74,7 +74,7 @@ namespace PPS.Core
         /// <returns>
         /// body 는 바람처럼 바디가 없거나 이미 터졌으면 null.
         /// </returns>
-        public (DeviceData data, Rigidbody2D body) GetDevice(int index)
+        public (IDeviceData data, Rigidbody2D body) GetDevice(int index)
         {
             var devices = Level.Devices;
 
@@ -87,9 +87,9 @@ namespace PPS.Core
 
             // 바디를 만든 장치만 자리를 하나 쓴다.
             for (int i = 0; i < index; i++)
-                if (DeviceFactory.MakesBody(devices[i].Type)) at++;
+                if (DeviceRegistry.MakesBody(devices[i].Type)) at++;
 
-            bool hasBody = DeviceFactory.MakesBody(devices[index].Type);
+            bool hasBody = DeviceRegistry.MakesBody(devices[index].Type);
             Rigidbody2D body = hasBody && at < _bodies.Count ? _bodies[at] : null;
 
             return (devices[index], body);

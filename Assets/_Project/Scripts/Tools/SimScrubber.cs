@@ -316,7 +316,7 @@ namespace PPS.Tools
                     Vector2 at = devices[i].Position;
 
                     Circle(at, 0.3f);
-                    Circle(at, devices[i].Radius);
+                    if (devices[i] is IHasReach reach) Circle(at, reach.Reach);
                     Line(at + new Vector2(-0.45f, 0f), at + new Vector2(0.45f, 0f));
                     Line(at + new Vector2(0f, -0.45f), at + new Vector2(0f, 0.45f));
                 }
@@ -469,7 +469,6 @@ namespace PPS.Tools
                     TestLevels.GapPuzzle, TestLevels.GapPuzzleSolution),
 
                 Stage("L001 (JSON 파일)", SampleLevelFile.Load, () => null),
-                Stage("L002 전 피처 (JSON)", FeatureLevelFile.LoadLevel, FeatureLevelFile.LoadSolution),
                 Stage("Ramp → Clear", TestLevels.RampToGoal, () => null),
                 Stage("Gap 다리 없음 → Fail", TestLevels.Gap, () => null),
                 Stage("Gap + 다리 → Stalled", TestLevels.Gap, TestLevels.BridgeSolution),

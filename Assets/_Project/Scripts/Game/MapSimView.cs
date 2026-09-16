@@ -2,6 +2,9 @@ using System.Collections.Generic;
 using PPS.Core;
 using UnityEngine;
 
+// UnityEngine 에도 같은 이름이 있다(SystemInfo.deviceType).
+using DeviceType = PPS.Core.DeviceType;
+
 namespace PPS.Game
 {
     /// <summary>
@@ -83,7 +86,7 @@ namespace PPS.Game
         /// </summary>
         void DrawDevices(SimWorld world, LevelData level)
         {
-            Grow(_devices, level.Devices.Count, "SimDevice", _style.Sprites.Bomb);
+            Grow(_devices, level.Devices.Count, "SimDevice", _style.SpriteOf(DeviceType.Bomb));
 
             for (int i = 0; i < _devices.Count; i++)
             {
@@ -93,10 +96,10 @@ namespace PPS.Game
                     continue;
                 }
 
-                (DeviceData data, Rigidbody2D body) = world.GetDevice(i);
+                (IDeviceData data, Rigidbody2D body) = world.GetDevice(i);
 
                 // 바디를 가질 장치인데 없으면 이미 터진 것이다.
-                bool used = body != null || !DeviceFactory.MakesBody(data.Type);
+                bool used = body != null || !DeviceRegistry.MakesBody(data.Type);
 
                 _devices[i].gameObject.SetActive(used);
                 if (!used) continue;
@@ -105,7 +108,7 @@ namespace PPS.Game
 
                 MapHandleGfx.PlaceDot(_devices[i],
                     body != null ? body.position : data.Position,
-                    SimStyle.RadiusOf(data), SimStyle.Plain,
+                    data.DrawRadius, SimStyle.Plain,
                     SimStyle.AngleOf(data));
             }
         }

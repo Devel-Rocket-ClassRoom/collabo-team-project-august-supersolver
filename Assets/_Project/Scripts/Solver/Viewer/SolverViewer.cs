@@ -1124,19 +1124,20 @@ namespace PPS.Solver.Viewer
 
             for (int i = 0; i < devices.Count; i++)
             {
-                DeviceData device = devices[i];
+                IDeviceData device = devices[i];
                 Vector2 at = device.Position;
+                float reach = device is IHasReach r ? r.Reach : 0f;
 
                 GL.Color(DeviceColor(device.Type, i));
 
                 Circle(at, 0.3f);
-                Circle(at, device.Radius);
+                Circle(at, reach);
 
-                if (device.Type == DeviceType.Wind)
+                if (device is IHasFacing facing)
                 {
-                    // 바람만 방향이 있다. 미는 쪽으로 선을 하나 뻗는다.
-                    float rad = device.Angle * Mathf.Deg2Rad;
-                    Line(at, at + new Vector2(Mathf.Cos(rad), Mathf.Sin(rad)) * device.Radius);
+                    // 방향이 있는 장치는 미는 쪽으로 선을 하나 뻗는다.
+                    float rad = facing.FacingDegrees * Mathf.Deg2Rad;
+                    Line(at, at + new Vector2(Mathf.Cos(rad), Mathf.Sin(rad)) * reach);
                     continue;
                 }
 

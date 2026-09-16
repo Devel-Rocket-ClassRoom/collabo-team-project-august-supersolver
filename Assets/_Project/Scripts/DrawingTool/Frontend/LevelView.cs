@@ -170,17 +170,20 @@ namespace PPS.DrawingTool
                 TerrainInk, RenderOrder.Terrain);
         }
 
-        void AddDevice(in DeviceData device, int index)
+        void AddDevice(IDeviceData device, int index)
         {
+            // 범위가 없는 장치는 지름 0 이라 보이지 않는다.
+            float reach = device is IHasReach r ? r.Reach : 0f;
+
             _deviceRanges.Add(AddDot($"DeviceRange_{index}", device.Position,
-                device.Radius * 2f,
+                reach * 2f,
                 ShapeSprites.Ring, Fade(DeviceColor, DeviceRangeAlpha),
                 RenderOrder.Device));
 
-            // 몸집과 방향은 SimStyle 이 안다 — 게임과 같은
+            // 모양은 SimStyle 이, 크기는 데이터가 안다 — 게임과 같은
             // 크기로 그려야 저작자가 본 것이 그대로 온다.
             Sprite art = _style == null ? null : _style.SpriteOf(device.Type);
-            float diameter = art == null ? DeviceSize : SimStyle.RadiusOf(device) * 2f;
+            float diameter = art == null ? DeviceSize : device.DrawRadius * 2f;
 
             Transform body = AddThemed($"Device_{index}", device.Position, diameter,
                 art, DeviceColor, RenderOrder.Device + 1);

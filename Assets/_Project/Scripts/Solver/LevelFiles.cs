@@ -78,7 +78,20 @@ namespace PPS.Solver
 
             if (Parse<StageData>(json, out StageData stage, out string broken)
                 && IsLevel(stage?.Level))
+            {
+                // StageData.FromJson 을 쓰지 않는 유일한 경로다.
+                // 여기서 올리지 않으면 장치가 없는 판을 보게 된다.
+                try
+                {
+                    StageDataMigration.Migrate(stage, json);
+                }
+                catch (Exception e)
+                {
+                    return new Entry(name, null, e.Message);
+                }
+
                 return new Entry(name, Renamed(stage, name), null);
+            }
 
             if (broken != null) return new Entry(name, null, $"json 이 아니다 — {broken}");
 

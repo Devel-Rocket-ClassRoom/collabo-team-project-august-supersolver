@@ -16,7 +16,7 @@ namespace PPS.Core
         /// <summary>
         /// 정적 바디다. 공이 위에 올라타도 밀리지 않는다.
         /// </summary>
-        public static Rigidbody2D CreateBody(Scene scene, in DeviceData data, string name)
+        public static Rigidbody2D CreateBody(Scene scene, SpikeData data, string name)
         {
             var go = new GameObject(name);
             SceneManager.MoveGameObjectToScene(go, scene);
@@ -29,6 +29,19 @@ namespace PPS.Core
             circle.radius = Mathf.Max(data.Radius, MinRadius);
 
             return body;
+        }
+
+        /// <summary>
+        /// 몸 전체가 위험하다. 파편 폭탄과 달리
+        /// 처음부터 끝까지 그 자리에 있다.
+        /// </summary>
+        public static IStepLogic Build(IDeviceData data, in DeviceBuildContext ctx)
+        {
+            var body = CreateBody(ctx.Scene, (SpikeData)data, ctx.Name);
+            ctx.Bodies.Add(body);
+            ctx.Hazards.Add(body.GetComponent<Collider2D>());
+
+            return new SpikeDevice();
         }
 
         public void Tick(int step, System.Random rng)

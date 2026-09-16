@@ -36,7 +36,7 @@ namespace PPS.DrawingTool.Tests
                 new StaticSegment(new Vector2(1f, 0f), new Vector2(4f, -2f)),
             },
             Stars = { new Vector2(0f, 2f) },
-            Devices = { new DeviceData { Position = new Vector2(2f, 2f), Radius = 1.5f } },
+            Devices = { new BombData { Position = new Vector2(2f, 2f), Radius = 1.5f } },
         };
 
         [Test]

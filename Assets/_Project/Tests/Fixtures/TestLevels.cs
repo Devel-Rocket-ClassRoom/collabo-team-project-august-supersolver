@@ -210,9 +210,8 @@ namespace PPS.Core.Tests
         public static LevelData FlatWithLateBomb()
         {
             var level = FlatRest();
-            level.Devices.Add(new DeviceData
+            level.Devices.Add(new BombData
             {
-                Type = DeviceType.Bomb,
                 // 공의 낙하 경로를 피한다.
                 // 바로 밑이면 공이 얹혀 불안정해진다.
                 Position = new Vector2(1.2f, BombDevice.BodyRadius),
@@ -231,9 +230,8 @@ namespace PPS.Core.Tests
         public static LevelData FlatWithJitteryBomb()
         {
             var level = FlatRest();
-            level.Devices.Add(new DeviceData
+            level.Devices.Add(new BombData
             {
-                Type = DeviceType.Bomb,
                 // 공의 낙하 경로를 피한다.
                 Position = new Vector2(1.2f, BombDevice.BodyRadius),
                 Radius = 3f,
@@ -266,13 +264,11 @@ namespace PPS.Core.Tests
                     new StaticSegment(new Vector2(-0.6f, 0f), new Vector2(-0.6f, 2.4f)), // 왼쪽 벽
                     new StaticSegment(new Vector2(0.6f, 0f), new Vector2(0.6f, 2.4f)),   // 오른쪽 벽
                 },
-                Devices = new List<DeviceData>
+                Devices = new List<IDeviceData>
                 {
-                    new DeviceData
+                    new FragBombData
                     {
-                        Type = DeviceType.FragBomb,
                         Position = new Vector2(0f, 1.4f),
-                        Radius = 0f,          // 밀어내기를 하지 않는다
                         Power = 6f,           // 파편 초기 속도
                         DelaySteps = FragBombFireStep,
                         JitterSteps = 0,      // 판정 시점을 읽기 쉽게 고정
@@ -289,12 +285,10 @@ namespace PPS.Core.Tests
         public static LevelData FragBombFarAway()
         {
             var level = FlatRest();
-            level.Devices.Add(new DeviceData
+            level.Devices.Add(new FragBombData
             {
-                Type = DeviceType.FragBomb,
                 // 파편 고리가 지면 아래로 안 가게 띄운다.
                 Position = new Vector2(4.2f, 0.6f),
-                Radius = 0f,
                 // 1.5m/s × 수명 1초 = 1.5m. 공까지는 4.2m.
                 Power = 1.5f,
                 DelaySteps = FragBombFireStep,
@@ -377,6 +371,54 @@ namespace PPS.Core.Tests
             solution.Pivots.Add(new PivotJoint(2, PivotJoint.WorldIndex, PivotOnWorld));
 
             return solution;
+        }
+
+        /// 바운서의 중심. 공이 바로 위에서 떨어진다.
+        public static readonly Vector2 BouncerAt = new Vector2(0f, 0.9f);
+
+        /// 바운서의 몸 크기.
+        public const float BouncerRadius = 0.5f;
+
+        /// 공이 바운서 위에 가만히 놓이는 높이.
+        public static float BouncerRestY =>
+            BouncerAt.y + BouncerRadius + LevelData.BallRadius;
+
+        /// <summary>
+        /// 바운서 바로 위에서 공을 떨어뜨린다.
+        /// 지면과 바운서를 둘 다 둬서, 되튕기지 못한 공이
+        /// 어디로 가는지도 함께 볼 수 있다.
+        /// </summary>
+        /// <param name="ballY">공의 출발 높이.</param>
+        public static LevelData BouncerDrop(float ballY)
+        {
+            var level = FlatRest();
+            level.BallStart = new Vector2(BouncerAt.x, ballY);
+            level.Devices.Add(new BouncerData
+            {
+                Position = BouncerAt,
+                Radius = BouncerRadius,
+            });
+            return level;
+        }
+
+        /// <summary>
+        /// 회전축 판에 흔들리는 폭탄을 하나 얹은 것.
+        /// 리플레이 왕복이 그림과 장치를 함께 거치는지 볼 때 쓴다 —
+        /// 흔들림이 있어야 난수 소비까지 결과에 섞인다.
+        /// </summary>
+        public static LevelData PivotSwingWithBomb()
+        {
+            var level = PivotSwing();
+            level.Devices.Add(new BombData
+            {
+                // 막대 아래. 터지면 막대와 공이 함께 밀린다.
+                Position = new Vector2(-2f, BombDevice.BodyRadius),
+                Radius = 4f,
+                Power = 5f,
+                DelaySteps = 20,
+                JitterSteps = 120,
+            });
+            return level;
         }
 
         /// <summary>Gap 의 틈을 잇는 다리.</summary>

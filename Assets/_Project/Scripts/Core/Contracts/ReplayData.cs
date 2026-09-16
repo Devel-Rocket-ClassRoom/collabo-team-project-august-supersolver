@@ -42,6 +42,9 @@ namespace PPS.Core
         // ReplayData를 JSON 문자열로 변환한다.
         public string ToJson(bool prettyPrint = true)
         {
+            // 장치는 디스크 형태로 접어야 실린다.
+            Stage?.Level?.PackDevices();
+
             return JsonUtility.ToJson(this, prettyPrint);
         }
 
@@ -53,7 +56,12 @@ namespace PPS.Core
                 return null;
 
             // JSON 안의 Stage와 Solution을 함께 복원한다.
-            return JsonUtility.FromJson<ReplayData>(json);
+            var replay = JsonUtility.FromJson<ReplayData>(json);
+
+            // 옛 리플레이도 지금 형식으로 올려서 돌아간다.
+            StageDataMigration.MigrateReplay(replay, json);
+
+            return replay;
         }
     }
 }

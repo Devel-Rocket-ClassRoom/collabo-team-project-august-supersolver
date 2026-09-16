@@ -25,11 +25,28 @@ namespace PPS.Core
         /// 리스트 순서 = 월드 등록 순서.
         public List<StaticSegment> Terrain = new List<StaticSegment>();
 
-        /// 리스트 순서 = 로직 등록 순서 = 난수 소비 순서.
-        public List<DeviceData> Devices = new List<DeviceData>();
+        /// <summary>
+        /// 디스크 형태. 런타임에 읽지 않는다 —
+        /// JsonUtility 가 인터페이스를 직렬화하지 못해
+        /// 타입 태그와 중첩 json 으로 나눠 담는다.
+        /// </summary>
+        public List<DeviceEntry> DeviceEntries = new List<DeviceEntry>();
+
+        /// <summary>
+        /// 런타임 형태. 리스트 순서 = 로직 등록 순서 = 난수 소비 순서.
+        /// 시뮬과 솔버는 이 안의 값을 변형하지 않는다 —
+        /// 참조 타입이라 고치면 원본이 함께 바뀐다.
+        /// </summary>
+        [NonSerialized] public List<IDeviceData> Devices = new List<IDeviceData>();
         public List<Vector2> Stars = new List<Vector2>();
 
         public float KillY = -20f;
+
+        /// <summary>런타임 형태 → 디스크 형태. 저장 직전에 부른다.</summary>
+        public void PackDevices() => DeviceSerialization.Pack(Devices, DeviceEntries);
+
+        /// <summary>디스크 형태 → 런타임 형태. 읽은 직후에 부른다.</summary>
+        public void UnpackDevices() => DeviceSerialization.Unpack(DeviceEntries, Devices);
     }
 
     /// <summary>붙박이 지형 한 조각.</summary>

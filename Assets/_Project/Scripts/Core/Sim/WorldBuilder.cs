@@ -70,7 +70,9 @@ namespace PPS.Core
             if (level.Devices != null)
             {
                 for (int i = 0; i < level.Devices.Count; i++)
-                    logics.Add(DeviceFactory.Create(level.Devices[i], i, scene, bodies, hazards, events));
+                    logics.Add(DeviceRegistry.Create(
+                        level.Devices[i],
+                        new DeviceBuildContext(i, scene, bodies, hazards, events)));
             }
 
             // 4. 스트로크 — 솔루션 리스트 순서.

@@ -15,9 +15,10 @@ namespace PPS.Core.Tests
         /// 반경·세기는 그 창 전체에서 공이 밀리도록
         /// 잡은 값이다.
         /// </summary>
-        static readonly DeviceData Bomb = new DeviceData
+        /// 부를 때마다 새로 만든다. 참조 타입이라
+        /// 나눠 쓰면 한 판의 편집이 다른 판에 번진다.
+        static BombData Bomb => new BombData
         {
-            Type = DeviceType.Bomb,
             Position = new Vector2(-2.5f, 1.6f),
             Radius = 4f,
             Power = 7f,
@@ -41,7 +42,7 @@ namespace PPS.Core.Tests
                     new StaticSegment(new Vector2(-5f, 3f), new Vector2(0f, 1f)),
                     new StaticSegment(new Vector2(2f, -1f), new Vector2(6f, -1f)),
                 },
-                Devices = new List<DeviceData> { Bomb },
+                Devices = new List<IDeviceData> { Bomb },
             };
         }
 
