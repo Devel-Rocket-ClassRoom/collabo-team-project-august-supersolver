@@ -12,7 +12,7 @@ namespace PPS.Core.Tests
     public class DeviceDataJsonTests
     {
         [Test]
-        public void 장치_4종이_왕복해도_그대로다()
+        public void 장치_전종이_왕복해도_그대로다()
         {
             // 기본값과 일부러 다르게 잡는다.
             // 기본값이면 안 실려도 통과한다.
@@ -37,6 +37,11 @@ namespace PPS.Core.Tests
                 {
                     Position = new Vector2(-3f, 1f),
                     Radius = 4.5f, Power = 8f, Angle = 135f,
+                },
+                new BouncerData
+                {
+                    Position = new Vector2(0.25f, -1f),
+                    Radius = 1.25f,
                 },
             };
 
@@ -70,6 +75,10 @@ namespace PPS.Core.Tests
             Assert.AreEqual(4.5f, wind.Radius, 1e-5f);
             Assert.AreEqual(8f, wind.Power, 1e-5f);
             Assert.AreEqual(135f, wind.Angle, 1e-5f);
+
+            var bouncer = Get<BouncerData>(after, 4);
+            Assert.AreEqual(new Vector2(0.25f, -1f), bouncer.Position);
+            Assert.AreEqual(1.25f, bouncer.Radius, 1e-5f);
         }
 
         [Test]

@@ -373,6 +373,34 @@ namespace PPS.Core.Tests
             return solution;
         }
 
+        /// 바운서의 중심. 공이 바로 위에서 떨어진다.
+        public static readonly Vector2 BouncerAt = new Vector2(0f, 0.9f);
+
+        /// 바운서의 몸 크기.
+        public const float BouncerRadius = 0.5f;
+
+        /// 공이 바운서 위에 가만히 놓이는 높이.
+        public static float BouncerRestY =>
+            BouncerAt.y + BouncerRadius + LevelData.BallRadius;
+
+        /// <summary>
+        /// 바운서 바로 위에서 공을 떨어뜨린다.
+        /// 지면과 바운서를 둘 다 둬서, 되튕기지 못한 공이
+        /// 어디로 가는지도 함께 볼 수 있다.
+        /// </summary>
+        /// <param name="ballY">공의 출발 높이.</param>
+        public static LevelData BouncerDrop(float ballY)
+        {
+            var level = FlatRest();
+            level.BallStart = new Vector2(BouncerAt.x, ballY);
+            level.Devices.Add(new BouncerData
+            {
+                Position = BouncerAt,
+                Radius = BouncerRadius,
+            });
+            return level;
+        }
+
         /// <summary>
         /// 회전축 판에 흔들리는 폭탄을 하나 얹은 것.
         /// 리플레이 왕복이 그림과 장치를 함께 거치는지 볼 때 쓴다 —

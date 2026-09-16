@@ -35,6 +35,7 @@ namespace PPS.Core
             { DeviceType.FragBomb, new Entry(typeof(FragBombData), true,  FragBombDevice.Build) },
             { DeviceType.Spike,    new Entry(typeof(SpikeData),    true,  SpikeDevice.Build) },
             { DeviceType.Wind,     new Entry(typeof(WindData),     false, WindDevice.Build) },
+            { DeviceType.Bouncer, new Entry(typeof(BouncerData), true, BouncerDevice.Build) },
         };
 
         /// <summary>

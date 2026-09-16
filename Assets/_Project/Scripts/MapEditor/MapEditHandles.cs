@@ -781,6 +781,16 @@ namespace PPS.MapEditor
                     });
                     break;
 
+                case 5: // 바운서
+                    devices.Add(new BouncerData
+                    {
+                        Position = world,
+
+                        // 공(0.25)의 두 배. 더 작으면 맞히기가 운이 된다.
+                        Radius = 0.5f,
+                    });
+                    break;
+
                 default:
                     return MapSelection.None;
             }
