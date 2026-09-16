@@ -20,6 +20,17 @@ namespace PPS.Core
 
         // 로그인 또는 사용자 데이터 준비 실패를 플레이어에게 안내
         [SerializeField] TextMeshProUGUI _loginResultText;
+
+        // 기기에서는 Google 로그인만 쓴다. 이메일 로그인 창은
+        // 시작 버튼 위를 덮으므로 에디터 밖에서는 꺼 둔다.
+        void Awake()
+        {
+            if (_firebaseLoginPanel != null)
+            {
+                _firebaseLoginPanel.SetActive(Application.isEditor);
+            }
+        }
+
         void OnEnable()
         {
             // UserData 로드 결과를 받을 함수를 연결한다.
@@ -67,6 +78,9 @@ namespace PPS.Core
             // 불러온 진행 정보를 Console에 출력
             Debug.Log($"게임 시작 준비 완료: LastCleared = {userData.LastCleared}");
 
+            // 스테이지 선택 씬이 Firestore 를 다시 읽지 않도록 넘긴다.
+            UserDataHandoff.Put(userData);
+
             // userData 준비가 끝났으므로 스테이지 선택 씬으로 이동한다.
             SceneManager.LoadScene("StageSelect");
         }
@@ -79,7 +93,7 @@ namespace PPS.Core
             // 플레이어에게 이해하기 쉬운 실패 안내를 표시
             if (_loginResultText != null)
             {
-                _loginResultText.text = " 로그인 정보를 불러오지 못했습니다. /n 잠시 후 시도해주세요.";
+                _loginResultText.text = "Could not load your account. Please try again.";
             }
         }
 
