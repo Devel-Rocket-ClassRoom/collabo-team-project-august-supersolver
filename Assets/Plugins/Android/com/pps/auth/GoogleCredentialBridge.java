@@ -104,7 +104,7 @@ public final class GoogleCredentialBridge
                         sendError(
                             unityObjectName,
                             errorMethod,
-                            "Google 인증 정보가 아닙니다.");
+                            "Not a Google credential.");
                     }
 
                     // 계정 선택 취소 또는 요청 실패 시 호출된다.
@@ -130,6 +130,6 @@ public final class GoogleCredentialBridge
         UnityPlayer.UnitySendMessage(
             unityObjectName,
             errorMethod,
-            message == null ? "Google 로그인 실패" : message);
+            message == null ? "Google sign-in failed." : message);
     }
 }
