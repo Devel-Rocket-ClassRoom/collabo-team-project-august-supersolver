@@ -7,12 +7,9 @@ namespace PPS.Core
     // 완성된 StageData와 Solution을 하나의 리플레이 파일로 저장한다.
     public static class ReplayStorage
     {
-        // 리플레이 JSON을 저장할 프로젝트 내부 상대 경로다.
-        const string RelativeFolder = "_Project/Replays";
-
         // 실제 리플레이 저장 폴더의 전체 경로를 반환한다.
         public static string FolderPath =>
-            Path.Combine(Application.dataPath, RelativeFolder);
+            Path.Combine(Application.persistentDataPath, "Replays");
 
         // StageData와 Solution을 하나의 리플레이 JSON 파일로 저장한다.
         public static string Save(
