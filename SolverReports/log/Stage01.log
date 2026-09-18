@@ -1,0 +1,545 @@
+[Licensing::Module] Trying to connect to existing licensing client channel...
+Built from '6000.3/staging' branch; Version is '6000.3.13f1 (8c4f11e4fb20) revision 9195281'; Using compiler version '194234433'; Build Type 'Release'
+OS: 'Windows 10  (10.0.19045) 64bit Professional' Language: 'ko' Physical Memory: 16252 MB
+[Licensing::IpcConnector] Successfully connected to: "LicenseClient-user" at "2026-09-18T04:52:39.5414925Z"
+BatchMode: 1, IsHumanControllingUs: 0, StartBugReporterOnCrash: 0, Is64bit: 1
+System  architecture: x64
+Process architecture: x64
+Date: 2026-09-18T04:52:39Z
+
+COMMAND LINE ARGUMENTS:
+C:\Program Files\Unity\Hub\Editor\6000.3.13f1\Editor\Unity.exe
+-batchmode
+-nographics
+-projectPath
+C:\Users\user\Desktop\KYO\KYO_GitRepos\PhysicsPuzzleSolver
+-executeMethod
+PPS.Solver.Batch.SolverBatch.Run
+-stage
+Stage01
+-out
+C:\Users\user\Desktop\KYO\KYO_GitRepos\PhysicsPuzzleSolver\SolverReports\json\Stage01.json
+-logFile
+C:\Users\user\Desktop\KYO\KYO_GitRepos\PhysicsPuzzleSolver\SolverReports\log\Stage01.log
+Successfully changed project path to: C:\Users\user\Desktop\KYO\KYO_GitRepos\PhysicsPuzzleSolver
+C:/Users/user/Desktop/KYO/KYO_GitRepos/PhysicsPuzzleSolver
+[UnityMemory] Configuration Parameters - Can be set up in boot.config
+    "memorysetup-temp-allocator-size-nav-mesh-worker=65536"
+    "memorysetup-temp-allocator-size-audio-worker=65536"
+    "memorysetup-temp-allocator-size-gfx=262144"
+    "memorysetup-allocator-temp-initial-block-size-main=262144"
+    "memorysetup-allocator-temp-initial-block-size-worker=262144"
+    "memorysetup-temp-allocator-size-background-worker=32768"
+    "memorysetup-temp-allocator-size-job-worker=262144"
+    "memorysetup-temp-allocator-size-preload-manager=33554432"
+    "memorysetup-temp-allocator-size-gi-baking-worker=262144"
+    "memorysetup-temp-allocator-size-gi-baking-worker=262144"
+    "memorysetup-temp-allocator-size-gi-baking-worker=262144"
+    "memorysetup-temp-allocator-size-gi-baking-worker=262144"
+    "memorysetup-temp-allocator-size-gi-baking-worker=262144"
+    "memorysetup-bucket-allocator-granularity=16"
+    "memorysetup-bucket-allocator-bucket-count=8"
+    "memorysetup-bucket-allocator-block-size=33554432"
+    "memorysetup-bucket-allocator-block-count=8"
+    "memorysetup-main-allocator-block-size=16777216"
+    "memorysetup-thread-allocator-block-size=16777216"
+    "memorysetup-gfx-main-allocator-block-size=16777216"
+    "memorysetup-gfx-thread-allocator-block-size=16777216"
+    "memorysetup-cache-allocator-block-size=4194304"
+    "memorysetup-typetree-allocator-block-size=2097152"
+    "memorysetup-profiler-bucket-allocator-granularity=16"
+    "memorysetup-profiler-bucket-allocator-bucket-count=8"
+    "memorysetup-profiler-bucket-allocator-block-size=33554432"
+    "memorysetup-profiler-bucket-allocator-block-count=8"
+    "memorysetup-profiler-allocator-block-size=16777216"
+    "memorysetup-profiler-editor-allocator-block-size=1048576"
+    "memorysetup-temp-allocator-size-main=16777216"
+    "memorysetup-job-temp-allocator-block-size=2097152"
+    "memorysetup-job-temp-allocator-block-size-background=1048576"
+    "memorysetup-job-temp-allocator-reduction-small-platforms=262144"
+    "memorysetup-temp-allocator-size-cloud-worker=32768"
+Player connection [25860]  Target information:
+
+Player connection [25860]  * "[IP] 192.168.0.226 [Port] 55504 [Flags] 2 [Guid] 4074054482 [EditorId] 4074054482 [Version] 1048832 [Id] WindowsEditor(7,DESKTOP-PDC91MM) [Debug] 1 [PackageName] WindowsEditor [ProjectName] Editor" 
+
+Player connection [25860] Host joined multi-casting on [225.0.0.222:54997]...
+Player connection [25860] Host joined alternative multi-casting on [225.0.0.222:34997]...
+Input System module state changed to: Initialized.
+[Physics::Module] Initialized fallback backend.
+[Physics::Module] Id: 0xdecafbad
+[Package Manager] Connected to IPC stream "Upm-13040" after 0.3 seconds.
+[Licensing::Module] Licensing is not yet initialized.
+[Licensing::Client] Error: HandshakeResponse reported an error:
+	ResponseCode: 505
+	ResponseStatus: Unsupported protocol version '1.18.1'.
+[Licensing::Module] Error: Failed to handshake to channel: "LicenseClient-user"
+[Licensing::IpcConnector] LicenseClient-user channel disconnected successfully.
+[Licensing::IpcConnector] Channel LicenseClient-user-6000.3.13 doesn't exist
+[Licensing::Module] Successfully launched the LicensingClient (PId: 13232)
+[Licensing::IpcConnector] Successfully connected to: "LicenseClient-user-6000.3.13" at "2026-09-18T04:52:40.8080926Z"
+[Licensing::Client] Handshaking with LicensingClient:
+  Version:                 1.18.1+9fbee8e
+  Session Id:              f59e112fdfd84b858fc009b410d8e284
+  Correlation Id:          1f2d936379c5ea30a8d6221d77e5a7de
+  External correlation Id: 8398705599904996840
+  Machine Id:              5jT37xA33WeblVJZCSr89gvMlik=
+[Licensing::Module] Successfully connected to LicensingClient on channel: "LicenseClient-user-6000.3.13" (connect: 0.57s, validation: 0.04s, handshake: 0.68s)
+[Licensing::IpcConnector] Successfully connected to: "LicenseClient-user-6000.3.13-notifications" at "2026-09-18T04:52:41.5300946Z"
+[Licensing::Module] Connected to LicensingClient (PId: 13232, launch time: 0.00, total connection time: 1.29s)
+[Licensing::Module] Error: Access token is unavailable; failed to update
+[Licensing::Client] Successfully resolved entitlement details
+[Licensing::Module] License group:
+  Id: 14569197507921-UnityPersXXXX
+  Product: Unity Personal
+  Type: Assigned
+  Expiration: Unlimited
+[Licensing::Client] Successfully updated license, isAsync: True, time: 0.01
+[Licensing::Client] Successfully resolved entitlement details
+[Licensing::Module] Licensing Background thread has ended after 2.01s
+[Licensing::Module] Licensing is initialized (took 1.58s).
+[Licensing::Client] Successfully resolved entitlement details
+Library Redirect Path: Library/
+[Physics::Module] Selected backend.
+[Physics::Module] Name: PhysX
+[Physics::Module] Id: 0xf2b8ea05
+[Physics::Module] SDK Version: 4.1.2
+[Physics::Module] Integration Version: 1.0.0
+[Physics::Module] Threading Mode: Multi-Threaded
+[Licensing::Client] Successfully resolved entitlement details
+Refreshing native plugins compatible for Editor in 1.79 ms, found 0 plugins.
+Preloading 0 native plugins for Editor in 0.00 ms.
+Initialize engine version: 6000.3.13f1 (8c4f11e4fb20)
+[Subsystems] Discovering subsystems at path C:/Program Files/Unity/Hub/Editor/6000.3.13f1/Editor/Data/Resources/UnitySubsystems
+[Subsystems] Discovering subsystems at path C:/Users/user/Desktop/KYO/KYO_GitRepos/PhysicsPuzzleSolver/Assets
+Forcing GfxDevice: Null
+GfxDevice: creating device client; kGfxThreadingModeNonThreaded
+NullGfxDevice:
+    Version:  NULL 1.0 [1.0]
+    Renderer: Null Device
+    Vendor:   Unity Technologies
+Initialize mono
+Mono path[0] = 'C:/Program Files/Unity/Hub/Editor/6000.3.13f1/Editor/Data/Managed'
+Mono path[1] = 'C:/Program Files/Unity/Hub/Editor/6000.3.13f1/Editor/Data/MonoBleedingEdge/lib/mono/unityjit-win32'
+Mono config path = 'C:/Program Files/Unity/Hub/Editor/6000.3.13f1/Editor/Data/MonoBleedingEdge/etc'
+Using monoOptions --debugger-agent=transport=dt_socket,embedding=1,server=y,suspend=n,address=127.0.0.1:56040
+Using cacheserver namespaces - metadata:defaultmetadata, artifacts:defaultartifacts
+Using cacheserver namespaces - metadata:defaultmetadata, artifacts:defaultartifacts
+ImportWorker Server TCP listen port: 0
+AcceleratorClientConnectionCallback - disconnected - :0
+Begin MonoManager ReloadAssembly
+Registering precompiled unity dll's ...
+Register platform support module: C:/Program Files/Unity/Hub/Editor/6000.3.13f1/Editor/Data/PlaybackEngines/WebGLSupport/UnityEditor.WebGL.Extensions.dll
+Register platform support module: C:/Program Files/Unity/Hub/Editor/6000.3.13f1/Editor/Data/PlaybackEngines/WindowsStandaloneSupport/UnityEditor.WindowsStandalone.Extensions.dll
+Register platform support module: C:/Program Files/Unity/Hub/Editor/6000.3.13f1/Editor/Data/PlaybackEngines/AndroidPlayer/UnityEditor.Android.Extensions.dll
+Registered in 0.002632 seconds.
+- Loaded All Assemblies, in  0.399 seconds
+Native extension for Android target not found
+Native extension for WindowsStandalone target not found
+Native extension for WebGL target not found
+Package Manager log level set to [2]
+ScheduleIndexationOnStartup MainProcess:False IndexOnStartup:True
+Mono: successfully reloaded assembly
+- Finished resetting the current domain, in  0.372 seconds
+Domain Reload Profiling: 769ms
+	BeginReloadAssembly (146ms)
+		ExecutionOrderSort (0ms)
+		DisableScriptedObjects (0ms)
+		BackupInstance (0ms)
+		ReleaseScriptingObjects (0ms)
+		CreateAndSetChildDomain (19ms)
+	RebuildCommonClasses (38ms)
+	RebuildNativeTypeToScriptingClass (11ms)
+	initialDomainReloadingComplete (45ms)
+	LoadAllAssembliesAndSetupDomain (157ms)
+		LoadAssemblies (127ms)
+		RebuildTransferFunctionScriptingTraits (0ms)
+		AnalyzeDomain (153ms)
+			TypeCache.Refresh (151ms)
+				TypeCache.ScanAssembly (139ms)
+			BuildScriptInfoCaches (0ms)
+			ResolveRequiredComponents (0ms)
+	FinalizeReload (372ms)
+		ReleaseScriptCaches (0ms)
+		RebuildScriptCaches (0ms)
+		SetupLoadedEditorAssemblies (337ms)
+			LogAssemblyErrors (0ms)
+			InitializePlatformSupportModulesInManaged (58ms)
+			SetLoadedEditorAssemblies (4ms)
+			BeforeProcessingInitializeOnLoad (74ms)
+			ProcessInitializeOnLoadAttributes (123ms)
+			ProcessInitializeOnLoadMethodAttributes (78ms)
+			AfterProcessingInitializeOnLoad (0ms)
+			EditorAssembliesLoaded (0ms)
+		ExecutionOrderSort2 (0ms)
+		AwakeInstancesAfterBackupRestoration (0ms)
+[Licensing::Client] Successfully resolved entitlement details
+[Licensing::Client] Successfully resolved entitlement details
+Application.AssetDatabase Initial Refresh Start
+[Package Manager] Restoring resolved packages state from cache
+[Licensing::Client] Successfully resolved entitlement details
+[Package Manager] Registered 65 packages:
+  Packages from [https://packages.unity.com]:
+    com.unity.addressables@2.9.1 (location: C:\Users\user\Desktop\KYO\KYO_GitRepos\PhysicsPuzzleSolver\Library\PackageCache\com.unity.addressables@8460f1c9c927)
+    com.unity.ai.navigation@2.0.12 (location: C:\Users\user\Desktop\KYO\KYO_GitRepos\PhysicsPuzzleSolver\Library\PackageCache\com.unity.ai.navigation@734c2c4c5591)
+    com.unity.collab-proxy@2.12.4 (location: C:\Users\user\Desktop\KYO\KYO_GitRepos\PhysicsPuzzleSolver\Library\PackageCache\com.unity.collab-proxy@0b1559bcd34e)
+    com.unity.ide.rider@3.0.39 (location: C:\Users\user\Desktop\KYO\KYO_GitRepos\PhysicsPuzzleSolver\Library\PackageCache\com.unity.ide.rider@4504839d03f7)
+    com.unity.ide.visualstudio@2.0.26 (location: C:\Users\user\Desktop\KYO\KYO_GitRepos\PhysicsPuzzleSolver\Library\PackageCache\com.unity.ide.visualstudio@a99d56dec63f)
+    com.unity.inputsystem@1.19.0 (location: C:\Users\user\Desktop\KYO\KYO_GitRepos\PhysicsPuzzleSolver\Library\PackageCache\com.unity.inputsystem@21a28c3a6c83)
+    com.unity.timeline@1.8.12 (location: C:\Users\user\Desktop\KYO\KYO_GitRepos\PhysicsPuzzleSolver\Library\PackageCache\com.unity.timeline@8cd8509afae5)
+    com.unity.visualscripting@1.9.11 (location: C:\Users\user\Desktop\KYO\KYO_GitRepos\PhysicsPuzzleSolver\Library\PackageCache\com.unity.visualscripting@8bed5ad90189)
+    com.unity.profiling.core@1.0.3 (location: C:\Users\user\Desktop\KYO\KYO_GitRepos\PhysicsPuzzleSolver\Library\PackageCache\com.unity.profiling.core@8a49f7027d06)
+    com.unity.scriptablebuildpipeline@2.6.1 (location: C:\Users\user\Desktop\KYO\KYO_GitRepos\PhysicsPuzzleSolver\Library\PackageCache\com.unity.scriptablebuildpipeline@36e3b5898ee2)
+    com.unity.searcher@4.9.4 (location: C:\Users\user\Desktop\KYO\KYO_GitRepos\PhysicsPuzzleSolver\Library\PackageCache\com.unity.searcher@d45a78918735)
+    com.unity.burst@1.8.29 (location: C:\Users\user\Desktop\KYO\KYO_GitRepos\PhysicsPuzzleSolver\Library\PackageCache\com.unity.burst@6bb9aca3ef38)
+    com.unity.mathematics@1.3.3 (location: C:\Users\user\Desktop\KYO\KYO_GitRepos\PhysicsPuzzleSolver\Library\PackageCache\com.unity.mathematics@19a9377c4ffa)
+    com.unity.collections@2.6.5 (location: C:\Users\user\Desktop\KYO\KYO_GitRepos\PhysicsPuzzleSolver\Library\PackageCache\com.unity.collections@12999e356c23)
+    com.unity.nuget.mono-cecil@1.11.6 (location: C:\Users\user\Desktop\KYO\KYO_GitRepos\PhysicsPuzzleSolver\Library\PackageCache\com.unity.nuget.mono-cecil@ecb9724e46ff)
+    com.unity.test-framework.performance@3.4.0 (location: C:\Users\user\Desktop\KYO\KYO_GitRepos\PhysicsPuzzleSolver\Library\PackageCache\com.unity.test-framework.performance@aa81a99c4a75)
+  Built-in packages:
+    com.unity.2d.sprite@1.0.0 (location: C:\Users\user\Desktop\KYO\KYO_GitRepos\PhysicsPuzzleSolver\Library\PackageCache\com.unity.2d.sprite@d14b9d497a24)
+    com.unity.multiplayer.center@1.0.1 (location: C:\Users\user\Desktop\KYO\KYO_GitRepos\PhysicsPuzzleSolver\Library\PackageCache\com.unity.multiplayer.center@f01f4ba8d00a)
+    com.unity.render-pipelines.universal@17.3.0 (location: C:\Users\user\Desktop\KYO\KYO_GitRepos\PhysicsPuzzleSolver\Library\PackageCache\com.unity.render-pipelines.universal@d00cd191b3cc)
+    com.unity.test-framework@1.6.0 (location: C:\Users\user\Desktop\KYO\KYO_GitRepos\PhysicsPuzzleSolver\Library\PackageCache\com.unity.test-framework@aebcb98460c6)
+    com.unity.ugui@2.0.0 (location: C:\Users\user\Desktop\KYO\KYO_GitRepos\PhysicsPuzzleSolver\Library\PackageCache\com.unity.ugui@8ccc29d23a79)
+    com.unity.modules.accessibility@1.0.0 (location: C:\Users\user\Desktop\KYO\KYO_GitRepos\PhysicsPuzzleSolver\Library\PackageCache\com.unity.modules.accessibility)
+    com.unity.modules.adaptiveperformance@1.0.0 (location: C:\Users\user\Desktop\KYO\KYO_GitRepos\PhysicsPuzzleSolver\Library\PackageCache\com.unity.modules.adaptiveperformance)
+    com.unity.modules.ai@1.0.0 (location: C:\Users\user\Desktop\KYO\KYO_GitRepos\PhysicsPuzzleSolver\Library\PackageCache\com.unity.modules.ai)
+    com.unity.modules.androidjni@1.0.0 (location: C:\Users\user\Desktop\KYO\KYO_GitRepos\PhysicsPuzzleSolver\Library\PackageCache\com.unity.modules.androidjni)
+    com.unity.modules.animation@1.0.0 (location: C:\Users\user\Desktop\KYO\KYO_GitRepos\PhysicsPuzzleSolver\Library\PackageCache\com.unity.modules.animation)
+    com.unity.modules.assetbundle@1.0.0 (location: C:\Users\user\Desktop\KYO\KYO_GitRepos\PhysicsPuzzleSolver\Library\PackageCache\com.unity.modules.assetbundle)
+    com.unity.modules.audio@1.0.0 (location: C:\Users\user\Desktop\KYO\KYO_GitRepos\PhysicsPuzzleSolver\Library\PackageCache\com.unity.modules.audio)
+    com.unity.modules.cloth@1.0.0 (location: C:\Users\user\Desktop\KYO\KYO_GitRepos\PhysicsPuzzleSolver\Library\PackageCache\com.unity.modules.cloth)
+    com.unity.modules.director@1.0.0 (location: C:\Users\user\Desktop\KYO\KYO_GitRepos\PhysicsPuzzleSolver\Library\PackageCache\com.unity.modules.director)
+    com.unity.modules.imageconversion@1.0.0 (location: C:\Users\user\Desktop\KYO\KYO_GitRepos\PhysicsPuzzleSolver\Library\PackageCache\com.unity.modules.imageconversion)
+    com.unity.modules.imgui@1.0.0 (location: C:\Users\user\Desktop\KYO\KYO_GitRepos\PhysicsPuzzleSolver\Library\PackageCache\com.unity.modules.imgui)
+    com.unity.modules.jsonserialize@1.0.0 (location: C:\Users\user\Desktop\KYO\KYO_GitRepos\PhysicsPuzzleSolver\Library\PackageCache\com.unity.modules.jsonserialize)
+    com.unity.modules.particlesystem@1.0.0 (location: C:\Users\user\Desktop\KYO\KYO_GitRepos\PhysicsPuzzleSolver\Library\PackageCache\com.unity.modules.particlesystem)
+    com.unity.modules.physics@1.0.0 (location: C:\Users\user\Desktop\KYO\KYO_GitRepos\PhysicsPuzzleSolver\Library\PackageCache\com.unity.modules.physics)
+    com.unity.modules.physics2d@1.0.0 (location: C:\Users\user\Desktop\KYO\KYO_GitRepos\PhysicsPuzzleSolver\Library\PackageCache\com.unity.modules.physics2d)
+    com.unity.modules.screencapture@1.0.0 (location: C:\Users\user\Desktop\KYO\KYO_GitRepos\PhysicsPuzzleSolver\Library\PackageCache\com.unity.modules.screencapture)
+    com.unity.modules.terrain@1.0.0 (location: C:\Users\user\Desktop\KYO\KYO_GitRepos\PhysicsPuzzleSolver\Library\PackageCache\com.unity.modules.terrain)
+    com.unity.modules.terrainphysics@1.0.0 (location: C:\Users\user\Desktop\KYO\KYO_GitRepos\PhysicsPuzzleSolver\Library\PackageCache\com.unity.modules.terrainphysics)
+    com.unity.modules.tilemap@1.0.0 (location: C:\Users\user\Desktop\KYO\KYO_GitRepos\PhysicsPuzzleSolver\Library\PackageCache\com.unity.modules.tilemap)
+    com.unity.modules.ui@1.0.0 (location: C:\Users\user\Desktop\KYO\KYO_GitRepos\PhysicsPuzzleSolver\Library\PackageCache\com.unity.modules.ui)
+    com.unity.modules.uielements@1.0.0 (location: C:\Users\user\Desktop\KYO\KYO_GitRepos\PhysicsPuzzleSolver\Library\PackageCache\com.unity.modules.uielements)
+    com.unity.modules.umbra@1.0.0 (location: C:\Users\user\Desktop\KYO\KYO_GitRepos\PhysicsPuzzleSolver\Library\PackageCache\com.unity.modules.umbra)
+    com.unity.modules.unityanalytics@1.0.0 (location: C:\Users\user\Desktop\KYO\KYO_GitRepos\PhysicsPuzzleSolver\Library\PackageCache\com.unity.modules.unityanalytics)
+    com.unity.modules.unitywebrequest@1.0.0 (location: C:\Users\user\Desktop\KYO\KYO_GitRepos\PhysicsPuzzleSolver\Library\PackageCache\com.unity.modules.unitywebrequest)
+    com.unity.modules.unitywebrequestassetbundle@1.0.0 (location: C:\Users\user\Desktop\KYO\KYO_GitRepos\PhysicsPuzzleSolver\Library\PackageCache\com.unity.modules.unitywebrequestassetbundle)
+    com.unity.modules.unitywebrequestaudio@1.0.0 (location: C:\Users\user\Desktop\KYO\KYO_GitRepos\PhysicsPuzzleSolver\Library\PackageCache\com.unity.modules.unitywebrequestaudio)
+    com.unity.modules.unitywebrequesttexture@1.0.0 (location: C:\Users\user\Desktop\KYO\KYO_GitRepos\PhysicsPuzzleSolver\Library\PackageCache\com.unity.modules.unitywebrequesttexture)
+    com.unity.modules.unitywebrequestwww@1.0.0 (location: C:\Users\user\Desktop\KYO\KYO_GitRepos\PhysicsPuzzleSolver\Library\PackageCache\com.unity.modules.unitywebrequestwww)
+    com.unity.modules.vectorgraphics@1.0.0 (location: C:\Users\user\Desktop\KYO\KYO_GitRepos\PhysicsPuzzleSolver\Library\PackageCache\com.unity.modules.vectorgraphics)
+    com.unity.modules.vehicles@1.0.0 (location: C:\Users\user\Desktop\KYO\KYO_GitRepos\PhysicsPuzzleSolver\Library\PackageCache\com.unity.modules.vehicles)
+    com.unity.modules.video@1.0.0 (location: C:\Users\user\Desktop\KYO\KYO_GitRepos\PhysicsPuzzleSolver\Library\PackageCache\com.unity.modules.video)
+    com.unity.modules.vr@1.0.0 (location: C:\Users\user\Desktop\KYO\KYO_GitRepos\PhysicsPuzzleSolver\Library\PackageCache\com.unity.modules.vr)
+    com.unity.modules.wind@1.0.0 (location: C:\Users\user\Desktop\KYO\KYO_GitRepos\PhysicsPuzzleSolver\Library\PackageCache\com.unity.modules.wind)
+    com.unity.modules.xr@1.0.0 (location: C:\Users\user\Desktop\KYO\KYO_GitRepos\PhysicsPuzzleSolver\Library\PackageCache\com.unity.modules.xr)
+    com.unity.modules.subsystems@1.0.0 (location: C:\Users\user\Desktop\KYO\KYO_GitRepos\PhysicsPuzzleSolver\Library\PackageCache\com.unity.modules.subsystems)
+    com.unity.modules.hierarchycore@1.0.0 (location: C:\Users\user\Desktop\KYO\KYO_GitRepos\PhysicsPuzzleSolver\Library\PackageCache\com.unity.modules.hierarchycore)
+    com.unity.ext.nunit@2.0.5 (location: C:\Users\user\Desktop\KYO\KYO_GitRepos\PhysicsPuzzleSolver\Library\PackageCache\com.unity.ext.nunit@d8c07649098d)
+    com.unity.render-pipelines.core@17.3.0 (location: C:\Users\user\Desktop\KYO\KYO_GitRepos\PhysicsPuzzleSolver\Library\PackageCache\com.unity.render-pipelines.core@beca2a4be9a2)
+    com.unity.shadergraph@17.3.0 (location: C:\Users\user\Desktop\KYO\KYO_GitRepos\PhysicsPuzzleSolver\Library\PackageCache\com.unity.shadergraph@8453f937f03b)
+    com.unity.render-pipelines.universal-config@17.0.3 (location: C:\Users\user\Desktop\KYO\KYO_GitRepos\PhysicsPuzzleSolver\Library\PackageCache\com.unity.render-pipelines.universal-config@8dc1aab4af1d)
+  Local Tarball packages:
+    com.google.external-dependency-manager@file:C:\Users\user\Desktop\KYO\KYO_GitRepos\PhysicsPuzzleSolver\GooglePackages\com.google.external-dependency-manager-1.2.186.tgz (location: C:\Users\user\Desktop\KYO\KYO_GitRepos\PhysicsPuzzleSolver\Library\PackageCache\com.google.external-dependency-manager@f377d09ccd8e)
+    com.google.firebase.app@file:C:\Users\user\Desktop\KYO\KYO_GitRepos\PhysicsPuzzleSolver\GooglePackages\com.google.firebase.app-13.15.0.tgz (location: C:\Users\user\Desktop\KYO\KYO_GitRepos\PhysicsPuzzleSolver\Library\PackageCache\com.google.firebase.app@f37c8a4637b5)
+    com.google.firebase.auth@file:C:\Users\user\Desktop\KYO\KYO_GitRepos\PhysicsPuzzleSolver\GooglePackages\com.google.firebase.auth-13.15.0.tgz (location: C:\Users\user\Desktop\KYO\KYO_GitRepos\PhysicsPuzzleSolver\Library\PackageCache\com.google.firebase.auth@8b3ec30d049e)
+    com.google.firebase.firestore@file:C:\Users\user\Desktop\KYO\KYO_GitRepos\PhysicsPuzzleSolver\GooglePackages\com.google.firebase.firestore-13.15.0.tgz (location: C:\Users\user\Desktop\KYO\KYO_GitRepos\PhysicsPuzzleSolver\Library\PackageCache\com.google.firebase.firestore@7abed12b4f31)
+[Subsystems] No new subsystems found in resolved package list.
+[Package Manager] Done registering packages in 0.02 seconds
+[ScriptCompilation] Requested script compilation because: Assetdatabase observed changes in script compilation related files
+Starting: C:\Program Files\Unity\Hub\Editor\6000.3.13f1\Editor\Data\Tools\BuildPipeline\bee_backend.exe --ipc --defer-dag-verification --dagfile="Library/Bee/1300b0aE.dag" --continue-on-failure --profile="Library/Bee/backend1.traceevents" ScriptAssemblies
+WorkingDir: C:/Users/user/Desktop/KYO/KYO_GitRepos/PhysicsPuzzleSolver
+DisplayProgressbar: Compiling Scripts
+ExitCode: 0 Duration: 1s516ms
+[ 932/1219  0s] ILPP-Configuration Library/ilpp-configuration.nevergeneratedoutput
+[1215/1219  1s] Csc Library/Bee/artifacts/1300b0aE.dag/PPS.Solver.Batch.dll (+2 others)
+[1216/1219  0s] ILPostProcess Library/Bee/artifacts/1300b0aE.dag/post-processed/PPS.Solver.Batch.dll (+pdb)
+Processing assembly Library/Bee/artifacts/1300b0aE.dag/PPS.Solver.Batch.dll, with 145 defines and 308 references
+
+processors: Unity.Jobs.CodeGen.JobsILPostProcessor, zzzUnity.Burst.CodeGen.BurstILPostProcessor
+
+running Unity.Jobs.CodeGen.JobsILPostProcessor
+
+running zzzUnity.Burst.CodeGen.BurstILPostProcessor
+[1217/1219  0s] CopyFiles Library/ScriptAssemblies/PPS.Solver.Batch.dll
+[1218/1219  0s] CopyFiles Library/ScriptAssemblies/PPS.Solver.Batch.pdb
+*** Tundra build success (1.48 seconds), 5 items updated, 1219 evaluated
+AssetDatabase: script compilation time: 1.905439s
+Begin MonoManager ReloadAssembly
+- Loaded All Assemblies, in  1.068 seconds
+Refreshing native plugins compatible for Editor in 5.02 ms, found 7 plugins.
+Native extension for Android target not found
+Native extension for WindowsStandalone target not found
+Native extension for WebGL target not found
+Refreshing native plugins compatible for Editor in 4.28 ms, found 7 plugins.
+Generated Firebase Android Resources file Assets\Plugins\Android\FirebaseApp.androidlib\res\values\google-services.xml from C:/Users/user/Desktop/KYO/KYO_GitRepos/PhysicsPuzzleSolver/Assets\..\Assets/google-services.json
+	
+Executed "C:\Users\user\Desktop\KYO\KYO_GitRepos\PhysicsPuzzleSolver\Library\PackageCache\com.google.firebase.app@f37c8a4637b5\Firebase\Editor\generate_xml_from_google_services_json.exe" -i "C:/Users/user/Desktop/KYO/KYO_GitRepos/PhysicsPuzzleSolver/Assets\..\Assets/google-services.json" -o "C:/Users/user/Desktop/KYO/KYO_GitRepos/PhysicsPuzzleSolver/Assets\..\Assets\Plugins\Android\FirebaseApp.androidlib\res\values\google-services.xml" -p "com.Supersolver.YummyDrawer"
+UnityEngine.Debug:ExtractStackTraceNoAlloc (byte*,int,string)
+UnityEngine.StackTraceUtility:ExtractStackTrace ()
+UnityEngine.DebugLogHandler:Internal_Log (UnityEngine.LogType,UnityEngine.LogOption,string,UnityEngine.Object)
+UnityEngine.DebugLogHandler:LogFormat (UnityEngine.LogType,UnityEngine.Object,string,object[])
+UnityEngine.Logger:Log (UnityEngine.LogType,object)
+UnityEngine.Debug:Log (object)
+Firebase.Editor.GenerateXmlFromGoogleServicesJson:RunResourceGenerator (System.Collections.Generic.IEnumerable`1<string>,string,bool) (at /Users/runner/work/firebase-unity-sdk/firebase-unity-sdk/editor/app/src/GenerateXmlFromGoogleServicesJson.cs:538)
+Firebase.Editor.GenerateXmlFromGoogleServicesJson:GenerateXmlResources (string,bool) (at /Users/runner/work/firebase-unity-sdk/firebase-unity-sdk/editor/app/src/GenerateXmlFromGoogleServicesJson.cs:588)
+Firebase.Editor.GenerateXmlFromGoogleServicesJson:UpdateJson (bool,Firebase.Editor.GenerateXmlFromGoogleServicesJson/LogMessage,Firebase.Editor.GenerateXmlFromGoogleServicesJson/LogMessage) (at /Users/runner/work/firebase-unity-sdk/firebase-unity-sdk/editor/app/src/GenerateXmlFromGoogleServicesJson.cs:165)
+Firebase.Editor.GenerateXmlFromGoogleServicesJson:UpdateJsonWithBundleIdChooserDialog (string,bool) (at /Users/runner/work/firebase-unity-sdk/firebase-unity-sdk/editor/app/src/GenerateXmlFromGoogleServicesJson.cs:481)
+Firebase.Editor.GenerateXmlFromGoogleServicesJson:CheckConfiguration () (at /Users/runner/work/firebase-unity-sdk/firebase-unity-sdk/editor/app/src/GenerateXmlFromGoogleServicesJson.cs:254)
+Firebase.Editor.GenerateXmlFromGoogleServicesJson/<>c:<.cctor>b__15_1 () (at /Users/runner/work/firebase-unity-sdk/firebase-unity-sdk/editor/app/src/GenerateXmlFromGoogleServicesJson.cs:103)
+Google.EditorInitializer/<>c__DisplayClass0_0:<InitializeOnMainThread>b__0 () (at /Users/amaurice/Documents/GitHub/unity-jar-resolver/source/VersionHandlerImpl/src/EditorInitializer.cs:60)
+Google.RunOnMainThread:ExecutePollingJobs () (at /Users/amaurice/Documents/GitHub/unity-jar-resolver/source/VersionHandlerImpl/src/RunOnMainThread.cs:409)
+Google.RunOnMainThread/<>c:<ExecuteAllUnnested>b__28_0 () (at /Users/amaurice/Documents/GitHub/unity-jar-resolver/source/VersionHandlerImpl/src/RunOnMainThread.cs:541)
+Google.RunOnMainThread:RunAction (System.Action) (at /Users/amaurice/Documents/GitHub/unity-jar-resolver/source/VersionHandlerImpl/src/RunOnMainThread.cs:343)
+Google.RunOnMainThread:ExecuteAllUnnested (bool) (at /Users/amaurice/Documents/GitHub/unity-jar-resolver/source/VersionHandlerImpl/src/RunOnMainThread.cs:530)
+Google.RunOnMainThread/<>c:<PollOnUpdateUntilComplete>b__20_0 () (at /Users/amaurice/Documents/GitHub/unity-jar-resolver/source/VersionHandlerImpl/src/RunOnMainThread.cs:365)
+Google.RunOnMainThread:RunAction (System.Action) (at /Users/amaurice/Documents/GitHub/unity-jar-resolver/source/VersionHandlerImpl/src/RunOnMainThread.cs:343)
+Google.RunOnMainThread:PollOnUpdateUntilComplete (System.Func`1<bool>,bool) (at /Users/amaurice/Documents/GitHub/unity-jar-resolver/source/VersionHandlerImpl/src/RunOnMainThread.cs:363)
+Google.EditorInitializer:InitializeOnMainThread (System.Func`1<bool>,System.Func`1<bool>,string,Google.Logger) (at /Users/amaurice/Documents/GitHub/unity-jar-resolver/source/VersionHandlerImpl/src/EditorInitializer.cs:48)
+Firebase.Editor.GenerateXmlFromGoogleServicesJson:.cctor () (at /Users/runner/work/firebase-unity-sdk/firebase-unity-sdk/editor/app/src/GenerateXmlFromGoogleServicesJson.cs:98)
+System.Runtime.CompilerServices.RuntimeHelpers:RunClassConstructor (System.RuntimeTypeHandle)
+UnityEditor.EditorAssemblies:ProcessInitializeOnLoadAttributes (System.Type[])
+
+(Filename: /Users/runner/work/firebase-unity-sdk/firebase-unity-sdk/editor/app/src/GenerateXmlFromGoogleServicesJson.cs Line: 538)
+
+Mono: successfully reloaded assembly
+- Finished resetting the current domain, in  4.373 seconds
+Domain Reload Profiling: 5436ms
+	BeginReloadAssembly (304ms)
+		ExecutionOrderSort (0ms)
+		DisableScriptedObjects (25ms)
+		BackupInstance (0ms)
+		ReleaseScriptingObjects (0ms)
+		CreateAndSetChildDomain (142ms)
+	RebuildCommonClasses (32ms)
+	RebuildNativeTypeToScriptingClass (11ms)
+	initialDomainReloadingComplete (33ms)
+	LoadAllAssembliesAndSetupDomain (683ms)
+		LoadAssemblies (484ms)
+		RebuildTransferFunctionScriptingTraits (0ms)
+		AnalyzeDomain (295ms)
+			TypeCache.Refresh (204ms)
+				TypeCache.ScanAssembly (190ms)
+			BuildScriptInfoCaches (76ms)
+			ResolveRequiredComponents (11ms)
+	FinalizeReload (4373ms)
+		ReleaseScriptCaches (0ms)
+		RebuildScriptCaches (0ms)
+		SetupLoadedEditorAssemblies (4148ms)
+			LogAssemblyErrors (0ms)
+			InitializePlatformSupportModulesInManaged (34ms)
+			SetLoadedEditorAssemblies (5ms)
+			BeforeProcessingInitializeOnLoad (168ms)
+			ProcessInitializeOnLoadAttributes (3795ms)
+			ProcessInitializeOnLoadMethodAttributes (140ms)
+			AfterProcessingInitializeOnLoad (5ms)
+			EditorAssembliesLoaded (0ms)
+		ExecutionOrderSort2 (0ms)
+		AwakeInstancesAfterBackupRestoration (17ms)
+Refreshing native plugins compatible for Editor in 4.38 ms, found 7 plugins.
+Preloading 0 native plugins for Editor in 0.00 ms.
+Asset Pipeline Refresh (id=cd0d8cb26c1096a4b8b1783bae4abab9): Total: 8.794 seconds - Initiated by InitialRefreshV2(ForceSynchronousImport)
+	Summary:
+		Imports: total=0 (actual=0, local cache=0, cache server=0)
+		Asset DB Process Time: managed=0 ms, native=5101 ms
+		Asset DB Callback time: managed=590 ms, native=61 ms
+		Scripting: domain reloads=1, domain reload time=1069 ms, compile time=1907 ms, other=64 ms
+		Project Asset Count: scripts=1751, non-scripts=6951
+		Asset File Changes: new=0, changed=1, moved=0, deleted=0
+		Scan Filter Count: 0
+	InvokeCustomDependenciesCallbacks: 0.002ms
+	InvokePackagesCallback: 200.640ms
+	ApplyChangesToAssetFolders: 0.707ms
+	Scan: 140.190ms
+	OnSourceAssetsModified: 0.911ms
+	CategorizeAssetsWithTransientArtifact: 67.709ms
+	ProcessAssetsWithTransientArtifactChanges: 86.459ms
+	CategorizeAssets: 106.282ms
+	ImportOutOfDateAssets: 4393.361ms (2482.262ms without children)
+		CompileScripts: 1907.094ms
+		ReloadNativeAssets: 0.067ms
+		UnloadImportedAssets: 2.025ms
+		EnsureUptoDateAssetsAreRegisteredWithGuidPM: 1.295ms
+		InitializingProgressBar: 0.000ms
+		PostProcessAllAssetNotificationsAddChangedAssets: 0.000ms
+		OnDemandSchedulerStart: 0.617ms
+	PostProcessAllAssets: 592.690ms
+	Hotreload: 6.627ms
+	GatherAllCurrentPrimaryArtifactRevisions: 0.002ms
+	UnloadStreamsBegin: 2.168ms
+	PersistCurrentRevisions: 0.230ms
+	UnloadStreamsEnd: 0.001ms
+	GenerateScriptTypeHashes: 4.328ms
+	Untracked: 3195.823ms
+
+Application.AssetDatabase Initial Refresh End
+Scanning for USB devices : 39.384ms
+Initializing Unity extensions:
+Unloading 19 Unused Serialized files (Serialized files now loaded: 0)
+Unloading 7695 unused Assets / (3.7 MB). Loaded Objects now: 8513.
+Memory consumption went from 219.7 MB to 216.0 MB.
+Total: 11.612800 ms (FindLiveObjects: 0.764400 ms CreateObjectMapping: 0.863300 ms MarkObjects: 7.623500 ms  DeleteObjects: 2.360800 ms)
+
+Unloading 2 Unused Serialized files (Serialized files now loaded: 0)
+Unloading 1 unused Assets / (4.9 KB). Loaded Objects now: 8515.
+Memory consumption went from 207.3 MB to 207.3 MB.
+Total: 7.733600 ms (FindLiveObjects: 0.339100 ms CreateObjectMapping: 0.326900 ms MarkObjects: 7.049600 ms  DeleteObjects: 0.017300 ms)
+
+Microsoft Media Foundation video decoding to texture disabled: graphics device is Null, only Direct3D 11 and Direct3D 12 (only on desktop) are supported for hardware-accelerated video decoding.
+[Project] Loading completed in 14.095 seconds
+	Project init time: 				12.549 seconds
+		Template init time: 		0.000 seconds
+		Package Manager init time: 		1.883 seconds
+		Asset Database init time: 		0.392 seconds
+		Global illumination init time: 	0.002 seconds
+		Assemblies load time: 			0.789 seconds
+		Unity extensions init time: 	0.011 seconds
+		Asset Database refresh time: 	8.794 seconds
+	Scene opening time: 			1.435 seconds
+##utp:{"type":"ProjectInfo","version":2,"phase":"Immediate","time":1789707173623,"processId":13040,"projectLoad":14.0952719,"projectInit":12.5489676,"templateInit":0.0,"packageManagerInit":1.8832468,"assetDatabaseInit":0.3921918,"globalIlluminationInit":0.0022799,"assembliesLoad":0.7890281,"unityExtensionsInit":0.0108261,"assetDatabaseRefresh":8.7939222,"sceneOpening":1.434658}
+##utp:{"type":"EditorInfo","version":2,"phase":"Immediate","time":1789707173623,"processId":13040,"editorVersion":"6000.3.13f1 (8c4f11e4fb20)","branch":"6000.3/staging","buildType":"Release","platform":"Windows"}
+Reloading assemblies for play mode.
+Reloading assemblies after forced synchronous recompile.
+Begin MonoManager ReloadAssembly
+- Loaded All Assemblies, in  0.885 seconds
+Refreshing native plugins compatible for Editor in 4.48 ms, found 7 plugins.
+Native extension for Android target not found
+Native extension for WindowsStandalone target not found
+Native extension for WebGL target not found
+ScheduleIndexationOnStartup MainProcess:True IndexOnStartup:True
+Mono: successfully reloaded assembly
+- Finished resetting the current domain, in  1.185 seconds
+Domain Reload Profiling: 2068ms
+	BeginReloadAssembly (547ms)
+		ExecutionOrderSort (0ms)
+		DisableScriptedObjects (32ms)
+		BackupInstance (0ms)
+		ReleaseScriptingObjects (0ms)
+		CreateAndSetChildDomain (374ms)
+	RebuildCommonClasses (32ms)
+	RebuildNativeTypeToScriptingClass (12ms)
+	initialDomainReloadingComplete (32ms)
+	LoadAllAssembliesAndSetupDomain (260ms)
+		LoadAssemblies (153ms)
+		RebuildTransferFunctionScriptingTraits (0ms)
+		AnalyzeDomain (197ms)
+			TypeCache.Refresh (6ms)
+				TypeCache.ScanAssembly (0ms)
+			BuildScriptInfoCaches (175ms)
+			ResolveRequiredComponents (11ms)
+	FinalizeReload (1186ms)
+		ReleaseScriptCaches (0ms)
+		RebuildScriptCaches (0ms)
+		SetupLoadedEditorAssemblies (887ms)
+			LogAssemblyErrors (0ms)
+			InitializePlatformSupportModulesInManaged (34ms)
+			SetLoadedEditorAssemblies (4ms)
+			BeforeProcessingInitializeOnLoad (162ms)
+			ProcessInitializeOnLoadAttributes (609ms)
+			ProcessInitializeOnLoadMethodAttributes (73ms)
+			AfterProcessingInitializeOnLoad (5ms)
+			EditorAssembliesLoaded (0ms)
+		ExecutionOrderSort2 (0ms)
+		AwakeInstancesAfterBackupRestoration (24ms)
+Asset Pipeline Refresh (id=6cc54aa910a77de49bfe50340ecedfdd): Total: 2.392 seconds - Initiated by StopAssetImportingV2(ForceSynchronousImport | ForceDomainReload)
+	Summary:
+		Imports: total=0 (actual=0, local cache=0, cache server=0)
+		Asset DB Process Time: managed=0 ms, native=1433 ms
+		Asset DB Callback time: managed=24 ms, native=27 ms
+		Scripting: domain reloads=1, domain reload time=905 ms, compile time=1 ms, other=0 ms
+		Project Asset Count: scripts=1751, non-scripts=6951
+		Asset File Changes: new=0, changed=0, moved=0, deleted=0
+		Scan Filter Count: 0
+	InvokeCustomDependenciesCallbacks: 0.001ms
+	InvokePackagesCallback: 133.810ms
+	ApplyChangesToAssetFolders: 0.374ms
+	Scan: 0.001ms
+	OnSourceAssetsModified: 0.002ms
+	CategorizeAssetsWithTransientArtifact: 0.002ms
+	ProcessAssetsWithTransientArtifactChanges: 5.569ms
+	CategorizeAssets: 82.586ms
+	ImportOutOfDateAssets: 1203.221ms (1197.229ms without children)
+		CompileScripts: 1.262ms
+		CollectScriptTypesHashes: 1.744ms
+		ReloadNativeAssets: 1.216ms
+		UnloadImportedAssets: 0.388ms
+		EnsureUptoDateAssetsAreRegisteredWithGuidPM: 1.028ms
+		InitializingProgressBar: 0.000ms
+		PostProcessAllAssetNotificationsAddChangedAssets: 0.000ms
+		OnDemandSchedulerStart: 0.354ms
+	PostProcessAllAssets: 24.308ms
+	GatherAllCurrentPrimaryArtifactRevisions: 0.344ms
+	UnloadStreamsBegin: 0.054ms
+	PersistCurrentRevisions: 0.199ms
+	UnloadStreamsEnd: 0.001ms
+	GenerateScriptTypeHashes: 5.592ms
+	Untracked: 941.504ms
+
+Loaded scene 'Temp/__Backupscenes/0.backup'
+	Deserialize:            0.279 ms
+	Integration:            367.802 ms
+	Integration of assets:  0.001 ms
+	Thread Wait Time:       0.005 ms
+	Total Operation Time:   368.087 ms
+[MODES] ModeService[none].Initialize
+[MODES] ModeService[none].LoadModes
+[SolverBatch] 레벨 1개, 프리셋 532개 — C:\Users\user\Desktop\KYO\KYO_GitRepos\PhysicsPuzzleSolver\SolverReports\json\Stage01.json
+UnityEngine.Debug:ExtractStackTraceNoAlloc (byte*,int,string)
+UnityEngine.StackTraceUtility:ExtractStackTrace ()
+UnityEngine.DebugLogHandler:Internal_Log (UnityEngine.LogType,UnityEngine.LogOption,string,UnityEngine.Object)
+UnityEngine.DebugLogHandler:LogFormat (UnityEngine.LogType,UnityEngine.Object,string,object[])
+UnityEngine.Logger:Log (UnityEngine.LogType,object)
+UnityEngine.Debug:Log (object)
+PPS.Solver.Batch.SolverBatch:Begin () (at Assets/_Project/Scripts/Solver/Batch/SolverBatch.cs:161)
+PPS.Solver.Batch.SolverBatch:WaitForPlay () (at Assets/_Project/Scripts/Solver/Batch/SolverBatch.cs:96)
+UnityEditor.EditorApplication:Internal_CallUpdateFunctions ()
+
+(Filename: Assets/_Project/Scripts/Solver/Batch/SolverBatch.cs Line: 161)
+
+Start Indexing on Editor startup
+[Indexing] Starting Initial Indexing for Assets
+Created GICache directory at C:/Users/user/AppData/LocalLow/Unity/Caches/GiCache. Took: 0.014s, timestamps: [16.907 - 16.921]
+[Licensing::Client] Successfully resolved entitlement details
+[Licensing::Client] Successfully resolved entitlement details
+[SolverBatch] [1/1] Stage01 — Corridor 로 풀림 (202회 시도) (1.9초)
+UnityEngine.Debug:ExtractStackTraceNoAlloc (byte*,int,string)
+UnityEngine.StackTraceUtility:ExtractStackTrace ()
+UnityEngine.DebugLogHandler:Internal_Log (UnityEngine.LogType,UnityEngine.LogOption,string,UnityEngine.Object)
+UnityEngine.DebugLogHandler:LogFormat (UnityEngine.LogType,UnityEngine.Object,string,object[])
+UnityEngine.Logger:Log (UnityEngine.LogType,object)
+UnityEngine.Debug:Log (object)
+PPS.Solver.Batch.SolverBatch:FinishStage () (at Assets/_Project/Scripts/Solver/Batch/SolverBatch.cs:273)
+PPS.Solver.Batch.SolverBatch:Tick () (at Assets/_Project/Scripts/Solver/Batch/SolverBatch.cs:214)
+UnityEditor.EditorApplication:Internal_CallUpdateFunctions ()
+
+(Filename: Assets/_Project/Scripts/Solver/Batch/SolverBatch.cs Line: 273)
+
+[SolverBatch] 끝 — 2.0초, C:\Users\user\Desktop\KYO\KYO_GitRepos\PhysicsPuzzleSolver\SolverReports\json\Stage01.json
+UnityEngine.Debug:ExtractStackTraceNoAlloc (byte*,int,string)
+UnityEngine.StackTraceUtility:ExtractStackTrace ()
+UnityEngine.DebugLogHandler:Internal_Log (UnityEngine.LogType,UnityEngine.LogOption,string,UnityEngine.Object)
+UnityEngine.DebugLogHandler:LogFormat (UnityEngine.LogType,UnityEngine.Object,string,object[])
+UnityEngine.Logger:Log (UnityEngine.LogType,object)
+UnityEngine.Debug:Log (object)
+PPS.Solver.Batch.SolverBatch:Finish () (at Assets/_Project/Scripts/Solver/Batch/SolverBatch.cs:287)
+PPS.Solver.Batch.SolverBatch:Tick () (at Assets/_Project/Scripts/Solver/Batch/SolverBatch.cs:217)
+UnityEditor.EditorApplication:Internal_CallUpdateFunctions ()
+
+(Filename: Assets/_Project/Scripts/Solver/Batch/SolverBatch.cs Line: 287)
+
+Killing ADB server in 2.0850434 seconds.
+[Physics::Module] Cleanup current backend.
+[Physics::Module] Id: 0xf2b8ea05
+Input System module state changed to: ShutdownInProgress.
+Input System polling thread exited.
+Input System module state changed to: Shutdown.
+[Licensing::IpcConnector] LicenseClient-user-6000.3.13-notifications channel disconnected successfully.
+[Licensing::IpcConnector] LicenseClient-user-6000.3.13 channel disconnected successfully.
+AcceleratorClientConnectionCallback - disconnected - :0
+Cleanup mono
+Checking for leaked weakptr:
+  Found no leaked weakptrs.
+[Package Manager] Server process was shutdown
+##utp:{"type":"MemoryLeaks","version":2,"phase":"Immediate","time":1789707181993,"processId":13040,"allocatedMemory":19455284,"memoryLabels":[{"Default":29313},{"Permanent":15236},{"NewDelete":68483},{"Thread":4230344},{"Manager":33085},{"VertexData":8},{"Geometry":816},{"Texture":296},{"Shader":79381},{"Material":24},{"GfxDevice":55265},{"Animation":392},{"Audio":2664},{"FreeType":8},{"FontEngine":736},{"Physics":2090},{"Physics2D":16},{"Serialization":464},{"Input":14984},{"JobScheduler":33024},{"TextLib":216},{"Mono":32},{"MonoCode":64},{"ScriptingNativeRuntime":155060},{"BaseObject":1620400},{"Resource":1336},{"Renderer":3000},{"Transform":4685},{"File":45071},{"WebCam":616},{"Culling":32},{"Terrain":11394},{"Wind":24},{"STL":40},{"String":21510},{"DynamicArray":126360},{"HashMap":80621},{"Utility":2660278},{"Curl":2498},{"PoolAlloc":2152},{"AI":80},{"TypeTree":16261},{"ScriptManager":512},{"RuntimeInitializeOnLoadManager":64},{"SpriteAtlas":112},{"GI":7792},{"Director":8240},{"CloudService":9504},{"WebRequest":808},{"VR":47994},{"SceneManager":504},{"Video":64},{"LazyScriptCache":32},{"Camera":17},{"Secure":2113},{"SerializationCache":1576},{"APIUpdating":10320},{"Subsystems":336},{"VirtualTexturing":57888},{"StaticSafetyDebugInfo":278528},{"Analytics":384},{"Hierarchy":608},{"CoreStats":13032},{"Identifiers":12960},{"Gui":96},{"EditorUtility":123309},{"VersionControl":4},{"Undo":947},{"AssetDatabase":9514136},{"EditorGi":328},{"UnityConnect":29232},{"Upm":1896},{"AssetCompliance":64},{"DrivenProperties":72},{"LocalIPC":210},{"ProfilerEditor":9746},{"CoreBusinessMetrics":2873},{"Licensing":664},{"AssetReference":32},{"IPCStream":32}]}
