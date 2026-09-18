@@ -1,0 +1,3285 @@
+{
+    "generatedAt": "2026-09-18T13:52:56",
+    "levelFolder": "_Project/Levels",
+    "stageFilter": "Stage01",
+    "presetCount": 532,
+    "unreadable": [],
+    "stages": [
+        {
+            "stageId": "Stage01",
+            "seed": 0,
+            "deviceCount": 0,
+            "cleared": true,
+            "pass": 1,
+            "passName": "Corridor",
+            "tries": 202,
+            "bestGoalDist": 0.5510250926017761,
+            "seconds": 1.9434678554534913,
+            "solution": {
+                "Strokes": [
+                    {
+                        "Tool": 0,
+                        "Points": [
+                            {
+                                "x": 4.186885833740234,
+                                "y": -5.030989646911621
+                            },
+                            {
+                                "x": -2.7347018718719484,
+                                "y": 5.890597343444824
+                            }
+                        ]
+                    },
+                    {
+                        "Tool": 0,
+                        "Points": [
+                            {
+                                "x": 3.5111589431762697,
+                                "y": -5.459233283996582
+                            },
+                            {
+                                "x": -3.410428762435913,
+                                "y": 5.462353706359863
+                            }
+                        ]
+                    }
+                ],
+                "Pivots": []
+            },
+            "attempts": [
+                {
+                    "index": 0,
+                    "pass": 1,
+                    "passName": "Corridor",
+                    "outcome": "Clear",
+                    "minGoalDist": 0.6181225776672363,
+                    "endStep": 119,
+                    "ink": 25.8603515625,
+                    "area": {
+                        "serializedVersion": "2",
+                        "x": -3.410428762435913,
+                        "y": -5.459233283996582,
+                        "width": 7.597314834594727,
+                        "height": 11.349830627441407
+                    }
+                },
+                {
+                    "index": 1,
+                    "pass": 2,
+                    "passName": "Lever",
+                    "outcome": "Clear",
+                    "minGoalDist": 0.6891046166419983,
+                    "endStep": 173,
+                    "ink": 2.659998893737793,
+                    "area": {
+                        "serializedVersion": "2",
+                        "x": -3.0725650787353517,
+                        "y": 5.426476001739502,
+                        "width": 1.0,
+                        "height": 1.359999656677246
+                    }
+                },
+                {
+                    "index": 2,
+                    "pass": 2,
+                    "passName": "Lever",
+                    "outcome": "Clear",
+                    "minGoalDist": 0.6082837581634522,
+                    "endStep": 228,
+                    "ink": 2.6599998474121095,
+                    "area": {
+                        "serializedVersion": "2",
+                        "x": -3.17256498336792,
+                        "y": 5.426476001739502,
+                        "width": 1.0,
+                        "height": 4.360000133514404
+                    }
+                },
+                {
+                    "index": 3,
+                    "pass": 2,
+                    "passName": "Lever",
+                    "outcome": "Clear",
+                    "minGoalDist": 0.6877722144126892,
+                    "endStep": 203,
+                    "ink": 2.659998893737793,
+                    "area": {
+                        "serializedVersion": "2",
+                        "x": -3.17256498336792,
+                        "y": 5.426476001739502,
+                        "width": 1.0,
+                        "height": 2.359999656677246
+                    }
+                },
+                {
+                    "index": 4,
+                    "pass": 2,
+                    "passName": "Lever",
+                    "outcome": "Clear",
+                    "minGoalDist": 0.7474397420883179,
+                    "endStep": 244,
+                    "ink": 2.659998893737793,
+                    "area": {
+                        "serializedVersion": "2",
+                        "x": -3.17256498336792,
+                        "y": 5.426476001739502,
+                        "width": 1.0,
+                        "height": 1.359999656677246
+                    }
+                },
+                {
+                    "index": 5,
+                    "pass": 2,
+                    "passName": "Lever",
+                    "outcome": "Clear",
+                    "minGoalDist": 0.605913519859314,
+                    "endStep": 184,
+                    "ink": 2.659998893737793,
+                    "area": {
+                        "serializedVersion": "2",
+                        "x": -3.0725650787353517,
+                        "y": 5.426476001739502,
+                        "width": 1.0,
+                        "height": 2.359999656677246
+                    }
+                },
+                {
+                    "index": 6,
+                    "pass": 2,
+                    "passName": "Lever",
+                    "outcome": "Clear",
+                    "minGoalDist": 0.7227218151092529,
+                    "endStep": 174,
+                    "ink": 2.659998893737793,
+                    "area": {
+                        "serializedVersion": "2",
+                        "x": -3.0725650787353517,
+                        "y": 5.426476001739502,
+                        "width": 1.0,
+                        "height": 1.359999656677246
+                    }
+                },
+                {
+                    "index": 7,
+                    "pass": 2,
+                    "passName": "Lever",
+                    "outcome": "Clear",
+                    "minGoalDist": 0.6412951946258545,
+                    "endStep": 189,
+                    "ink": 4.460000038146973,
+                    "area": {
+                        "serializedVersion": "2",
+                        "x": -3.0725650787353517,
+                        "y": 5.426476001739502,
+                        "width": 2.0,
+                        "height": 1.359999656677246
+                    }
+                },
+                {
+                    "index": 8,
+                    "pass": 2,
+                    "passName": "Lever",
+                    "outcome": "Clear",
+                    "minGoalDist": 0.6976223587989807,
+                    "endStep": 184,
+                    "ink": 4.460000038146973,
+                    "area": {
+                        "serializedVersion": "2",
+                        "x": -3.0725650787353517,
+                        "y": 5.426476001739502,
+                        "width": 2.0,
+                        "height": 2.359999656677246
+                    }
+                },
+                {
+                    "index": 9,
+                    "pass": 2,
+                    "passName": "Lever",
+                    "outcome": "Clear",
+                    "minGoalDist": 0.6440097093582153,
+                    "endStep": 164,
+                    "ink": 4.460000991821289,
+                    "area": {
+                        "serializedVersion": "2",
+                        "x": -3.0725650787353517,
+                        "y": 5.426476001739502,
+                        "width": 2.0,
+                        "height": 4.360000133514404
+                    }
+                },
+                {
+                    "index": 10,
+                    "pass": 2,
+                    "passName": "Lever",
+                    "outcome": "Clear",
+                    "minGoalDist": 0.5940468311309815,
+                    "endStep": 203,
+                    "ink": 4.460000038146973,
+                    "area": {
+                        "serializedVersion": "2",
+                        "x": -3.2725651264190676,
+                        "y": 5.426476001739502,
+                        "width": 2.0,
+                        "height": 1.359999656677246
+                    }
+                },
+                {
+                    "index": 11,
+                    "pass": 2,
+                    "passName": "Lever",
+                    "outcome": "Clear",
+                    "minGoalDist": 0.6463354825973511,
+                    "endStep": 149,
+                    "ink": 4.460000038146973,
+                    "area": {
+                        "serializedVersion": "2",
+                        "x": -3.2725651264190676,
+                        "y": 5.426476001739502,
+                        "width": 2.0,
+                        "height": 1.359999656677246
+                    }
+                },
+                {
+                    "index": 12,
+                    "pass": 2,
+                    "passName": "Lever",
+                    "outcome": "Clear",
+                    "minGoalDist": 0.6843559741973877,
+                    "endStep": 186,
+                    "ink": 4.579998016357422,
+                    "area": {
+                        "serializedVersion": "2",
+                        "x": -3.0725650787353517,
+                        "y": 5.426476001739502,
+                        "width": 1.0,
+                        "height": 2.0799999237060549
+                    }
+                },
+                {
+                    "index": 13,
+                    "pass": 2,
+                    "passName": "Lever",
+                    "outcome": "Clear",
+                    "minGoalDist": 0.6267708539962769,
+                    "endStep": 176,
+                    "ink": 4.579998016357422,
+                    "area": {
+                        "serializedVersion": "2",
+                        "x": -3.0725650787353517,
+                        "y": 5.426476001739502,
+                        "width": 1.0,
+                        "height": 2.0799999237060549
+                    }
+                },
+                {
+                    "index": 14,
+                    "pass": 2,
+                    "passName": "Lever",
+                    "outcome": "Clear",
+                    "minGoalDist": 0.6671652793884277,
+                    "endStep": 181,
+                    "ink": 4.579997539520264,
+                    "area": {
+                        "serializedVersion": "2",
+                        "x": -3.0725650787353517,
+                        "y": 5.426476001739502,
+                        "width": 1.0,
+                        "height": 3.0799994468688967
+                    }
+                },
+                {
+                    "index": 15,
+                    "pass": 2,
+                    "passName": "Lever",
+                    "outcome": "Clear",
+                    "minGoalDist": 0.5915290713310242,
+                    "endStep": 164,
+                    "ink": 4.579998016357422,
+                    "area": {
+                        "serializedVersion": "2",
+                        "x": -3.17256498336792,
+                        "y": 5.426476001739502,
+                        "width": 1.0,
+                        "height": 2.0799999237060549
+                    }
+                },
+                {
+                    "index": 16,
+                    "pass": 2,
+                    "passName": "Lever",
+                    "outcome": "Clear",
+                    "minGoalDist": 0.7060602903366089,
+                    "endStep": 178,
+                    "ink": 4.579997539520264,
+                    "area": {
+                        "serializedVersion": "2",
+                        "x": -3.17256498336792,
+                        "y": 5.426476001739502,
+                        "width": 1.0,
+                        "height": 3.0799994468688967
+                    }
+                },
+                {
+                    "index": 17,
+                    "pass": 2,
+                    "passName": "Lever",
+                    "outcome": "Fail",
+                    "minGoalDist": 9.613341331481934,
+                    "endStep": 157,
+                    "ink": 4.579998016357422,
+                    "area": {
+                        "serializedVersion": "2",
+                        "x": -3.3725650310516359,
+                        "y": 5.426476001739502,
+                        "width": 1.0,
+                        "height": 2.0799999237060549
+                    }
+                },
+                {
+                    "index": 18,
+                    "pass": 3,
+                    "passName": "LeverThenCorridor",
+                    "outcome": "Clear",
+                    "minGoalDist": 0.6447111368179321,
+                    "endStep": 205,
+                    "ink": 18.557113647460939,
+                    "area": {
+                        "serializedVersion": "2",
+                        "x": -4.19451904296875,
+                        "y": -5.465754985809326,
+                        "width": 7.709900379180908,
+                        "height": 12.972230911254883
+                    }
+                },
+                {
+                    "index": 19,
+                    "pass": 2,
+                    "passName": "Lever",
+                    "outcome": "Clear",
+                    "minGoalDist": 0.7488532066345215,
+                    "endStep": 268,
+                    "ink": 4.579998016357422,
+                    "area": {
+                        "serializedVersion": "2",
+                        "x": -3.17256498336792,
+                        "y": 5.426476001739502,
+                        "width": 1.0,
+                        "height": 5.080000400543213
+                    }
+                },
+                {
+                    "index": 20,
+                    "pass": 2,
+                    "passName": "Lever",
+                    "outcome": "Fail",
+                    "minGoalDist": 10.518622398376465,
+                    "endStep": 166,
+                    "ink": 6.259999752044678,
+                    "area": {
+                        "serializedVersion": "2",
+                        "x": -3.3725650310516359,
+                        "y": 5.426476001739502,
+                        "width": 3.0,
+                        "height": 2.359999656677246
+                    }
+                },
+                {
+                    "index": 21,
+                    "pass": 3,
+                    "passName": "LeverThenCorridor",
+                    "outcome": "Fail",
+                    "minGoalDist": 9.85319995880127,
+                    "endStep": 183,
+                    "ink": 20.00046730041504,
+                    "area": {
+                        "serializedVersion": "2",
+                        "x": -4.292204856872559,
+                        "y": -5.472497940063477,
+                        "width": 7.812144756317139,
+                        "height": 13.258974075317383
+                    }
+                },
+                {
+                    "index": 22,
+                    "pass": 2,
+                    "passName": "Lever",
+                    "outcome": "Clear",
+                    "minGoalDist": 0.6724896430969238,
+                    "endStep": 224,
+                    "ink": 6.259999752044678,
+                    "area": {
+                        "serializedVersion": "2",
+                        "x": -3.0725650787353517,
+                        "y": 5.426476001739502,
+                        "width": 3.0,
+                        "height": 2.359999656677246
+                    }
+                },
+                {
+                    "index": 23,
+                    "pass": 2,
+                    "passName": "Lever",
+                    "outcome": "Clear",
+                    "minGoalDist": 0.7354269027709961,
+                    "endStep": 211,
+                    "ink": 6.259999752044678,
+                    "area": {
+                        "serializedVersion": "2",
+                        "x": -3.0725650787353517,
+                        "y": 5.426476001739502,
+                        "width": 3.0,
+                        "height": 1.359999656677246
+                    }
+                },
+                {
+                    "index": 24,
+                    "pass": 2,
+                    "passName": "Lever",
+                    "outcome": "Clear",
+                    "minGoalDist": 0.5929520726203919,
+                    "endStep": 231,
+                    "ink": 6.259999752044678,
+                    "area": {
+                        "serializedVersion": "2",
+                        "x": -3.3725650310516359,
+                        "y": 5.426476001739502,
+                        "width": 3.0,
+                        "height": 1.359999656677246
+                    }
+                },
+                {
+                    "index": 25,
+                    "pass": 2,
+                    "passName": "Lever",
+                    "outcome": "Clear",
+                    "minGoalDist": 0.7203165292739868,
+                    "endStep": 151,
+                    "ink": 6.259999752044678,
+                    "area": {
+                        "serializedVersion": "2",
+                        "x": -3.3725650310516359,
+                        "y": 5.426476001739502,
+                        "width": 3.0,
+                        "height": 1.359999656677246
+                    }
+                },
+                {
+                    "index": 26,
+                    "pass": 2,
+                    "passName": "Lever",
+                    "outcome": "Clear",
+                    "minGoalDist": 0.647499144077301,
+                    "endStep": 221,
+                    "ink": 6.259999752044678,
+                    "area": {
+                        "serializedVersion": "2",
+                        "x": -3.0725650787353517,
+                        "y": 5.426476001739502,
+                        "width": 3.0,
+                        "height": 1.359999656677246
+                    }
+                },
+                {
+                    "index": 27,
+                    "pass": 2,
+                    "passName": "Lever",
+                    "outcome": "Clear",
+                    "minGoalDist": 0.7133935689926148,
+                    "endStep": 164,
+                    "ink": 6.259999752044678,
+                    "area": {
+                        "serializedVersion": "2",
+                        "x": -3.0725650787353517,
+                        "y": 5.426476001739502,
+                        "width": 3.0,
+                        "height": 2.359999656677246
+                    }
+                },
+                {
+                    "index": 28,
+                    "pass": 2,
+                    "passName": "Lever",
+                    "outcome": "Clear",
+                    "minGoalDist": 0.6755799651145935,
+                    "endStep": 164,
+                    "ink": 6.260000705718994,
+                    "area": {
+                        "serializedVersion": "2",
+                        "x": -3.0725650787353517,
+                        "y": 5.426476001739502,
+                        "width": 3.0,
+                        "height": 4.360000133514404
+                    }
+                },
+                {
+                    "index": 29,
+                    "pass": 2,
+                    "passName": "Lever",
+                    "outcome": "Clear",
+                    "minGoalDist": 0.6755799651145935,
+                    "endStep": 164,
+                    "ink": 6.260000705718994,
+                    "area": {
+                        "serializedVersion": "2",
+                        "x": -3.0725650787353517,
+                        "y": 5.426476001739502,
+                        "width": 3.0,
+                        "height": 8.360000610351563
+                    }
+                },
+                {
+                    "index": 30,
+                    "pass": 2,
+                    "passName": "Lever",
+                    "outcome": "Clear",
+                    "minGoalDist": 0.6064907908439636,
+                    "endStep": 167,
+                    "ink": 6.259999752044678,
+                    "area": {
+                        "serializedVersion": "2",
+                        "x": -3.0725650787353517,
+                        "y": 5.426476001739502,
+                        "width": 3.0,
+                        "height": 1.359999656677246
+                    }
+                },
+                {
+                    "index": 31,
+                    "pass": 2,
+                    "passName": "Lever",
+                    "outcome": "Clear",
+                    "minGoalDist": 0.6064907908439636,
+                    "endStep": 167,
+                    "ink": 6.259999752044678,
+                    "area": {
+                        "serializedVersion": "2",
+                        "x": -3.0725650787353517,
+                        "y": 5.426476001739502,
+                        "width": 3.0,
+                        "height": 2.359999656677246
+                    }
+                },
+                {
+                    "index": 32,
+                    "pass": 2,
+                    "passName": "Lever",
+                    "outcome": "Clear",
+                    "minGoalDist": 0.6064907908439636,
+                    "endStep": 167,
+                    "ink": 6.260000705718994,
+                    "area": {
+                        "serializedVersion": "2",
+                        "x": -3.0725650787353517,
+                        "y": 5.426476001739502,
+                        "width": 3.0,
+                        "height": 4.360000133514404
+                    }
+                },
+                {
+                    "index": 33,
+                    "pass": 2,
+                    "passName": "Lever",
+                    "outcome": "Clear",
+                    "minGoalDist": 0.6064907908439636,
+                    "endStep": 167,
+                    "ink": 6.260000705718994,
+                    "area": {
+                        "serializedVersion": "2",
+                        "x": -3.0725650787353517,
+                        "y": 5.426476001739502,
+                        "width": 3.0,
+                        "height": 8.360000610351563
+                    }
+                },
+                {
+                    "index": 34,
+                    "pass": 2,
+                    "passName": "Lever",
+                    "outcome": "Clear",
+                    "minGoalDist": 0.6393420100212097,
+                    "endStep": 212,
+                    "ink": 7.580000400543213,
+                    "area": {
+                        "serializedVersion": "2",
+                        "x": -3.0725650787353517,
+                        "y": 5.426476001739502,
+                        "width": 2.0,
+                        "height": 3.0799994468688967
+                    }
+                },
+                {
+                    "index": 35,
+                    "pass": 2,
+                    "passName": "Lever",
+                    "outcome": "Fail",
+                    "minGoalDist": 10.048176765441895,
+                    "endStep": 168,
+                    "ink": 7.580000400543213,
+                    "area": {
+                        "serializedVersion": "2",
+                        "x": -3.2725651264190676,
+                        "y": 5.426476001739502,
+                        "width": 2.0,
+                        "height": 3.0799994468688967
+                    }
+                },
+                {
+                    "index": 36,
+                    "pass": 2,
+                    "passName": "Lever",
+                    "outcome": "Fail",
+                    "minGoalDist": 10.460037231445313,
+                    "endStep": 159,
+                    "ink": 7.580000877380371,
+                    "area": {
+                        "serializedVersion": "2",
+                        "x": -3.0725650787353517,
+                        "y": 5.426476001739502,
+                        "width": 2.0,
+                        "height": 2.0799999237060549
+                    }
+                },
+                {
+                    "index": 37,
+                    "pass": 2,
+                    "passName": "Lever",
+                    "outcome": "Clear",
+                    "minGoalDist": 0.7453758120536804,
+                    "endStep": 270,
+                    "ink": 7.580000877380371,
+                    "area": {
+                        "serializedVersion": "2",
+                        "x": -3.2725651264190676,
+                        "y": 5.426476001739502,
+                        "width": 2.0,
+                        "height": 2.0799999237060549
+                    }
+                },
+                {
+                    "index": 38,
+                    "pass": 2,
+                    "passName": "Lever",
+                    "outcome": "Clear",
+                    "minGoalDist": 0.7384442090988159,
+                    "endStep": 187,
+                    "ink": 7.580000877380371,
+                    "area": {
+                        "serializedVersion": "2",
+                        "x": -3.0725650787353517,
+                        "y": 5.426476001739502,
+                        "width": 2.0,
+                        "height": 2.0799999237060549
+                    }
+                },
+                {
+                    "index": 39,
+                    "pass": 2,
+                    "passName": "Lever",
+                    "outcome": "Clear",
+                    "minGoalDist": 0.7452637553215027,
+                    "endStep": 164,
+                    "ink": 7.580000877380371,
+                    "area": {
+                        "serializedVersion": "2",
+                        "x": -3.0725650787353517,
+                        "y": 5.426476001739502,
+                        "width": 2.0,
+                        "height": 5.080000400543213
+                    }
+                },
+                {
+                    "index": 40,
+                    "pass": 2,
+                    "passName": "Lever",
+                    "outcome": "Clear",
+                    "minGoalDist": 0.6977143287658691,
+                    "endStep": 147,
+                    "ink": 7.580000877380371,
+                    "area": {
+                        "serializedVersion": "2",
+                        "x": -3.2725651264190676,
+                        "y": 5.426476001739502,
+                        "width": 2.0,
+                        "height": 2.0799999237060549
+                    }
+                },
+                {
+                    "index": 41,
+                    "pass": 2,
+                    "passName": "Lever",
+                    "outcome": "Clear",
+                    "minGoalDist": 0.6828938722610474,
+                    "endStep": 169,
+                    "ink": 7.580000400543213,
+                    "area": {
+                        "serializedVersion": "2",
+                        "x": -3.0725650787353517,
+                        "y": 5.426476001739502,
+                        "width": 2.0,
+                        "height": 3.0799994468688967
+                    }
+                },
+                {
+                    "index": 42,
+                    "pass": 2,
+                    "passName": "Lever",
+                    "outcome": "Clear",
+                    "minGoalDist": 0.7141082882881165,
+                    "endStep": 176,
+                    "ink": 7.779996395111084,
+                    "area": {
+                        "serializedVersion": "2",
+                        "x": -3.0725650787353517,
+                        "y": 5.426476001739502,
+                        "width": 1.0,
+                        "height": 3.2800002098083498
+                    }
+                },
+                {
+                    "index": 43,
+                    "pass": 2,
+                    "passName": "Lever",
+                    "outcome": "Clear",
+                    "minGoalDist": 0.6117792725563049,
+                    "endStep": 181,
+                    "ink": 7.779996395111084,
+                    "area": {
+                        "serializedVersion": "2",
+                        "x": -3.0725650787353517,
+                        "y": 5.426476001739502,
+                        "width": 1.0,
+                        "height": 3.2800002098083498
+                    }
+                },
+                {
+                    "index": 44,
+                    "pass": 2,
+                    "passName": "Lever",
+                    "outcome": "Clear",
+                    "minGoalDist": 0.5927862524986267,
+                    "endStep": 221,
+                    "ink": 7.779996395111084,
+                    "area": {
+                        "serializedVersion": "2",
+                        "x": -3.0725650787353517,
+                        "y": 5.426476001739502,
+                        "width": 1.0,
+                        "height": 4.28000020980835
+                    }
+                },
+                {
+                    "index": 45,
+                    "pass": 2,
+                    "passName": "Lever",
+                    "outcome": "Clear",
+                    "minGoalDist": 0.7419692277908325,
+                    "endStep": 160,
+                    "ink": 7.779996395111084,
+                    "area": {
+                        "serializedVersion": "2",
+                        "x": -3.17256498336792,
+                        "y": 5.426476001739502,
+                        "width": 1.0,
+                        "height": 3.2800002098083498
+                    }
+                },
+                {
+                    "index": 46,
+                    "pass": 2,
+                    "passName": "Lever",
+                    "outcome": "Clear",
+                    "minGoalDist": 0.7163369655609131,
+                    "endStep": 182,
+                    "ink": 7.779996395111084,
+                    "area": {
+                        "serializedVersion": "2",
+                        "x": -3.17256498336792,
+                        "y": 5.426476001739502,
+                        "width": 1.0,
+                        "height": 4.28000020980835
+                    }
+                },
+                {
+                    "index": 47,
+                    "pass": 2,
+                    "passName": "Lever",
+                    "outcome": "Clear",
+                    "minGoalDist": 0.7304027080535889,
+                    "endStep": 242,
+                    "ink": 7.779996871948242,
+                    "area": {
+                        "serializedVersion": "2",
+                        "x": -3.17256498336792,
+                        "y": 5.426476001739502,
+                        "width": 1.0,
+                        "height": 6.28000020980835
+                    }
+                },
+                {
+                    "index": 48,
+                    "pass": 2,
+                    "passName": "Lever",
+                    "outcome": "Clear",
+                    "minGoalDist": 0.6394690275192261,
+                    "endStep": 169,
+                    "ink": 7.779996395111084,
+                    "area": {
+                        "serializedVersion": "2",
+                        "x": -3.0725650787353517,
+                        "y": 5.426476001739502,
+                        "width": 1.0,
+                        "height": 3.2800002098083498
+                    }
+                },
+                {
+                    "index": 49,
+                    "pass": 2,
+                    "passName": "Lever",
+                    "outcome": "Clear",
+                    "minGoalDist": 0.7130924463272095,
+                    "endStep": 196,
+                    "ink": 7.779996395111084,
+                    "area": {
+                        "serializedVersion": "2",
+                        "x": -3.17256498336792,
+                        "y": 5.426476001739502,
+                        "width": 1.0,
+                        "height": 3.2800002098083498
+                    }
+                },
+                {
+                    "index": 50,
+                    "pass": 2,
+                    "passName": "Lever",
+                    "outcome": "Fail",
+                    "minGoalDist": 9.307478904724121,
+                    "endStep": 163,
+                    "ink": 7.779996395111084,
+                    "area": {
+                        "serializedVersion": "2",
+                        "x": -3.3725650310516359,
+                        "y": 5.426476001739502,
+                        "width": 1.0,
+                        "height": 3.2800002098083498
+                    }
+                },
+                {
+                    "index": 51,
+                    "pass": 3,
+                    "passName": "LeverThenCorridor",
+                    "outcome": "Clear",
+                    "minGoalDist": 0.730288028717041,
+                    "endStep": 149,
+                    "ink": 22.070236206054689,
+                    "area": {
+                        "serializedVersion": "2",
+                        "x": -4.1753435134887699,
+                        "y": -5.460284233093262,
+                        "width": 7.687170028686523,
+                        "height": 14.166760444641114
+                    }
+                },
+                {
+                    "index": 52,
+                    "pass": 2,
+                    "passName": "Lever",
+                    "outcome": "Clear",
+                    "minGoalDist": 0.7361000180244446,
+                    "endStep": 166,
+                    "ink": 8.059999465942383,
+                    "area": {
+                        "serializedVersion": "2",
+                        "x": -3.0725650787353517,
+                        "y": 5.426476001739502,
+                        "width": 4.0,
+                        "height": 2.359999656677246
+                    }
+                },
+                {
+                    "index": 53,
+                    "pass": 2,
+                    "passName": "Lever",
+                    "outcome": "Clear",
+                    "minGoalDist": 0.7361000180244446,
+                    "endStep": 166,
+                    "ink": 8.0600004196167,
+                    "area": {
+                        "serializedVersion": "2",
+                        "x": -3.0725650787353517,
+                        "y": 5.426476001739502,
+                        "width": 4.0,
+                        "height": 4.360000133514404
+                    }
+                },
+                {
+                    "index": 54,
+                    "pass": 2,
+                    "passName": "Lever",
+                    "outcome": "Clear",
+                    "minGoalDist": 0.7361000180244446,
+                    "endStep": 166,
+                    "ink": 8.0600004196167,
+                    "area": {
+                        "serializedVersion": "2",
+                        "x": -3.0725650787353517,
+                        "y": 5.426476001739502,
+                        "width": 4.0,
+                        "height": 8.360000610351563
+                    }
+                },
+                {
+                    "index": 55,
+                    "pass": 2,
+                    "passName": "Lever",
+                    "outcome": "Clear",
+                    "minGoalDist": 0.6985771656036377,
+                    "endStep": 248,
+                    "ink": 8.059999465942383,
+                    "area": {
+                        "serializedVersion": "2",
+                        "x": -3.0725650787353517,
+                        "y": 5.426476001739502,
+                        "width": 4.0,
+                        "height": 1.359999656677246
+                    }
+                },
+                {
+                    "index": 56,
+                    "pass": 2,
+                    "passName": "Lever",
+                    "outcome": "Clear",
+                    "minGoalDist": 0.6116136908531189,
+                    "endStep": 170,
+                    "ink": 8.059999465942383,
+                    "area": {
+                        "serializedVersion": "2",
+                        "x": -3.0725650787353517,
+                        "y": 5.426476001739502,
+                        "width": 4.0,
+                        "height": 2.359999656677246
+                    }
+                },
+                {
+                    "index": 57,
+                    "pass": 2,
+                    "passName": "Lever",
+                    "outcome": "Clear",
+                    "minGoalDist": 0.7056092023849487,
+                    "endStep": 170,
+                    "ink": 8.0600004196167,
+                    "area": {
+                        "serializedVersion": "2",
+                        "x": -3.0725650787353517,
+                        "y": 5.426476001739502,
+                        "width": 4.0,
+                        "height": 4.360000133514404
+                    }
+                },
+                {
+                    "index": 58,
+                    "pass": 2,
+                    "passName": "Lever",
+                    "outcome": "Clear",
+                    "minGoalDist": 0.7056092023849487,
+                    "endStep": 170,
+                    "ink": 8.0600004196167,
+                    "area": {
+                        "serializedVersion": "2",
+                        "x": -3.0725650787353517,
+                        "y": 5.426476001739502,
+                        "width": 4.0,
+                        "height": 8.360000610351563
+                    }
+                },
+                {
+                    "index": 59,
+                    "pass": 2,
+                    "passName": "Lever",
+                    "outcome": "Clear",
+                    "minGoalDist": 0.5948596000671387,
+                    "endStep": 155,
+                    "ink": 8.059999465942383,
+                    "area": {
+                        "serializedVersion": "2",
+                        "x": -3.472565174102783,
+                        "y": 5.426476001739502,
+                        "width": 4.0,
+                        "height": 1.359999656677246
+                    }
+                },
+                {
+                    "index": 60,
+                    "pass": 2,
+                    "passName": "Lever",
+                    "outcome": "Clear",
+                    "minGoalDist": 0.6494168043136597,
+                    "endStep": 156,
+                    "ink": 8.059999465942383,
+                    "area": {
+                        "serializedVersion": "2",
+                        "x": -3.472565174102783,
+                        "y": 5.426476001739502,
+                        "width": 4.0,
+                        "height": 2.359999656677246
+                    }
+                },
+                {
+                    "index": 61,
+                    "pass": 2,
+                    "passName": "Lever",
+                    "outcome": "Clear",
+                    "minGoalDist": 0.6494168043136597,
+                    "endStep": 156,
+                    "ink": 8.0600004196167,
+                    "area": {
+                        "serializedVersion": "2",
+                        "x": -3.472565174102783,
+                        "y": 5.426476001739502,
+                        "width": 4.0,
+                        "height": 4.360000133514404
+                    }
+                },
+                {
+                    "index": 62,
+                    "pass": 2,
+                    "passName": "Lever",
+                    "outcome": "Clear",
+                    "minGoalDist": 0.6494168043136597,
+                    "endStep": 156,
+                    "ink": 8.0600004196167,
+                    "area": {
+                        "serializedVersion": "2",
+                        "x": -3.472565174102783,
+                        "y": 5.426476001739502,
+                        "width": 4.0,
+                        "height": 8.360000610351563
+                    }
+                },
+                {
+                    "index": 63,
+                    "pass": 2,
+                    "passName": "Lever",
+                    "outcome": "Clear",
+                    "minGoalDist": 0.6382690668106079,
+                    "endStep": 233,
+                    "ink": 8.059999465942383,
+                    "area": {
+                        "serializedVersion": "2",
+                        "x": -3.0725650787353517,
+                        "y": 5.426476001739502,
+                        "width": 4.0,
+                        "height": 1.359999656677246
+                    }
+                },
+                {
+                    "index": 64,
+                    "pass": 2,
+                    "passName": "Lever",
+                    "outcome": "Clear",
+                    "minGoalDist": 0.6648240685462952,
+                    "endStep": 256,
+                    "ink": 8.059999465942383,
+                    "area": {
+                        "serializedVersion": "2",
+                        "x": -3.0725650787353517,
+                        "y": 5.426476001739502,
+                        "width": 4.0,
+                        "height": 2.359999656677246
+                    }
+                },
+                {
+                    "index": 65,
+                    "pass": 2,
+                    "passName": "Lever",
+                    "outcome": "Clear",
+                    "minGoalDist": 0.7361000180244446,
+                    "endStep": 166,
+                    "ink": 8.059999465942383,
+                    "area": {
+                        "serializedVersion": "2",
+                        "x": -3.0725650787353517,
+                        "y": 5.426476001739502,
+                        "width": 4.0,
+                        "height": 1.359999656677246
+                    }
+                },
+                {
+                    "index": 66,
+                    "pass": 2,
+                    "passName": "Lever",
+                    "outcome": "Clear",
+                    "minGoalDist": 0.5851144194602966,
+                    "endStep": 149,
+                    "ink": 10.579999923706055,
+                    "area": {
+                        "serializedVersion": "2",
+                        "x": -3.3725650310516359,
+                        "y": 5.426476001739502,
+                        "width": 3.0,
+                        "height": 2.0799999237060549
+                    }
+                },
+                {
+                    "index": 67,
+                    "pass": 2,
+                    "passName": "Lever",
+                    "outcome": "Clear",
+                    "minGoalDist": 0.6755799651145935,
+                    "endStep": 164,
+                    "ink": 10.579999923706055,
+                    "area": {
+                        "serializedVersion": "2",
+                        "x": -3.0725650787353517,
+                        "y": 5.426476001739502,
+                        "width": 3.0,
+                        "height": 9.079999923706055
+                    }
+                },
+                {
+                    "index": 68,
+                    "pass": 2,
+                    "passName": "Lever",
+                    "outcome": "Clear",
+                    "minGoalDist": 0.6755799651145935,
+                    "endStep": 164,
+                    "ink": 10.579999923706055,
+                    "area": {
+                        "serializedVersion": "2",
+                        "x": -3.0725650787353517,
+                        "y": 5.426476001739502,
+                        "width": 3.0,
+                        "height": 5.080000400543213
+                    }
+                },
+                {
+                    "index": 69,
+                    "pass": 2,
+                    "passName": "Lever",
+                    "outcome": "Clear",
+                    "minGoalDist": 0.7279030680656433,
+                    "endStep": 163,
+                    "ink": 10.579998970031739,
+                    "area": {
+                        "serializedVersion": "2",
+                        "x": -3.0725650787353517,
+                        "y": 5.426476001739502,
+                        "width": 3.0,
+                        "height": 3.0799994468688967
+                    }
+                },
+                {
+                    "index": 70,
+                    "pass": 2,
+                    "passName": "Lever",
+                    "outcome": "Clear",
+                    "minGoalDist": 0.6985068917274475,
+                    "endStep": 197,
+                    "ink": 10.579999923706055,
+                    "area": {
+                        "serializedVersion": "2",
+                        "x": -3.0725650787353517,
+                        "y": 5.426476001739502,
+                        "width": 3.0,
+                        "height": 2.0799999237060549
+                    }
+                },
+                {
+                    "index": 71,
+                    "pass": 2,
+                    "passName": "Lever",
+                    "outcome": "Clear",
+                    "minGoalDist": 0.6488553285598755,
+                    "endStep": 169,
+                    "ink": 10.579999923706055,
+                    "area": {
+                        "serializedVersion": "2",
+                        "x": -3.0725650787353517,
+                        "y": 5.426476001739502,
+                        "width": 3.0,
+                        "height": 2.0799999237060549
+                    }
+                },
+                {
+                    "index": 72,
+                    "pass": 2,
+                    "passName": "Lever",
+                    "outcome": "Clear",
+                    "minGoalDist": 0.6491532921791077,
+                    "endStep": 197,
+                    "ink": 10.579999923706055,
+                    "area": {
+                        "serializedVersion": "2",
+                        "x": -3.3725650310516359,
+                        "y": 5.426476001739502,
+                        "width": 3.0,
+                        "height": 2.0799999237060549
+                    }
+                },
+                {
+                    "index": 73,
+                    "pass": 2,
+                    "passName": "Lever",
+                    "outcome": "Fail",
+                    "minGoalDist": 11.374573707580567,
+                    "endStep": 187,
+                    "ink": 10.579998970031739,
+                    "area": {
+                        "serializedVersion": "2",
+                        "x": -3.3725650310516359,
+                        "y": 5.426476001739502,
+                        "width": 3.0,
+                        "height": 3.0799994468688967
+                    }
+                },
+                {
+                    "index": 74,
+                    "pass": 3,
+                    "passName": "LeverThenCorridor",
+                    "outcome": "Clear",
+                    "minGoalDist": 0.6811702847480774,
+                    "endStep": 255,
+                    "ink": 25.961509704589845,
+                    "area": {
+                        "serializedVersion": "2",
+                        "x": -4.893515110015869,
+                        "y": -5.463752746582031,
+                        "width": 8.407581329345704,
+                        "height": 13.97022819519043
+                    }
+                },
+                {
+                    "index": 75,
+                    "pass": 2,
+                    "passName": "Lever",
+                    "outcome": "Fail",
+                    "minGoalDist": 11.403304100036621,
+                    "endStep": 165,
+                    "ink": 10.579998970031739,
+                    "area": {
+                        "serializedVersion": "2",
+                        "x": -3.0725650787353517,
+                        "y": 5.426476001739502,
+                        "width": 3.0,
+                        "height": 3.0799994468688967
+                    }
+                },
+                {
+                    "index": 76,
+                    "pass": 3,
+                    "passName": "LeverThenCorridor",
+                    "outcome": "Fail",
+                    "minGoalDist": 11.403304100036621,
+                    "endStep": 165,
+                    "ink": 24.606964111328126,
+                    "area": {
+                        "serializedVersion": "2",
+                        "x": -4.468722343444824,
+                        "y": -5.472497940063477,
+                        "width": 7.988662242889404,
+                        "height": 13.978973388671875
+                    }
+                },
+                {
+                    "index": 77,
+                    "pass": 2,
+                    "passName": "Lever",
+                    "outcome": "Fail",
+                    "minGoalDist": 11.398294448852539,
+                    "endStep": 192,
+                    "ink": 10.579999923706055,
+                    "area": {
+                        "serializedVersion": "2",
+                        "x": -3.3725650310516359,
+                        "y": 5.426476001739502,
+                        "width": 3.0,
+                        "height": 5.080000400543213
+                    }
+                },
+                {
+                    "index": 78,
+                    "pass": 3,
+                    "passName": "LeverThenCorridor",
+                    "outcome": "Fail",
+                    "minGoalDist": 11.115818977355957,
+                    "endStep": 200,
+                    "ink": 24.86408805847168,
+                    "area": {
+                        "serializedVersion": "2",
+                        "x": -4.67948055267334,
+                        "y": -5.472497940063477,
+                        "width": 8.199420928955079,
+                        "height": 15.978974342346192
+                    }
+                },
+                {
+                    "index": 79,
+                    "pass": 2,
+                    "passName": "Lever",
+                    "outcome": "Clear",
+                    "minGoalDist": 0.6688582897186279,
+                    "endStep": 190,
+                    "ink": 10.579999923706055,
+                    "area": {
+                        "serializedVersion": "2",
+                        "x": -3.0725650787353517,
+                        "y": 5.426476001739502,
+                        "width": 3.0,
+                        "height": 2.0799999237060549
+                    }
+                },
+                {
+                    "index": 80,
+                    "pass": 2,
+                    "passName": "Lever",
+                    "outcome": "Clear",
+                    "minGoalDist": 0.6064907908439636,
+                    "endStep": 167,
+                    "ink": 10.579999923706055,
+                    "area": {
+                        "serializedVersion": "2",
+                        "x": -3.0725650787353517,
+                        "y": 5.426476001739502,
+                        "width": 3.0,
+                        "height": 9.079999923706055
+                    }
+                },
+                {
+                    "index": 81,
+                    "pass": 2,
+                    "passName": "Lever",
+                    "outcome": "Clear",
+                    "minGoalDist": 0.6064907908439636,
+                    "endStep": 167,
+                    "ink": 10.579998970031739,
+                    "area": {
+                        "serializedVersion": "2",
+                        "x": -3.0725650787353517,
+                        "y": 5.426476001739502,
+                        "width": 3.0,
+                        "height": 3.0799994468688967
+                    }
+                },
+                {
+                    "index": 82,
+                    "pass": 2,
+                    "passName": "Lever",
+                    "outcome": "Clear",
+                    "minGoalDist": 0.6064907908439636,
+                    "endStep": 167,
+                    "ink": 10.579999923706055,
+                    "area": {
+                        "serializedVersion": "2",
+                        "x": -3.0725650787353517,
+                        "y": 5.426476001739502,
+                        "width": 3.0,
+                        "height": 5.080000400543213
+                    }
+                },
+                {
+                    "index": 83,
+                    "pass": 2,
+                    "passName": "Lever",
+                    "outcome": "Clear",
+                    "minGoalDist": 0.6064907908439636,
+                    "endStep": 167,
+                    "ink": 10.579999923706055,
+                    "area": {
+                        "serializedVersion": "2",
+                        "x": -3.0725650787353517,
+                        "y": 5.426476001739502,
+                        "width": 3.0,
+                        "height": 2.0799999237060549
+                    }
+                },
+                {
+                    "index": 84,
+                    "pass": 2,
+                    "passName": "Lever",
+                    "outcome": "Fail",
+                    "minGoalDist": 9.91296100616455,
+                    "endStep": 154,
+                    "ink": 12.259993553161621,
+                    "area": {
+                        "serializedVersion": "2",
+                        "x": -3.17256498336792,
+                        "y": 5.426476001739502,
+                        "width": 1.0,
+                        "height": 4.9599995613098148
+                    }
+                },
+                {
+                    "index": 85,
+                    "pass": 2,
+                    "passName": "Lever",
+                    "outcome": "Fail",
+                    "minGoalDist": 9.122577667236329,
+                    "endStep": 215,
+                    "ink": 12.259993553161621,
+                    "area": {
+                        "serializedVersion": "2",
+                        "x": -3.0725650787353517,
+                        "y": 5.426476001739502,
+                        "width": 1.0,
+                        "height": 4.9599995613098148
+                    }
+                },
+                {
+                    "index": 86,
+                    "pass": 2,
+                    "passName": "Lever",
+                    "outcome": "Clear",
+                    "minGoalDist": 0.6125563383102417,
+                    "endStep": 248,
+                    "ink": 12.259992599487305,
+                    "area": {
+                        "serializedVersion": "2",
+                        "x": -3.17256498336792,
+                        "y": 5.426476001739502,
+                        "width": 1.0,
+                        "height": 7.9599995613098148
+                    }
+                },
+                {
+                    "index": 87,
+                    "pass": 2,
+                    "passName": "Lever",
+                    "outcome": "Clear",
+                    "minGoalDist": 0.6335288286209106,
+                    "endStep": 209,
+                    "ink": 12.259993553161621,
+                    "area": {
+                        "serializedVersion": "2",
+                        "x": -3.17256498336792,
+                        "y": 5.426476001739502,
+                        "width": 1.0,
+                        "height": 5.9599995613098148
+                    }
+                },
+                {
+                    "index": 88,
+                    "pass": 2,
+                    "passName": "Lever",
+                    "outcome": "Clear",
+                    "minGoalDist": 0.6600821018218994,
+                    "endStep": 164,
+                    "ink": 12.259993553161621,
+                    "area": {
+                        "serializedVersion": "2",
+                        "x": -3.17256498336792,
+                        "y": 5.426476001739502,
+                        "width": 1.0,
+                        "height": 4.9599995613098148
+                    }
+                },
+                {
+                    "index": 89,
+                    "pass": 2,
+                    "passName": "Lever",
+                    "outcome": "Fail",
+                    "minGoalDist": 9.775788307189942,
+                    "endStep": 165,
+                    "ink": 12.259993553161621,
+                    "area": {
+                        "serializedVersion": "2",
+                        "x": -3.3725650310516359,
+                        "y": 5.426476001739502,
+                        "width": 1.0,
+                        "height": 4.9599995613098148
+                    }
+                },
+                {
+                    "index": 90,
+                    "pass": 2,
+                    "passName": "Lever",
+                    "outcome": "Clear",
+                    "minGoalDist": 0.6934956312179565,
+                    "endStep": 182,
+                    "ink": 12.259993553161621,
+                    "area": {
+                        "serializedVersion": "2",
+                        "x": -3.0725650787353517,
+                        "y": 5.426476001739502,
+                        "width": 1.0,
+                        "height": 5.9599995613098148
+                    }
+                },
+                {
+                    "index": 91,
+                    "pass": 2,
+                    "passName": "Lever",
+                    "outcome": "Fail",
+                    "minGoalDist": 10.689311027526856,
+                    "endStep": 185,
+                    "ink": 12.259993553161621,
+                    "area": {
+                        "serializedVersion": "2",
+                        "x": -3.0725650787353517,
+                        "y": 5.426476001739502,
+                        "width": 1.0,
+                        "height": 4.9599995613098148
+                    }
+                },
+                {
+                    "index": 92,
+                    "pass": 3,
+                    "passName": "LeverThenCorridor",
+                    "outcome": "Timeout",
+                    "minGoalDist": 12.770007133483887,
+                    "endStep": 1800,
+                    "ink": 25.78166389465332,
+                    "area": {
+                        "serializedVersion": "2",
+                        "x": -3.6967008113861086,
+                        "y": -5.458318710327148,
+                        "width": 7.207282066345215,
+                        "height": 15.844794273376465
+                    }
+                },
+                {
+                    "index": 93,
+                    "pass": 2,
+                    "passName": "Lever",
+                    "outcome": "Clear",
+                    "minGoalDist": 0.746249794960022,
+                    "endStep": 235,
+                    "ink": 12.259993553161621,
+                    "area": {
+                        "serializedVersion": "2",
+                        "x": -3.0725650787353517,
+                        "y": 5.426476001739502,
+                        "width": 1.0,
+                        "height": 4.9599995613098148
+                    }
+                },
+                {
+                    "index": 94,
+                    "pass": 2,
+                    "passName": "Lever",
+                    "outcome": "Clear",
+                    "minGoalDist": 0.6685734391212463,
+                    "endStep": 190,
+                    "ink": 12.78000259399414,
+                    "area": {
+                        "serializedVersion": "2",
+                        "x": -3.0725650787353517,
+                        "y": 5.426476001739502,
+                        "width": 2.0,
+                        "height": 3.2800002098083498
+                    }
+                },
+                {
+                    "index": 95,
+                    "pass": 2,
+                    "passName": "Lever",
+                    "outcome": "Clear",
+                    "minGoalDist": 0.6788449883460999,
+                    "endStep": 165,
+                    "ink": 12.78000259399414,
+                    "area": {
+                        "serializedVersion": "2",
+                        "x": -3.0725650787353517,
+                        "y": 5.426476001739502,
+                        "width": 2.0,
+                        "height": 6.28000020980835
+                    }
+                },
+                {
+                    "index": 96,
+                    "pass": 2,
+                    "passName": "Lever",
+                    "outcome": "Clear",
+                    "minGoalDist": 0.6123942732810974,
+                    "endStep": 171,
+                    "ink": 12.78000259399414,
+                    "area": {
+                        "serializedVersion": "2",
+                        "x": -3.0725650787353517,
+                        "y": 5.426476001739502,
+                        "width": 2.0,
+                        "height": 4.28000020980835
+                    }
+                },
+                {
+                    "index": 97,
+                    "pass": 2,
+                    "passName": "Lever",
+                    "outcome": "Fail",
+                    "minGoalDist": 9.824880599975586,
+                    "endStep": 159,
+                    "ink": 12.78000259399414,
+                    "area": {
+                        "serializedVersion": "2",
+                        "x": -3.0725650787353517,
+                        "y": 5.426476001739502,
+                        "width": 2.0,
+                        "height": 3.2800002098083498
+                    }
+                },
+                {
+                    "index": 98,
+                    "pass": 2,
+                    "passName": "Lever",
+                    "outcome": "Fail",
+                    "minGoalDist": 10.023216247558594,
+                    "endStep": 164,
+                    "ink": 12.78000259399414,
+                    "area": {
+                        "serializedVersion": "2",
+                        "x": -3.2725651264190676,
+                        "y": 5.426476001739502,
+                        "width": 2.0,
+                        "height": 4.28000020980835
+                    }
+                },
+                {
+                    "index": 99,
+                    "pass": 2,
+                    "passName": "Lever",
+                    "outcome": "Fail",
+                    "minGoalDist": 9.266802787780762,
+                    "endStep": 211,
+                    "ink": 12.78000259399414,
+                    "area": {
+                        "serializedVersion": "2",
+                        "x": -3.2725651264190676,
+                        "y": 5.426476001739502,
+                        "width": 2.0,
+                        "height": 3.2800002098083498
+                    }
+                },
+                {
+                    "index": 100,
+                    "pass": 3,
+                    "passName": "LeverThenCorridor",
+                    "outcome": "Timeout",
+                    "minGoalDist": 5.8657612800598148,
+                    "endStep": 1800,
+                    "ink": 27.505523681640626,
+                    "area": {
+                        "serializedVersion": "2",
+                        "x": -3.9388527870178224,
+                        "y": -5.447283744812012,
+                        "width": 7.442728042602539,
+                        "height": 14.153759956359864
+                    }
+                },
+                {
+                    "index": 101,
+                    "pass": 2,
+                    "passName": "Lever",
+                    "outcome": "Clear",
+                    "minGoalDist": 0.6730450987815857,
+                    "endStep": 188,
+                    "ink": 12.78000259399414,
+                    "area": {
+                        "serializedVersion": "2",
+                        "x": -3.0725650787353517,
+                        "y": 5.426476001739502,
+                        "width": 2.0,
+                        "height": 4.28000020980835
+                    }
+                },
+                {
+                    "index": 102,
+                    "pass": 2,
+                    "passName": "Lever",
+                    "outcome": "Fail",
+                    "minGoalDist": 10.216512680053711,
+                    "endStep": 162,
+                    "ink": 12.78000259399414,
+                    "area": {
+                        "serializedVersion": "2",
+                        "x": -3.0725650787353517,
+                        "y": 5.426476001739502,
+                        "width": 2.0,
+                        "height": 3.2800002098083498
+                    }
+                },
+                {
+                    "index": 103,
+                    "pass": 2,
+                    "passName": "Lever",
+                    "outcome": "Clear",
+                    "minGoalDist": 0.7089882493019104,
+                    "endStep": 147,
+                    "ink": 12.78000259399414,
+                    "area": {
+                        "serializedVersion": "2",
+                        "x": -3.2725651264190676,
+                        "y": 5.426476001739502,
+                        "width": 2.0,
+                        "height": 3.2800002098083498
+                    }
+                },
+                {
+                    "index": 104,
+                    "pass": 2,
+                    "passName": "Lever",
+                    "outcome": "Fail",
+                    "minGoalDist": 12.351744651794434,
+                    "endStep": 158,
+                    "ink": 12.78000259399414,
+                    "area": {
+                        "serializedVersion": "2",
+                        "x": -3.2725651264190676,
+                        "y": 5.426476001739502,
+                        "width": 2.0,
+                        "height": 3.2800002098083498
+                    }
+                },
+                {
+                    "index": 105,
+                    "pass": 2,
+                    "passName": "Lever",
+                    "outcome": "Clear",
+                    "minGoalDist": 0.7158200740814209,
+                    "endStep": 186,
+                    "ink": 13.579999923706055,
+                    "area": {
+                        "serializedVersion": "2",
+                        "x": -3.0725650787353517,
+                        "y": 5.426476001739502,
+                        "width": 4.0,
+                        "height": 2.0799999237060549
+                    }
+                },
+                {
+                    "index": 106,
+                    "pass": 2,
+                    "passName": "Lever",
+                    "outcome": "Clear",
+                    "minGoalDist": 0.6749924421310425,
+                    "endStep": 172,
+                    "ink": 13.579999923706055,
+                    "area": {
+                        "serializedVersion": "2",
+                        "x": -3.0725650787353517,
+                        "y": 5.426476001739502,
+                        "width": 4.0,
+                        "height": 2.0799999237060549
+                    }
+                },
+                {
+                    "index": 107,
+                    "pass": 2,
+                    "passName": "Lever",
+                    "outcome": "Fail",
+                    "minGoalDist": 11.367388725280762,
+                    "endStep": 180,
+                    "ink": 13.579999923706055,
+                    "area": {
+                        "serializedVersion": "2",
+                        "x": -3.0725650787353517,
+                        "y": 5.426476001739502,
+                        "width": 4.0,
+                        "height": 3.0799994468688967
+                    }
+                },
+                {
+                    "index": 108,
+                    "pass": 3,
+                    "passName": "LeverThenCorridor",
+                    "outcome": "Fail",
+                    "minGoalDist": 9.945575714111329,
+                    "endStep": 245,
+                    "ink": 28.45762062072754,
+                    "area": {
+                        "serializedVersion": "2",
+                        "x": -4.779811859130859,
+                        "y": -5.468179702758789,
+                        "width": 8.296810150146485,
+                        "height": 13.974655151367188
+                    }
+                },
+                {
+                    "index": 109,
+                    "pass": 2,
+                    "passName": "Lever",
+                    "outcome": "Clear",
+                    "minGoalDist": 0.6494168043136597,
+                    "endStep": 156,
+                    "ink": 13.580000877380371,
+                    "area": {
+                        "serializedVersion": "2",
+                        "x": -3.472565174102783,
+                        "y": 5.426476001739502,
+                        "width": 4.0,
+                        "height": 9.079999923706055
+                    }
+                },
+                {
+                    "index": 110,
+                    "pass": 2,
+                    "passName": "Lever",
+                    "outcome": "Clear",
+                    "minGoalDist": 0.6782510876655579,
+                    "endStep": 205,
+                    "ink": 13.579999923706055,
+                    "area": {
+                        "serializedVersion": "2",
+                        "x": -3.0725650787353517,
+                        "y": 5.426476001739502,
+                        "width": 4.0,
+                        "height": 2.0799999237060549
+                    }
+                },
+                {
+                    "index": 111,
+                    "pass": 2,
+                    "passName": "Lever",
+                    "outcome": "Clear",
+                    "minGoalDist": 0.7361000180244446,
+                    "endStep": 166,
+                    "ink": 13.580000877380371,
+                    "area": {
+                        "serializedVersion": "2",
+                        "x": -3.0725650787353517,
+                        "y": 5.426476001739502,
+                        "width": 4.0,
+                        "height": 9.079999923706055
+                    }
+                },
+                {
+                    "index": 112,
+                    "pass": 2,
+                    "passName": "Lever",
+                    "outcome": "Clear",
+                    "minGoalDist": 0.7231135964393616,
+                    "endStep": 171,
+                    "ink": 13.579999923706055,
+                    "area": {
+                        "serializedVersion": "2",
+                        "x": -3.0725650787353517,
+                        "y": 5.426476001739502,
+                        "width": 4.0,
+                        "height": 3.0799994468688967
+                    }
+                },
+                {
+                    "index": 113,
+                    "pass": 2,
+                    "passName": "Lever",
+                    "outcome": "Clear",
+                    "minGoalDist": 0.7361000180244446,
+                    "endStep": 166,
+                    "ink": 13.580000877380371,
+                    "area": {
+                        "serializedVersion": "2",
+                        "x": -3.0725650787353517,
+                        "y": 5.426476001739502,
+                        "width": 4.0,
+                        "height": 5.080000400543213
+                    }
+                },
+                {
+                    "index": 114,
+                    "pass": 2,
+                    "passName": "Lever",
+                    "outcome": "Clear",
+                    "minGoalDist": 0.7361000180244446,
+                    "endStep": 166,
+                    "ink": 13.579999923706055,
+                    "area": {
+                        "serializedVersion": "2",
+                        "x": -3.0725650787353517,
+                        "y": 5.426476001739502,
+                        "width": 4.0,
+                        "height": 3.0799994468688967
+                    }
+                },
+                {
+                    "index": 115,
+                    "pass": 2,
+                    "passName": "Lever",
+                    "outcome": "Clear",
+                    "minGoalDist": 0.7361000180244446,
+                    "endStep": 166,
+                    "ink": 13.579999923706055,
+                    "area": {
+                        "serializedVersion": "2",
+                        "x": -3.0725650787353517,
+                        "y": 5.426476001739502,
+                        "width": 4.0,
+                        "height": 2.0799999237060549
+                    }
+                },
+                {
+                    "index": 116,
+                    "pass": 2,
+                    "passName": "Lever",
+                    "outcome": "Clear",
+                    "minGoalDist": 0.7056092023849487,
+                    "endStep": 170,
+                    "ink": 13.580000877380371,
+                    "area": {
+                        "serializedVersion": "2",
+                        "x": -3.0725650787353517,
+                        "y": 5.426476001739502,
+                        "width": 4.0,
+                        "height": 5.080000400543213
+                    }
+                },
+                {
+                    "index": 117,
+                    "pass": 2,
+                    "passName": "Lever",
+                    "outcome": "Clear",
+                    "minGoalDist": 0.7056092023849487,
+                    "endStep": 170,
+                    "ink": 13.580000877380371,
+                    "area": {
+                        "serializedVersion": "2",
+                        "x": -3.0725650787353517,
+                        "y": 5.426476001739502,
+                        "width": 4.0,
+                        "height": 9.079999923706055
+                    }
+                },
+                {
+                    "index": 118,
+                    "pass": 2,
+                    "passName": "Lever",
+                    "outcome": "Clear",
+                    "minGoalDist": 0.7075119614601135,
+                    "endStep": 153,
+                    "ink": 13.579999923706055,
+                    "area": {
+                        "serializedVersion": "2",
+                        "x": -3.472565174102783,
+                        "y": 5.426476001739502,
+                        "width": 4.0,
+                        "height": 2.0799999237060549
+                    }
+                },
+                {
+                    "index": 119,
+                    "pass": 2,
+                    "passName": "Lever",
+                    "outcome": "Clear",
+                    "minGoalDist": 0.6494168043136597,
+                    "endStep": 156,
+                    "ink": 13.579999923706055,
+                    "area": {
+                        "serializedVersion": "2",
+                        "x": -3.472565174102783,
+                        "y": 5.426476001739502,
+                        "width": 4.0,
+                        "height": 3.0799994468688967
+                    }
+                },
+                {
+                    "index": 120,
+                    "pass": 2,
+                    "passName": "Lever",
+                    "outcome": "Clear",
+                    "minGoalDist": 0.6494168043136597,
+                    "endStep": 156,
+                    "ink": 13.580000877380371,
+                    "area": {
+                        "serializedVersion": "2",
+                        "x": -3.472565174102783,
+                        "y": 5.426476001739502,
+                        "width": 4.0,
+                        "height": 5.080000400543213
+                    }
+                },
+                {
+                    "index": 121,
+                    "pass": 2,
+                    "passName": "Lever",
+                    "outcome": "Clear",
+                    "minGoalDist": 0.6064907908439636,
+                    "endStep": 167,
+                    "ink": 17.78000259399414,
+                    "area": {
+                        "serializedVersion": "2",
+                        "x": -3.0725650787353517,
+                        "y": 5.426476001739502,
+                        "width": 3.0,
+                        "height": 3.2800002098083498
+                    }
+                },
+                {
+                    "index": 122,
+                    "pass": 2,
+                    "passName": "Lever",
+                    "outcome": "Fail",
+                    "minGoalDist": 9.703849792480469,
+                    "endStep": 162,
+                    "ink": 17.78000259399414,
+                    "area": {
+                        "serializedVersion": "2",
+                        "x": -3.0725650787353517,
+                        "y": 5.426476001739502,
+                        "width": 3.0,
+                        "height": 4.28000020980835
+                    }
+                },
+                {
+                    "index": 123,
+                    "pass": 2,
+                    "passName": "Lever",
+                    "outcome": "Fail",
+                    "minGoalDist": 9.616419792175293,
+                    "endStep": 202,
+                    "ink": 17.78000259399414,
+                    "area": {
+                        "serializedVersion": "2",
+                        "x": -3.0725650787353517,
+                        "y": 5.426476001739502,
+                        "width": 3.0,
+                        "height": 3.2800002098083498
+                    }
+                },
+                {
+                    "index": 124,
+                    "pass": 2,
+                    "passName": "Lever",
+                    "outcome": "Fail",
+                    "minGoalDist": 12.031661033630371,
+                    "endStep": 194,
+                    "ink": 17.78000259399414,
+                    "area": {
+                        "serializedVersion": "2",
+                        "x": -3.3725650310516359,
+                        "y": 5.426476001739502,
+                        "width": 3.0,
+                        "height": 6.28000020980835
+                    }
+                },
+                {
+                    "index": 125,
+                    "pass": 3,
+                    "passName": "LeverThenCorridor",
+                    "outcome": "Fail",
+                    "minGoalDist": 3.5983457565307619,
+                    "endStep": 178,
+                    "ink": 46.38967514038086,
+                    "area": {
+                        "serializedVersion": "2",
+                        "x": -5.213334083557129,
+                        "y": -5.472497940063477,
+                        "width": 9.391439437866211,
+                        "height": 17.178974151611329
+                    }
+                },
+                {
+                    "index": 126,
+                    "pass": 2,
+                    "passName": "Lever",
+                    "outcome": "Fail",
+                    "minGoalDist": 11.807991981506348,
+                    "endStep": 197,
+                    "ink": 17.78000259399414,
+                    "area": {
+                        "serializedVersion": "2",
+                        "x": -3.3725650310516359,
+                        "y": 5.426476001739502,
+                        "width": 3.0,
+                        "height": 4.28000020980835
+                    }
+                },
+                {
+                    "index": 127,
+                    "pass": 3,
+                    "passName": "LeverThenCorridor",
+                    "outcome": "Fail",
+                    "minGoalDist": 1.051745057106018,
+                    "endStep": 206,
+                    "ink": 34.10723876953125,
+                    "area": {
+                        "serializedVersion": "2",
+                        "x": -5.192106246948242,
+                        "y": -5.458318710327148,
+                        "width": 8.702686309814454,
+                        "height": 15.164794921875
+                    }
+                },
+                {
+                    "index": 128,
+                    "pass": 2,
+                    "passName": "Lever",
+                    "outcome": "Clear",
+                    "minGoalDist": 0.6295469999313355,
+                    "endStep": 148,
+                    "ink": 17.78000259399414,
+                    "area": {
+                        "serializedVersion": "2",
+                        "x": -3.3725650310516359,
+                        "y": 5.426476001739502,
+                        "width": 3.0,
+                        "height": 3.2800002098083498
+                    }
+                },
+                {
+                    "index": 129,
+                    "pass": 2,
+                    "passName": "Lever",
+                    "outcome": "Fail",
+                    "minGoalDist": 12.383883476257325,
+                    "endStep": 251,
+                    "ink": 17.78000259399414,
+                    "area": {
+                        "serializedVersion": "2",
+                        "x": -3.3725650310516359,
+                        "y": 5.426476001739502,
+                        "width": 3.0,
+                        "height": 3.2800002098083498
+                    }
+                },
+                {
+                    "index": 130,
+                    "pass": 3,
+                    "passName": "LeverThenCorridor",
+                    "outcome": "Clear",
+                    "minGoalDist": 0.6787043213844299,
+                    "endStep": 192,
+                    "ink": 32.86199951171875,
+                    "area": {
+                        "serializedVersion": "2",
+                        "x": -3.3725650310516359,
+                        "y": -5.07221794128418,
+                        "width": 7.582291603088379,
+                        "height": 13.778694152832032
+                    }
+                },
+                {
+                    "index": 131,
+                    "pass": 2,
+                    "passName": "Lever",
+                    "outcome": "Clear",
+                    "minGoalDist": 0.6025947332382202,
+                    "endStep": 202,
+                    "ink": 17.78000259399414,
+                    "area": {
+                        "serializedVersion": "2",
+                        "x": -3.0725650787353517,
+                        "y": 5.426476001739502,
+                        "width": 3.0,
+                        "height": 3.2800002098083498
+                    }
+                },
+                {
+                    "index": 132,
+                    "pass": 2,
+                    "passName": "Lever",
+                    "outcome": "Clear",
+                    "minGoalDist": 0.600534200668335,
+                    "endStep": 164,
+                    "ink": 17.78000259399414,
+                    "area": {
+                        "serializedVersion": "2",
+                        "x": -3.0725650787353517,
+                        "y": 5.426476001739502,
+                        "width": 3.0,
+                        "height": 4.28000020980835
+                    }
+                },
+                {
+                    "index": 133,
+                    "pass": 2,
+                    "passName": "Lever",
+                    "outcome": "Clear",
+                    "minGoalDist": 0.6755799651145935,
+                    "endStep": 164,
+                    "ink": 17.78000259399414,
+                    "area": {
+                        "serializedVersion": "2",
+                        "x": -3.0725650787353517,
+                        "y": 5.426476001739502,
+                        "width": 3.0,
+                        "height": 6.28000020980835
+                    }
+                },
+                {
+                    "index": 134,
+                    "pass": 2,
+                    "passName": "Lever",
+                    "outcome": "Clear",
+                    "minGoalDist": 0.6755799651145935,
+                    "endStep": 164,
+                    "ink": 17.78000259399414,
+                    "area": {
+                        "serializedVersion": "2",
+                        "x": -3.0725650787353517,
+                        "y": 5.426476001739502,
+                        "width": 3.0,
+                        "height": 10.280000686645508
+                    }
+                },
+                {
+                    "index": 135,
+                    "pass": 2,
+                    "passName": "Lever",
+                    "outcome": "Clear",
+                    "minGoalDist": 0.6064907908439636,
+                    "endStep": 167,
+                    "ink": 17.78000259399414,
+                    "area": {
+                        "serializedVersion": "2",
+                        "x": -3.0725650787353517,
+                        "y": 5.426476001739502,
+                        "width": 3.0,
+                        "height": 10.280000686645508
+                    }
+                },
+                {
+                    "index": 136,
+                    "pass": 2,
+                    "passName": "Lever",
+                    "outcome": "Clear",
+                    "minGoalDist": 0.6064907908439636,
+                    "endStep": 167,
+                    "ink": 17.78000259399414,
+                    "area": {
+                        "serializedVersion": "2",
+                        "x": -3.0725650787353517,
+                        "y": 5.426476001739502,
+                        "width": 3.0,
+                        "height": 6.28000020980835
+                    }
+                },
+                {
+                    "index": 137,
+                    "pass": 2,
+                    "passName": "Lever",
+                    "outcome": "Clear",
+                    "minGoalDist": 0.6064907908439636,
+                    "endStep": 167,
+                    "ink": 17.78000259399414,
+                    "area": {
+                        "serializedVersion": "2",
+                        "x": -3.0725650787353517,
+                        "y": 5.426476001739502,
+                        "width": 3.0,
+                        "height": 4.28000020980835
+                    }
+                },
+                {
+                    "index": 138,
+                    "pass": 2,
+                    "passName": "Lever",
+                    "outcome": "Fail",
+                    "minGoalDist": 10.96182632446289,
+                    "endStep": 156,
+                    "ink": 17.78000259399414,
+                    "area": {
+                        "serializedVersion": "2",
+                        "x": -3.0725650787353517,
+                        "y": 5.426476001739502,
+                        "width": 3.0,
+                        "height": 3.2800002098083498
+                    }
+                },
+                {
+                    "index": 139,
+                    "pass": 2,
+                    "passName": "Lever",
+                    "outcome": "Clear",
+                    "minGoalDist": 0.6859464049339294,
+                    "endStep": 171,
+                    "ink": 20.060007095336915,
+                    "area": {
+                        "serializedVersion": "2",
+                        "x": -3.0725650787353517,
+                        "y": 5.426476001739502,
+                        "width": 2.0,
+                        "height": 5.9599995613098148
+                    }
+                },
+                {
+                    "index": 140,
+                    "pass": 2,
+                    "passName": "Lever",
+                    "outcome": "Clear",
+                    "minGoalDist": 0.6611947417259216,
+                    "endStep": 192,
+                    "ink": 20.060007095336915,
+                    "area": {
+                        "serializedVersion": "2",
+                        "x": -3.0725650787353517,
+                        "y": 5.426476001739502,
+                        "width": 2.0,
+                        "height": 4.9599995613098148
+                    }
+                },
+                {
+                    "index": 141,
+                    "pass": 2,
+                    "passName": "Lever",
+                    "outcome": "Fail",
+                    "minGoalDist": 12.443659782409668,
+                    "endStep": 166,
+                    "ink": 20.060007095336915,
+                    "area": {
+                        "serializedVersion": "2",
+                        "x": -3.0725650787353517,
+                        "y": 5.426476001739502,
+                        "width": 2.0,
+                        "height": 4.9599995613098148
+                    }
+                },
+                {
+                    "index": 142,
+                    "pass": 2,
+                    "passName": "Lever",
+                    "outcome": "Clear",
+                    "minGoalDist": 0.5510250926017761,
+                    "endStep": 166,
+                    "ink": 20.060007095336915,
+                    "area": {
+                        "serializedVersion": "2",
+                        "x": -3.0725650787353517,
+                        "y": 5.426476001739502,
+                        "width": 2.0,
+                        "height": 7.9599995613098148
+                    }
+                },
+                {
+                    "index": 143,
+                    "pass": 2,
+                    "passName": "Lever",
+                    "outcome": "Clear",
+                    "minGoalDist": 0.587813138961792,
+                    "endStep": 157,
+                    "ink": 20.060007095336915,
+                    "area": {
+                        "serializedVersion": "2",
+                        "x": -3.2725651264190676,
+                        "y": 5.426476001739502,
+                        "width": 2.0,
+                        "height": 4.9599995613098148
+                    }
+                },
+                {
+                    "index": 144,
+                    "pass": 2,
+                    "passName": "Lever",
+                    "outcome": "Fail",
+                    "minGoalDist": 9.632579803466797,
+                    "endStep": 166,
+                    "ink": 20.060007095336915,
+                    "area": {
+                        "serializedVersion": "2",
+                        "x": -3.0725650787353517,
+                        "y": 5.426476001739502,
+                        "width": 2.0,
+                        "height": 5.9599995613098148
+                    }
+                },
+                {
+                    "index": 145,
+                    "pass": 2,
+                    "passName": "Lever",
+                    "outcome": "Fail",
+                    "minGoalDist": 12.480389595031739,
+                    "endStep": 164,
+                    "ink": 20.060007095336915,
+                    "area": {
+                        "serializedVersion": "2",
+                        "x": -3.2725651264190676,
+                        "y": 5.426476001739502,
+                        "width": 2.0,
+                        "height": 4.9599995613098148
+                    }
+                },
+                {
+                    "index": 146,
+                    "pass": 3,
+                    "passName": "LeverThenCorridor",
+                    "outcome": "Clear",
+                    "minGoalDist": 0.7102208733558655,
+                    "endStep": 181,
+                    "ink": 48.73577117919922,
+                    "area": {
+                        "serializedVersion": "2",
+                        "x": -5.275372505187988,
+                        "y": -5.472497940063477,
+                        "width": 9.45347785949707,
+                        "height": 15.858973503112793
+                    }
+                },
+                {
+                    "index": 147,
+                    "pass": 2,
+                    "passName": "Lever",
+                    "outcome": "Fail",
+                    "minGoalDist": 10.522085189819336,
+                    "endStep": 166,
+                    "ink": 20.060007095336915,
+                    "area": {
+                        "serializedVersion": "2",
+                        "x": -3.0725650787353517,
+                        "y": 5.426476001739502,
+                        "width": 2.0,
+                        "height": 4.9599995613098148
+                    }
+                },
+                {
+                    "index": 148,
+                    "pass": 2,
+                    "passName": "Lever",
+                    "outcome": "Fail",
+                    "minGoalDist": 9.170863151550293,
+                    "endStep": 231,
+                    "ink": 20.060007095336915,
+                    "area": {
+                        "serializedVersion": "2",
+                        "x": -3.2725651264190676,
+                        "y": 5.426476001739502,
+                        "width": 2.0,
+                        "height": 4.9599995613098148
+                    }
+                },
+                {
+                    "index": 149,
+                    "pass": 3,
+                    "passName": "LeverThenCorridor",
+                    "outcome": "Clear",
+                    "minGoalDist": 0.5946018695831299,
+                    "endStep": 149,
+                    "ink": 35.273048400878909,
+                    "area": {
+                        "serializedVersion": "2",
+                        "x": -3.965181350708008,
+                        "y": -5.441408157348633,
+                        "width": 7.465682029724121,
+                        "height": 15.82788372039795
+                    }
+                },
+                {
+                    "index": 150,
+                    "pass": 2,
+                    "passName": "Lever",
+                    "outcome": "Fail",
+                    "minGoalDist": 10.461009979248047,
+                    "endStep": 165,
+                    "ink": 20.060007095336915,
+                    "area": {
+                        "serializedVersion": "2",
+                        "x": -3.2725651264190676,
+                        "y": 5.426476001739502,
+                        "width": 2.0,
+                        "height": 5.9599995613098148
+                    }
+                },
+                {
+                    "index": 151,
+                    "pass": 2,
+                    "passName": "Lever",
+                    "outcome": "Fail",
+                    "minGoalDist": 11.058958053588868,
+                    "endStep": 175,
+                    "ink": 22.780000686645509,
+                    "area": {
+                        "serializedVersion": "2",
+                        "x": -3.0725650787353517,
+                        "y": 5.426476001739502,
+                        "width": 4.0,
+                        "height": 3.2800002098083498
+                    }
+                },
+                {
+                    "index": 152,
+                    "pass": 2,
+                    "passName": "Lever",
+                    "outcome": "Clear",
+                    "minGoalDist": 0.6530436873435974,
+                    "endStep": 253,
+                    "ink": 22.780000686645509,
+                    "area": {
+                        "serializedVersion": "2",
+                        "x": -3.0725650787353517,
+                        "y": 5.426476001739502,
+                        "width": 4.0,
+                        "height": 3.2800002098083498
+                    }
+                },
+                {
+                    "index": 153,
+                    "pass": 2,
+                    "passName": "Lever",
+                    "outcome": "Fail",
+                    "minGoalDist": 12.289658546447754,
+                    "endStep": 188,
+                    "ink": 22.780000686645509,
+                    "area": {
+                        "serializedVersion": "2",
+                        "x": -3.0725650787353517,
+                        "y": 5.426476001739502,
+                        "width": 4.0,
+                        "height": 4.28000020980835
+                    }
+                },
+                {
+                    "index": 154,
+                    "pass": 3,
+                    "passName": "LeverThenCorridor",
+                    "outcome": "Fail",
+                    "minGoalDist": 11.322973251342774,
+                    "endStep": 200,
+                    "ink": 38.414390563964847,
+                    "area": {
+                        "serializedVersion": "2",
+                        "x": -5.116783618927002,
+                        "y": -5.465965270996094,
+                        "width": 8.632304191589356,
+                        "height": 15.172441482543946
+                    }
+                },
+                {
+                    "index": 155,
+                    "pass": 2,
+                    "passName": "Lever",
+                    "outcome": "Clear",
+                    "minGoalDist": 0.6407971978187561,
+                    "endStep": 153,
+                    "ink": 22.780000686645509,
+                    "area": {
+                        "serializedVersion": "2",
+                        "x": -3.472565174102783,
+                        "y": 5.426476001739502,
+                        "width": 4.0,
+                        "height": 3.2800002098083498
+                    }
+                },
+                {
+                    "index": 156,
+                    "pass": 2,
+                    "passName": "Lever",
+                    "outcome": "Clear",
+                    "minGoalDist": 0.7361000180244446,
+                    "endStep": 166,
+                    "ink": 22.78000259399414,
+                    "area": {
+                        "serializedVersion": "2",
+                        "x": -3.0725650787353517,
+                        "y": 5.426476001739502,
+                        "width": 4.0,
+                        "height": 10.280000686645508
+                    }
+                },
+                {
+                    "index": 157,
+                    "pass": 2,
+                    "passName": "Lever",
+                    "outcome": "Clear",
+                    "minGoalDist": 0.7361000180244446,
+                    "endStep": 166,
+                    "ink": 22.780000686645509,
+                    "area": {
+                        "serializedVersion": "2",
+                        "x": -3.0725650787353517,
+                        "y": 5.426476001739502,
+                        "width": 4.0,
+                        "height": 6.28000020980835
+                    }
+                },
+                {
+                    "index": 158,
+                    "pass": 2,
+                    "passName": "Lever",
+                    "outcome": "Clear",
+                    "minGoalDist": 0.7361000180244446,
+                    "endStep": 166,
+                    "ink": 22.780000686645509,
+                    "area": {
+                        "serializedVersion": "2",
+                        "x": -3.0725650787353517,
+                        "y": 5.426476001739502,
+                        "width": 4.0,
+                        "height": 4.28000020980835
+                    }
+                },
+                {
+                    "index": 159,
+                    "pass": 2,
+                    "passName": "Lever",
+                    "outcome": "Clear",
+                    "minGoalDist": 0.7361000180244446,
+                    "endStep": 166,
+                    "ink": 22.780000686645509,
+                    "area": {
+                        "serializedVersion": "2",
+                        "x": -3.0725650787353517,
+                        "y": 5.426476001739502,
+                        "width": 4.0,
+                        "height": 3.2800002098083498
+                    }
+                },
+                {
+                    "index": 160,
+                    "pass": 2,
+                    "passName": "Lever",
+                    "outcome": "Clear",
+                    "minGoalDist": 0.6513574719429016,
+                    "endStep": 169,
+                    "ink": 22.780000686645509,
+                    "area": {
+                        "serializedVersion": "2",
+                        "x": -3.0725650787353517,
+                        "y": 5.426476001739502,
+                        "width": 4.0,
+                        "height": 4.28000020980835
+                    }
+                },
+                {
+                    "index": 161,
+                    "pass": 2,
+                    "passName": "Lever",
+                    "outcome": "Clear",
+                    "minGoalDist": 0.7056092023849487,
+                    "endStep": 170,
+                    "ink": 22.780000686645509,
+                    "area": {
+                        "serializedVersion": "2",
+                        "x": -3.0725650787353517,
+                        "y": 5.426476001739502,
+                        "width": 4.0,
+                        "height": 6.28000020980835
+                    }
+                },
+                {
+                    "index": 162,
+                    "pass": 2,
+                    "passName": "Lever",
+                    "outcome": "Clear",
+                    "minGoalDist": 0.7056092023849487,
+                    "endStep": 170,
+                    "ink": 22.78000259399414,
+                    "area": {
+                        "serializedVersion": "2",
+                        "x": -3.0725650787353517,
+                        "y": 5.426476001739502,
+                        "width": 4.0,
+                        "height": 10.280000686645508
+                    }
+                },
+                {
+                    "index": 163,
+                    "pass": 2,
+                    "passName": "Lever",
+                    "outcome": "Clear",
+                    "minGoalDist": 0.6494168043136597,
+                    "endStep": 156,
+                    "ink": 22.780000686645509,
+                    "area": {
+                        "serializedVersion": "2",
+                        "x": -3.472565174102783,
+                        "y": 5.426476001739502,
+                        "width": 4.0,
+                        "height": 4.28000020980835
+                    }
+                },
+                {
+                    "index": 164,
+                    "pass": 2,
+                    "passName": "Lever",
+                    "outcome": "Clear",
+                    "minGoalDist": 0.6494168043136597,
+                    "endStep": 156,
+                    "ink": 22.780000686645509,
+                    "area": {
+                        "serializedVersion": "2",
+                        "x": -3.472565174102783,
+                        "y": 5.426476001739502,
+                        "width": 4.0,
+                        "height": 6.28000020980835
+                    }
+                },
+                {
+                    "index": 165,
+                    "pass": 2,
+                    "passName": "Lever",
+                    "outcome": "Clear",
+                    "minGoalDist": 0.6494168043136597,
+                    "endStep": 156,
+                    "ink": 22.78000259399414,
+                    "area": {
+                        "serializedVersion": "2",
+                        "x": -3.472565174102783,
+                        "y": 5.426476001739502,
+                        "width": 4.0,
+                        "height": 10.280000686645508
+                    }
+                },
+                {
+                    "index": 166,
+                    "pass": 2,
+                    "passName": "Lever",
+                    "outcome": "Clear",
+                    "minGoalDist": 0.6445603966712952,
+                    "endStep": 207,
+                    "ink": 22.780000686645509,
+                    "area": {
+                        "serializedVersion": "2",
+                        "x": -3.0725650787353517,
+                        "y": 5.426476001739502,
+                        "width": 4.0,
+                        "height": 3.2800002098083498
+                    }
+                },
+                {
+                    "index": 167,
+                    "pass": 2,
+                    "passName": "Lever",
+                    "outcome": "Fail",
+                    "minGoalDist": 11.33509635925293,
+                    "endStep": 196,
+                    "ink": 27.860013961791993,
+                    "area": {
+                        "serializedVersion": "2",
+                        "x": -3.0725650787353517,
+                        "y": 5.426476001739502,
+                        "width": 3.0,
+                        "height": 4.9599995613098148
+                    }
+                },
+                {
+                    "index": 168,
+                    "pass": 2,
+                    "passName": "Lever",
+                    "outcome": "Fail",
+                    "minGoalDist": 12.192294120788575,
+                    "endStep": 164,
+                    "ink": 27.860013961791993,
+                    "area": {
+                        "serializedVersion": "2",
+                        "x": -3.0725650787353517,
+                        "y": 5.426476001739502,
+                        "width": 3.0,
+                        "height": 5.9599995613098148
+                    }
+                },
+                {
+                    "index": 169,
+                    "pass": 2,
+                    "passName": "Lever",
+                    "outcome": "Clear",
+                    "minGoalDist": 0.6503459215164185,
+                    "endStep": 243,
+                    "ink": 27.860013961791993,
+                    "area": {
+                        "serializedVersion": "2",
+                        "x": -3.3725650310516359,
+                        "y": 5.426476001739502,
+                        "width": 3.0,
+                        "height": 4.9599995613098148
+                    }
+                },
+                {
+                    "index": 170,
+                    "pass": 2,
+                    "passName": "Lever",
+                    "outcome": "Fail",
+                    "minGoalDist": 11.88745403289795,
+                    "endStep": 205,
+                    "ink": 27.860013961791993,
+                    "area": {
+                        "serializedVersion": "2",
+                        "x": -3.3725650310516359,
+                        "y": 5.426476001739502,
+                        "width": 3.0,
+                        "height": 5.9599995613098148
+                    }
+                },
+                {
+                    "index": 171,
+                    "pass": 3,
+                    "passName": "LeverThenCorridor",
+                    "outcome": "Clear",
+                    "minGoalDist": 0.5722445845603943,
+                    "endStep": 162,
+                    "ink": 44.88554382324219,
+                    "area": {
+                        "serializedVersion": "2",
+                        "x": -5.262619495391846,
+                        "y": -5.451125621795654,
+                        "width": 8.768774032592774,
+                        "height": 16.837600708007814
+                    }
+                },
+                {
+                    "index": 172,
+                    "pass": 2,
+                    "passName": "Lever",
+                    "outcome": "Fail",
+                    "minGoalDist": 12.031661033630371,
+                    "endStep": 201,
+                    "ink": 27.860013961791993,
+                    "area": {
+                        "serializedVersion": "2",
+                        "x": -3.3725650310516359,
+                        "y": 5.426476001739502,
+                        "width": 3.0,
+                        "height": 7.9599995613098148
+                    }
+                },
+                {
+                    "index": 173,
+                    "pass": 3,
+                    "passName": "LeverThenCorridor",
+                    "outcome": "Clear",
+                    "minGoalDist": 0.7094415426254273,
+                    "endStep": 172,
+                    "ink": 57.70716857910156,
+                    "area": {
+                        "serializedVersion": "2",
+                        "x": -6.213168621063232,
+                        "y": -5.472497940063477,
+                        "width": 10.391273498535157,
+                        "height": 18.85897445678711
+                    }
+                },
+                {
+                    "index": 174,
+                    "pass": 2,
+                    "passName": "Lever",
+                    "outcome": "Fail",
+                    "minGoalDist": 12.03978443145752,
+                    "endStep": 171,
+                    "ink": 27.860013961791993,
+                    "area": {
+                        "serializedVersion": "2",
+                        "x": -3.0725650787353517,
+                        "y": 5.426476001739502,
+                        "width": 3.0,
+                        "height": 4.9599995613098148
+                    }
+                },
+                {
+                    "index": 175,
+                    "pass": 2,
+                    "passName": "Lever",
+                    "outcome": "Clear",
+                    "minGoalDist": 0.6064907908439636,
+                    "endStep": 167,
+                    "ink": 27.860013961791993,
+                    "area": {
+                        "serializedVersion": "2",
+                        "x": -3.0725650787353517,
+                        "y": 5.426476001739502,
+                        "width": 3.0,
+                        "height": 4.9599995613098148
+                    }
+                },
+                {
+                    "index": 176,
+                    "pass": 2,
+                    "passName": "Lever",
+                    "outcome": "Clear",
+                    "minGoalDist": 0.6064907908439636,
+                    "endStep": 167,
+                    "ink": 27.860013961791993,
+                    "area": {
+                        "serializedVersion": "2",
+                        "x": -3.0725650787353517,
+                        "y": 5.426476001739502,
+                        "width": 3.0,
+                        "height": 5.9599995613098148
+                    }
+                },
+                {
+                    "index": 177,
+                    "pass": 2,
+                    "passName": "Lever",
+                    "outcome": "Clear",
+                    "minGoalDist": 0.6064907908439636,
+                    "endStep": 167,
+                    "ink": 27.860013961791993,
+                    "area": {
+                        "serializedVersion": "2",
+                        "x": -3.0725650787353517,
+                        "y": 5.426476001739502,
+                        "width": 3.0,
+                        "height": 7.9599995613098148
+                    }
+                },
+                {
+                    "index": 178,
+                    "pass": 2,
+                    "passName": "Lever",
+                    "outcome": "Clear",
+                    "minGoalDist": 0.6064907908439636,
+                    "endStep": 167,
+                    "ink": 27.86000633239746,
+                    "area": {
+                        "serializedVersion": "2",
+                        "x": -3.0725650787353517,
+                        "y": 5.426476001739502,
+                        "width": 3.0,
+                        "height": 11.959999084472657
+                    }
+                },
+                {
+                    "index": 179,
+                    "pass": 2,
+                    "passName": "Lever",
+                    "outcome": "Clear",
+                    "minGoalDist": 0.7439870238304138,
+                    "endStep": 203,
+                    "ink": 27.860013961791993,
+                    "area": {
+                        "serializedVersion": "2",
+                        "x": -3.0725650787353517,
+                        "y": 5.426476001739502,
+                        "width": 3.0,
+                        "height": 4.9599995613098148
+                    }
+                },
+                {
+                    "index": 180,
+                    "pass": 2,
+                    "passName": "Lever",
+                    "outcome": "Clear",
+                    "minGoalDist": 0.6176058650016785,
+                    "endStep": 164,
+                    "ink": 27.860013961791993,
+                    "area": {
+                        "serializedVersion": "2",
+                        "x": -3.0725650787353517,
+                        "y": 5.426476001739502,
+                        "width": 3.0,
+                        "height": 5.9599995613098148
+                    }
+                },
+                {
+                    "index": 181,
+                    "pass": 2,
+                    "passName": "Lever",
+                    "outcome": "Clear",
+                    "minGoalDist": 0.6755799651145935,
+                    "endStep": 164,
+                    "ink": 27.860013961791993,
+                    "area": {
+                        "serializedVersion": "2",
+                        "x": -3.0725650787353517,
+                        "y": 5.426476001739502,
+                        "width": 3.0,
+                        "height": 7.9599995613098148
+                    }
+                },
+                {
+                    "index": 182,
+                    "pass": 2,
+                    "passName": "Lever",
+                    "outcome": "Clear",
+                    "minGoalDist": 0.6755799651145935,
+                    "endStep": 164,
+                    "ink": 27.86000633239746,
+                    "area": {
+                        "serializedVersion": "2",
+                        "x": -3.0725650787353517,
+                        "y": 5.426476001739502,
+                        "width": 3.0,
+                        "height": 11.959999084472657
+                    }
+                },
+                {
+                    "index": 183,
+                    "pass": 2,
+                    "passName": "Lever",
+                    "outcome": "Clear",
+                    "minGoalDist": 0.5894076824188232,
+                    "endStep": 148,
+                    "ink": 27.860013961791993,
+                    "area": {
+                        "serializedVersion": "2",
+                        "x": -3.3725650310516359,
+                        "y": 5.426476001739502,
+                        "width": 3.0,
+                        "height": 4.9599995613098148
+                    }
+                },
+                {
+                    "index": 184,
+                    "pass": 2,
+                    "passName": "Lever",
+                    "outcome": "Clear",
+                    "minGoalDist": 0.638739287853241,
+                    "endStep": 285,
+                    "ink": 35.659976959228519,
+                    "area": {
+                        "serializedVersion": "2",
+                        "x": -3.0725650787353517,
+                        "y": 5.426476001739502,
+                        "width": 4.0,
+                        "height": 4.9599995613098148
+                    }
+                },
+                {
+                    "index": 185,
+                    "pass": 2,
+                    "passName": "Lever",
+                    "outcome": "Fail",
+                    "minGoalDist": 12.463729858398438,
+                    "endStep": 191,
+                    "ink": 35.659976959228519,
+                    "area": {
+                        "serializedVersion": "2",
+                        "x": -3.0725650787353517,
+                        "y": 5.426476001739502,
+                        "width": 4.0,
+                        "height": 4.9599995613098148
+                    }
+                },
+                {
+                    "index": 186,
+                    "pass": 3,
+                    "passName": "LeverThenCorridor",
+                    "outcome": "Clear",
+                    "minGoalDist": 0.6787407994270325,
+                    "endStep": 287,
+                    "ink": 52.508689880371097,
+                    "area": {
+                        "serializedVersion": "2",
+                        "x": -5.6587815284729,
+                        "y": -5.4628682136535648,
+                        "width": 9.172270774841309,
+                        "height": 15.849344253540039
+                    }
+                },
+                {
+                    "index": 187,
+                    "pass": 2,
+                    "passName": "Lever",
+                    "outcome": "Clear",
+                    "minGoalDist": 0.7056092023849487,
+                    "endStep": 170,
+                    "ink": 35.659976959228519,
+                    "area": {
+                        "serializedVersion": "2",
+                        "x": -3.0725650787353517,
+                        "y": 5.426476001739502,
+                        "width": 4.0,
+                        "height": 7.9599995613098148
+                    }
+                },
+                {
+                    "index": 188,
+                    "pass": 2,
+                    "passName": "Lever",
+                    "outcome": "Clear",
+                    "minGoalDist": 0.7056092023849487,
+                    "endStep": 170,
+                    "ink": 35.65998458862305,
+                    "area": {
+                        "serializedVersion": "2",
+                        "x": -3.0725650787353517,
+                        "y": 5.426476001739502,
+                        "width": 4.0,
+                        "height": 11.959999084472657
+                    }
+                },
+                {
+                    "index": 189,
+                    "pass": 2,
+                    "passName": "Lever",
+                    "outcome": "Clear",
+                    "minGoalDist": 0.6236032843589783,
+                    "endStep": 153,
+                    "ink": 35.659976959228519,
+                    "area": {
+                        "serializedVersion": "2",
+                        "x": -3.472565174102783,
+                        "y": 5.426476001739502,
+                        "width": 4.0,
+                        "height": 4.9599995613098148
+                    }
+                },
+                {
+                    "index": 190,
+                    "pass": 2,
+                    "passName": "Lever",
+                    "outcome": "Clear",
+                    "minGoalDist": 0.6494168043136597,
+                    "endStep": 156,
+                    "ink": 35.659976959228519,
+                    "area": {
+                        "serializedVersion": "2",
+                        "x": -3.472565174102783,
+                        "y": 5.426476001739502,
+                        "width": 4.0,
+                        "height": 5.9599995613098148
+                    }
+                },
+                {
+                    "index": 191,
+                    "pass": 2,
+                    "passName": "Lever",
+                    "outcome": "Clear",
+                    "minGoalDist": 0.6494168043136597,
+                    "endStep": 156,
+                    "ink": 35.659976959228519,
+                    "area": {
+                        "serializedVersion": "2",
+                        "x": -3.472565174102783,
+                        "y": 5.426476001739502,
+                        "width": 4.0,
+                        "height": 7.9599995613098148
+                    }
+                },
+                {
+                    "index": 192,
+                    "pass": 2,
+                    "passName": "Lever",
+                    "outcome": "Clear",
+                    "minGoalDist": 0.7113770246505737,
+                    "endStep": 161,
+                    "ink": 35.65998458862305,
+                    "area": {
+                        "serializedVersion": "2",
+                        "x": -3.472565174102783,
+                        "y": 5.426476001739502,
+                        "width": 4.0,
+                        "height": 11.959999084472657
+                    }
+                },
+                {
+                    "index": 193,
+                    "pass": 2,
+                    "passName": "Lever",
+                    "outcome": "Clear",
+                    "minGoalDist": 0.6308410167694092,
+                    "endStep": 169,
+                    "ink": 35.659976959228519,
+                    "area": {
+                        "serializedVersion": "2",
+                        "x": -3.0725650787353517,
+                        "y": 5.426476001739502,
+                        "width": 4.0,
+                        "height": 5.9599995613098148
+                    }
+                },
+                {
+                    "index": 194,
+                    "pass": 2,
+                    "passName": "Lever",
+                    "outcome": "Fail",
+                    "minGoalDist": 12.503785133361817,
+                    "endStep": 191,
+                    "ink": 35.659976959228519,
+                    "area": {
+                        "serializedVersion": "2",
+                        "x": -3.0725650787353517,
+                        "y": 5.426476001739502,
+                        "width": 4.0,
+                        "height": 5.9599995613098148
+                    }
+                },
+                {
+                    "index": 195,
+                    "pass": 2,
+                    "passName": "Lever",
+                    "outcome": "Clear",
+                    "minGoalDist": 0.7361000180244446,
+                    "endStep": 166,
+                    "ink": 35.659976959228519,
+                    "area": {
+                        "serializedVersion": "2",
+                        "x": -3.0725650787353517,
+                        "y": 5.426476001739502,
+                        "width": 4.0,
+                        "height": 4.9599995613098148
+                    }
+                },
+                {
+                    "index": 196,
+                    "pass": 2,
+                    "passName": "Lever",
+                    "outcome": "Clear",
+                    "minGoalDist": 0.7361000180244446,
+                    "endStep": 166,
+                    "ink": 35.659976959228519,
+                    "area": {
+                        "serializedVersion": "2",
+                        "x": -3.0725650787353517,
+                        "y": 5.426476001739502,
+                        "width": 4.0,
+                        "height": 5.9599995613098148
+                    }
+                },
+                {
+                    "index": 197,
+                    "pass": 2,
+                    "passName": "Lever",
+                    "outcome": "Clear",
+                    "minGoalDist": 0.7361000180244446,
+                    "endStep": 166,
+                    "ink": 35.659976959228519,
+                    "area": {
+                        "serializedVersion": "2",
+                        "x": -3.0725650787353517,
+                        "y": 5.426476001739502,
+                        "width": 4.0,
+                        "height": 7.9599995613098148
+                    }
+                },
+                {
+                    "index": 198,
+                    "pass": 2,
+                    "passName": "Lever",
+                    "outcome": "Clear",
+                    "minGoalDist": 0.7361000180244446,
+                    "endStep": 166,
+                    "ink": 35.65998458862305,
+                    "area": {
+                        "serializedVersion": "2",
+                        "x": -3.0725650787353517,
+                        "y": 5.426476001739502,
+                        "width": 4.0,
+                        "height": 11.959999084472657
+                    }
+                },
+                {
+                    "index": 199,
+                    "pass": 2,
+                    "passName": "Lever",
+                    "outcome": "Clear",
+                    "minGoalDist": 0.6696276664733887,
+                    "endStep": 208,
+                    "ink": 35.659976959228519,
+                    "area": {
+                        "serializedVersion": "2",
+                        "x": -3.0725650787353517,
+                        "y": 5.426476001739502,
+                        "width": 4.0,
+                        "height": 4.9599995613098148
+                    }
+                },
+                {
+                    "index": 200,
+                    "pass": 3,
+                    "passName": "LeverThenCorridor",
+                    "outcome": "Clear",
+                    "minGoalDist": 0.7496578693389893,
+                    "endStep": 151,
+                    "ink": 23.040515899658204,
+                    "area": {
+                        "serializedVersion": "2",
+                        "x": -4.662270545959473,
+                        "y": -5.017725467681885,
+                        "width": 8.840375900268555,
+                        "height": 15.524202346801758
+                    }
+                },
+                {
+                    "index": 201,
+                    "pass": 3,
+                    "passName": "LeverThenCorridor",
+                    "outcome": "Clear",
+                    "minGoalDist": 0.7452637553215027,
+                    "endStep": 164,
+                    "ink": 12.848844528198243,
+                    "area": {
+                        "serializedVersion": "2",
+                        "x": -3.0725650787353517,
+                        "y": -6.662270545959473,
+                        "width": 7.324077129364014,
+                        "height": 17.168746948242189
+                    }
+                }
+            ]
+        }
+    ]
+}
