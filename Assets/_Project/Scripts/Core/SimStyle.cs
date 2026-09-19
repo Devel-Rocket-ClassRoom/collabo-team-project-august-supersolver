@@ -35,8 +35,18 @@ namespace PPS.Core
         [System.Serializable]
         public sealed class DeviceVisual
         {
+            [Tooltip("이 이미지 설정을 적용할 장치 종류입니다.")]
             public DeviceType Type;
+            [Tooltip("게임과 맵에디터에서 표시할 장치 본체 이미지입니다. 크기는 장치 데이터에 맞춰 자동 조절됩니다.")]
             public Sprite Sprite;
+            [Tooltip("맵에디터에서 선택한 장치의 효과 범위를 채우는 이미지입니다. 폭탄·바람의 실제 반경에 맞춰 표시됩니다.")]
+            public Sprite RangeFill;
+            [Tooltip("맵에디터의 효과 범위 테두리와 반경 조절 도구에 쓰는 이미지입니다. 장치 반경에 맞춰 크기가 조절됩니다.")]
+            public Sprite RangeOutline;
+            [Tooltip("맵에디터에서 장치의 진행 방향을 표시하는 이미지입니다. 오른쪽을 향하는 원본을 사용하면 장치 각도에 맞춰 회전합니다. 바람처럼 방향이 있는 장치에 사용합니다.")]
+            public Sprite DirectionArrow;
+            [Tooltip("폭발 순간 표시한 뒤 자동으로 사라지는 이미지입니다. 일반 폭탄은 폭발 반경, 파편 폭탄은 본체 크기에 맞춰 표시됩니다. 비워 두면 폭발 이미지를 표시하지 않습니다.")]
+            public Sprite Explosion;
         }
 
         /// <summary>
@@ -53,7 +63,9 @@ namespace PPS.Core
         /// 채운다 — 길쭉해도 되므로 1wu 인 Shapes 와 따로 둔다.
         public Sprite KillLine;
 
-        /// 지형 선분. 코드가 만든 흰 사각형이라 색이 있어야 한다.
+        public Sprite TerrainSprite;
+
+        /// 지형 스프라이트에 입히는 색.
         public Color Terrain = new Color32(0x23, 0x25, 0x2B, 0xFF);
 
         /// <summary>
@@ -66,10 +78,12 @@ namespace PPS.Core
         /// 안 꽂힌 종류는 null 이다. 아직 그리지 않은 장치까지
         /// 막으면 아트를 기다리느라 작업이 선다.
         /// </summary>
-        public Sprite SpriteOf(DeviceType type)
+        public Sprite SpriteOf(DeviceType type) => VisualOf(type)?.Sprite;
+
+        public DeviceVisual VisualOf(DeviceType type)
         {
             for (int i = 0; i < Devices.Count; i++)
-                if (Devices[i] != null && Devices[i].Type == type) return Devices[i].Sprite;
+                if (Devices[i] != null && Devices[i].Type == type) return Devices[i];
 
             return null;
         }

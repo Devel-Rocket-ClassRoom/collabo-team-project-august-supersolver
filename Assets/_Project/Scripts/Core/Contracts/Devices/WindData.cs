@@ -10,15 +10,22 @@ namespace PPS.Core
     [Serializable]
     public sealed class WindData : IDeviceData, IOccupiesCameraArea, IHasReach, IHasFacing
     {
+        [DeviceParameter("Position", Kind = DeviceEditKind.Position)]
         public Vector2 Position;
 
         /// 미는 구역의 반경. 밖의 바디는 안 건드린다.
+        [DeviceParameter("Range", Kind = DeviceEditKind.Radius, Unit = "m")]
+        [Min(0.01f)]
         public float Radius = 2f;
 
         /// 매 스텝 더할 가속도(m/s²).
+        [DeviceParameter("Force", Unit = "m/s²")]
+        [Min(0f)]
         public float Power = 5f;
 
         /// 미는 방향(도). 0 이 오른쪽이다.
+        [DeviceParameter("Direction", Kind = DeviceEditKind.Angle, Unit = "°")]
+        [Tooltip("0° = right. 90° = up.")]
         public float Angle;
 
         public DeviceType Type => DeviceType.Wind;

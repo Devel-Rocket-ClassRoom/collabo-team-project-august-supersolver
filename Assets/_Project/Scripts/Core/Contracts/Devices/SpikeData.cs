@@ -10,9 +10,12 @@ namespace PPS.Core
     [Serializable]
     public sealed class SpikeData : IDeviceData, IOccupiesCameraArea
     {
+        [DeviceParameter("Position", Kind = DeviceEditKind.Position)]
         public Vector2 Position;
 
         /// 몸 크기.
+        [DeviceParameter("Radius", Kind = DeviceEditKind.Radius, Unit = "m")]
+        [Min(SpikeDevice.MinRadius)]
         public float Radius = 0.3f;
 
         public DeviceType Type => DeviceType.Spike;
