@@ -182,10 +182,8 @@ namespace PPS.DrawingTool
 
             if (reach > 0f)
             {
-                AddDeviceOverlay(overlays.transform, "Fill", visual?.RangeFill,
-                    device.Position, reach, Fade(Color.white, 0.15f), RenderOrder.Device - 2);
-                AddDeviceOverlay(overlays.transform, "Outline", visual?.RangeOutline,
-                    device.Position, reach, Fade(Color.white, DeviceRangeAlpha), RenderOrder.Device - 1);
+                AddDeviceOverlay(overlays.transform, "Outline", ShapeSprites.Ring,
+                    device.Position, reach, Fade(DeviceColor, DeviceRangeAlpha), RenderOrder.Device);
             }
             if (device is IHasFacing facing)
             {

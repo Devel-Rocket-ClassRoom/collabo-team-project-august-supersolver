@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using PPS.Core;
 using PPS.Game;
+using PPS.DrawingTool;
 using UnityEngine;
 
 // UnityEngine 에도 같은 이름이 있다(SystemInfo.deviceType).
@@ -25,7 +26,6 @@ namespace PPS.MapEditor
 
         /// 고른 장치가 미치는 범위.
         SpriteRenderer _reachHandle;
-        SpriteRenderer _reachOutline;
 
         /// 지우개가 닿는 범위.
         SpriteRenderer _eraserHandle;
@@ -83,10 +83,8 @@ namespace PPS.MapEditor
             if (_startHandle == null) _startHandle = Create("StartHandle", _style.Sim.Sprites.Ball);
             if (_goalHandle == null) _goalHandle = Create("GoalHandle", _style.Sim.Sprites.Goal);
             if (_scaleHandle == null) _scaleHandle = Create("ScaleHandle", _visuals.ResizeHandle);
-            if (_reachHandle == null) _reachHandle = Create("ReachHandle", null);
-            if (_reachOutline == null) _reachOutline = Create("ReachOutline", null);
+            if (_reachHandle == null) _reachHandle = Create("ReachHandle", ShapeSprites.Disc);
             _reachHandle.sortingOrder = -1;
-            _reachOutline.sortingOrder = 19;
             if (_eraserHandle == null) _eraserHandle = Create("EraserHandle", _visuals.Eraser);
 
             for (int i = 0; i < _boundsHandles.Length; i++)
@@ -211,15 +209,11 @@ namespace PPS.MapEditor
                 && MapEditStyle.HasReach(devices[_model.Selection.Index]);
 
             _reachHandle.gameObject.SetActive(on);
-            _reachOutline.gameObject.SetActive(on && _model.DeviceTool != DeviceEditKind.Radius);
             if (!on) return;
 
             var device = (IHasReach)devices[_model.Selection.Index];
-            var art = _style.Sim.VisualOf(devices[_model.Selection.Index].Type);
             MapHandleGfx.PlaceDot(
-                _reachHandle, art?.RangeFill, devices[_model.Selection.Index].Position, device.Reach, _style.Reach);
-            MapHandleGfx.PlaceDot(_reachOutline, art?.RangeOutline, devices[_model.Selection.Index].Position,
-                device.Reach, _style.Scale);
+                _reachHandle, ShapeSprites.Disc, devices[_model.Selection.Index].Position, device.Reach, _style.Reach);
         }
 
         void DrawDeviceTools()
@@ -237,7 +231,7 @@ namespace PPS.MapEditor
                 : ringVisible ? (float)parameter.Read(device) : 0f;
             var ring = _deviceToolHandles[0];
             ring.gameObject.SetActive(ringVisible);
-            var ringArt = rotation ? _visuals.RotationRing : art?.RangeOutline;
+            var ringArt = _visuals.RotationRing;
             ring.sortingOrder = 20;
             if (ringVisible)
                 MapHandleGfx.PlaceDot(ring, ringArt, device.Position, radius, rotation ? _style.Selected : _style.Scale);

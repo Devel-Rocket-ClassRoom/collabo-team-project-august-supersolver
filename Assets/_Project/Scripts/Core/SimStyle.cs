@@ -39,10 +39,6 @@ namespace PPS.Core
             public DeviceType Type;
             [Tooltip("게임과 맵에디터에서 표시할 장치 본체 이미지입니다. 크기는 장치 데이터에 맞춰 자동 조절됩니다.")]
             public Sprite Sprite;
-            [Tooltip("맵에디터에서 선택한 장치의 효과 범위를 채우는 이미지입니다. 폭탄·바람의 실제 반경에 맞춰 표시됩니다.")]
-            public Sprite RangeFill;
-            [Tooltip("맵에디터의 효과 범위 테두리와 반경 조절 도구에 쓰는 이미지입니다. 장치 반경에 맞춰 크기가 조절됩니다.")]
-            public Sprite RangeOutline;
             [Tooltip("맵에디터에서 장치의 진행 방향을 표시하는 이미지입니다. 오른쪽을 향하는 원본을 사용하면 장치 각도에 맞춰 회전합니다. 바람처럼 방향이 있는 장치에 사용합니다.")]
             public Sprite DirectionArrow;
             [Tooltip("폭발 순간 표시한 뒤 자동으로 사라지는 이미지입니다. 일반 폭탄은 폭발 반경, 파편 폭탄은 본체 크기에 맞춰 표시됩니다. 비워 두면 폭발 이미지를 표시하지 않습니다.")]
