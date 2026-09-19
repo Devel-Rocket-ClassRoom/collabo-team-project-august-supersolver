@@ -57,7 +57,7 @@ namespace PPS.MapEditor
         public int Order { get; }
         public int DeclarationOrder => _field.MetadataToken;
         public bool IsNumber => ValueType == typeof(float) || ValueType == typeof(int);
-        public bool CanEdit => IsNumber || ValueType == typeof(bool) || ValueType.IsEnum || ValueType == typeof(string);
+        public bool CanEdit => IsNumber || ValueType == typeof(bool) || ValueType.IsEnum;
 
         public DeviceParameter(FieldInfo field)
         {
@@ -75,14 +75,24 @@ namespace PPS.MapEditor
 
         public object Read(IDeviceData device) => _field.GetValue(device);
 
-        public string Format(IDeviceData device) => Convert.ToString(Read(device), CultureInfo.InvariantCulture);
+        public string Format(IDeviceData device)
+        {
+            object value = Read(device);
+            if (value == null) return "None";
+            if (value is System.Collections.ICollection items) return $"{items.Count} items";
+            return Convert.ToString(value, CultureInfo.InvariantCulture);
+        }
 
         public bool TryParse(string text, out object value, out string error)
         {
             value = null;
+            if (!CanEdit)
+            {
+                error = "Read only: no editor for this type.";
+                return false;
+            }
             error = "Enter a valid value.";
-            if (ValueType == typeof(string)) value = text;
-            else if (ValueType == typeof(bool) && bool.TryParse(text, out bool flag)) value = flag;
+            if (ValueType == typeof(bool) && bool.TryParse(text, out bool flag)) value = flag;
             else if (ValueType.IsEnum && Enum.TryParse(ValueType, text, out var choice)
                 && Enum.IsDefined(ValueType, choice)) value = choice;
             else if (IsNumber)

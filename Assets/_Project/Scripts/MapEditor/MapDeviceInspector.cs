@@ -224,7 +224,12 @@ namespace PPS.MapEditor
             help.gameObject.SetActive(false);
             if (!parameter.CanEdit)
             {
-                Text(row, "Custom tool needed", 24);
+                var readOnly = Value(row);
+                readOnly.richText = false;
+                readOnly.color = _visuals.MutedText;
+                _refresh.Add(() => readOnly.text = parameter.Format(device));
+                help.text = "Read only: no editor for this type.";
+                help.gameObject.SetActive(true);
                 return;
             }
             if (parameter.ValueType == typeof(bool) || parameter.ValueType.IsEnum)
