@@ -32,9 +32,7 @@ public class ThemeRepository : IThemeRepository
     public void Init(IResourceLoader loader)
     {
         _loader = loader;
-        _loader.AfterLoad += OnResourceLoaded;
     }
-    private void OnResourceLoaded() => OnLoaded?.Invoke();
     public async UniTask LoadAsync(ThemeLabel theme)
     {
         Debug.Log("[테마 에셋 로드] 로딩시작");
@@ -80,6 +78,9 @@ public class ThemeRepository : IThemeRepository
         {
             _locked = false;
         }
+
+        OnLoaded?.Invoke();
+
         Debug.Log("[테마 에셋 로드] 로딩종료");
     }
 
@@ -96,7 +97,7 @@ public class ThemeRepository : IThemeRepository
         _locked = true;
         if (_handle != null && currentTheme == theme)
         {
-            Debug.LogWarning("[테마 에셋 로드 실패] 이미 로드된 에셋을 또 로드하려고 시도함");
+            Debug.LogWarning($"[테마 에셋 로드 실패] 이미 로드된 {currentTheme}을 또 로드하려고 시도함");
             _locked = false;
             return false;
         }

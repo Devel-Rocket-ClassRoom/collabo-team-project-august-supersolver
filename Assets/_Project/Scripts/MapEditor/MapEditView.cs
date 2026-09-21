@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using PPS.Core;
 using PPS.Game;
+using PPS.DrawingTool;
 using UnityEngine;
 
 // UnityEngine 에도 같은 이름이 있다(SystemInfo.deviceType).
@@ -15,6 +16,9 @@ namespace PPS.MapEditor
     public sealed class MapEditView : MonoBehaviour
     {
         [SerializeField] MapEditStyle _style;
+        [SerializeField] MapEditorVisuals _visuals;
+        public MapEditorVisuals Visuals => _visuals;
+        public MapEditStyle Style => _style;
 
         SpriteRenderer _startHandle;
         SpriteRenderer _goalHandle;
@@ -39,6 +43,7 @@ namespace PPS.MapEditor
         readonly List<SpriteRenderer> _starHandles = new List<SpriteRenderer>();
         readonly List<SpriteRenderer> _deviceHandles = new List<SpriteRenderer>();
         readonly List<SpriteRenderer> _terrainHandles = new List<SpriteRenderer>();
+        readonly List<SpriteRenderer> _deviceToolHandles = new List<SpriteRenderer>();
 
         /// 도형을 선분으로 굽는 임시 버퍼.
         /// 매번 새로 만들면 프레임마다 할당이 생긴다.
@@ -46,6 +51,9 @@ namespace PPS.MapEditor
 
         /// 이번에 그리는 것. 전달 인자를 메서드마다 나르지 않는다.
         MapDrawModel _model;
+        bool _reportedMissingAssets;
+
+        void OnEnable() => HideAll();
 
         /// <summary>
         /// 크기 핸들 자리. 테두리의 오른쪽 위 모서리다 —
@@ -59,20 +67,36 @@ namespace PPS.MapEditor
             if (ServiceLocator.TryGet<IThemeRepository>(out var repo) && repo.Asset.MapStyle != null)
                 _style = repo.Asset.MapStyle;
 
-            _startHandle = Create("StartHandle", _style.Sim.Sprites.Ball);
-            _goalHandle = Create("GoalHandle", _style.Sim.Sprites.Goal);
-            _scaleHandle = Create("ScaleHandle", MapHandleGfx.Square);
-            _reachHandle = Create("ReachHandle", MapHandleGfx.Circle);
-            _eraserHandle = Create("EraserHandle", MapHandleGfx.Circle);
+            EnsureHandles();
+        }
+
+        bool EnsureHandles()
+        {
+            if (_style == null || _style.Sim == null || _style.Sim.Sprites == null || _visuals == null)
+            {
+                if (!_reportedMissingAssets)
+                    Debug.LogError("MapEditView needs a MapEditStyle with SimStyle and a MapEditorVisuals asset.", this);
+                _reportedMissingAssets = true;
+                return false;
+            }
+            _reportedMissingAssets = false;
+            if (_startHandle == null) _startHandle = Create("StartHandle", _style.Sim.Sprites.Ball);
+            if (_goalHandle == null) _goalHandle = Create("GoalHandle", _style.Sim.Sprites.Goal);
+            if (_scaleHandle == null) _scaleHandle = Create("ScaleHandle", _visuals.ResizeHandle);
+            if (_reachHandle == null) _reachHandle = Create("ReachHandle", ShapeSprites.Disc);
+            _reachHandle.sortingOrder = -1;
+            if (_eraserHandle == null) _eraserHandle = Create("EraserHandle", _visuals.Eraser);
 
             for (int i = 0; i < _boundsHandles.Length; i++)
-                _boundsHandles[i] = Create($"BoundsHandle_{i}", MapHandleGfx.Square);
+                if (_boundsHandles[i] == null)
+                    _boundsHandles[i] = Create($"BoundsHandle_{i}", _visuals.Line);
+            return true;
         }
 
         /// <summary>편집 쪽이 매 프레임 부른다.</summary>
         public void OnDraw(in MapDrawModel model)
         {
-            if (_style == null || model.Level == null) return;
+            if (model.Level == null || !EnsureHandles()) return;
 
             _model = model;
 
@@ -90,6 +114,7 @@ namespace PPS.MapEditor
             DrawDevices();
             DrawShapes();
             DrawEditHandles();
+            DrawDeviceTools();
             DrawStroke();
             DrawEraser();
         }
@@ -103,7 +128,7 @@ namespace PPS.MapEditor
             var points = _model.Stroke;
             int need = points != null && points.Count >= 2 ? points.Count - 1 : 0;
 
-            Grow(_strokeHandles, need, "StrokeHandle", MapHandleGfx.Square);
+            Grow(_strokeHandles, need, "StrokeHandle", _visuals.Line);
 
             for (int i = 0; i < _strokeHandles.Count; i++)
             {
@@ -111,7 +136,7 @@ namespace PPS.MapEditor
                 _strokeHandles[i].gameObject.SetActive(used);
                 if (!used) continue;
 
-                MapHandleGfx.PlaceLine(_strokeHandles[i],
+                MapHandleGfx.PlaceLine(_strokeHandles[i], _visuals.Line,
                     new StaticSegment(points[i], points[i + 1]), _style.Selected);
             }
         }
@@ -128,7 +153,7 @@ namespace PPS.MapEditor
             if (!on) return;
 
             MapHandleGfx.PlaceDot(
-                _eraserHandle, _model.EraserAt, _model.EraserRadius, _style.Reach);
+                _eraserHandle, _visuals.Eraser, _model.EraserAt, _model.EraserRadius, _style.Scale);
         }
 
         void DrawStars()
@@ -179,6 +204,7 @@ namespace PPS.MapEditor
         void DrawReach(List<IDeviceData> devices)
         {
             bool on = _model.Selection.Kind == MapHandleKind.Device
+                && _model.Selection.Index >= 0
                 && _model.Selection.Index < devices.Count
                 && MapEditStyle.HasReach(devices[_model.Selection.Index]);
 
@@ -187,8 +213,52 @@ namespace PPS.MapEditor
 
             var device = (IHasReach)devices[_model.Selection.Index];
             MapHandleGfx.PlaceDot(
-                _reachHandle, devices[_model.Selection.Index].Position, device.Reach, _style.Reach);
+                _reachHandle, ShapeSprites.Disc, devices[_model.Selection.Index].Position, device.Reach, _style.Reach);
         }
+
+        void DrawDeviceTools()
+        {
+            Hide(_deviceToolHandles);
+            if (_model.Selection.Kind != MapHandleKind.Device
+                || _model.Selection.Index < 0 || _model.Selection.Index >= _model.Level.Devices.Count) return;
+            var device = _model.Level.Devices[_model.Selection.Index];
+            var art = _style.Sim.VisualOf(device.Type);
+            Grow(_deviceToolHandles, 6, "DeviceTool", _visuals.ResizeHandle);
+            var parameter = DeviceParameterSchema.For(device).Find(_model.DeviceTool);
+            bool rotation = _model.DeviceTool == DeviceEditKind.Angle;
+            bool ringVisible = parameter != null && _model.DeviceTool != DeviceEditKind.Position;
+            float radius = rotation ? DeviceTransformGeometry.RotationRadius(device, _model.HandleRadius)
+                : ringVisible ? (float)parameter.Read(device) : 0f;
+            var ring = _deviceToolHandles[0];
+            ring.gameObject.SetActive(ringVisible);
+            var ringArt = _visuals.RotationRing;
+            ring.sortingOrder = 20;
+            if (ringVisible)
+                MapHandleGfx.PlaceDot(ring, ringArt, device.Position, radius, rotation ? _style.Selected : _style.Scale);
+            for (int i = 0; i < 4; i++)
+            {
+                var handle = _deviceToolHandles[i + 1];
+                handle.gameObject.SetActive(ringVisible && (!rotation || i == 0));
+                var handleArt = rotation ? _visuals.VertexHandle : _visuals.ResizeHandle;
+                handle.sortingOrder = 21;
+                float angle = rotation ? (float)parameter.Read(device) : i * 90f;
+                MapHandleGfx.PlaceDot(handle, handleArt, OnCircle(device.Position, radius, angle),
+                    _model.HandleRadius, rotation ? _style.Selected : _style.Scale, rotation ? 0 : angle - 45);
+            }
+            var arrow = _deviceToolHandles[5];
+            arrow.gameObject.SetActive(device is IHasFacing);
+            if (device is IHasFacing facing)
+            {
+                arrow.sortingOrder = 22;
+                float distance = rotation ? radius
+                    : Mathf.Max(device.DrawRadius + _model.HandleRadius * 3f, _model.HandleRadius * 4f);
+                MapHandleGfx.PlaceDot(arrow, art?.DirectionArrow, OnCircle(device.Position, distance, facing.FacingDegrees),
+                    _model.HandleRadius * 1.5f, _style.Selected, facing.FacingDegrees);
+            }
+        }
+
+        static Vector2 OnCircle(Vector2 center, float radius, float degrees) =>
+            center + new Vector2(Mathf.Cos(degrees * Mathf.Deg2Rad), Mathf.Sin(degrees * Mathf.Deg2Rad)) * radius;
 
         /// <summary>
         /// 도형마다 색을 정하고 그 도형의 선분을 그린다.
@@ -200,7 +270,7 @@ namespace PPS.MapEditor
             var shapes = _model.Shapes.Shapes;
 
             Grow(_terrainHandles, _model.Level.Terrain.Count,
-                "TerrainHandle", MapHandleGfx.Square);
+                "TerrainHandle", _visuals.Line);
 
             int handle = 0;
 
@@ -214,7 +284,7 @@ namespace PPS.MapEditor
                 for (int s = 0; s < _scratch.Count && handle < _terrainHandles.Count; s++, handle++)
                 {
                     _terrainHandles[handle].gameObject.SetActive(true);
-                    MapHandleGfx.PlaceLine(_terrainHandles[handle], _scratch[s], color);
+                    MapHandleGfx.PlaceLine(_terrainHandles[handle], _visuals.Line, _scratch[s], color);
                 }
             }
 
@@ -251,9 +321,9 @@ namespace PPS.MapEditor
             DrawBounds(shape.Bounds());
 
             // 크기 핸들은 사각형이라 버텍스와 한눈에 구분된다.
-            MapHandleGfx.PlaceDot(_scaleHandle, ScaleHandleAt(shape), radius, _style.Scale);
+            MapHandleGfx.PlaceDot(_scaleHandle, _visuals.ResizeHandle, ScaleHandleAt(shape), radius, _style.Scale);
 
-            Grow(_vertexHandles, shape.Points.Count, "VertexHandle", MapHandleGfx.Circle);
+            Grow(_vertexHandles, shape.Points.Count, "VertexHandle", _visuals.VertexHandle);
 
             for (int i = 0; i < _vertexHandles.Count; i++)
             {
@@ -263,7 +333,7 @@ namespace PPS.MapEditor
 
                 // 마지막으로 고른 점은 크고 밝게.
                 bool active = _model.ActiveVertex == i;
-                MapHandleGfx.PlaceDot(_vertexHandles[i], shape.Points[i],
+                MapHandleGfx.PlaceDot(_vertexHandles[i], _visuals.VertexHandle, shape.Points[i],
                     active ? radius : radius * 0.7f,
                     active ? _style.Selected : _style.Vertex);
             }
@@ -281,7 +351,7 @@ namespace PPS.MapEditor
             _corners[3] = new Vector2(bounds.xMin, bounds.yMax);
 
             for (int i = 0; i < _boundsHandles.Length; i++)
-                MapHandleGfx.PlaceLine(_boundsHandles[i],
+                MapHandleGfx.PlaceLine(_boundsHandles[i], _visuals.Line,
                     new StaticSegment(_corners[i], _corners[(i + 1) % _corners.Length]),
                     _style.Bounds, MapHandleGfx.LineWidth * 0.25f);
         }
@@ -308,20 +378,10 @@ namespace PPS.MapEditor
         /// </summary>
         public void HideAll()
         {
-            _startHandle.gameObject.SetActive(false);
-            _goalHandle.gameObject.SetActive(false);
-            _scaleHandle.gameObject.SetActive(false);
-            _reachHandle.gameObject.SetActive(false);
-            _eraserHandle.gameObject.SetActive(false);
-
-            for (int i = 0; i < _boundsHandles.Length; i++)
-                _boundsHandles[i].gameObject.SetActive(false);
-
-            Hide(_vertexHandles);
-            Hide(_starHandles);
-            Hide(_deviceHandles);
-            Hide(_terrainHandles);
-            Hide(_strokeHandles);
+            // 재컴파일로 필드 참조가 초기화돼도 숨긴다.
+            foreach (Transform child in transform)
+                if (child.GetComponent<SpriteRenderer>() != null)
+                    child.gameObject.SetActive(false);
         }
 
         static void Hide(List<SpriteRenderer> handles)
@@ -335,7 +395,15 @@ namespace PPS.MapEditor
                 handles.Add(Create($"{name}_{handles.Count}", sprite));
         }
 
-        SpriteRenderer Create(string name, Sprite sprite) =>
-            MapHandleGfx.Create(transform, name, sprite);
+        SpriteRenderer Create(string name, Sprite sprite)
+        {
+            var existing = transform.Find(name);
+            if (existing != null && existing.TryGetComponent<SpriteRenderer>(out var renderer))
+            {
+                renderer.sprite = sprite;
+                return renderer;
+            }
+            return MapHandleGfx.Create(transform, name, sprite);
+        }
     }
 }

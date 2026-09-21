@@ -4,9 +4,8 @@ using UnityEngine;
 namespace PPS.MapEditor
 {
     /// <summary>
-    /// 편집 중에만 보이는 것의 색.
-    /// 오브젝트의 모양·크기는 SimStyle 이 든다 —
-    /// 편집 화면과 게임이 같은 것을 보아야 한다.
+    /// 편집 표시의 스프라이트와 강조색.
+    /// 게임 오브젝트의 모양은 SimStyle과 공유한다.
     /// </summary>
     [CreateAssetMenu(fileName = "MapEditStyle", menuName = "PPS/Map Edit Style")]
     public sealed class MapEditStyle : ScriptableObject

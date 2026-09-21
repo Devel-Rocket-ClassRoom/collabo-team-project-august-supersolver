@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using PPS.Core;
+using PPS.Game;
 using UnityEngine;
 
 namespace PPS.DrawingTool
@@ -172,13 +173,26 @@ namespace PPS.DrawingTool
 
         void AddDevice(IDeviceData device, int index)
         {
-            // 범위가 없는 장치는 지름 0 이라 보이지 않는다.
+            var visual = _style == null ? null : _style.VisualOf(device.Type);
             float reach = device is IHasReach r ? r.Reach : 0f;
+            var overlays = new GameObject($"DeviceRange_{index}");
+            overlays.transform.SetParent(transform, false);
+            _parts.Add(overlays);
+            _deviceRanges.Add(overlays.transform);
 
-            _deviceRanges.Add(AddDot($"DeviceRange_{index}", device.Position,
-                reach * 2f,
-                ShapeSprites.Ring, Fade(DeviceColor, DeviceRangeAlpha),
-                RenderOrder.Device));
+            if (reach > 0f)
+            {
+                AddDeviceOverlay(overlays.transform, "Outline", ShapeSprites.Ring,
+                    device.Position, reach, Fade(DeviceColor, DeviceRangeAlpha), RenderOrder.Device);
+            }
+            if (device is IHasFacing facing)
+            {
+                float radians = facing.FacingDegrees * Mathf.Deg2Rad;
+                Vector2 direction = new Vector2(Mathf.Cos(radians), Mathf.Sin(radians));
+                Vector2 position = device.Position + direction * device.DrawRadius * 2f;
+                AddDeviceOverlay(overlays.transform, "Direction", visual?.DirectionArrow,
+                    position, device.DrawRadius, Color.white, RenderOrder.Device + 2, facing.FacingDegrees);
+            }
 
             // 모양은 SimStyle 이, 크기는 데이터가 안다 — 게임과 같은
             // 크기로 그려야 저작자가 본 것이 그대로 온다.
@@ -190,6 +204,16 @@ namespace PPS.DrawingTool
 
             body.rotation = Quaternion.Euler(0f, 0f, SimStyle.AngleOf(device));
             _deviceBodies.Add(body);
+        }
+
+        static void AddDeviceOverlay(Transform parent, string name, Sprite sprite,
+            Vector2 position, float radius, Color color, int order, float angle = 0f)
+        {
+            if (sprite == null) return;
+            var renderer = MapHandleGfx.Create(parent, name, sprite);
+            renderer.sortingOrder = order;
+            MapHandleGfx.PlaceDot(renderer, sprite, position, radius, color, angle);
+            renderer.gameObject.SetActive(true);
         }
 
         /// <summary>먹은 별을 지운다. 남아 있으면 먹었는지 알 수 없다.</summary>
