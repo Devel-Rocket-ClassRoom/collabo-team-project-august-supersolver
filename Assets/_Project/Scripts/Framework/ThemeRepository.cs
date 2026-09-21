@@ -96,7 +96,7 @@ public class ThemeRepository : IThemeRepository
         _locked = true;
         if (_handle != null && currentTheme == theme)
         {
-            Debug.LogWarning("[테마 에셋 로드 실패] 이미 로드된 에셋을 또 로드하려고 시도함");
+            Debug.LogWarning($"[테마 에셋 로드 실패] 이미 로드된 {currentTheme}을 또 로드하려고 시도함");
             _locked = false;
             return false;
         }
