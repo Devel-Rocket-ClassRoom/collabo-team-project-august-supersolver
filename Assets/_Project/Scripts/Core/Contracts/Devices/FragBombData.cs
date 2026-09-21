@@ -10,16 +10,23 @@ namespace PPS.Core
     [Serializable]
     public sealed class FragBombData : IDeviceData, IOccupiesCameraArea
     {
+        [DeviceParameter("Position", Kind = DeviceEditKind.Position)]
         public Vector2 Position;
 
         /// 파편이 튀어 나가는 속도(m/s).
+        [DeviceParameter("Speed", Unit = "m/s")]
+        [Min(0f)]
         public float Power = 6f;
 
         /// 발동까지의 기본 스텝 수.
+        [DeviceParameter("Blast delay", Unit = "steps", Order = -20)]
+        [Tooltip("Steps before this device activates.")]
+        [Min(0f)]
         public int DelaySteps = 30;
 
         /// rng 로 뽑는 추가 지연의 상한.
         /// 0 이면 시드와 무관하게 발동한다.
+        [HideInInspector]
         public int JitterSteps;
 
         public DeviceType Type => DeviceType.FragBomb;

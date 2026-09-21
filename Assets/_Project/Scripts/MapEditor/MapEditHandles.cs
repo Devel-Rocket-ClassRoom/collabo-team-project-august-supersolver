@@ -4,6 +4,7 @@ using PPS.DrawingTool;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.InputSystem;
+using TMPro;
 
 namespace PPS.MapEditor
 {
@@ -145,6 +146,53 @@ namespace PPS.MapEditor
         /// 지우개를 그릴 자리.
         Vector2 _eraseAt;
 
+        MapDeviceInspector _inspector;
+        DeviceParameter _dragParameter;
+        float _deviceDragStart;
+        Vector2 _devicePointerStart;
+        Vector2 _deviceMoveStart;
+        public DeviceEditKind DeviceTool { get; private set; } = DeviceEditKind.Position;
+        public bool IsDragging => _dragging;
+        public bool EditingShape => isActiveAndEnabled && _editMode;
+        public bool EditingVertices => EditingShape && _insertMode;
+
+        public IDeviceData SelectedDevice => _session != null
+            && ReferenceEquals(_lastStage, _session.Current)
+            && _selected.Kind == MapHandleKind.Device && InRange(_selected)
+                ? _session.Current.Level.Devices[_selected.Index] : null;
+
+        void Start()
+        {
+            if (_palette != null)
+                _palette.GetComponentInParent<Canvas>().gameObject.AddComponent<MapEditToolbar>().Initialize(this, _view.Visuals);
+            if (_fitter == null || _palette == null || _palette.EditorArea == null)
+            {
+                Debug.LogError("Device editor needs a fitter and palette editor area.", this);
+                return;
+            }
+            _inspector = gameObject.AddComponent<MapDeviceInspector>();
+            _inspector.Initialize(this, _fitter, _palette, _palette.EditorArea, _view.Visuals);
+        }
+
+        public void SelectDeviceTool(DeviceEditKind kind)
+        {
+            if (SelectedDevice != null && DeviceParameterSchema.For(SelectedDevice).Find(kind) == null) return;
+            DeviceTool = kind;
+            _palette?.SelectOnly();
+        }
+
+        public bool SetDeviceParameter(IDeviceData device, DeviceParameter parameter, string text, out string error, bool record = true)
+        {
+            error = "Select the device again.";
+            if (!isActiveAndEnabled || !ReferenceEquals(device, SelectedDevice)) return false;
+            if (!parameter.TryParse(text, out var value, out error)) return false;
+            if (Equals(parameter.Read(device), value)) return true;
+            if (record) Record();
+            parameter.Write(device, value);
+            _session.Bake();
+            return true;
+        }
+
         /// <summary>
         /// 테스트가 시작되면 이 오브젝트가 꺼진다.
         /// 그리는 쪽은 다른 오브젝트라 같이 안 꺼진다 —
@@ -152,6 +200,10 @@ namespace PPS.MapEditor
         /// </summary>
         void OnDisable()
         {
+            _dragging = false;
+            _drawing = false;
+            _erasing = false;
+            _grab = GrabKind.None;
             if (_view != null) _view.HideAll();
         }
 
@@ -160,6 +212,7 @@ namespace PPS.MapEditor
             if (_session == null || _fitter == null || !_fitter.IsReady) return;
 
             DropStaleSelection();
+            HandleDeviceShortcuts();
             HandleInput();
             Redraw();
         }
@@ -195,11 +248,11 @@ namespace PPS.MapEditor
             switch (selection.Kind)
             {
                 case MapHandleKind.Star:
-                    return selection.Index < level.Stars.Count;
+                    return selection.Index >= 0 && selection.Index < level.Stars.Count;
                 case MapHandleKind.Device:
-                    return selection.Index < level.Devices.Count;
+                    return selection.Index >= 0 && selection.Index < level.Devices.Count;
                 case MapHandleKind.Terrain:
-                    return selection.Index < _session.Shapes.Shapes.Count;
+                    return selection.Index >= 0 && selection.Index < _session.Shapes.Shapes.Count;
                 default:
                     return true;
             }
@@ -220,6 +273,7 @@ namespace PPS.MapEditor
             }
 
             _editMode = !_editMode;
+            if (_editMode) _palette?.SelectOnly();
             if (!_editMode)
             {
                 _insertMode = false;
@@ -241,6 +295,7 @@ namespace PPS.MapEditor
             }
 
             _insertMode = !_insertMode;
+            if (_insertMode) _palette?.SelectOnly();
             Debug.Log(_insertMode ? "[맵 에디터] 버텍스 추가 중" : "[맵 에디터] 버텍스 추가 끝");
         }
 
@@ -475,23 +530,26 @@ namespace PPS.MapEditor
 
             Vector2 world = _fitter.ScreenToWorld(pointer.position.ReadValue());
 
+            if (Typing()) return;
+
             if (HandleDrawInput(pointer, world)) return;
 
             if (pointer.press.wasPressedThisFrame && !OverUI())
             {
                 _grab = GrabKind.None;
 
-                // 삽입 모드에서는 삽입이 핸들보다 먼저다.
-                // 핸들을 먼저 보면 점 주변이 전부 옮기기로
-                // 잡혀 새 점을 넣을 자리가 남지 않는다.
+                // 기존 점은 이동하고 빈 선 위에는 추가한다.
+                // 크기 핸들은 버텍스 선택을 가리지 않는다.
                 bool insertMode = InsertReady();
-                bool inserted = insertMode && InsertVertexAt(world);
+                if (insertMode) _grab = PickVertexHandle(world);
+                bool inserted = insertMode && _grab == GrabKind.None && InsertVertexAt(world);
 
                 if (!insertMode)
                 {
                     // 편집 모드에서는 도형 안의 핸들이 먼저다.
                     // 도형보다 작아서 뒤로 밀리면 절대 못 잡는다.
-                    _grab = PickEditHandle(world);
+                    _grab = PickDeviceHandle(world);
+                    if (_grab == GrabKind.None) _grab = PickEditHandle(world);
                 }
 
                 if (!insertMode && _grab == GrabKind.None)
@@ -501,6 +559,7 @@ namespace PPS.MapEditor
                     // 다른 도형을 고르면 편집 모드에서 빠진다.
                     if (hit.Kind != _selected.Kind || hit.Index != _selected.Index)
                     {
+                        DeviceTool = DeviceEditKind.Position;
                         _editMode = false;
                         _insertMode = false;
                         _activeVertex = -1;
@@ -514,6 +573,11 @@ namespace PPS.MapEditor
 
                 _dragging = _grab != GrabKind.None;
                 _dragFrom = world;
+                if (_grab == GrabKind.Object && SelectedDevice != null)
+                {
+                    _deviceMoveStart = SelectedDevice.Position;
+                    _devicePointerStart = world;
+                }
 
                 // 삽입은 이미 스냅샷을 남겼다.
                 // 여기서 풀면 이어지는 드래그가 하나 더 남긴다.
@@ -527,6 +591,56 @@ namespace PPS.MapEditor
             }
 
             if (_dragging && pointer.press.isPressed) Drag(world);
+        }
+
+        static bool Typing() => EventSystem.current != null
+            && EventSystem.current.currentSelectedGameObject != null
+            && EventSystem.current.currentSelectedGameObject.TryGetComponent<TMP_InputField>(out var input)
+            && input.isFocused;
+
+        void HandleDeviceShortcuts()
+        {
+            var keyboard = Keyboard.current;
+            if (keyboard == null || Typing() || _dragging) return;
+            if (keyboard.escapeKey.wasPressedThisFrame)
+            {
+                _selected = MapSelection.None;
+                _palette?.SelectOnly();
+            }
+            if (SelectedDevice == null) return;
+            if (keyboard.wKey.wasPressedThisFrame) SelectDeviceTool(DeviceEditKind.Position);
+            if (keyboard.eKey.wasPressedThisFrame) SelectDeviceTool(DeviceEditKind.Angle);
+            if (keyboard.rKey.wasPressedThisFrame) SelectDeviceTool(DeviceEditKind.Radius);
+        }
+
+        GrabKind PickDeviceHandle(Vector2 world)
+        {
+            var device = SelectedDevice;
+            if (device == null || DeviceTool == DeviceEditKind.Position) return GrabKind.None;
+            _dragParameter = DeviceParameterSchema.For(device).Find(DeviceTool);
+            if (_dragParameter == null) return GrabKind.None;
+            float radius = DeviceTool == DeviceEditKind.Radius
+                ? (float)_dragParameter.Read(device)
+                : DeviceTransformGeometry.RotationRadius(device, HandleRadius());
+            if (!DeviceTransformGeometry.HitsRing(world, device.Position, radius, PickRadiusWorld()))
+                return GrabKind.None;
+            _deviceDragStart = (float)_dragParameter.Read(device);
+            _devicePointerStart = world;
+            return GrabKind.DeviceTransform;
+        }
+
+        void DragDeviceHandle(Vector2 world)
+        {
+            var device = SelectedDevice;
+            if (device == null) return;
+            if (!_dragRecorded && world == _devicePointerStart) return;
+            float value = DeviceTransformGeometry.Drag(DeviceTool, device.Position,
+                _devicePointerStart, world, _deviceDragStart);
+            value = _dragParameter.Constrain(value);
+            if (Mathf.Approximately((float)_dragParameter.Read(device), value)) return;
+            if (!_dragRecorded) { Record(); _dragRecorded = true; }
+            _dragParameter.Write(device, value);
+            _session.Bake();
         }
 
         /// <summary>
@@ -722,7 +836,7 @@ namespace PPS.MapEditor
         /// 장치 탭의 항목 하나를 놓는다.
         /// 별은 같은 탭에 있지만 레벨의 별도 목록에 들어간다 —
         /// 코어가 장치가 아니라 수집 목표로 다룬다.
-        /// 세기·지연은 기본값으로 둔다. 값을 고치는 UI 는 아직 없다.
+        /// 세기·지연은 배치 후 속성 패널에서 고친다.
         /// </summary>
         MapSelection AddDeviceItem(Vector2 world, int kind)
         {
@@ -746,7 +860,6 @@ namespace PPS.MapEditor
 
                         // 흔들림은 0 이다. 값이 있으면 발동 시점이
                         // 시드에 따라 달라져 레벨을 읽기 어렵다.
-                        JitterSteps = 0,
                     });
                     break;
 
@@ -777,7 +890,6 @@ namespace PPS.MapEditor
                         Position = world,
                         Power = 6f,
                         DelaySteps = 30,
-                        JitterSteps = 0,
                     });
                     break;
 
@@ -814,6 +926,14 @@ namespace PPS.MapEditor
 
             if (Vector2.Distance(world, MapEditView.ScaleHandleAt(shape)) <= reach) return GrabKind.Scale;
 
+            return PickVertexHandle(world);
+        }
+
+        GrabKind PickVertexHandle(Vector2 world)
+        {
+            if (!_editMode || _selected.Kind != MapHandleKind.Terrain) return GrabKind.None;
+            ShapeData shape = _session.Shapes.Shapes[_selected.Index];
+            float reach = HandleRadius();
             for (int i = 0; i < shape.Points.Count; i++)
             {
                 if (Vector2.Distance(world, shape.Points[i]) > reach) continue;
@@ -975,6 +1095,22 @@ namespace PPS.MapEditor
 
         void Drag(Vector2 world)
         {
+            if (_grab == GrabKind.DeviceTransform)
+            {
+                DragDeviceHandle(world);
+                return;
+            }
+            if (_grab == GrabKind.Object && SelectedDevice != null)
+            {
+                if (!_dragRecorded && world == _devicePointerStart) return;
+                Vector2 position = _deviceMoveStart + world - _devicePointerStart;
+                position = ClampPoint(position);
+                if (position == SelectedDevice.Position) return;
+                if (!_dragRecorded) { Record(); _dragRecorded = true; }
+                SelectedDevice.Position = position;
+                _session.Bake();
+                return;
+            }
             Vector2 delta = world - _dragFrom;
             if (delta == Vector2.zero) return;
 
@@ -1003,10 +1139,6 @@ namespace PPS.MapEditor
                     break;
                 case MapHandleKind.Star:
                     level.Stars[_selected.Index] = MovePoint(level.Stars[_selected.Index], ref delta);
-                    break;
-                case MapHandleKind.Device:
-                    IDeviceData device = level.Devices[_selected.Index];
-                    device.Position = MovePoint(device.Position, ref delta);
                     break;
                 case MapHandleKind.Terrain:
                     ShapeData shape = _session.Shapes.Shapes[_selected.Index];
@@ -1094,7 +1226,7 @@ namespace PPS.MapEditor
                 _session.Current.Level, _session.Shapes, _selected,
                 _editMode, InsertReady(), _activeVertex, HandleRadius(),
                 _drawing ? _stroke.Points : null,
-                _erasing ? EraserRadiusWorld() : 0f, _eraseAt));
+                _erasing ? EraserRadiusWorld() : 0f, _eraseAt, DeviceTool));
         }
 
         float PickRadiusWorld()
@@ -1104,8 +1236,10 @@ namespace PPS.MapEditor
         }
 
         /// 도구 버튼을 눌렀는데 맵이 반응하면 안 된다.
-        static bool OverUI() =>
-            EventSystem.current != null && EventSystem.current.IsPointerOverGameObject();
+        bool OverUI() =>
+            (_inspector != null && Pointer.current != null
+                && _inspector.ContainsScreenPoint(Pointer.current.position.ReadValue()))
+            || (EventSystem.current != null && EventSystem.current.IsPointerOverGameObject());
 
         /// <summary>
         /// 이번 드래그가 움직이는 대상.
@@ -1117,6 +1251,7 @@ namespace PPS.MapEditor
             Object,
             Vertex,
             Scale,
+            DeviceTransform,
         }
 
     }

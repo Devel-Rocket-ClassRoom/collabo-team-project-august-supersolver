@@ -36,11 +36,13 @@ namespace PPS.MapEditor
         public readonly float EraserRadius;
 
         public readonly Vector2 EraserAt;
+        public readonly DeviceEditKind DeviceTool;
 
         public MapDrawModel(
             LevelData level, MapShapes shapes, MapSelection selection,
             bool editMode, bool insertReady, int activeVertex, float handleRadius,
-            List<Vector2> stroke, float eraserRadius, Vector2 eraserAt)
+            List<Vector2> stroke, float eraserRadius, Vector2 eraserAt,
+            DeviceEditKind deviceTool = DeviceEditKind.Position)
         {
             Level = level;
             Shapes = shapes;
@@ -52,6 +54,7 @@ namespace PPS.MapEditor
             Stroke = stroke;
             EraserRadius = eraserRadius;
             EraserAt = eraserAt;
+            DeviceTool = deviceTool;
         }
     }
 }
