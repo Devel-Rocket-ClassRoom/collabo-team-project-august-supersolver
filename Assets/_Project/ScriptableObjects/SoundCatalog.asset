@@ -19,7 +19,7 @@ MonoBehaviour:
     Clip: {fileID: 8300000, guid: a8cc2c23143c43949ba7c5d480f2d896, type: 3}
   sfx:
   - Type: 0
-    Clip: {fileID: 8300000, guid: 2409c352934699749b0ede05116bd545, type: 3}
+    Clip: {fileID: 8300000, guid: 3c4db961282141c45bfdcfbb64863875, type: 3}
   - Type: 1
     Clip: {fileID: 8300000, guid: b613dd730e3f03d49b229a4de9b8a1f6, type: 3}
   - Type: 2
@@ -28,3 +28,5 @@ MonoBehaviour:
     Clip: {fileID: 8300000, guid: a1f7ed7f9d6efd644ba315f4c97028ca, type: 3}
   - Type: 4
     Clip: {fileID: 8300000, guid: 316a6d52cf72dc349baa0f03fc2dcc6a, type: 3}
+  - Type: 5
+    Clip: {fileID: 8300000, guid: 3c4db961282141c45bfdcfbb64863875, type: 3}
