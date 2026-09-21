@@ -91,6 +91,7 @@ namespace PPS.DrawingTool
 
             _levelView.ResetBall();
             _levelView.ShowAll();
+            _levelView.ShowCountdown(0);
             HideFragments();
             StopKillEffect();
             _strokes.Rebuild();
@@ -109,6 +110,7 @@ namespace PPS.DrawingTool
             FollowPivots();
             FollowStars(world);
             FollowDevices(world);
+            _levelView.ShowCountdown(world.CurrentStep);
             FollowFragments(world);
             FollowKill(world);
         }

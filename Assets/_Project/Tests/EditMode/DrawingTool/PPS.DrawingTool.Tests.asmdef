@@ -6,7 +6,8 @@
         "UnityEditor.TestRunner",
         "PPS.Core",
         "PPS.DrawingTool",
-        "UnityEngine.UI"
+        "UnityEngine.UI",
+        "Unity.TextMeshPro"
     ],
     "includePlatforms": [
         "Editor"
