@@ -10,13 +10,14 @@ public class ThemeSelectView : UIScene
     [SerializeField] ThemeAssetCatalog catalog;
 
     [Header("UGUI")]
-    [SerializeField] RectTransform body;
     [SerializeField] Transform buttonParent;
     [SerializeField] ThemeSelectButton themeButtonPrefab;
 
     [Header("Animation")]
-    [SerializeField] float showAnimOffset = 10f;
-    [SerializeField] float showAnimDuration = .5f;
+    [SerializeField] float showAnimDuration = .3f;
+
+    /// 버튼이 하나씩 터지는 간격.
+    [SerializeField] float popInterval = .06f;
 
     List<ThemeSelectButton> buttons = new();
 
@@ -30,12 +31,28 @@ public class ThemeSelectView : UIScene
 
         await base.OnShowAnimation();
         UpdateThemeButton();
-        float dest = body.anchoredPosition.y;
-        body.anchoredPosition += Vector2.up * showAnimOffset;
-        var task = body.DOAnchorPosY(dest, showAnimDuration)
-            .SetEase(Ease.OutCubic);
 
-        await task.AsyncWaitForCompletion();
+        await PopInButtons();
+    }
+
+    /// <summary>
+    /// 버튼을 하나씩 부풀려 띄운다. 자리는 레이아웃 그룹이
+    /// 잡으므로 위치를 건드리면 되돌려진다 — 스케일만 만진다.
+    /// </summary>
+    async UniTask PopInButtons()
+    {
+        Sequence sequence = DOTween.Sequence().SetLink(gameObject);
+
+        for (int i = 0; i < buttons.Count; i++)
+        {
+            Transform button = buttons[i].transform;
+            button.localScale = Vector3.zero;
+
+            sequence.Insert(i * popInterval,
+                button.DOScale(1f, showAnimDuration).SetEase(Ease.OutBack));
+        }
+
+        await sequence.AsyncWaitForCompletion();
     }
     void UpdateThemeButton()
     {
