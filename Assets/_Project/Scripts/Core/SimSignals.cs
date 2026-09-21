@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using UnityEngine;
 
 namespace PPS.Core
@@ -14,7 +14,13 @@ namespace PPS.Core
         /// 구독자는 꺼질 때 반드시 해제한다.
         public static event Action<DeviceType, Vector2> DeviceTriggered;
 
+        /// 별을 먹었다. 먹은 자리를 준다.
+        public static event Action<Vector2> StarCollected;
+
         public static void Trigger(DeviceType type, Vector2 at)
             => DeviceTriggered?.Invoke(type, at);
+
+        public static void CollectStar(Vector2 at)
+            => StarCollected?.Invoke(at);
     }
 }

@@ -1,4 +1,4 @@
-namespace PPS.Core
+﻿namespace PPS.Core
 {
     public enum BgmType
     {
@@ -13,6 +13,7 @@ namespace PPS.Core
         Death,
         Slime,
         Reward,
+        Star,
     }
 
     /// <summary>

@@ -1,7 +1,8 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using PPS.Core;
 using PPS.Game;
 using UnityEngine;
+using DeviceType = PPS.Core.DeviceType;
 
 namespace PPS.DrawingTool
 {
@@ -68,9 +69,20 @@ namespace PPS.DrawingTool
                 Debug.LogWarning("테마에 낙사 이펙트가 없다. 떨어져 죽어도 안 터진다.", this);
         }
 
-        void OnEnable() => SimSignals.DeviceTriggered += OnDeviceTriggered;
+        void OnEnable()
+        {
+            SimSignals.DeviceTriggered += OnDeviceTriggered;
+            SimSignals.StarCollected += OnStarCollected;
+        }
 
-        void OnDisable() => SimSignals.DeviceTriggered -= OnDeviceTriggered;
+        void OnDisable()
+        {
+            SimSignals.DeviceTriggered -= OnDeviceTriggered;
+            SimSignals.StarCollected -= OnStarCollected;
+        }
+
+        void OnStarCollected(Vector2 at)
+            => ServiceLocator.Get<ISoundManager>().PlaySfx(SfxType.Star);
 
         /// <summary>
         /// 장치가 발동한 것을 소리로 알린다. 자리는 아직
