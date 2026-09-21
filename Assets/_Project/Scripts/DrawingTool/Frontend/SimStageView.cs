@@ -68,6 +68,28 @@ namespace PPS.DrawingTool
                 Debug.LogWarning("테마에 낙사 이펙트가 없다. 떨어져 죽어도 안 터진다.", this);
         }
 
+        void OnEnable() => SimSignals.DeviceTriggered += OnDeviceTriggered;
+
+        void OnDisable() => SimSignals.DeviceTriggered -= OnDeviceTriggered;
+
+        /// <summary>
+        /// 장치가 발동한 것을 소리로 알린다. 자리는 아직
+        /// 쓰지 않는다 — 소리가 화면 전체에 깔린다.
+        /// </summary>
+        void OnDeviceTriggered(DeviceType type, Vector2 at)
+        {
+            switch (type)
+            {
+                case DeviceType.Bomb:
+                case DeviceType.FragBomb:
+                    ServiceLocator.Get<ISoundManager>().PlaySfx(SfxType.Bomb);
+                    break;
+                case DeviceType.Bouncer:
+                    ServiceLocator.Get<ISoundManager>().PlaySfx(SfxType.Slime);
+                    break;
+            }
+        }
+
         public void Begin()
         {
             _strokeLocal.Clear();

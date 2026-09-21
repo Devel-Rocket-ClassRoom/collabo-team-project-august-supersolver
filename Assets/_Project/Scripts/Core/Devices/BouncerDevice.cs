@@ -1,4 +1,4 @@
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
@@ -114,6 +114,8 @@ namespace PPS.Core
                 // 법선 성분만 뒤집어 비율만큼 남긴다.
                 // 접선 성분은 그대로 지나간다 — 스쳐 가는 것은 스쳐 간다.
                 body.linearVelocity += normal * (approach * (1f + PowerAmplifier));
+
+                SimSignals.Trigger(DeviceType.Bouncer, _data.Position);
             }
         }
     }

@@ -1,4 +1,4 @@
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
@@ -124,6 +124,7 @@ namespace PPS.Core
 
             Explode(step, rng);
             _fired = true;
+            SimSignals.Trigger(DeviceType.FragBomb, _data.Position);
         }
 
         void Explode(int step, System.Random rng)
