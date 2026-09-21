@@ -36,6 +36,8 @@ public class SoundManager : MonoSingleton<SoundManager>, ISoundManager
         _sfxSources = new AudioSource[sfxSourceCount];
         for (int i = 0; i < sfxSourceCount; i++)
             _sfxSources[i] = CreateSfxSource(i);
+
+        PlayBgm(BgmType.Title);
     }
 
     AudioSource CreateSfxSource(int index)

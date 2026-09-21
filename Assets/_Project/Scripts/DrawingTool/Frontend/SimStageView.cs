@@ -1,4 +1,4 @@
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using PPS.Core;
 using PPS.Game;
 using UnityEngine;
@@ -181,6 +181,7 @@ namespace PPS.DrawingTool
 
             _levelView.SetBallVisible(false);
             PlayKillEffect(world.Ball.position);
+            ServiceLocator.Get<ISoundManager>().PlaySfx(SfxType.Death);
         }
 
         void PlayKillEffect(Vector2 at)

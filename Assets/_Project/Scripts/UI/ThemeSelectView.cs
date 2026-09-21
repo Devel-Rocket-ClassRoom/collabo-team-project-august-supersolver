@@ -1,4 +1,4 @@
-using Cysharp.Threading.Tasks;
+﻿using Cysharp.Threading.Tasks;
 using DG.Tweening;
 using PPS.Core;
 using System.Collections.Generic;
@@ -26,6 +26,8 @@ public class ThemeSelectView : UIScene
 
     protected override async UniTask OnShowAnimation()
     {
+        ServiceLocator.Get<ISoundManager>().PlayBgm(BgmType.Stage);
+
         await base.OnShowAnimation();
         UpdateThemeButton();
         float dest = body.anchoredPosition.y;

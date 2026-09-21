@@ -1,3 +1,4 @@
+﻿using PPS.Core;
 using PPS.DrawingTool;
 using UnityEngine;
 
@@ -30,6 +31,7 @@ public class DrawingToolSceneUI : UIScene
     {
         CanvasCameraFitter.Instance.SetCanvasArea(canvasArea);
         managers.gameObject.SetActive(true);
+        ServiceLocator.Get<ISoundManager>().PlayBgm(BgmType.Stage);
     }
 
     /// <summary>
