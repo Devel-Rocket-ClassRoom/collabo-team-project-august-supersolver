@@ -1,20 +1,6 @@
-using System;
+﻿using System;
+using PPS.Core;
 using UnityEngine;
-
-public enum BgmType
-{
-    Title,
-    Stage,
-}
-
-public enum SfxType
-{
-    UIClick,
-    Bomb,
-    Death,
-    Slime,
-    Reward,
-}
 
 /// <summary>
 /// 종류와 클립을 이어 두는 표. 종류마다 클립은 하나다.

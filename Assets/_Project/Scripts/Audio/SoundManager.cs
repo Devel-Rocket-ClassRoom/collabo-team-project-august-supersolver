@@ -1,3 +1,4 @@
+﻿using PPS.Core;
 using UnityEngine;
 using UnityEngine.Audio;
 
@@ -6,7 +7,7 @@ using UnityEngine.Audio;
 /// 전용 소스를 두고, SFX 는 겹쳐 울려야 해 자식으로
 /// 만들어 둔 소스 풀을 돌려 쓴다.
 /// </summary>
-public class SoundManager : MonoSingleton<SoundManager>
+public class SoundManager : MonoSingleton<SoundManager>, ISoundManager
 {
     [SerializeField] SoundCatalogSO catalog;
     [SerializeField] AudioSource bgmSource;
@@ -27,6 +28,10 @@ public class SoundManager : MonoSingleton<SoundManager>
         // 중복 인스턴스는 base 가 지운다. 지워질 것에
         // 풀을 달아 봐야 같이 버려진다.
         if (Instance != this) return;
+
+        // 어셈블리가 갈린 뷰는 이 타입을 못 본다.
+        // 계약만 걸어 두고 자신을 꽂는다.
+        ServiceLocator.Register<ISoundManager>(this);
 
         _sfxSources = new AudioSource[sfxSourceCount];
         for (int i = 0; i < sfxSourceCount; i++)
