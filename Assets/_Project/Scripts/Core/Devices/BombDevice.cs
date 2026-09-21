@@ -1,4 +1,4 @@
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
@@ -93,6 +93,7 @@ namespace PPS.Core
 
             Explode();
             _fired = true;
+            SimSignals.Trigger(DeviceType.Bomb, _data.Position);
         }
 
         void Explode()
