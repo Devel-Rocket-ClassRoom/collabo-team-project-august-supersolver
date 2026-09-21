@@ -15,7 +15,7 @@ MonoBehaviour:
   Sprites:
     Dot: {fileID: -2003601947, guid: a829e51a37e0dc148b87a468c29520fa, type: 3}
     Ball: {fileID: 21300000, guid: 7c31e13797e94499acc7f130a16b21e3, type: 3}
-    Goal: {fileID: 1313371594, guid: a829e51a37e0dc148b87a468c29520fa, type: 3}
+    Goal: {fileID: 21300000, guid: 107aab199a64ae84190ac285aaaa4091, type: 3}
     Star: {fileID: 21300000, guid: ad6b02fc55974ee7a0f4aaf1508974f1, type: 3}
   Devices:
   - Type: 0
