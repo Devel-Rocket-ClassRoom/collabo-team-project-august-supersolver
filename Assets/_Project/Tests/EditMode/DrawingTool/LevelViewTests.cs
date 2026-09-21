@@ -1,5 +1,6 @@
 using NUnit.Framework;
 using PPS.Core;
+using TMPro;
 using UnityEngine;
 
 namespace PPS.DrawingTool.Tests
@@ -180,6 +181,71 @@ namespace PPS.DrawingTool.Tests
 
             Assert.AreEqual(length + width, part.localScale.x, 1e-5f,
                 "선분이 두께만큼 길어지지 않았다");
+        }
+
+        /// <summary>
+        /// 점선이 곧 범위 끝이다. 안이나 밖에 서면
+        /// 닿는지 안 닿는지를 잘못 읽는다.
+        /// </summary>
+        [Test]
+        public void 범위_점선이_Reach_거리에_선다()
+        {
+            LevelData level = MakeLevel();
+            _view.SetLevel(level);
+
+            var bomb = (BombData)level.Devices[0];
+            int dashes = 0;
+
+            foreach (Transform part in _go.transform.Find("DeviceRange_0"))
+            {
+                if (part.name != "Dash") continue;
+                dashes++;
+
+                Assert.AreEqual(bomb.Reach, Vector2.Distance(part.position, bomb.Position), 1e-4f,
+                    "점선이 범위 끝에서 벗어났다");
+            }
+
+            Assert.Greater(dashes, 0, "범위 점선이 없다");
+        }
+
+        /// <summary>
+        /// 남은 초는 올려 적는다. 내리면 아직 안 터진
+        /// 폭탄에 0 이 떠서 불발처럼 읽힌다.
+        /// </summary>
+        [Test]
+        public void 남은_초는_터지는_스텝에서만_0_이다()
+        {
+            _view.SetLevel(MakeLevel());
+            TMP_Text timer = TimerOf(0);
+
+            Assert.AreEqual("0.5s", timer.text, "그리는 중에 설정값이 안 보인다");
+
+            _view.ShowCountdown(29);
+            Assert.AreEqual("0.1s", timer.text);
+
+            _view.ShowCountdown(30);
+            Assert.AreEqual("0.0s", timer.text);
+        }
+
+        /// 같은 값이면 안 고쳐 적는다. 그 판별이 옛 값에
+        /// 걸리면 재시도한 판에 지난 판의 초가 남는다.
+        [Test]
+        public void 재시도하면_남은_초가_설정값으로_돌아온다()
+        {
+            _view.SetLevel(MakeLevel());
+
+            _view.ShowCountdown(20);
+            _view.ShowCountdown(0);
+
+            Assert.AreEqual("0.5s", TimerOf(0).text);
+        }
+
+        TMP_Text TimerOf(int device)
+        {
+            Transform timer = _go.transform.Find($"DeviceRange_{device}/Timer");
+
+            Assert.IsNotNull(timer, "시한 장치에 남은 초가 없다");
+            return timer.GetComponent<TMP_Text>();
         }
 
         int CountStartingWith(string prefix)

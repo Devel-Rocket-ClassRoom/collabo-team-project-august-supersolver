@@ -24,6 +24,10 @@ namespace PPS.DrawingTool
 
         public const int PivotMarker = 1000;
 
+        /// 시한 장치의 남은 초. 획에 가리면 언제
+        /// 터질지 모른다.
+        public const int DeviceTimer = 1200;
+
         /// 장치가 뿌리는 파편. 닿으면 실패라 지형·장치보다
         /// 위다. 공은 그보다 위다 — 어디 있는지가 먼저다.
         public const int Fragment = 1500;

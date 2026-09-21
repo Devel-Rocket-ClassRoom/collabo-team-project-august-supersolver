@@ -19,19 +19,19 @@ MonoBehaviour:
     Star: {fileID: 21300000, guid: ad6b02fc55974ee7a0f4aaf1508974f1, type: 3}
   Devices:
   - Type: 0
-    Sprite: {fileID: -1892451399, guid: a829e51a37e0dc148b87a468c29520fa, type: 3}
+    Sprite: {fileID: 21300000, guid: a4e2b02d8c8544aaa034d1c9e8850c4a, type: 3}
     DirectionArrow: {fileID: 0}
     Explosion: {fileID: 0}
   - Type: 1
-    Sprite: {fileID: -1292404710, guid: a829e51a37e0dc148b87a468c29520fa, type: 3}
+    Sprite: {fileID: 21300000, guid: c1d4a9e58f6b47d59c1ce42dfd324864, type: 3}
     DirectionArrow: {fileID: 0}
     Explosion: {fileID: 0}
   - Type: 2
-    Sprite: {fileID: 1380786320, guid: a829e51a37e0dc148b87a468c29520fa, type: 3}
+    Sprite: {fileID: 21300000, guid: e9c51a7da4fd4dc9a65bf17e460d34e5, type: 3}
     DirectionArrow: {fileID: 0}
     Explosion: {fileID: 0}
   - Type: 3
-    Sprite: {fileID: 1407274763, guid: a829e51a37e0dc148b87a468c29520fa, type: 3}
+    Sprite: {fileID: 21300000, guid: 04cbf01562534af09cd65c7b55f01e0a, type: 3}
     DirectionArrow: {fileID: 21300000, guid: 9e15873a22814ea19e09250eb73a4579, type: 3}
     Explosion: {fileID: 0}
   - Type: 4
