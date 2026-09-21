@@ -1,0 +1,30 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1a2401a768b611a4e96646d17964ed8a, type: 3}
+  m_Name: SoundCatalog
+  m_EditorClassIdentifier: Assembly-CSharp::SoundCatalogSO
+  bgm:
+  - Type: 0
+    Clip: {fileID: 8300000, guid: 53cd294e354fcd44f92bbf162f2d4d46, type: 3}
+  - Type: 1
+    Clip: {fileID: 8300000, guid: a8cc2c23143c43949ba7c5d480f2d896, type: 3}
+  sfx:
+  - Type: 0
+    Clip: {fileID: 8300000, guid: 2409c352934699749b0ede05116bd545, type: 3}
+  - Type: 1
+    Clip: {fileID: 8300000, guid: b613dd730e3f03d49b229a4de9b8a1f6, type: 3}
+  - Type: 2
+    Clip: {fileID: 8300000, guid: e0c61f27e883eee449b445ef995e9314, type: 3}
+  - Type: 3
+    Clip: {fileID: 8300000, guid: a1f7ed7f9d6efd644ba315f4c97028ca, type: 3}
+  - Type: 4
+    Clip: {fileID: 8300000, guid: 316a6d52cf72dc349baa0f03fc2dcc6a, type: 3}
