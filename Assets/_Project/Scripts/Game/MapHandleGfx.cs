@@ -13,47 +13,33 @@ namespace PPS.Game
         /// 지형을 그리는 굵기. 표시용일 뿐 물리는 선이다.
         public const float LineWidth = 0.12f;
 
-        static Sprite _square;
-        static Sprite _circle;
+        public static void PlaceDot(SpriteRenderer handle, Sprite art, Vector2 world,
+            float radius, Color color, float degrees = 0f) =>
+            Place(handle, art, world, Vector2.one * (radius * 2f), color, degrees, true);
 
-        /// <summary>
-        /// 편집 핸들용 원. 버텍스와 범위 표시가 쓴다.
-        /// 사각형과 같은 이유로 코드에 둔다 — 편집 중에만
-        /// 보이는 것이라 아틀라스가 비면 편집이 막힌다.
-        /// </summary>
-        public static Sprite Circle => _circle != null ? _circle : _circle = MakeCircle();
-
-        static Sprite MakeCircle()
+        public static void PlaceLine(SpriteRenderer handle, Sprite art, in StaticSegment segment,
+            Color color, float width = LineWidth)
         {
-            const int size = 64;
-            var texture = new Texture2D(size, size, TextureFormat.RGBA32, false);
-            float center = (size - 1) * 0.5f;
-
-            for (int y = 0; y < size; y++)
-            for (int x = 0; x < size; x++)
-            {
-                float dist = Vector2.Distance(new Vector2(x, y), new Vector2(center, center));
-                texture.SetPixel(x, y, dist <= center ? Color.white : Color.clear);
-            }
-
-            texture.Apply();
-            return Sprite.Create(texture, new Rect(0, 0, size, size), Vector2.one * 0.5f, size);
+            Vector2 ab = segment.B - segment.A;
+            Place(handle, art, (segment.A + segment.B) * 0.5f, new Vector2(ab.magnitude, width),
+                color, Mathf.Atan2(ab.y, ab.x) * Mathf.Rad2Deg, false);
         }
 
-        /// <summary>
-        /// 선을 늘려 그리는 흰 사각형.
-        /// 이것만 코드로 만든다 — 늘리고 돌려 쓰는 조각이라
-        /// 여백이나 둥근 모서리가 있으면 선이 끊겨 보인다.
-        /// </summary>
-        public static Sprite Square => _square != null ? _square : _square = MakeSquare();
-
-        static Sprite MakeSquare()
+        static void Place(SpriteRenderer handle, Sprite art, Vector2 world,
+            Vector2 size, Color color, float degrees, bool preserveAspect)
         {
-            var texture = new Texture2D(1, 1, TextureFormat.RGBA32, false);
-            texture.SetPixel(0, 0, Color.white);
-            texture.Apply();
-
-            return Sprite.Create(texture, new Rect(0, 0, 1, 1), Vector2.one * 0.5f, 1);
+            handle.sprite = art;
+            handle.enabled = art != null;
+            if (!handle.enabled) return;
+            Vector2 contentSize = art.bounds.size;
+            Vector2 scale = new Vector2(size.x / contentSize.x, size.y / contentSize.y);
+            if (preserveAspect) scale = Vector2.one * Mathf.Min(scale.x, scale.y);
+            Vector2 center = art.bounds.center;
+            Quaternion rotation = Quaternion.Euler(0, 0, degrees);
+            handle.transform.localScale = new Vector3(scale.x, scale.y, 1);
+            handle.transform.rotation = rotation;
+            handle.transform.position = (Vector3)world - rotation * Vector2.Scale(center, scale);
+            handle.color = color;
         }
 
         /// <summary>
@@ -79,7 +65,8 @@ namespace PPS.Game
         {
             handle.transform.position = new Vector3(world.x, world.y, 0f);
             handle.transform.rotation = Quaternion.Euler(0f, 0f, degrees);
-            handle.transform.localScale = Vector3.one * (radius * 2f);
+            float size = handle.sprite == null ? 1f : Mathf.Max(handle.sprite.bounds.size.x, handle.sprite.bounds.size.y);
+            handle.transform.localScale = Vector3.one * (radius * 2f / size);
             handle.color = color;
         }
 
@@ -93,7 +80,8 @@ namespace PPS.Game
             handle.transform.position = new Vector3(center.x, center.y, 0f);
             handle.transform.rotation =
                 Quaternion.Euler(0f, 0f, Mathf.Atan2(ab.y, ab.x) * Mathf.Rad2Deg);
-            handle.transform.localScale = new Vector3(ab.magnitude, width, 1f);
+            Vector2 size = handle.sprite == null ? Vector2.one : (Vector2)handle.sprite.bounds.size;
+            handle.transform.localScale = new Vector3(ab.magnitude / size.x, width / size.y, 1f);
             handle.color = color;
         }
     }

@@ -184,6 +184,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 580e11934a88414489dfa09b9adf4967, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PPS.MapEditor.MapEditView
+  _visuals: {fileID: 11400000, guid: 249194508b32457db269aaa702403a3a, type: 2}
   _style: {fileID: 11400000, guid: 59d72269ab1cff14b987d2aa4dd75eb9, type: 2}
 --- !u!1 &5441716764451905385
 GameObject:

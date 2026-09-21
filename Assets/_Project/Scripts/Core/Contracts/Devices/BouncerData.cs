@@ -11,9 +11,12 @@ namespace PPS.Core
     [Serializable]
     public sealed class BouncerData : IDeviceData, IOccupiesCameraArea
     {
+        [DeviceParameter("Position", Kind = DeviceEditKind.Position)]
         public Vector2 Position;
 
         /// 몸 크기. 이 표면에 닿는 것이 되튕긴다.
+        [DeviceParameter("Radius", Kind = DeviceEditKind.Radius, Unit = "m")]
+        [Min(BouncerDevice.MinRadius)]
         public float Radius = 0.5f;
 
         public DeviceType Type => DeviceType.Bouncer;

@@ -51,13 +51,13 @@ namespace PPS.Game
 
         void DrawTerrain(LevelData level)
         {
-            Grow(_terrain, level.Terrain.Count, "SimTerrain", MapHandleGfx.Square);
+            Grow(_terrain, level.Terrain.Count, "SimTerrain", _style.TerrainSprite);
 
             for (int i = 0; i < _terrain.Count; i++)
             {
                 bool used = i < level.Terrain.Count;
                 _terrain[i].gameObject.SetActive(used);
-                if (used) MapHandleGfx.PlaceLine(_terrain[i], level.Terrain[i], _style.Terrain);
+                if (used) MapHandleGfx.PlaceLine(_terrain[i], _style.TerrainSprite, level.Terrain[i], _style.Terrain);
             }
         }
 
