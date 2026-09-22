@@ -7,53 +7,67 @@ namespace PPS.Core
     // 완성된 StageData와 Solution을 하나의 리플레이 파일로 저장한다.
     public static class ReplayStorage
     {
+        const string RelativeFolder = "_Project/Replays";
         // 실제 리플레이 저장 폴더의 전체 경로를 반환한다.
-        public static string FolderPath =>
-            Path.Combine(Application.persistentDataPath, "Replays");
+        public static string FolderPath
+        {
+            get
+            {
+#if UNITY_EDITOR
+                return Path.Combine(Application.dataPath, RelativeFolder);
+#else
+        return Path.Combine(Application.persistentDataPath, "Replays");
+#endif
+            }
+        }
 
-        // StageData와 Solution을 하나의 리플레이 JSON 파일로 저장한다.
+        // 기존 호출 방식은 유지한다.
         public static string Save(
             StageData stage,
             Solution solution)
         {
-            // StageData와 Solution을 하나의 ReplayData로 묶는다.
-            ReplayData replay = ReplayData.Create(stage, solution);
+            return Save(ReplayData.Create(stage, solution));
+        }
 
-            // 필수 데이터가 없으면 저장하지 않는다.
-            if (replay == null)
+        // 이미 구성된 리플레이를 JSON 파일로 저장한다.
+        public static string Save(ReplayData replay)
+        {
+            if (replay == null ||
+                replay.Stage == null ||
+                replay.Stage.Level == null ||
+                replay.Solution == null)
             {
-                Debug.LogWarning(
-                    "리플레이 저장에는 StageData와 Solution이 필요합니다.");
-
+                Debug.LogWarning("저장할 리플레이 데이터가 없습니다.");
                 return string.Empty;
             }
 
-            // Replays 폴더가 없다면 새로 만든다.
-            Directory.CreateDirectory(FolderPath);
+            try
+            {
+                Directory.CreateDirectory(FolderPath);
 
-            // 같은 스테이지의 리플레이도 중복 저장할 수 있도록 시간을 포함한다.
-            string fileName =
-                $"Replay_{DateTime.Now:yyyyMMdd_HHmmssfff}.json";
+                string fileName =
+                    $"Replay_{DateTime.Now:yyyyMMdd_HHmmssfff}.json";
 
-            // 저장 폴더와 파일명을 하나의 전체 경로로 결합한다.
-            string filePath = Path.Combine(FolderPath, fileName);
+                string filePath =
+                    Path.Combine(FolderPath, fileName);
 
-            // StageData와 Solution이 합쳐진 ReplayData를 JSON으로 변환한다.
-            string json = replay.ToJson();
-
-            // 완성된 JSON 문자열을 파일로 저장한다.
-            File.WriteAllText(filePath, json);
+                string json = replay.ToJson();
+                File.WriteAllText(filePath, json);
 
 #if UNITY_EDITOR
-            // 새로 생성된 JSON이 Unity Project 창에 바로 표시되도록 갱신한다.
-            UnityEditor.AssetDatabase.Refresh();
+                UnityEditor.AssetDatabase.Refresh();
 #endif
 
-            // 저장된 위치를 Console에서 확인한다.
-            Debug.Log($"리플레이 저장 완료: {filePath}");
+                Debug.Log($"리플레이 저장 완료: {filePath}");
+                return filePath;
+            }
+            catch (Exception exception)
+            {
+                Debug.LogWarning(
+                    $"리플레이 저장 실패: {exception.Message}");
 
-            // 다른 코드에서도 저장 위치를 사용할 수 있도록 경로를 반환한다.
-            return filePath;
+                return string.Empty;
+            }
         }
         // 저장된 리플레이 JSON 파일 경로를 최신순으로 반환한다.
         public static string[] GetReplayFiles()

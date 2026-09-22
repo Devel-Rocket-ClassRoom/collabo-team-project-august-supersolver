@@ -18,7 +18,6 @@ namespace PPS.DrawingTool
         /// 터질 시간을 준다 — 0 이면 죽는 순간이 안 보인다.
         const float DeathRestartDelay = 0.6f;
 
-        [SerializeField] StageLoader _stageLoader;
         [SerializeField] GameSimDriver _driver;
         [SerializeField] DrawingSession _session;
         [SerializeField] StageFlow _flow;
@@ -50,11 +49,7 @@ namespace PPS.DrawingTool
                 _handled = true;
                 _sinceDecided = 0f;
 
-                if (world.Judge.Cleared)
-                {
-                    SaveReplay();
-                    ShowReward(world);
-                }
+                if (world.Judge.Cleared) ShowReward(world);
                 else if (world.Judge.Stalled) _retryBlink.Play();
             }
 
@@ -74,22 +69,7 @@ namespace PPS.DrawingTool
 
             _flow.Retry();
         }
-        void SaveReplay()
-        {
-            if (_stageLoader == null ||
-                _stageLoader.Stage == null ||
-                _session == null)
-            {
-                Debug.LogWarning(
-                    "[Replay] 저장에 필요한 StageLoader 또는 DrawingSession 참조가 없습니다.");
-
-                return;
-            }
-
-            ReplayStorage.Save(
-                _stageLoader.Stage,
-                _session.Solution);
-        }
+        
 
         void ShowReward(SimWorld world)
         {
