@@ -6,6 +6,8 @@
   -All 이 없으면 이 파일 옆 targetStage.txt 의 첫 줄을 굴린다.
   csv 가 떨어질 자리는 CsvDirectory.txt 에 상대 경로로 적는다.
   비면 SolverReports\csv 로 간다.
+
+  취소해도 헤드리스 Unity 가 남지 않는다 — 잡(Job) 에 넣어 둔다.
 #>
 param([switch]$All)
 
@@ -19,6 +21,86 @@ if (-not (Test-Path $unity)) {
     Write-Host "Unity 를 못 찾았다 - $unity"
     exit 1
 }
+
+<#
+  잡 핸들을 이 프로세스가 들고 있으면, 어떻게 끝나든 —
+  Ctrl+C, 콘솔 창 닫기, 강제 종료 — 윈도우가 잡에 든 것을
+  전부 죽인다. try/finally 는 창을 닫는 경우를 못 막는다.
+#>
+Add-Type -Namespace PPS -Name Job -MemberDefinition @'
+[DllImport("kernel32.dll", CharSet = CharSet.Unicode)]
+static extern IntPtr CreateJobObject(IntPtr attr, string name);
+
+[DllImport("kernel32.dll")]
+static extern bool SetInformationJobObject(IntPtr job, int cls, IntPtr info, uint len);
+
+[DllImport("kernel32.dll")]
+static extern bool AssignProcessToJobObject(IntPtr job, IntPtr process);
+
+[StructLayout(LayoutKind.Sequential)]
+struct Basic
+{
+    public long PerProcessUserTimeLimit;
+    public long PerJobUserTimeLimit;
+    public uint LimitFlags;
+    public UIntPtr MinimumWorkingSetSize;
+    public UIntPtr MaximumWorkingSetSize;
+    public uint ActiveProcessLimit;
+    public UIntPtr Affinity;
+    public uint PriorityClass;
+    public uint SchedulingClass;
+}
+
+[StructLayout(LayoutKind.Sequential)]
+struct Io
+{
+    public ulong R, W, O, RT, WT, OT;
+}
+
+[StructLayout(LayoutKind.Sequential)]
+struct Extended
+{
+    public Basic Basic;
+    public Io Io;
+    public UIntPtr ProcessMemoryLimit;
+    public UIntPtr JobMemoryLimit;
+    public UIntPtr PeakProcessMemoryUsed;
+    public UIntPtr PeakJobMemoryUsed;
+}
+
+/// JOB_OBJECT_LIMIT_KILL_ON_JOB_CLOSE.
+const uint KillOnClose = 0x2000;
+
+/// JobObjectExtendedLimitInformation.
+const int ExtendedLimit = 9;
+
+public static IntPtr Create()
+{
+    IntPtr job = CreateJobObject(IntPtr.Zero, null);
+    if (job == IntPtr.Zero) return IntPtr.Zero;
+
+    var ext = new Extended();
+    ext.Basic.LimitFlags = KillOnClose;
+
+    int size = Marshal.SizeOf(ext);
+    IntPtr info = Marshal.AllocHGlobal(size);
+
+    try
+    {
+        Marshal.StructureToPtr(ext, info, false);
+        if (!SetInformationJobObject(job, ExtendedLimit, info, (uint)size))
+            return IntPtr.Zero;
+    }
+    finally { Marshal.FreeHGlobal(info); }
+
+    return job;
+}
+
+public static bool Add(IntPtr job, IntPtr process)
+{
+    return job != IntPtr.Zero && AssignProcessToJobObject(job, process);
+}
+'@
 
 <#
   빈 줄과 # 로 시작하는 줄을 건너뛰고 첫 줄만 돌려준다.
@@ -131,7 +213,13 @@ $unityArgs = @(
     "-logFile", $log
 )
 
+$job = [PPS.Job]::Create()
 $unityProcess = Start-Process -FilePath $unity -ArgumentList $unityArgs -PassThru -NoNewWindow
+
+if (-not [PPS.Job]::Add($job, $unityProcess.Handle)) {
+    Write-Host "경고: 잡에 넣지 못했다. 취소하면 Unity 가 남을 수 있다."
+}
+
 $pos = 0
 
 while (-not $unityProcess.HasExited) {
