@@ -1,0 +1,23 @@
+{
+  "StageId": "BarricadeWind_WD1BR1_FB1",
+  "Shapes": [
+    {
+      "Kind": 0,
+      "Points": [
+        {
+          "x": -3.0,
+          "y": 0.0
+        },
+        {
+          "x": 2.3,
+          "y": 0.0
+        },
+        {
+          "x": 5.0,
+          "y": 0.65
+        }
+      ],
+      "Radius": 0.0
+    }
+  ]
+}

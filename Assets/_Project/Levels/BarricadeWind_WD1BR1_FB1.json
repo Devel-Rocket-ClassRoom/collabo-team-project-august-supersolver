@@ -1,0 +1,63 @@
+{
+  "Version": 1,
+  "StageId": "BarricadeWind_WD1BR1_FB1",
+  "Seed": 0,
+  "Level": {
+    "InkLimit": 4.0,
+    "BallStart": {
+      "x": 0.75,
+      "y": 0.25
+    },
+    "GoalPosition": {
+      "x": 4.3,
+      "y": 0.72
+    },
+    "Terrain": [
+      {
+        "A": {
+          "x": -3.0,
+          "y": 0.0
+        },
+        "B": {
+          "x": 2.3,
+          "y": 0.0
+        }
+      },
+      {
+        "A": {
+          "x": 2.3,
+          "y": 0.0
+        },
+        "B": {
+          "x": 5.0,
+          "y": 0.65
+        }
+      }
+    ],
+    "DeviceEntries": [
+      {
+        "Type": 6,
+        "Json": "{\"Position\":{\"x\":-0.4,\"y\":0.7},\"HalfSize\":0.7,\"ThresholdSpeed\":2.3,\"Power\":17.0,\"Angle\":0.0}"
+      },
+      {
+        "Type": 3,
+        "Json": "{\"Position\":{\"x\":2.5,\"y\":0.25},\"Radius\":1.0,\"Power\":7.0,\"Angle\":0.0}"
+      }
+    ],
+    "Stars": [
+      {
+        "x": 1.35,
+        "y": 0.35
+      },
+      {
+        "x": 3.1,
+        "y": 0.45
+      },
+      {
+        "x": 4.3,
+        "y": 1.3
+      }
+    ],
+    "KillY": -5.0
+  }
+}

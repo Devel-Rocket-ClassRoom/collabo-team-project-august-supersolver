@@ -1,0 +1,19 @@
+{
+  "StageId": "BarricadeDrop_BR1_FB1",
+  "Shapes": [
+    {
+      "Kind": 0,
+      "Points": [
+        {
+          "x": -3.0,
+          "y": 0.0
+        },
+        {
+          "x": 5.0,
+          "y": 0.0
+        }
+      ],
+      "Radius": 0.0
+    }
+  ]
+}
