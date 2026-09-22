@@ -82,7 +82,10 @@ namespace PPS.DrawingTool
         }
 
         void OnStarCollected(Vector2 at)
-            => ServiceLocator.Get<ISoundManager>().PlaySfx(SfxType.Star);
+        {
+            if (ServiceLocator.TryGet<ISoundManager>(out var sound))
+                sound.PlaySfx(SfxType.Star);
+        }
 
         /// <summary>
         /// 장치가 발동한 것을 소리로 알린다. 자리는 아직
@@ -90,14 +93,16 @@ namespace PPS.DrawingTool
         /// </summary>
         void OnDeviceTriggered(DeviceType type, Vector2 at)
         {
+            if (!ServiceLocator.TryGet<ISoundManager>(out var sound)) return;
+
             switch (type)
             {
                 case DeviceType.Bomb:
                 case DeviceType.FragBomb:
-                    ServiceLocator.Get<ISoundManager>().PlaySfx(SfxType.Bomb);
+                    sound.PlaySfx(SfxType.Bomb);
                     break;
                 case DeviceType.Bouncer:
-                    ServiceLocator.Get<ISoundManager>().PlaySfx(SfxType.Slime);
+                    sound.PlaySfx(SfxType.Slime);
                     break;
             }
         }
@@ -221,7 +226,8 @@ namespace PPS.DrawingTool
 
             _levelView.SetBallVisible(false);
             PlayKillEffect(world.Ball.position);
-            ServiceLocator.Get<ISoundManager>().PlaySfx(SfxType.Death);
+            if (ServiceLocator.TryGet<ISoundManager>(out var sound))
+                sound.PlaySfx(SfxType.Death);
         }
 
         void PlayKillEffect(Vector2 at)
