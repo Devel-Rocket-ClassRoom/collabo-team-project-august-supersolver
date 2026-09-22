@@ -28,6 +28,14 @@ namespace PPS.Tools
         StageData _stage; // 어떤 스테이지(레벨)을 재생할지,
         Solution _solution; // 어떤 풀이(플레이어가 그린 그림)을 재생할지 담기.
 
+        public int CurrentStep => _world?.CurrentStep ?? 0;
+        public int TargetStep => _targetStep;
+        public int MaximumStep => MaxSteps;
+        public bool IsPlaying => _isPlaying;
+        public bool HasReplay => _world != null;
+        public ulong CurrentHash =>
+            _world == null ? 0UL : WorldHasher.Hash(_world);
+
         // Update is called once per frame
         void Update()
         {
@@ -125,7 +133,7 @@ namespace PPS.Tools
             _stepsPerFrame = Mathf.Clamp(stepsPerFrame, 1, MaxStepsPerFrame);
         }
 
-        // 현재 StageData와 Solution으로 처음부터 다시 재생한다.
+        // 현재 리플레이를 처음 위치로 되돌리고 정지한다.
         public void Restart()
         {
             // 아직 입력 데이터가 없다면 재시작할 수 없다.
@@ -134,9 +142,6 @@ namespace PPS.Tools
 
             // 보관한 두 데이터로 월드를 다시 만든다.
             RebuildReplayWorld();
-
-            // 자동 재생을 다시 시작한다.
-            Play();
         }
 
         // 리플레이에서 이동할 목표 스텝을 설정한다.
@@ -185,7 +190,7 @@ namespace PPS.Tools
             _isPlaying = false;
 
             // 새로 생성한 물리 월드와 레벨 정보를 화면 표시 컴포넌트에 전달한다.
-            _worldView?.Show(_stage.Level, _world);
+            _worldView?.Show(_stage.Level,_world,_solution);
         }
         private void OnDestroy()
         {

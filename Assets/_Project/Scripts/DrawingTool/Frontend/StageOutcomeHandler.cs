@@ -69,6 +69,7 @@ namespace PPS.DrawingTool
 
             _flow.Retry();
         }
+        
 
         void ShowReward(SimWorld world)
         {

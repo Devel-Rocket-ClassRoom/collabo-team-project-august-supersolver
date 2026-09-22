@@ -38,6 +38,35 @@ namespace PPS.Core
                 Solution = solution.Clone(),
             };
         }
+#if UNITY_EDITOR
+        // 저장 시점의 스테이지와 풀이를 독립적으로 복사한다.
+        public static ReplayData CreateSnapshot(
+            StageData stage,
+            Solution solution)
+        {
+            if (stage == null || stage.Level == null || solution == null)
+                return null;
+
+            // 직렬화되는 스테이지 데이터를 새 객체로 복사한다.
+            string stageJson = JsonUtility.ToJson(stage);
+            StageData stageCopy =
+                JsonUtility.FromJson<StageData>(stageJson);
+
+            // 일반 JSON 복사에서 빠지는 런타임 장치를 복사한다.
+            DeviceSerialization.Pack(
+                stage.Level.Devices,
+                stageCopy.Level.DeviceEntries);
+
+            stageCopy.Level.UnpackDevices();
+            stageCopy.Version = StageData.CurrentVersion;
+
+            return new ReplayData
+            {
+                Stage = stageCopy,
+                Solution = solution.Clone(),
+            };
+        }
+#endif
 
         // ReplayData를 JSON 문자열로 변환한다.
         public string ToJson(bool prettyPrint = true)
