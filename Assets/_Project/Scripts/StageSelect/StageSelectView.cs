@@ -39,7 +39,8 @@ public class StageSelectView : UIScene
     {
         base.OnBeforeShow();
 
-        ServiceLocator.Get<ISoundManager>().PlayBgm(BgmType.Stage);
+        if (ServiceLocator.TryGet<ISoundManager>(out var sound))
+            sound.PlayBgm(BgmType.Stage);
 
         ThemeModel theme = _repo.Asset;
         UserData data = _userRepo.Data;

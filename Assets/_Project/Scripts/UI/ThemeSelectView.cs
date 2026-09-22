@@ -27,7 +27,8 @@ public class ThemeSelectView : UIScene
 
     protected override async UniTask OnShowAnimation()
     {
-        ServiceLocator.Get<ISoundManager>().PlayBgm(BgmType.Stage);
+        if (ServiceLocator.TryGet<ISoundManager>(out var sound))
+            sound.PlayBgm(BgmType.Stage);
 
         await base.OnShowAnimation();
         UpdateThemeButton();

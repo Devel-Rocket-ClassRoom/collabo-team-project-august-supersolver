@@ -84,7 +84,8 @@ public class RewardView : UIPopup, IRewardView
 
     protected override async UniTask OnShowAnimation()
     {
-        ServiceLocator.Get<ISoundManager>().PlaySfx(SfxType.Reward);
+        if (ServiceLocator.TryGet<ISoundManager>(out var sound))
+            sound.PlaySfx(SfxType.Reward);
 
         content.anchoredPosition = new Vector2(content.anchoredPosition.x, -slideDistance);
 
