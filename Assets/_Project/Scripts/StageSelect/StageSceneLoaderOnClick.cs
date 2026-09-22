@@ -29,13 +29,24 @@ public class StageSceneLoaderOnClick : MonoBehaviour
     public async void OnClickedNext()
     {
         if (locked) return;
-        var manifest = ServiceLocator.Get<AssetManifest>();
-        if (StageSelection.Current.Stage >= manifest.GetStageNum(StageSelection.Current.Theme) - 1) return;
         locked = true;
 
-        await StageLauncher.Enter(new StageEntry(StageSelection.Current.Theme,
-                                                 StageSelection.Current.Stage + 1));
-        await UIManager.Instance.HidePopup(false);
+        var manifest = ServiceLocator.Get<AssetManifest>();
+        StageEntry current = StageSelection.Current;
+
+        if (current.Stage >= manifest.GetStageNum(current.Theme) - 1)
+        {
+            // 테마의 끝이라 갈 다음 칸이 없다. 보상창을 먼저
+            // 걷어야 테마 선택창의 해금 연출이 가려지지 않는다.
+            await UIManager.Instance.HideAllPopups(true);
+            await UIManager.Instance.ShowScene<ThemeSelectView>();
+        }
+        else
+        {
+            await StageLauncher.Enter(new StageEntry(current.Theme, current.Stage + 1));
+            await UIManager.Instance.HidePopup(false);
+        }
+
         locked = false;
     }
 }

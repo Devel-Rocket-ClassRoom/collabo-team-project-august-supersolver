@@ -34,6 +34,30 @@ public class ThemeSelectView : UIScene
         UpdateThemeButton();
 
         await PopInButtons();
+        await PlayPendingUnlock();
+    }
+
+    /// <summary>
+    /// 새로 열린 테마의 자물쇠를 푼다. 한 번 보여 준 뒤
+    /// 유저 데이터에 적어 다시 나오지 않게 한다.
+    /// </summary>
+    async UniTask PlayPendingUnlock()
+    {
+        var manifest = ServiceLocator.Get<AssetManifest>();
+        var repo = ServiceLocator.Get<IUserDataRepository>();
+
+        if (!ThemeProgress.HasPendingUnlock(repo.Data, manifest)) return;
+
+        int unlocked = ThemeProgress.UnlockedCount(repo.Data, manifest);
+        int themeIdx = unlocked - 1;
+
+        // 카탈로그가 매니페스트보다 짧으면 그릴 버튼이 없다.
+        if (themeIdx < 0 || themeIdx >= buttons.Count) return;
+
+        await buttons[themeIdx].PlayUnlock();
+
+        repo.Data.ThemeUnlockAnimShown = unlocked;
+        ServiceLocator.Get<IUserDataService>().SaveAsync(repo.Data).Forget();
     }
 
     /// <summary>
@@ -57,24 +81,22 @@ public class ThemeSelectView : UIScene
     }
     void UpdateThemeButton()
     {
-        int unlocked = UnlockedThemeCount();
+        var manifest = ServiceLocator.Get<AssetManifest>();
+        UserData data = ServiceLocator.Get<IUserDataRepository>().Data;
+
+        // 해금 연출이 남아 있으면 그 테마는 잠긴 채로 띄운다.
+        // 자물쇠가 풀리는 걸 봐야 새로 열렸다는 게 읽힌다.
+        int unlocked = ThemeProgress.UnlockedCount(data, manifest);
+        int shown = ThemeProgress.HasPendingUnlock(data, manifest) ? unlocked - 1 : unlocked;
+
         for (int i = 0; i < catalog.Asset.Count; i++)
         {
             int idx = i;
             ThemeAssetEntry entry = catalog.Asset[i];
 
-            GetButton(i).Init(entry.Spr_SelectButton, i < unlocked,
+            GetButton(i).Init(entry.Spr_SelectButton, i < shown,
                 () => EnterTheme(idx).Forget());
         }
-    }
-
-    /// 다음 테마는 앞 테마를 끝까지 깨야 열린다. 지금 열려
-    /// 있는 다음 스테이지가 속한 테마가 곧 마지막 해금 테마다.
-    int UnlockedThemeCount()
-    {
-        var manifest = ServiceLocator.Get<AssetManifest>();
-        return ServiceLocator.Get<IUserDataRepository>().Data
-            .LastCleared.Next(manifest).Theme + 1;
     }
     async UniTask EnterTheme(int themeIdx)
     {
