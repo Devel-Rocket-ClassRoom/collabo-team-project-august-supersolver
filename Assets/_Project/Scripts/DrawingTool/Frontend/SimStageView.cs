@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using PPS.Core;
 using PPS.Game;
 using UnityEngine;
+using DeviceType = PPS.Core.DeviceType;
 
 namespace PPS.DrawingTool
 {
@@ -68,6 +69,39 @@ namespace PPS.DrawingTool
                 Debug.LogWarning("테마에 낙사 이펙트가 없다. 떨어져 죽어도 안 터진다.", this);
         }
 
+        void OnEnable()
+        {
+            SimSignals.DeviceTriggered += OnDeviceTriggered;
+            SimSignals.StarCollected += OnStarCollected;
+        }
+
+        void OnDisable()
+        {
+            SimSignals.DeviceTriggered -= OnDeviceTriggered;
+            SimSignals.StarCollected -= OnStarCollected;
+        }
+
+        void OnStarCollected(Vector2 at)
+            => ServiceLocator.Get<ISoundManager>().PlaySfx(SfxType.Star);
+
+        /// <summary>
+        /// 장치가 발동한 것을 소리로 알린다. 자리는 아직
+        /// 쓰지 않는다 — 소리가 화면 전체에 깔린다.
+        /// </summary>
+        void OnDeviceTriggered(DeviceType type, Vector2 at)
+        {
+            switch (type)
+            {
+                case DeviceType.Bomb:
+                case DeviceType.FragBomb:
+                    ServiceLocator.Get<ISoundManager>().PlaySfx(SfxType.Bomb);
+                    break;
+                case DeviceType.Bouncer:
+                    ServiceLocator.Get<ISoundManager>().PlaySfx(SfxType.Slime);
+                    break;
+            }
+        }
+
         public void Begin()
         {
             _strokeLocal.Clear();
@@ -91,6 +125,7 @@ namespace PPS.DrawingTool
 
             _levelView.ResetBall();
             _levelView.ShowAll();
+            _levelView.ShowCountdown(0);
             HideFragments();
             StopKillEffect();
             _strokes.Rebuild();
@@ -109,6 +144,7 @@ namespace PPS.DrawingTool
             FollowPivots();
             FollowStars(world);
             FollowDevices(world);
+            _levelView.ShowCountdown(world.CurrentStep);
             FollowFragments(world);
             FollowKill(world);
         }
@@ -138,6 +174,10 @@ namespace PPS.DrawingTool
                 (IDeviceData data, Rigidbody2D body) = world.GetDevice(i);
 
                 _levelView.SetDeviceVisible(i, body != null || !DeviceRegistry.MakesBody(data.Type));
+
+                // 박쥐처럼 날아가는 장치가 있다. 붙박이 장치는
+                // 바디가 제자리라 같은 값을 다시 찍는 것뿐이다.
+                if (body != null) _levelView.MoveDevice(i, body.position, body.rotation);
             }
         }
 
@@ -181,6 +221,7 @@ namespace PPS.DrawingTool
 
             _levelView.SetBallVisible(false);
             PlayKillEffect(world.Ball.position);
+            ServiceLocator.Get<ISoundManager>().PlaySfx(SfxType.Death);
         }
 
         void PlayKillEffect(Vector2 at)

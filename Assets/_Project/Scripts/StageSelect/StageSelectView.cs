@@ -1,4 +1,4 @@
-using PPS.Core;
+﻿using PPS.Core;
 using System;
 using System.Collections.Generic;
 using UnityEngine;
@@ -38,6 +38,8 @@ public class StageSelectView : UIScene
     public override void OnBeforeShow()
     {
         base.OnBeforeShow();
+
+        ServiceLocator.Get<ISoundManager>().PlayBgm(BgmType.Stage);
 
         ThemeModel theme = _repo.Asset;
         UserData data = _userRepo.Data;

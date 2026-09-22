@@ -10,6 +10,8 @@ namespace PPS.MapEditor
     public sealed class ToolPalette : MonoBehaviour
     {
         [SerializeField] Button[] _tabs;
+        [SerializeField] RectTransform _editorArea;
+        public RectTransform EditorArea => _editorArea;
 
         /// 탭과 순서를 맞춘다.
         [SerializeField] GameObject[] _pages;
@@ -27,6 +29,11 @@ namespace PPS.MapEditor
 
         /// 그 탭 안에서 고른 항목. 없으면 -1.
         public int SelectedItem { get; private set; } = -1;
+
+        public void SelectOnly()
+        {
+            if (_items != null && SelectedTab >= 0) SelectItem(-1);
+        }
 
         void Awake()
         {

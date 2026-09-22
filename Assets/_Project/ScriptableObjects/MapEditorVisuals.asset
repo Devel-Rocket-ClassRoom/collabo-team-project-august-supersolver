@@ -1,0 +1,31 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e1951e2d04c64f18af5e7b299ee43dcc, type: 3}
+  m_Name: MapEditorVisuals
+  m_EditorClassIdentifier:
+  RotationRing: {fileID: 21300000, guid: 3c5b49f2c7984082af53507af0430885, type: 3}
+  Eraser: {fileID: 21300000, guid: 0e73b47c839a43668fd408ce193a7d54, type: 3}
+  Line: {fileID: 21300000, guid: b7e2a5271fb14b8290f7eb9ae97aa58a, type: 3}
+  ResizeHandle: {fileID: 21300000, guid: 410e9b4293e24af2a1ba9ec36d0ebfb3, type: 3}
+  VertexHandle: {fileID: 21300000, guid: 6f18e66ffaae416e9e50f0e0ceb8078c, type: 3}
+  Panel: {fileID: 21300000, guid: 3b47ff9940174abfa40146825a2040ae, type: 3}
+  Button: {fileID: 21300000, guid: 696e9055013e432aadfd603fc9ada674, type: 3}
+  SelectedButton: {fileID: 21300000, guid: 83122d85806742949990205473757be7, type: 3}
+  ValueBackground: {fileID: 21300000, guid: 9db43ea6bccd48c38946d286d103240b, type: 3}
+  Scrollbar: {fileID: 21300000, guid: 539f4c833585481b8a69f58f29c229a9, type: 3}
+  MoveIcon: {fileID: 21300000, guid: 42ac91a918124ad79ddfda3926c94b23, type: 3}
+  RotateIcon: {fileID: 21300000, guid: 0b390b276f5048aa9334b2fbefcee9fa, type: 3}
+  ResizeIcon: {fileID: 21300000, guid: 5599c1ccff0b4f1b8b376d489a29e3fd, type: 3}
+  Text: {r: 1, g: 1, b: 1, a: 1}
+  MutedText: {r: 0.69, g: 0.74, b: 0.81, a: 1}
+  SelectedText: {r: 0.11, g: 0.13, b: 0.18, a: 1}
+  ErrorText: {r: 1, g: 0.63, b: 0.58, a: 1}

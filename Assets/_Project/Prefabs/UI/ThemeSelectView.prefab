@@ -86,11 +86,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::ThemeSelectView
   catalog: {fileID: 11400000, guid: 1af1f6d20f39bab418cbb99d6e8c1ca4, type: 2}
-  body: {fileID: 3886818537642359388}
   buttonParent: {fileID: 7469902253490478198}
   themeButtonPrefab: {fileID: 9004958434794919956, guid: ba4a61d3b4f6fae4bb8a097b7c351986, type: 3}
-  showAnimOffset: 10
   showAnimDuration: 0.5
+  popInterval: 0.06
 --- !u!1 &6021521265329633493
 GameObject:
   m_ObjectHideFlags: 0
@@ -317,5 +316,5 @@ MonoBehaviour:
   m_ChildControlWidth: 0
   m_ChildControlHeight: 0
   m_ChildScaleWidth: 1
-  m_ChildScaleHeight: 1
+  m_ChildScaleHeight: 0
   m_ReverseArrangement: 0

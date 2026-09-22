@@ -1,4 +1,4 @@
-using Cysharp.Threading.Tasks;
+﻿using Cysharp.Threading.Tasks;
 using DG.Tweening;
 using PPS.Core;
 using System;
@@ -84,6 +84,8 @@ public class RewardView : UIPopup, IRewardView
 
     protected override async UniTask OnShowAnimation()
     {
+        ServiceLocator.Get<ISoundManager>().PlaySfx(SfxType.Reward);
+
         content.anchoredPosition = new Vector2(content.anchoredPosition.x, -slideDistance);
 
         // 트윈 길이와 대기 시간이 어긋나지 않게
