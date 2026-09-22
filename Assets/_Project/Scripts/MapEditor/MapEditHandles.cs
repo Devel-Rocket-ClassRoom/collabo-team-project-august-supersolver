@@ -903,6 +903,32 @@ namespace PPS.MapEditor
                     });
                     break;
 
+                case 6: // 박쥐
+                    devices.Add(new BatData
+                    {
+                        Position = world,
+                        Radius = 0.3f,
+
+                        // 1초에 6wu. 판 하나를 가로지르는 데 2초쯤이다.
+                        Speed = 6f,
+                        Angle = _placeAngle,
+                    });
+                    break;
+
+                case 7: // 바리게이트
+                    devices.Add(new BarricadeData
+                    {
+                        Position = world,
+                        HalfSize = 0.5f,
+
+                        // 0.8m 쯤 떨어뜨린 자유 물체의 속도.
+                        // 굴러온 공은 막고, 떨군 것은 부순다.
+                        ThresholdSpeed = 4f,
+                        Power = 8f,
+                        Angle = _placeAngle,
+                    });
+                    break;
+
                 default:
                     return MapSelection.None;
             }

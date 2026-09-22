@@ -12,7 +12,7 @@ namespace PPS.MapEditor.Dev
     public static class StageNameConvention
     {
         /// 장치 이니셜. 배열 순서 = DeviceType 순서 = 표기 순서.
-        static readonly string[] DeviceInitials = { "BB", "FB", "SP", "WD", "SL" };
+        static readonly string[] DeviceInitials = { "BB", "FB", "SP", "WD", "SL", "BT", "BR" };
 
         static readonly string[] SolutionInitials = { "FL", "FB", "LK", "PV" };
 

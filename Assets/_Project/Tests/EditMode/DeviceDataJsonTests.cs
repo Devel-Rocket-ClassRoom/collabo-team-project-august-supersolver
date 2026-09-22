@@ -43,6 +43,16 @@ namespace PPS.Core.Tests
                     Position = new Vector2(0.25f, -1f),
                     Radius = 1.25f,
                 },
+                new BatData
+                {
+                    Position = new Vector2(6f, -3.5f),
+                    Radius = 0.45f, Speed = 5.5f, Angle = 210f,
+                },
+                new BarricadeData
+                {
+                    Position = new Vector2(-7f, 0.5f),
+                    HalfSize = 0.85f, ThresholdSpeed = 6.5f, Power = 12f, Angle = 30f,
+                },
             };
 
             var entries = new List<DeviceEntry>();
@@ -79,6 +89,19 @@ namespace PPS.Core.Tests
             var bouncer = Get<BouncerData>(after, 4);
             Assert.AreEqual(new Vector2(0.25f, -1f), bouncer.Position);
             Assert.AreEqual(1.25f, bouncer.Radius, 1e-5f);
+
+            var bat = Get<BatData>(after, 5);
+            Assert.AreEqual(new Vector2(6f, -3.5f), bat.Position);
+            Assert.AreEqual(0.45f, bat.Radius, 1e-5f);
+            Assert.AreEqual(5.5f, bat.Speed, 1e-5f);
+            Assert.AreEqual(210f, bat.Angle, 1e-5f);
+
+            var barricade = Get<BarricadeData>(after, 6);
+            Assert.AreEqual(new Vector2(-7f, 0.5f), barricade.Position);
+            Assert.AreEqual(0.85f, barricade.HalfSize, 1e-5f);
+            Assert.AreEqual(6.5f, barricade.ThresholdSpeed, 1e-5f);
+            Assert.AreEqual(12f, barricade.Power, 1e-5f);
+            Assert.AreEqual(30f, barricade.Angle, 1e-5f);
         }
 
         [Test]

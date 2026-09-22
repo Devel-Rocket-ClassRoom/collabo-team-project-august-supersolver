@@ -444,5 +444,108 @@ namespace PPS.Core.Tests
             }));
             return solution;
         }
+
+        /// 박쥐가 나는 높이. 공도 평지도 아래에 있어 길이 비어 있다.
+        public const float BatFlightY = 3f;
+
+        /// 박쥐의 속도. 테스트가 예측 자리를 이 값으로 잰다.
+        public const float BatSpeed = 3f;
+
+        /// 박쥐의 출발점.
+        public static readonly Vector2 BatFrom = new Vector2(-0.5f, BatFlightY);
+
+        /// <summary>
+        /// 빈 하늘을 오른쪽으로 나는 박쥐.
+        /// 막을 것이 없어 예측한 자리 그대로 간다.
+        /// </summary>
+        public static LevelData BatFlight()
+        {
+            var level = FlatRest();
+            level.Devices.Add(new BatData
+            {
+                Position = BatFrom,
+                Radius = 0.3f,
+                Speed = BatSpeed,
+                Angle = 0f,
+            });
+            return level;
+        }
+
+        /// <summary>나는 길을 벽으로 막은 것. 박쥐가 사라져야 한다.</summary>
+        public static LevelData BatIntoWall()
+        {
+            var level = BatFlight();
+            level.Terrain.Add(new StaticSegment(
+                new Vector2(1f, BatFlightY - 1f), new Vector2(1f, BatFlightY + 1f)));
+            return level;
+        }
+
+        /// 박쥐 길에 놓은 자유 물체의 x. 대조군과 같은 자리다.
+        public const float BatFreeBodyX = 0.3f;
+
+        /// <summary>
+        /// 박쥐가 나는 길에 세운 자유 물체.
+        /// 박쥐가 밀고 지나가는지, 그러고도 사는지 본다.
+        /// </summary>
+        public static Solution BatFreeBodySolution()
+        {
+            var solution = new Solution();
+            solution.Strokes.Add(new Stroke(ToolType.FreeBody, new List<Vector2>
+            {
+                new Vector2(BatFreeBodyX, BatFlightY - 0.3f),
+                new Vector2(BatFreeBodyX, BatFlightY + 0.3f),
+            }));
+            return solution;
+        }
+
+        /// 바리게이트의 자리. 평지 위에 얹혀 있다.
+        public static readonly Vector2 BarricadeAt = new Vector2(2f, 0.5f);
+
+        /// 이보다 빠르게 부딪힌 것이 바리게이트를 부순다.
+        public const float BarricadeBreakSpeed = 4f;
+
+        /// <summary>
+        /// 평지 위의 바리게이트. 공은 왼쪽에서 굴러온다.
+        /// 굴러오는 속도는 부르는 쪽이 시작 상태로 정한다.
+        /// </summary>
+        public static LevelData BarricadeWall()
+        {
+            return new LevelData
+            {
+                InkLimit = 20f,
+                BallStart = new Vector2(-1f, 0.3f),
+                GoalPosition = new Vector2(50f, 50f),   // 못 닿는 곳
+                KillY = -20f,
+                Terrain = new List<StaticSegment>
+                {
+                    new StaticSegment(new Vector2(-6f, 0f), new Vector2(6f, 0f)),
+                },
+                Devices = new List<IDeviceData>
+                {
+                    new BarricadeData
+                    {
+                        Position = BarricadeAt,
+                        HalfSize = 0.5f,
+                        ThresholdSpeed = BarricadeBreakSpeed,
+                        Power = 8f,
+                    },
+                },
+            };
+        }
+
+        /// <summary>
+        /// 바리게이트 위로 떨어뜨리는 자유 물체.
+        /// 1.5m 쯤 떨어져 부수는 속도를 넘긴다.
+        /// </summary>
+        public static Solution BarricadeDropSolution()
+        {
+            var solution = new Solution();
+            solution.Strokes.Add(new Stroke(ToolType.FreeBody, new List<Vector2>
+            {
+                new Vector2(BarricadeAt.x - 0.4f, 2.6f),
+                new Vector2(BarricadeAt.x + 0.4f, 2.6f),
+            }));
+            return solution;
+        }
     }
 }

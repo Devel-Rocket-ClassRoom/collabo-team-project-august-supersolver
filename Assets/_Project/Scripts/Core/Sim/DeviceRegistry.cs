@@ -36,6 +36,8 @@ namespace PPS.Core
             { DeviceType.Spike,    new Entry(typeof(SpikeData),    true,  SpikeDevice.Build) },
             { DeviceType.Wind,     new Entry(typeof(WindData),     false, WindDevice.Build) },
             { DeviceType.Bouncer, new Entry(typeof(BouncerData), true, BouncerDevice.Build) },
+            { DeviceType.Bat, new Entry(typeof(BatData), true, BatDevice.Build) },
+            { DeviceType.Barricade, new Entry(typeof(BarricadeData), true, BarricadeDevice.Build) },
         };
 
         /// <summary>
