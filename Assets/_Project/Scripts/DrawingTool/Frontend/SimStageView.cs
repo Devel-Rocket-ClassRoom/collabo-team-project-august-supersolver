@@ -174,6 +174,10 @@ namespace PPS.DrawingTool
                 (IDeviceData data, Rigidbody2D body) = world.GetDevice(i);
 
                 _levelView.SetDeviceVisible(i, body != null || !DeviceRegistry.MakesBody(data.Type));
+
+                // 박쥐처럼 날아가는 장치가 있다. 붙박이 장치는
+                // 바디가 제자리라 같은 값을 다시 찍는 것뿐이다.
+                if (body != null) _levelView.MoveDevice(i, body.position, body.rotation);
             }
         }
 

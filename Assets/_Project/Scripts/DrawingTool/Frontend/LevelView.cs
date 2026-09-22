@@ -348,6 +348,24 @@ namespace PPS.DrawingTool
         }
 
         /// <summary>
+        /// 움직이는 장치를 바디에 맞춘다. 레벨 데이터의 자리는
+        /// 출발점일 뿐이라, 화면이 좇지 않으면 날아간 장치가
+        /// 제자리에 남는다. 범위·방향 표시도 같이 옮긴다.
+        /// </summary>
+        /// <param name="degrees">바디의 회전. Rigidbody2D 와 같은 도 단위다.</param>
+        public void MoveDevice(int index, Vector2 position, float degrees)
+        {
+            if (index < 0 || index >= _deviceBodies.Count) return;
+
+            _deviceBodies[index].SetPositionAndRotation(
+                position, Quaternion.Euler(0f, 0f, degrees));
+
+            // 겉 표시는 뿌리가 원점이고 자식이 세계 좌표로
+            // 놓여 있다. 뿌리를 옮긴 만큼 통째로 따라간다.
+            _deviceRanges[index].position = position - _level.Devices[index].Position;
+        }
+
+        /// <summary>
         /// 터진 장치를 지운다. 몸과 범위가 같이 사라진다 —
         /// 없는 폭탄의 범위는 거짓이다.
         /// </summary>
@@ -365,7 +383,15 @@ namespace PPS.DrawingTool
             SetBallVisible(true);
 
             for (int i = 0; i < _stars.Count; i++) SetStarVisible(i, true);
-            for (int i = 0; i < _deviceBodies.Count; i++) SetDeviceVisible(i, true);
+
+            for (int i = 0; i < _deviceBodies.Count; i++)
+            {
+                SetDeviceVisible(i, true);
+
+                // 날아간 장치는 되살리는 것만으로는 안 된다.
+                // 죽은 자리에 그대로 서 있게 된다.
+                MoveDevice(i, _level.Devices[i].Position, SimStyle.AngleOf(_level.Devices[i]));
+            }
         }
 
         /// <summary>

@@ -13,6 +13,9 @@ namespace PPS.Core
         /// 레벨의 장치 번호. 바디 이름과 알림에 쓴다.
         public readonly int Index;
 
+        /// 이 장치가 놓인 판. 움직이는 장치가 범위를 읽는다.
+        public readonly LevelData Level;
+
         /// 장치는 바디를 만들어도 된다.
         public readonly Scene Scene;
 
@@ -30,12 +33,14 @@ namespace PPS.Core
 
         public DeviceBuildContext(
             int index,
+            LevelData level,
             Scene scene,
             List<Rigidbody2D> bodies,
             List<Collider2D> hazards,
             SimEvents events)
         {
             Index = index;
+            Level = level;
             Scene = scene;
             Bodies = bodies;
             Hazards = hazards;
