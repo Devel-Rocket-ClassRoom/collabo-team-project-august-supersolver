@@ -28,7 +28,11 @@ namespace PPS.MapEditor.Dev
         /// 판이 없는 도형 파일. 지운 판이 남긴 찌꺼기다.
         readonly List<string> _shapeOrphan = new List<string>();
 
+        /// 어느 판도 가리키지 않는 스테이지 세트의 칸.
+        readonly List<string> _setProblems = new List<string>();
+
         Vector2 _scroll;
+        GUIStyle _unassignedStyle;
 
         class Row
         {
@@ -36,6 +40,9 @@ namespace PPS.MapEditor.Dev
             public string FileName;
             public string Expected;
             public bool HasSolution;
+
+            /// 이 판을 담은 스테이지 세트 이름. 비었으면 어디에도 없다.
+            public string Themes;
 
             public bool NameMatches => FileName == Expected;
         }
@@ -53,7 +60,7 @@ namespace PPS.MapEditor.Dev
                     Scan();
 
                 GUILayout.FlexibleSpace();
-                GUILayout.Label($"판 {_rows.Count}개", EditorStyles.miniLabel);
+                GUILayout.Label($"판 {_rows.Count}개 · 미할당 {UnassignedCount()}개", EditorStyles.miniLabel);
             }
 
             using (var scope = new EditorGUILayout.ScrollViewScope(_scroll))
@@ -64,7 +71,17 @@ namespace PPS.MapEditor.Dev
 
                 DrawPairSection("도형 파일이 없는 판", _shapeMissing);
                 DrawPairSection("판이 없는 도형 파일", _shapeOrphan);
+                DrawPairSection("판을 가리키지 않는 스테이지 세트의 칸", _setProblems);
             }
+        }
+
+        int UnassignedCount()
+        {
+            int count = 0;
+            for (int i = 0; i < _rows.Count; i++)
+                if (_rows[i].Themes.Length == 0) count++;
+
+            return count;
         }
 
         /// <summary>
@@ -100,6 +117,12 @@ namespace PPS.MapEditor.Dev
                 EditorGUI.DrawRect(dot, ColorOf(row));
 
                 GUILayout.Label(row.FileName);
+                GUILayout.FlexibleSpace();
+
+                if (row.Themes.Length > 0)
+                    GUILayout.Label(row.Themes, EditorStyles.miniLabel);
+                else
+                    GUILayout.Label("미할당", UnassignedStyle());
 
                 if (!row.NameMatches && GUILayout.Button("이름 변경", GUILayout.Width(80f)))
                 {
@@ -115,6 +138,18 @@ namespace PPS.MapEditor.Dev
             }
 
             if (!row.HasSolution) Note("풀이 토큰이 없다 — 이름 변경으로는 채울 수 없다.");
+        }
+
+        /// 미할당은 이름 문제와 색이 겹치지 않게 노란색으로 둔다.
+        GUIStyle UnassignedStyle()
+        {
+            if (_unassignedStyle == null)
+            {
+                _unassignedStyle = new GUIStyle(EditorStyles.miniLabel);
+                _unassignedStyle.normal.textColor = WarnColor;
+            }
+
+            return _unassignedStyle;
         }
 
         static void Note(string text)
@@ -133,6 +168,7 @@ namespace PPS.MapEditor.Dev
             _rows.Clear();
             _shapeMissing.Clear();
             _shapeOrphan.Clear();
+            _setProblems.Clear();
 
             if (!Directory.Exists(MapFile.Folder))
             {
@@ -165,10 +201,12 @@ namespace PPS.MapEditor.Dev
                     FileName = fileName,
                     Expected = StageNameConvention.Expected(fileName, stage.Level),
                     HasSolution = StageNameConvention.HasSolution(fileName),
+                    Themes = "",
                 });
             }
 
             ScanPairs();
+            ScanThemes();
             Repaint();
         }
 
@@ -201,6 +239,46 @@ namespace PPS.MapEditor.Dev
 
             _shapeOrphan.AddRange(shapes);
             _shapeOrphan.Sort(StringComparer.Ordinal);
+        }
+
+        /// <summary>
+        /// 어느 스테이지 세트에 실렸는지 표시한다. 세트에 오르지
+        /// 않은 판은 파일이 멀쩡해도 게임에 나오지 않는다.
+        /// </summary>
+        void ScanThemes()
+        {
+            var byPath = new Dictionary<string, Row>(StringComparer.Ordinal);
+            for (int i = 0; i < _rows.Count; i++) byPath[_rows[i].Path] = _rows[i];
+
+            string[] guids = AssetDatabase.FindAssets("t:ThemeStageSet");
+            for (int g = 0; g < guids.Length; g++)
+            {
+                string setPath = AssetDatabase.GUIDToAssetPath(guids[g]);
+                var set = AssetDatabase.LoadAssetAtPath<ThemeStageSet>(setPath);
+                if (set?.Stages == null) continue;
+
+                for (int i = 0; i < set.Stages.Length; i++)
+                {
+                    // 지워진 판을 가리키던 칸도 null 로 온다.
+                    if (set.Stages[i] == null)
+                    {
+                        _setProblems.Add($"{set.name}[{i}] — 빈 칸 또는 잃어버린 참조");
+                        continue;
+                    }
+
+                    string path = AssetDatabase.GetAssetPath(set.Stages[i]);
+                    if (!byPath.TryGetValue(path, out Row row))
+                    {
+                        _setProblems.Add($"{set.name}[{i}] — {path}");
+                        continue;
+                    }
+
+                    // 한 판이 여러 세트에 실릴 수 있다.
+                    row.Themes = row.Themes.Length == 0 ? set.name : $"{row.Themes}, {set.name}";
+                }
+            }
+
+            _setProblems.Sort(StringComparer.Ordinal);
         }
 
         void Rename(Row row)
