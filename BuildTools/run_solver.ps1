@@ -1,5 +1,6 @@
 ﻿<#
   솔버를 배치모드로 굴리고 결과를 json·csv 로 남긴다.
+  파일 이름은 <판>_YYYYMMDD-HHMMSS 다 — SolverBatch 기본 이름과 같은 형식.
   Unity 로그는 파일로 받으면서 [SolverBatch] 줄만 콘솔에 흘린다 —
   전부 흘리면 임포트 로그에 묻혀 형편이 안 보인다.
 
@@ -163,12 +164,12 @@ if (-not (Test-Path $csvDir)) {
     exit 1
 }
 
-$json = Join-Path $out "json\$name.json"
-$log = Join-Path $out "log\$name.log"
-$csv = Join-Path $csvDir $name
+# 이름에 시각을 박아 지난 결과를 덮어쓰지 않는다.
+$stem = "${name}_$(Get-Date -Format 'yyyyMMdd-HHmmss')"
 
-# 지난 로그가 남아 있으면 이번 것과 섞여 보인다.
-if (Test-Path $log) { Remove-Item $log }
+$json = Join-Path $out "json\$stem.json"
+$log = Join-Path $out "log\$stem.log"
+$csv = Join-Path $csvDir $stem
 
 <#
   로그에 새로 붙은 줄을 읽어 필요한 것만 찍고, 어디까지 읽었는지 돌려준다.
