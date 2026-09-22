@@ -147,8 +147,15 @@ namespace PPS.Solver.Batch
 
                 if (only != null && entry.Name != only) continue;
 
-                if (entry.Usable) _queue.Add(entry.Stage);
-                else _report.unreadable.Add($"{entry.Name} — {entry.Problem}");
+                if (entry.Usable)
+                {
+                    _queue.Add(entry.Stage);
+                    continue;
+                }
+
+                // 리포트에만 남기면 콘솔에서는 조용히 빠진 것으로 보인다.
+                _report.unreadable.Add($"{entry.Name} — {entry.Problem}");
+                Debug.Log($"[SolverBatch] 건너뜀 — {entry.Name}: {entry.Problem}");
             }
 
             // 이름을 잘못 적었는데 빈 리포트가 나오면

@@ -4,6 +4,8 @@
   전부 흘리면 임포트 로그에 묻혀 형편이 안 보인다.
 
   -All 이 없으면 이 파일 옆 targetStage.txt 의 첫 줄을 굴린다.
+  csv 가 떨어질 자리는 CsvDirectory.txt 에 상대 경로로 적는다.
+  비면 SolverReports\csv 로 간다.
 #>
 param([switch]$All)
 
@@ -16,6 +18,21 @@ $out = Join-Path $root "SolverReports"
 if (-not (Test-Path $unity)) {
     Write-Host "Unity 를 못 찾았다 - $unity"
     exit 1
+}
+
+<#
+  빈 줄과 # 로 시작하는 줄을 건너뛰고 첫 줄만 돌려준다.
+  파일이 없거나 쓸 줄이 없으면 빈 문자열이다.
+#>
+function Read-First([string]$path) {
+    if (-not (Test-Path $path)) { return "" }
+
+    $line = Get-Content $path |
+        Where-Object { $_.Trim() -ne "" -and -not $_.Trim().StartsWith("#") } |
+        Select-Object -First 1
+
+    if ($line) { return $line.Trim() }
+    return ""
 }
 
 # 굴릴 스테이지. 전체면 이름만 All 로 두고 -stage 를 안 준다.
@@ -31,28 +48,42 @@ else {
         exit 1
     }
 
-    # 첫 줄만 쓴다. 빈 줄과 # 로 시작하는 줄은 건너뛴다.
-    $name = Get-Content $list |
-        Where-Object { $_.Trim() -ne "" -and -not $_.Trim().StartsWith("#") } |
-        Select-Object -First 1
+    $name = Read-First $list
 
     if (-not $name) {
         Write-Host "targetStage.txt 에 스테이지 이름이 없다."
         exit 1
     }
 
-    $name = $name.Trim()
     $stage = @("-stage", $name)
 }
 
-foreach ($dir in @("json", "csv", "log")) {
+# 저장소 뿌리에서 본 상대 경로다 — 절대 경로로 적으면
+# 사람마다 갈려 파일을 함께 둘 수 없다.
+$csvDir = Read-First (Join-Path $here "CsvDirectory.txt")
+
+if ($csvDir) { $csvDir = Join-Path $root $csvDir }
+else { $csvDir = Join-Path $out "csv" }
+
+foreach ($dir in @("json", "log")) {
     $path = Join-Path $out $dir
     if (-not (Test-Path $path)) { New-Item -ItemType Directory -Path $path | Out-Null }
 }
 
+# 손으로 적은 경로라 오타가 나도 몇 분 굴린 뒤에야 드러난다. 먼저 본다.
+if (-not (Test-Path $csvDir)) {
+    New-Item -ItemType Directory -Path $csvDir -ErrorAction SilentlyContinue | Out-Null
+}
+
+if (-not (Test-Path $csvDir)) {
+    Write-Host "csv 폴더를 만들지 못했다 - $csvDir"
+    Write-Host "CsvDirectory.txt 의 경로를 본다."
+    exit 1
+}
+
 $json = Join-Path $out "json\$name.json"
 $log = Join-Path $out "log\$name.log"
-$csv = Join-Path $out "csv\$name"
+$csv = Join-Path $csvDir $name
 
 # 지난 로그가 남아 있으면 이번 것과 섞여 보인다.
 if (Test-Path $log) { Remove-Item $log }
@@ -116,7 +147,7 @@ if ($unityProcess.ExitCode -ne 0) {
     exit 1
 }
 
-Write-Host "[2/2] csv 로 바꾼다."
+Write-Host "[2/2] csv 로 바꾼다 - $csvDir"
 & python (Join-Path $here "solver_report_csv.py") $json -o $csv
 
 if ($LASTEXITCODE -ne 0) {
