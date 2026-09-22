@@ -8,6 +8,7 @@ namespace PPS.Core
         public static void Migrate(UserData data)
         {
             if (data.Version < 4) ToV4(data);
+            if (data.Version < 5) ToV5(data);
 
             data.Version = UserData.CurrentVersion;
         }
@@ -19,6 +20,14 @@ namespace PPS.Core
             data.StageClears.Clear();
             data.LastCleared = default;
             data.HasPlayed = true;
+        }
+
+        // 해금 연출 기록이 없던 저장물이다. 이미 들어가 본
+        // 테마까지는 본 것으로 친다 — 매니페스트가 없어 열린
+        // 테마 수를 못 세므로 마지막으로 깬 테마를 기준 삼는다.
+        static void ToV5(UserData data)
+        {
+            data.ThemeUnlockAnimShown = data.LastCleared.Theme + 1;
         }
     }
 }

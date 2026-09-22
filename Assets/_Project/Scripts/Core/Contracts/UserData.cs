@@ -9,7 +9,7 @@ namespace PPS.Core
     {
         // 지금 코드가 다룰 수 있는 저장 데이터 형식의 버전이다.
         // 스키마를 바꾸는 커밋에서 함께 올린다.
-        public const int CurrentVersion = 4;
+        public const int CurrentVersion = 5;
 
         // 이 저장물이 어느 형식으로 쓰였는지 나타낸다.
         // 옛 저장물을 복원하면 그때의 값이 그대로 들어온다.
@@ -22,6 +22,11 @@ namespace PPS.Core
         // 플레이어가 가장 멀리 클리어한 자리다. 진척도를
         // 판정하는 유일한 기준이다.
         public StageEntry LastCleared;
+
+        // 해금 연출을 이미 보여 준 테마 수. 테마는 앞에서부터
+        // 순서대로 열려서 개수 하나로 어디까지 봤는지 정해진다.
+        // 첫 테마는 처음부터 열려 있어 연출 대상이 아니다.
+        public int ThemeUnlockAnimShown = 1;
 
         // 각 스테이지의 클리어 결과를 보관한다.
         public List<StageClearData> StageClears = new List<StageClearData>();
