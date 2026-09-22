@@ -60,7 +60,7 @@ namespace PPS.Solver
         /// <summary>
         /// 스테이지로 먼저 읽고, 안 되면 레벨만 담긴 것으로 본다.
         /// JsonUtility 는 맞지 않는 필드를 조용히 넘겨서 예외로는 못 가른다 —
-        /// 읽은 결과가 레벨 구실을 하는지 보고 판단한다.
+        /// 원본에 Level 이 있었는지를 보고 판단한다.
         /// </summary>
         static Entry Read(string path)
         {
@@ -77,7 +77,7 @@ namespace PPS.Solver
             }
 
             if (Parse<StageData>(json, out StageData stage, out string broken)
-                && IsLevel(stage?.Level))
+                && HasLevel(json))
             {
                 // StageData.FromJson 을 쓰지 않는 유일한 경로다.
                 // 여기서 올리지 않으면 장치가 없는 판을 보게 된다.
@@ -101,7 +101,7 @@ namespace PPS.Solver
                     new StageData { StageId = name, Seed = 0, Level = level },
                     null);
 
-            return new Entry(name, null, "스테이지도 레벨도 아니다 (지형이 없다)");
+            return new Entry(name, null, "스테이지도 레벨도 아니다 (Level 이 없다)");
         }
 
         static bool Parse<T>(string json, out T value, out string broken)
@@ -122,9 +122,29 @@ namespace PPS.Solver
         }
 
         /// <summary>
-        /// 레벨 구실을 하는가.
-        /// 지형이 하나도 없으면 공이 닿을 것이 없어 판이 성립하지 않는다 —
-        /// 풀이 파일처럼 아예 다른 것도 여기서 걸린다.
+        /// 원본에 Level 이 들어 있었는가. 스테이지인지 가르는 자리다.
+        /// 읽은 결과로는 못 가른다 — StageData 가 Level 을 늘 채워 둬서
+        /// 풀이 파일을 읽어도 빈 레벨이 달려 나온다.
+        /// 지형으로 가르지 않는 것은 장치만 있는 판과
+        /// 전부 그어서 푸는 빈 판이 있기 때문이다.
+        /// </summary>
+        static bool HasLevel(string json)
+        {
+            Parse<StageProbe>(json, out StageProbe probe, out _);
+            return probe?.Level != null;
+        }
+
+        /// 초기값이 없어야 원본에 있었는지 알 수 있다.
+        [Serializable]
+        class StageProbe
+        {
+            public LevelData Level;
+        }
+
+        /// <summary>
+        /// 스테이지 껍데기 없는 옛 파일이 레벨 구실을 하는가.
+        /// 가를 표시가 없어 지형으로 본다 — 풀이 파일처럼
+        /// 아예 다른 것도 여기서 걸린다.
         /// </summary>
         static bool IsLevel(LevelData level)
             => level != null && level.Terrain != null && level.Terrain.Count > 0;

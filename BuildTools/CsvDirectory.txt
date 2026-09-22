@@ -1,0 +1,3 @@
+# csv 를 쓸 폴더를 첫 줄에 적는다.
+# 저장소 뿌리에서 본 상대 경로다. 예: SolverReports\csv
+# 비워 두면 SolverReports\csv 에 쓴다.
