@@ -38,6 +38,14 @@ MonoBehaviour:
     Sprite: {fileID: 21300000, guid: d9f8e77b7ddf4d79b01398490670e6a2, type: 3}
     DirectionArrow: {fileID: 0}
     Explosion: {fileID: 0}
+  - Type: 5
+    Sprite: {fileID: 21300000, guid: 3cabcdd6916afd0448738385435ecf46, type: 3}
+    DirectionArrow: {fileID: 0}
+    Explosion: {fileID: 0}
+  - Type: 6
+    Sprite: {fileID: 21300000, guid: 94ae5b372e52eaa42882f2e85fb81ab0, type: 3}
+    DirectionArrow: {fileID: 0}
+    Explosion: {fileID: 0}
   KillEffect: {fileID: 4593157221764657688, guid: b211ce208ee793949a55bc7dead08380, type: 3}
   KillLine: {fileID: 21300000, guid: ff16c08b124e1944185fc6dae4abc9f1, type: 3}
   TerrainSprite: {fileID: 21300000, guid: b7e2a5271fb14b8290f7eb9ae97aa58a, type: 3}
