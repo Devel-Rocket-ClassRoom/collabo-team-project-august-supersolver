@@ -1,5 +1,5 @@
 {
-    "StageId": "BarricadeBomb_BB1BR1_Auto",
+    "StageId": "BarricadeBomb_BB1BR1_FL1",
     "Shapes": [
         {
             "Kind": 0,
@@ -11,20 +11,6 @@
                 {
                     "x": 4.0,
                     "y": 0.0
-                }
-            ],
-            "Radius": 0.0
-        },
-        {
-            "Kind": 0,
-            "Points": [
-                {
-                    "x": 1.816269874572754,
-                    "y": -0.021043896675109865
-                },
-                {
-                    "x": 3.458770751953125,
-                    "y": 1.1390882730484009
                 }
             ],
             "Radius": 0.0
