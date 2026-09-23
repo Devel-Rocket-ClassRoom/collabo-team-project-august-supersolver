@@ -20,19 +20,20 @@ namespace PPS.Solver.Viewer
         const int MaxSteps = SimWorld.DefaultMaxSteps;
         const int CircleSegments = 28;
 
+        /// 킬라인은 끝이 없어 화면 밖까지 길게 깐다.
+        const float KillLineWidth = 60f;
+
         // 밝은 배경(FFE6B3) 위에서 읽히도록 전부 어둡고 진한 색으로 잡았다.
-        static readonly Color TerrainColor = new Color32(0x23, 0x25, 0x2B, 0xFF);   // 거의 검정
         static readonly Color FreeBodyColor = new Color32(0x1B, 0x4F, 0xA0, 0xFF);  // 진한 파랑
-        static readonly Color BallColor = new Color32(0xC0, 0x14, 0x3C, 0xFF);      // 크림슨
-        static readonly Color GoalColor = new Color32(0x0E, 0x7A, 0x3C, 0xFF);      // 진한 초록
-        static readonly Color StarColor = new Color32(0xB8, 0x7A, 0x00, 0xFF);      // 진한 금색
-        static readonly Color KillLineColor = new Color32(0x8A, 0x1C, 0x1C, 0xFF);  // 어두운 벽돌
         static readonly Color BombIdleColor = new Color32(0x6B, 0x3F, 0xA0, 0xFF);  // 진한 보라
         static readonly Color BombFiredColor = new Color32(0xC4, 0x00, 0x6B, 0xFF); // 진한 마젠타
-        static readonly Color HazardColor = new Color32(0xD4, 0x4A, 0x00, 0xFF);    // 진한 주황 — 닿으면 실패
         static readonly Color WindColor = new Color32(0x00, 0x6E, 0x8A, 0xFF);      // 진한 하늘 — 미는 쪽으로 선
         static readonly Color PathColor = new Color32(0x0B, 0x3F, 0x7A, 0xFF);      // 진한 감청
         static readonly Color SolutionColor = new Color32(0x0B, 0x6E, 0x6E, 0xFF);  // 진한 청록 — 솔버가 그린 것
+
+        /// 공·골·별·장치·지형·킬라인·파편의 모양.
+        /// 게임과 같은 그림으로 봐야 어긋남이 보인다.
+        [SerializeField] SimStyle _style;
 
         [SerializeField] bool _autoFitCamera = true;
 
@@ -138,6 +139,14 @@ namespace PPS.Solver.Viewer
 
         Material _lineMaterial;
 
+        /// <summary>
+        /// 스프라이트 자리들. 프레임마다 앞에서부터
+        /// 다시 채우고 남은 것은 끈다 — 파편처럼
+        /// 도중에 늘고 주는 것이 있어서다.
+        /// </summary>
+        readonly List<SpriteRenderer> _sprites = new List<SpriteRenderer>();
+        int _spritesUsed;
+
         void Start()
         {
             LoadPresets();
@@ -166,6 +175,16 @@ namespace PPS.Solver.Viewer
 
             while (_world.CurrentStep < _targetStep && !_world.IsTerminal)
                 _world.Step();
+        }
+
+        void LateUpdate()
+        {
+            if (_world == null) return;
+
+            _spritesUsed = 0;
+            if (_style != null) DrawSprites();
+
+            for (int i = _spritesUsed; i < _sprites.Count; i++) _sprites[i].enabled = false;
         }
 
         void OnDestroy()
@@ -390,16 +409,10 @@ namespace PPS.Solver.Viewer
             // 창이 낮으면 아래쪽 줄이 잘린다. 잘린 만큼 스크롤한다.
             _legendScroll = GUILayout.BeginScrollView(_legendScroll);
 
-            LegendRow(TerrainColor, "지형 (붙박이)");
             LegendRow(FreeBodyColor, "자유 물체");
-            LegendRow(BallColor, "공");
-            LegendRow(GoalColor, "골");
-            LegendRow(StarColor, "별");
-            LegendRow(BombIdleColor, "폭탄 — 대기");
-            LegendRow(BombFiredColor, "폭탄 — 발동");
-            LegendRow(HazardColor, "스파이크 · 위험 바디");
+            LegendRow(BombIdleColor, "폭탄 반경 — 대기");
+            LegendRow(BombFiredColor, "폭탄 반경 — 발동");
             LegendRow(WindColor, "바람 (선은 미는 쪽)");
-            LegendRow(KillLineColor, "킬 라인");
             LegendRow(PathColor, "통로");
             LegendRow(SolutionColor, "솔버가 그린 선");
 
@@ -980,21 +993,18 @@ namespace PPS.Solver.Viewer
             // 선분마다 사각형을 그린다.
             GL.Begin(GL.QUADS);
 
-            DrawLevelMarkers();
+            DrawDeviceReach();
             DrawTopology();
 
-            var bodies = _world.Bodies;
-            for (int i = 0; i < bodies.Count; i++)
+            // 붙박이 획은 아래 솔버 선과 자리가 같아 건너뛴다.
+            GL.Color(FreeBodyColor);
+            var strokes = _world.StrokeBodies;
+            for (int i = 0; i < strokes.Count; i++)
             {
-                var body = bodies[i];
-                if (body == null) continue;
+                var body = strokes[i];
+                if (body == null || body.bodyType == RigidbodyType2D.Static) continue;
 
-                GL.Color(ReferenceEquals(body, _world.Ball) ? BallColor
-                       : IsHazard(body) ? HazardColor
-                       : body.bodyType == RigidbodyType2D.Static ? TerrainColor
-                       : FreeBodyColor);
-
-                DrawBody(body);
+                DrawFreeBody(body);
             }
 
             // 솔버가 그린 선. 바디 위에 덧그려 지형과 색이 갈리게 한다.
@@ -1027,18 +1037,6 @@ namespace PPS.Solver.Viewer
             for (int p = 0; p + 1 < path.Length; p++) Line(path[p], path[p + 1]);
         }
 
-        /// <summary>목록이 짧아 선형 검색으로 충분하다.</summary>
-        bool IsHazard(Rigidbody2D body)
-        {
-            var hazards = _world.Hazards;
-            for (int i = 0; i < hazards.Count; i++)
-            {
-                var hazard = hazards[i];
-                if (hazard != null && ReferenceEquals(hazard.attachedRigidbody, body)) return true;
-            }
-            return false;
-        }
-
         /// <summary>파괴된 파편은 null 로 남아 있다.</summary>
         int CountLiveHazards()
         {
@@ -1049,100 +1047,64 @@ namespace PPS.Solver.Viewer
             return count;
         }
 
-        void DrawBody(Rigidbody2D body)
+        /// <summary>
+        /// 자유 물체 — 외곽이 아니라 원래 그은 선을 그린다.
+        /// 두께는 충돌을 성립시키려고 붙인 것이지
+        /// 유저가 그린 것이 아니다.
+        /// </summary>
+        void DrawFreeBody(Rigidbody2D body)
         {
-            // 정적 스트로크와 지형 — 두께 0 의 선.
-            var edge = body.GetComponent<EdgeCollider2D>();
-            if (edge != null)
-            {
-                var points = edge.points;
-                for (int i = 0; i + 1 < points.Length; i++)
-                {
-                    Line(body.transform.TransformPoint(points[i]),
-                         body.transform.TransformPoint(points[i + 1]));
-                }
-                return;
-            }
-
-            // 자유 물체 — 외곽이 아니라 원래 그은 선을 그린다.
-            // 두께는 충돌을 성립시키려고 붙인 것이지
-            // 유저가 그린 것이 아니다.
             var polygons = body.GetComponents<PolygonCollider2D>();
-            if (polygons.Length > 0)
+            var transform = body.transform;
+
+            for (int p = 0; p < polygons.Length; p++)
             {
-                var transform = body.transform;
+                var path = polygons[p].GetPath(0);
+                if (path.Length != 4) continue;
 
-                for (int p = 0; p < polygons.Length; p++)
+                Vector2 start = (path[0] + path[1]) * 0.5f;
+                Vector2 end = (path[2] + path[3]) * 0.5f;
+
+                Vector2 delta = end - start;
+                float length = delta.magnitude;
+
+                // 늘여 둔 만큼 되돌린다. 짧으면 뒤집히니 둔다.
+                if (length > 2f * ColliderFactory.FreeBodyHalfWidth)
                 {
-                    var path = polygons[p].GetPath(0);
-                    if (path.Length != 4) continue;
-
-                    Vector2 start = (path[0] + path[1]) * 0.5f;
-                    Vector2 end = (path[2] + path[3]) * 0.5f;
-
-                    Vector2 delta = end - start;
-                    float length = delta.magnitude;
-
-                    // 늘여 둔 만큼 되돌린다. 짧으면 뒤집히니 둔다.
-                    if (length > 2f * ColliderFactory.FreeBodyHalfWidth)
-                    {
-                        Vector2 cap = delta / length * ColliderFactory.FreeBodyHalfWidth;
-                        start += cap;
-                        end -= cap;
-                    }
-
-                    Line(transform.TransformPoint(start), transform.TransformPoint(end));
+                    Vector2 cap = delta / length * ColliderFactory.FreeBodyHalfWidth;
+                    start += cap;
+                    end -= cap;
                 }
-                return;
-            }
 
-            var circle = body.GetComponent<CircleCollider2D>();
-            if (circle != null) Circle(body.position, circle.radius);
+                Line(transform.TransformPoint(start), transform.TransformPoint(end));
+            }
         }
 
-        void DrawLevelMarkers()
+        /// <summary>
+        /// 장치의 영향 범위. 그림에는 없는 값이라
+        /// 스프라이트 위에 선으로 겹친다.
+        /// </summary>
+        void DrawDeviceReach()
         {
-            var level = _world.Level;
-
-            GL.Color(GoalColor);
-            Circle(level.GoalPosition, LevelData.GoalRadius);
-
-            var stars = level.Stars;
-            if (stars != null)
-            {
-                GL.Color(StarColor);
-
-                for (int i = 0; i < stars.Count; i++)
-                    Circle(stars[i], LevelData.StarCaptureRadius);
-            }
-
-            GL.Color(KillLineColor);
-            Line(new Vector2(-30f, level.KillY), new Vector2(30f, level.KillY));
-
-            var devices = level.Devices;
+            var devices = _world.Level.Devices;
             if (devices == null) return;
 
             for (int i = 0; i < devices.Count; i++)
             {
                 IDeviceData device = devices[i];
+                if (!(device is IHasReach r)) continue;
+
                 Vector2 at = device.Position;
-                float reach = device is IHasReach r ? r.Reach : 0f;
 
                 GL.Color(DeviceColor(device.Type, i));
-
-                Circle(at, 0.3f);
-                Circle(at, reach);
+                Circle(at, r.Reach);
 
                 if (device is IHasFacing facing)
                 {
                     // 방향이 있는 장치는 미는 쪽으로 선을 하나 뻗는다.
                     float rad = facing.FacingDegrees * Mathf.Deg2Rad;
-                    Line(at, at + new Vector2(Mathf.Cos(rad), Mathf.Sin(rad)) * reach);
-                    continue;
+                    Line(at, at + new Vector2(Mathf.Cos(rad), Mathf.Sin(rad)) * r.Reach);
                 }
-
-                Line(at + new Vector2(-0.45f, 0f), at + new Vector2(0.45f, 0f));
-                Line(at + new Vector2(0f, -0.45f), at + new Vector2(0f, 0.45f));
             }
         }
 
@@ -1152,10 +1114,137 @@ namespace PPS.Solver.Viewer
         /// </summary>
         Color DeviceColor(DeviceType type, int index)
         {
-            if (type == DeviceType.Spike) return HazardColor;
             if (type == DeviceType.Wind) return WindColor;
 
             return _world.GetDevice(index).body != null ? BombIdleColor : BombFiredColor;
+        }
+
+        // ── 스프라이트 ──
+
+        /// <summary>
+        /// 게임 화면과 같은 규칙으로 놓는다.
+        /// 먹은 별과 터진 폭탄은 사라진다.
+        /// </summary>
+        void DrawSprites()
+        {
+            LevelData level = _world.Level;
+
+            var terrain = level.Terrain;
+            if (terrain != null)
+            {
+                for (int i = 0; i < terrain.Count; i++)
+                {
+                    Vector2 ab = terrain[i].B - terrain[i].A;
+                    Put(_style.TerrainSprite, (terrain[i].A + terrain[i].B) * 0.5f,
+                        new Vector2(ab.magnitude, _lineWidth),
+                        Mathf.Atan2(ab.y, ab.x) * Mathf.Rad2Deg, 0, _style.Terrain, false);
+                }
+            }
+
+            PutKillLine(level.KillY);
+
+            Put(_style.Sprites.Goal, level.GoalPosition, Diameter(LevelData.GoalRadius), 0f, 1);
+
+            var stars = level.Stars;
+            if (stars != null)
+            {
+                for (int i = 0; i < stars.Count; i++)
+                {
+                    if (_world.Judge.IsCollected(i)) continue;
+                    Put(_style.Sprites.Star, stars[i], Diameter(LevelData.StarCaptureRadius), 0f, 1);
+                }
+            }
+
+            var devices = level.Devices;
+            if (devices != null)
+            {
+                for (int i = 0; i < devices.Count; i++)
+                {
+                    (IDeviceData data, Rigidbody2D body) = _world.GetDevice(i);
+
+                    // 바디를 가질 장치인데 없으면 이미 터진 것이다.
+                    if (body == null && DeviceRegistry.MakesBody(data.Type)) continue;
+
+                    Put(_style.SpriteOf(data.Type), body != null ? body.position : data.Position,
+                        Diameter(data.DrawRadius), SimStyle.AngleOf(data), 2);
+                }
+            }
+
+            // 붙박이 위험은 스파이크다. 장치 그림으로 이미 그렸다.
+            var hazards = _world.Hazards;
+            for (int i = 0; i < hazards.Count; i++)
+            {
+                var hazard = hazards[i];
+                if (hazard == null || hazard.attachedRigidbody.bodyType == RigidbodyType2D.Static) continue;
+
+                Put(_style.Sprites.Dot, hazard.transform.position,
+                    Diameter(FragBombDevice.FragmentRadius), 0f, 3);
+            }
+
+            Put(_style.Sprites.Ball, _world.Ball.position, Diameter(LevelData.BallRadius),
+                _world.Ball.rotation, 4);
+        }
+
+        static Vector2 Diameter(float radius) => Vector2.one * (radius * 2f);
+
+        /// <summary>
+        /// 그림 하나를 size 안에 맞춰 놓는다.
+        /// 안 꽂힌 그림은 건너뛴다.
+        /// </summary>
+        void Put(Sprite art, Vector2 at, Vector2 size, float degrees, int order,
+            Color? tint = null, bool keepAspect = true)
+        {
+            if (art == null) return;
+
+            SpriteRenderer handle = NextSprite(art, order, tint ?? SimStyle.Plain);
+            handle.drawMode = SpriteDrawMode.Simple;
+
+            Vector2 content = art.bounds.size;
+            Vector2 scale = new Vector2(size.x / content.x, size.y / content.y);
+            if (keepAspect) scale = Vector2.one * Mathf.Min(scale.x, scale.y);
+
+            // 피벗이 가운데가 아닌 그림도 at 에 가운데가 오게 한다.
+            Quaternion rotation = Quaternion.Euler(0f, 0f, degrees);
+            Transform t = handle.transform;
+            t.localScale = new Vector3(scale.x, scale.y, 1f);
+            t.rotation = rotation;
+            t.position = (Vector3)at - rotation * Vector2.Scale(art.bounds.center, scale);
+        }
+
+        /// <summary>
+        /// 늘리면 그림이 찌그러진다. 가로로만 반복하고
+        /// 그림의 아랫변을 KillY 에 맞춘다.
+        /// </summary>
+        void PutKillLine(float killY)
+        {
+            Sprite art = _style.KillLine;
+            if (art == null) return;
+
+            SpriteRenderer handle = NextSprite(art, 0, SimStyle.Plain);
+            handle.drawMode = SpriteDrawMode.Tiled;
+            handle.size = new Vector2(KillLineWidth, art.bounds.size.y);
+
+            Transform t = handle.transform;
+            t.localScale = Vector3.one;
+            t.rotation = Quaternion.identity;
+            t.position = new Vector3(0f, killY - art.bounds.min.y, 0f);
+        }
+
+        SpriteRenderer NextSprite(Sprite art, int order, Color color)
+        {
+            if (_spritesUsed == _sprites.Count)
+            {
+                var go = new GameObject($"Sprite_{_sprites.Count}");
+                go.transform.SetParent(transform, false);
+                _sprites.Add(go.AddComponent<SpriteRenderer>());
+            }
+
+            SpriteRenderer handle = _sprites[_spritesUsed++];
+            handle.enabled = true;
+            handle.sprite = art;
+            handle.sortingOrder = order;
+            handle.color = color;
+            return handle;
         }
 
         /// <summary>선분 하나를 사각형으로 그린다.</summary>
