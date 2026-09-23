@@ -12,4 +12,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7c5b810cebe04ce094b3ea16e2f47d08, type: 3}
   m_Name: FixedTutorialSet
   m_EditorClassIdentifier: Assembly-CSharp::FixedTutorialSet
-  FixedTutorials: []
+  FixedTutorials:
+  - {fileID: 11400000, guid: ccae3361ae62a3740bdbcdc59b8ef6b9, type: 2}
+  - {fileID: 11400000, guid: 78f89f7e40dfaeb41a48dc92ffc0aea4, type: 2}
+  - {fileID: 11400000, guid: 9f7f01531a6790540b5dea6303fc1463, type: 2}
+  - {fileID: 11400000, guid: dbecfae83e0ec7948a031deba9ccd038, type: 2}
+  - {fileID: 11400000, guid: aa5506b4c52a81a42b891afad411513a, type: 2}

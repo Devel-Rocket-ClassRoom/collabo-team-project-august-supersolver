@@ -15,11 +15,11 @@ MonoBehaviour:
   IsUnlockTutorial: 0
   Entry:
     Theme: 0
-    Stage: 0
+    Stage: 1
   Tool: 0
   Duration: 2
   Target: 14
   PrefabKey: 2
-  Offset: {x: -358, y: 547}
+  Offset: {x: -36, y: 34}
   Drag: {x: 0, y: 0}
   Condition: 0

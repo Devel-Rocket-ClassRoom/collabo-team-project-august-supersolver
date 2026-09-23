@@ -11,5 +11,12 @@ namespace PPS.Core
 
         DrawGesture,
         Pointer,
+
+        /// 장치가 무엇을 하는지 보여 주는 안내 그림.
+        GuideBouncer,
+        GuideBomb,
+        GuideWind,
+        GuideBarricade,
+        GuideBat,
     }
 }

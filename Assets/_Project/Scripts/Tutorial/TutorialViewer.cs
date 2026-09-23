@@ -113,8 +113,8 @@ public class TutorialViewer : MonoBehaviour
 
     /// <summary>
     /// 스테이지 것을 한꺼번에 띄운다. 순서가 없어
-    /// 기다리지 않고, 캔버스 영역 한가운데에 붙는다 —
-    /// 모드가 갈려도 그 자리는 안 꺼진다.
+    /// 기다리지 않고, 캔버스 영역에서 제 Offset 만큼
+    /// 민 자리에 붙는다 — 모드가 갈려도 안 꺼진다.
     /// </summary>
     void ShowFixed(IReadOnlyList<FixedTutorial> fixedTutorials, StageEntry entry)
     {
@@ -136,7 +136,11 @@ public class TutorialViewer : MonoBehaviour
             var prefab = FindPrefab(fixedTutorial.PrefabKey, fixedTutorial.name);
             if (prefab == null) continue;
 
-            _fixed.Add(Instantiate(prefab, center));
+            var spawned = Instantiate(prefab, center);
+            if (spawned.transform is RectTransform rect)
+                rect.anchoredPosition += fixedTutorial.Offset;
+
+            _fixed.Add(spawned);
         }
     }
 
