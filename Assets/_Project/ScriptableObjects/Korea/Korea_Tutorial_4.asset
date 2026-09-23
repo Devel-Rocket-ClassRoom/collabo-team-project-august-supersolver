@@ -15,7 +15,7 @@ MonoBehaviour:
   IsUnlockTutorial: 0
   Entry:
     Theme: 0
-    Stage: 0
+    Stage: 1
   Tool: 0
   Duration: 2.5
   Target: 5
