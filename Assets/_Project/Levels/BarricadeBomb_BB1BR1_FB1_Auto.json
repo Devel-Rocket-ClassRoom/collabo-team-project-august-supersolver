@@ -1,6 +1,6 @@
 {
     "Version": 1,
-    "StageId": "BarricadeBomb_BB1BR1_FB1",
+    "StageId": "BarricadeBomb_BB1BR1_FB1_Auto",
     "Seed": 0,
     "Level": {
         "InkLimit": 20.0,
@@ -51,7 +51,7 @@
             },
             {
                 "Type": 0,
-                "Json": "{\"Position\":{\"x\":1.490823745727539,\"y\":-0.27548012137413027},\"Radius\":1.2999999523162842,\"Power\":8.0,\"DelaySteps\":55,\"JitterSteps\":0}"
+                "Json": "{\"Position\":{\"x\":0.5073947310447693,\"y\":-0.26765477657318118},\"Radius\":1.2999999523162842,\"Power\":8.0,\"DelaySteps\":60,\"JitterSteps\":0}"
             }
         ],
         "Stars": [
@@ -68,6 +68,6 @@
                 "y": 1.234110951423645
             }
         ],
-        "KillY": -4.575479984283447
+        "KillY": -4.567654609680176
     }
 }

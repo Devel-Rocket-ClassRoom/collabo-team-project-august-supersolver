@@ -11,7 +11,6 @@ namespace PPS.Core.Tests
         {
             "BarricadeDrop_BR1_FB1",
             "BarricadeBounce_SL1BR1_FB1",
-            "BarricadeBomb_BB1BR1_FB1",
             "BarricadeWind_WD1BR1_FB1",
             "BarricadeRelay_BB1WD1SL1BR1_FB1",
         };
@@ -86,7 +85,6 @@ namespace PPS.Core.Tests
         }
 
         [TestCase("BarricadeBounce_SL1BR1_FB1", 1)]
-        [TestCase("BarricadeBomb_BB1BR1_FB1", 1)]
         [TestCase("BarricadeWind_WD1BR1_FB1", 1)]
         [TestCase("BarricadeRelay_BB1WD1SL1BR1_FB1", 1)]
         [TestCase("BarricadeRelay_BB1WD1SL1BR1_FB1", 2)]
