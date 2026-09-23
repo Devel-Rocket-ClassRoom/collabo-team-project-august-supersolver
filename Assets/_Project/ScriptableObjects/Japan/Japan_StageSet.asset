@@ -13,23 +13,19 @@ MonoBehaviour:
   m_Name: Japan_StageSet
   m_EditorClassIdentifier: Assembly-CSharp::ThemeStageSet
   Stages:
-  - {fileID: 4900000, guid: e5705dd4f9923c341bdd92a81b2778e4, type: 3}
-  - {fileID: 4900000, guid: 83d7ee2d6157075448f181f9046ffd4f, type: 3}
   - {fileID: 4900000, guid: b97473bfa84e2a149a4abe83bade03a9, type: 3}
   - {fileID: 4900000, guid: 6654975b2423cad42856ce3f5a7a8a0d, type: 3}
   - {fileID: 4900000, guid: 8655017dd9efb3d479ef8423c0e5afae, type: 3}
   - {fileID: 4900000, guid: c09399886a8c02f4b894633312caa7d5, type: 3}
   - {fileID: 4900000, guid: 950b9d2cb18fc1341821bd44406d42db, type: 3}
   - {fileID: 4900000, guid: 7245b617cf3334c48b092f2c8179f7a7, type: 3}
-  - {fileID: 4900000, guid: 9d2b316eca989dc4d8264d985d95dd10, type: 3}
-  - {fileID: 4900000, guid: 9d2b316eca989dc4d8264d985d95dd10, type: 3}
-  - {fileID: 4900000, guid: 9d2b316eca989dc4d8264d985d95dd10, type: 3}
-  - {fileID: 4900000, guid: 9d2b316eca989dc4d8264d985d95dd10, type: 3}
-  - {fileID: 4900000, guid: 9d2b316eca989dc4d8264d985d95dd10, type: 3}
-  - {fileID: 4900000, guid: 9d2b316eca989dc4d8264d985d95dd10, type: 3}
-  - {fileID: 4900000, guid: 9d2b316eca989dc4d8264d985d95dd10, type: 3}
-  - {fileID: 4900000, guid: 9d2b316eca989dc4d8264d985d95dd10, type: 3}
-  - {fileID: 4900000, guid: 9d2b316eca989dc4d8264d985d95dd10, type: 3}
-  - {fileID: 4900000, guid: 9d2b316eca989dc4d8264d985d95dd10, type: 3}
-  - {fileID: 4900000, guid: 9d2b316eca989dc4d8264d985d95dd10, type: 3}
-  - {fileID: 4900000, guid: 9d2b316eca989dc4d8264d985d95dd10, type: 3}
+  - {fileID: 4900000, guid: 2c205a2e8ce1a0347bea28aa7c26fe49, type: 3}
+  - {fileID: 4900000, guid: 4ee07532b62668449a8ceb4e65b79046, type: 3}
+  - {fileID: 4900000, guid: 23d69ab1e9ee23e46978b37cfdc7edc5, type: 3}
+  - {fileID: 4900000, guid: b55fd710f2374a0a9e25408da9d3822c, type: 3}
+  - {fileID: 4900000, guid: 319ce729ad54c0e40984c404d0a21d81, type: 3}
+  - {fileID: 4900000, guid: 11fda4b0426901c4aaa311d5b5f0da5f, type: 3}
+  - {fileID: 4900000, guid: 7fbf50f4ce6feb540b9ac2be1fc6fe4c, type: 3}
+  - {fileID: 4900000, guid: b7cab9e642c760047a951eaf4ce7cab9, type: 3}
+  - {fileID: 4900000, guid: fb0f82087083dc64ea2725a05cd602de, type: 3}
+  - {fileID: 4900000, guid: cd3f0344c15b74340880995af0cb93ef, type: 3}
