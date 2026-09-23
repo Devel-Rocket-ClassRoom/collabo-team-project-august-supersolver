@@ -22,5 +22,6 @@ public static class StageLauncher
 
         StageLoader.SetStage(stageData);
         TutorialViewer.SetStage(entry);
+        CurrentStageInfo.SetStage(entry);
     }
 }

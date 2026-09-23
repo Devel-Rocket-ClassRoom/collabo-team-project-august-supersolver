@@ -33,18 +33,19 @@ namespace PPS.Core
 
         void OnEnable()
         {
-            // UserData 로드 결과를 받을 함수를 연결한다.
-            _userDataLoader.DataLoaded += OnUserDataLoaded;
+            if (_userDataLoader == null)
+                return;
 
-            // UserData 로드 실패 결과를 받을 함수를 연결한다.
+            _userDataLoader.DataLoaded += OnUserDataLoaded;
             _userDataLoader.DataLoadFailed += OnUserDataLoadFailed;
         }
+
         void OnDisable()
         {
-            // 오브젝트가 비활성화 될 때 이벤트 연결을 해제한다.
-            _userDataLoader.DataLoaded -= OnUserDataLoaded;
+            if (_userDataLoader == null)
+                return;
 
-            // 중복 호출을 방지하기 위해 실패 이벤트도 해제한다.
+            _userDataLoader.DataLoaded -= OnUserDataLoaded;
             _userDataLoader.DataLoadFailed -= OnUserDataLoadFailed;
         }
 

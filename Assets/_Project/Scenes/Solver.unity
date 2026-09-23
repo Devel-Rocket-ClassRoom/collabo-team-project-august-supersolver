@@ -476,6 +476,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ff1a499b8cd492745a87c2187deeba81, type: 3}
   m_Name: 
   m_EditorClassIdentifier: PPS.Solver.Viewer::PPS.Solver.Viewer.SolverViewer
+  _style: {fileID: 11400000, guid: 24aff3ded2f74d2389273c9c64cc0bff, type: 2}
   _autoFitCamera: 1
   _lineWidthRatio: 0.013
   _background: {r: 1, g: 0.9019608, b: 0.7019608, a: 1}

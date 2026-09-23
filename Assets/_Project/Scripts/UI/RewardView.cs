@@ -84,7 +84,8 @@ public class RewardView : UIPopup, IRewardView
 
     protected override async UniTask OnShowAnimation()
     {
-        ServiceLocator.Get<ISoundManager>().PlaySfx(SfxType.Reward);
+        if (ServiceLocator.TryGet<ISoundManager>(out var sound))
+            sound.PlaySfx(SfxType.Reward);
 
         content.anchoredPosition = new Vector2(content.anchoredPosition.x, -slideDistance);
 
@@ -117,7 +118,7 @@ public class RewardView : UIPopup, IRewardView
 
     private void Bind(RewardViewModel vm)
     {
-        stageLabel.text = FormatStage(vm.Entry);
+        stageLabel.text = vm.Entry.ToLabel();
         clearTimeLabel.text = FormatTime(vm.EndStep);
 
         float left = Mathf.Max(0f, vm.InkLimit - vm.InkUsed);
@@ -192,10 +193,6 @@ public class RewardView : UIPopup, IRewardView
         int seconds = Mathf.RoundToInt(endStep * SimWorld.FixedDt);
         return $"{seconds / 60}:{seconds % 60:00}";
     }
-
-    /// 표기는 1 부터 세고 StageEntry 는 0 부터 센다.
-    private static string FormatStage(StageEntry entry)
-        => $"{entry.Theme + 1} - {entry.Stage + 1}";
 
     private void SetButtonsInteractable(bool value)
     {

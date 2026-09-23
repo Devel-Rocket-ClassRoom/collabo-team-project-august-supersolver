@@ -31,7 +31,8 @@ public class DrawingToolSceneUI : UIScene
     {
         CanvasCameraFitter.Instance.SetCanvasArea(canvasArea);
         managers.gameObject.SetActive(true);
-        ServiceLocator.Get<ISoundManager>().PlayBgm(BgmType.Stage);
+        if (ServiceLocator.TryGet<ISoundManager>(out var sound))
+            sound.PlayBgm(BgmType.Stage);
     }
 
     /// <summary>

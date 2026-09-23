@@ -1,4 +1,4 @@
-using Cysharp.Threading.Tasks;
+﻿using Cysharp.Threading.Tasks;
 using UnityEngine;
 
 namespace PPS.Core
@@ -9,8 +9,12 @@ namespace PPS.Core
         private readonly string _errorMessage = "가짜 데이터인데 에러가 왜나요";
         public FakeUserDataStorage()
         {
-            fakeData = new UserData();   // HasPlayed = false, LastCleared = (0,0)
-            fakeData.LastCleared = new StageEntry(0, 18);
+            fakeData = new UserData();
+
+            // 1-18 까지 깬 계정. 잠금 판정이 HasPlayed 가
+            // false 면 LastCleared 를 보지 않으므로 같이 켠다.
+            fakeData.HasPlayed = true;
+            fakeData.LastCleared = new StageEntry(0, 17);
         }
         public UniTask<UserDataLoadResult> LoadAsync()
         {
