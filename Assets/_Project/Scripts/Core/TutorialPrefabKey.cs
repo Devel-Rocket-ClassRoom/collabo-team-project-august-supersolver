@@ -22,5 +22,8 @@ namespace PPS.Core
         /// 동그라미를 긋는 손가락. 자유물체를 가르친다.
         /// 값이 에셋에 박혀 있어 DrawGesture 옆으로 못 옮긴다.
         DrawRingGesture,
+
+        /// 회전축을 박을 자리를 표시하는 고리.
+        PivotSpot,
     }
 }
