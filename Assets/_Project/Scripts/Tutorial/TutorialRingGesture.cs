@@ -3,9 +3,9 @@ using UnityEngine;
 using UnityEngine.UI;
 
 /// <summary>
-/// 원을 그리는 손가락을 글자 없이 보여 준다. 컷과 달리
-/// 고정 표시는 Drag 를 못 받아서 도는 크기를 프리팹이
-/// 쥐고 스스로 돈다.
+/// 원을 그리는 손가락을 글자 없이 보여 준다. 곧게 끄는
+/// TutorialGesture 와 짝이고, 한 점에서 다른 점으로 가는
+/// 획이 아니라 닫힌 고리라 Drag 대신 반지름을 든다.
 /// </summary>
 [DisallowMultipleComponent]
 public sealed class TutorialRingGesture : MonoBehaviour
@@ -16,7 +16,8 @@ public sealed class TutorialRingGesture : MonoBehaviour
     /// 닿는 순간 퍼지는 파문. 어디서 시작하는지 짚어 준다.
     [SerializeField] Graphic _ripple;
 
-    /// 도는 원의 반지름. 옆에 깔린 점선과 같아야 한다.
+    /// 도는 원의 반지름. 플레이어가 따라 그릴 크기라
+    /// 판마다 풀리는 범위에 맞춰야 한다.
     [SerializeField] float _radius = 70f;
 
     /// 손가락이 원 꼭대기에서 출발해 시계 방향으로 돈다.
@@ -30,7 +31,8 @@ public sealed class TutorialRingGesture : MonoBehaviour
 
     Tween _tween;
 
-    // 컷이 불러 주는 Play 가 없다. 떠 있는 동안 계속 돈다.
+    // 뷰어는 TutorialGesture 에만 Play 를 걸어 준다.
+    // 여기는 뜨는 순간 스스로 돌기 시작한다.
     void OnEnable() => _tween = Trace();
 
     void OnDisable() => _tween?.Kill();

@@ -19,8 +19,8 @@ namespace PPS.Core
         GuideBarricade,
         GuideBat,
 
-        /// 자유물체를 어디에 그려야 하는지 짚는 그림.
-        GuideFreeBody,
+        /// 동그라미를 긋는 손가락. 자유물체를 가르친다.
+        DrawRingGesture,
 
         /// 지렛대 막대와 핀 자리를 함께 짚는 그림.
         GuidePinLever,

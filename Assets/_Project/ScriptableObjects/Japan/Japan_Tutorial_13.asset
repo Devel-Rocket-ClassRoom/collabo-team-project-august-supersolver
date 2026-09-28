@@ -19,7 +19,7 @@ MonoBehaviour:
   Tool: 0
   Duration: 2.5
   Target: 14
-  PrefabKey: 0
-  Offset: {x: 0, y: 0}
+  PrefabKey: 8
+  Offset: {x: -179, y: 183}
   Drag: {x: 0, y: 0}
   Condition: 2
