@@ -20,6 +20,6 @@ MonoBehaviour:
   Duration: 2.5
   Target: 14
   PrefabKey: 2
-  Offset: {x: 183, y: 20}
+  Offset: {x: 136, y: 20}
   Drag: {x: 0, y: 0}
   Condition: 2

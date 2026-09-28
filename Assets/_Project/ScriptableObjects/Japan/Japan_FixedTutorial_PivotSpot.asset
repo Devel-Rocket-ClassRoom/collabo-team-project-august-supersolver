@@ -9,17 +9,13 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: b9fd1099fd60c764cae6f98e9fa3b190, type: 3}
-  m_Name: Japan_Tutorial_18
-  m_EditorClassIdentifier: PPS.Core::PPS.Core.Tutorial
+  m_Script: {fileID: 11500000, guid: 3706053ae1e271f4bad30e94d09ebed6, type: 3}
+  m_Name: Japan_FixedTutorial_PivotSpot
+  m_EditorClassIdentifier: PPS.Core::PPS.Core.FixedTutorial
   IsUnlockTutorial: 0
   Entry:
     Theme: 1
     Stage: 14
   Tool: 0
-  Duration: 2.5
-  Target: 14
-  PrefabKey: 1
-  Offset: {x: 173, y: 173}
-  Drag: {x: 0, y: -248}
-  Condition: 2
+  PrefabKey: 9
+  Offset: {x: 173, y: 54}
