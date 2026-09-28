@@ -25,5 +25,9 @@ namespace PPS.Core
 
         /// 회전축을 박을 자리를 표시하는 고리.
         PivotSpot,
+
+        /// 가시 안내 그림. 값이 에셋에 박혀 있어
+        /// 다른 장치 안내 옆으로 못 옮긴다.
+        GuideSpike,
     }
 }
