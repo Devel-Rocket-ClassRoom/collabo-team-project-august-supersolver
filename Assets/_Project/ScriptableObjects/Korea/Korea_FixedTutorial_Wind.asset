@@ -15,7 +15,7 @@ MonoBehaviour:
   IsUnlockTutorial: 0
   Entry:
     Theme: 0
-    Stage: 13
+    Stage: 14
   Tool: 0
   PrefabKey: 5
   Offset: {x: 150, y: -417}

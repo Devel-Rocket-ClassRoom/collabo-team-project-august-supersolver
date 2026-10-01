@@ -18,6 +18,12 @@ public class SoundManager : MonoSingleton<SoundManager>, ISoundManager
 
     AudioSource[] _sfxSources;
 
+    const string BgmVolumeKey = "Audio.BgmVolume";
+    const string SfxVolumeKey = "Audio.SfxVolume";
+
+    public float BgmVolume { get; private set; } = 1f;
+    public float SfxVolume { get; private set; } = 1f;
+
     /// 다음에 빼앗을 자리. 전부 울리는 중일 때만 쓴다.
     int _cursor;
 
@@ -37,7 +43,43 @@ public class SoundManager : MonoSingleton<SoundManager>, ISoundManager
         for (int i = 0; i < sfxSourceCount; i++)
             _sfxSources[i] = CreateSfxSource(i);
 
+        BgmVolume = Mathf.Clamp01(PlayerPrefs.GetFloat(BgmVolumeKey, 1f));
+        SfxVolume = Mathf.Clamp01(PlayerPrefs.GetFloat(SfxVolumeKey, 1f));
+    }
+
+    void Start()
+    {
+        if (Instance != this) return;
+
+        // 믹서 파라미터는 Awake 이후에 적용한다.
+        ApplyVolume(bgmSource.outputAudioMixerGroup, "BGMVolume", BgmVolume);
+        ApplyVolume(sfxOutput, "SFXVolume", SfxVolume);
         PlayBgm(BgmType.Title);
+    }
+
+    public void SetBgmVolume(float volume)
+    {
+        BgmVolume = Mathf.Clamp01(volume);
+        ApplyVolume(bgmSource.outputAudioMixerGroup, "BGMVolume", BgmVolume);
+        PlayerPrefs.SetFloat(BgmVolumeKey, BgmVolume);
+    }
+
+    public void SetSfxVolume(float volume)
+    {
+        SfxVolume = Mathf.Clamp01(volume);
+        ApplyVolume(sfxOutput, "SFXVolume", SfxVolume);
+        PlayerPrefs.SetFloat(SfxVolumeKey, SfxVolume);
+    }
+
+    static void ApplyVolume(AudioMixerGroup group, string parameter, float volume)
+    {
+        float decibels = volume <= 0f ? -80f : Mathf.Log10(volume) * 20f;
+        group.audioMixer.SetFloat(parameter, decibels);
+    }
+
+    void OnApplicationPause(bool paused)
+    {
+        if (paused && Instance == this) PlayerPrefs.Save();
     }
 
     AudioSource CreateSfxSource(int index)
