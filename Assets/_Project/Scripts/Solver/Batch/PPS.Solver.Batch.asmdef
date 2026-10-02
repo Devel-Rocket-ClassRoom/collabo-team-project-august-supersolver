@@ -1,0 +1,19 @@
+{
+    "name": "PPS.Solver.Batch",
+    "rootNamespace": "PPS.Solver.Batch",
+    "references": [
+        "PPS.Core",
+        "PPS.Solver"
+    ],
+    "includePlatforms": [
+        "Editor"
+    ],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": false,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}

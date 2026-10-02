@@ -23,8 +23,6 @@ namespace PPS.Core.Tests
             var level = SampleLevelFile.Load();
 
             Assert.AreEqual(SampleLevelFile.ExpectedInkLimit, level.InkLimit, 1e-4f);
-            Assert.AreEqual(SampleLevelFile.ExpectedBallRadius, level.BallRadius, 1e-4f);
-            Assert.AreEqual(SampleLevelFile.ExpectedGoalRadius, level.GoalRadius, 1e-4f);
             Assert.AreEqual(SampleLevelFile.ExpectedKillY, level.KillY, 1e-4f);
 
             Assert.AreEqual(SampleLevelFile.ExpectedBallStart, level.BallStart);

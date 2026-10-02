@@ -1,0 +1,35 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c287725c43ef42bc8bdd6499d94b9ec0, type: 3}
+  m_Name: Japan_StageSet
+  m_EditorClassIdentifier: Assembly-CSharp::ThemeStageSet
+  Stages:
+  - {fileID: 4900000, guid: b97473bfa84e2a149a4abe83bade03a9, type: 3}
+  - {fileID: 4900000, guid: 6654975b2423cad42856ce3f5a7a8a0d, type: 3}
+  - {fileID: 4900000, guid: 4c1ab7e0d95f42a3b6e8f10c2d734a51, type: 3}
+  - {fileID: 4900000, guid: 6b39e5c2748d4f1092ac37d5e8b60c74, type: 3}
+  - {fileID: 4900000, guid: 8655017dd9efb3d479ef8423c0e5afae, type: 3}
+  - {fileID: 4900000, guid: c09399886a8c02f4b894633312caa7d5, type: 3}
+  - {fileID: 4900000, guid: 950b9d2cb18fc1341821bd44406d42db, type: 3}
+  - {fileID: 4900000, guid: 7245b617cf3334c48b092f2c8179f7a7, type: 3}
+  - {fileID: 4900000, guid: 23d69ab1e9ee23e46978b37cfdc7edc5, type: 3}
+  - {fileID: 4900000, guid: b55fd710f2374a0a9e25408da9d3822c, type: 3}
+  - {fileID: 4900000, guid: bf6236f3b7030f44396be53f496950f7, type: 3}
+  - {fileID: 4900000, guid: cd3f0344c15b74340880995af0cb93ef, type: 3}
+  - {fileID: 4900000, guid: fb0f82087083dc64ea2725a05cd602de, type: 3}
+  - {fileID: 4900000, guid: b7cab9e642c760047a951eaf4ce7cab9, type: 3}
+  - {fileID: 4900000, guid: f7f619c73fb90f544a112db84e33642b, type: 3}
+  - {fileID: 4900000, guid: 7fbf50f4ce6feb540b9ac2be1fc6fe4c, type: 3}
+  - {fileID: 4900000, guid: 319ce729ad54c0e40984c404d0a21d81, type: 3}
+  - {fileID: 4900000, guid: 11fda4b0426901c4aaa311d5b5f0da5f, type: 3}
+  - {fileID: 4900000, guid: 8f5d13ba64c74e8f91b37ac025de6091, type: 3}
+  - {fileID: 4900000, guid: 32e3aaa23535fb44f8dda399ecc05710, type: 3}

@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="utf-8"?>
+<test-run id="2" testcasecount="3" result="Passed" total="3" passed="3" failed="0" inconclusive="0" skipped="0" asserts="0" engine-version="3.5.0.0" clr-version="4.0.30319.42000" start-time="2026-08-10 08:12:31Z" end-time="2026-08-10 08:12:32Z" duration="0.1372089">
+  <test-suite type="TestSuite" id="1109" name="PhysicsPuzzleSolver" fullname="PhysicsPuzzleSolver" runstate="Runnable" testcasecount="81" result="Passed" start-time="2026-08-10 08:12:31Z" end-time="2026-08-10 08:12:32Z" duration="0.137209" total="3" passed="3" failed="0" inconclusive="0" skipped="0" asserts="0">
+    <properties>
+      <property name="platform" value="PlayMode" />
+    </properties>
+    <test-suite type="Assembly" id="1102" name="PPS.Solver.PlayTests.dll" fullname="C:/Users/user/Desktop/KYO/KYO_GitRepos/PhysicsPuzzleSolver/Library/ScriptAssemblies/PPS.Solver.PlayTests.dll" runstate="Runnable" testcasecount="3" result="Passed" start-time="2026-08-10 08:12:31Z" end-time="2026-08-10 08:12:32Z" duration="0.112467" total="3" passed="3" failed="0" inconclusive="0" skipped="0" asserts="0">
+      <properties>
+        <property name="_PID" value="10460" />
+        <property name="_APPDOMAIN" value="Unity Child Domain" />
+        <property name="platform" value="PlayMode" />
+        <property name="EditorOnly" value="False" />
+      </properties>
+      <test-suite type="TestSuite" id="1103" name="PPS" fullname="PPS" runstate="Runnable" testcasecount="3" result="Passed" start-time="2026-08-10 08:12:31Z" end-time="2026-08-10 08:12:32Z" duration="0.110540" total="3" passed="3" failed="0" inconclusive="0" skipped="0" asserts="0">
+        <properties />
+        <test-suite type="TestSuite" id="1104" name="Solver" fullname="PPS.Solver" runstate="Runnable" testcasecount="3" result="Passed" start-time="2026-08-10 08:12:31Z" end-time="2026-08-10 08:12:32Z" duration="0.084317" total="3" passed="3" failed="0" inconclusive="0" skipped="0" asserts="0">
+          <properties />
+          <test-suite type="TestSuite" id="1105" name="Tests" fullname="PPS.Solver.Tests" runstate="Runnable" testcasecount="3" result="Passed" start-time="2026-08-10 08:12:31Z" end-time="2026-08-10 08:12:32Z" duration="0.071926" total="3" passed="3" failed="0" inconclusive="0" skipped="0" asserts="0">
+            <properties />
+            <test-suite type="TestFixture" id="1098" name="MeasureStageTests" fullname="PPS.Solver.Tests.MeasureStageTests" classname="PPS.Solver.Tests.MeasureStageTests" runstate="Runnable" testcasecount="3" result="Passed" start-time="2026-08-10 08:12:31Z" end-time="2026-08-10 08:12:32Z" duration="0.056951" total="3" passed="3" failed="0" inconclusive="0" skipped="0" asserts="0">
+              <properties />
+              <test-case id="1099" name="가만히_둔_공은_이산_자유낙하와_같다" fullname="PPS.Solver.Tests.MeasureStageTests.가만히_둔_공은_이산_자유낙하와_같다" methodname="가만히_둔_공은_이산_자유낙하와_같다" classname="PPS.Solver.Tests.MeasureStageTests" runstate="Runnable" seed="1365463510" result="Passed" start-time="2026-08-10 08:12:32Z" end-time="2026-08-10 08:12:32Z" duration="0.028590" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+              <test-case id="1100" name="수평_속도는_줄지_않는다" fullname="PPS.Solver.Tests.MeasureStageTests.수평_속도는_줄지_않는다" methodname="수평_속도는_줄지_않는다" classname="PPS.Solver.Tests.MeasureStageTests" runstate="Runnable" seed="1641681902" result="Passed" start-time="2026-08-10 08:12:32Z" end-time="2026-08-10 08:12:32Z" duration="0.000543" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+              <test-case id="1101" name="위로_쏜_공의_최고점을_집어낸다" fullname="PPS.Solver.Tests.MeasureStageTests.위로_쏜_공의_최고점을_집어낸다" methodname="위로_쏜_공의_최고점을_집어낸다" classname="PPS.Solver.Tests.MeasureStageTests" runstate="Runnable" seed="241855138" result="Passed" start-time="2026-08-10 08:12:32Z" end-time="2026-08-10 08:12:32Z" duration="0.000375" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+                <output><![CDATA[Saving results to: C:/Users/user/AppData/LocalLow/DefaultCompany/PhysicsPuzzleSolver\TestResults.xml
+]]></output>
+              </test-case>
+            </test-suite>
+          </test-suite>
+        </test-suite>
+      </test-suite>
+    </test-suite>
+  </test-suite>
+</test-run>

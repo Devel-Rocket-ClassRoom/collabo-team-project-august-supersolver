@@ -1,0 +1,16 @@
+fileFormatVersion: 2
+guid: 8c198147024c848d68e3f8b599276ada
+ShaderImporter:
+  externalObjects: {}
+  defaultTextures: []
+  nonModifiableTextures: []
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 279464
+  packageName: GUI Pro - Casual Game(+PSD)
+  packageVersion: 1.1.0
+  assetPath: Assets/Layer Lab/GUI Pro-CasualGame/ResourcesData/Shader & Materials/MobileAdditive.shader
+  uploadId: 906828

@@ -11,6 +11,12 @@ namespace PPS.Core
     [Serializable]
     public class StageData
     {
+        /// 지금 코드가 쓰는 저장 형식.
+        public const int CurrentVersion = 1;
+
+        /// 없는 파일 = 0 = 옛 공통 DeviceData 형식.
+        public int Version;
+
         /// 판을 가리키는 유일한 식별자.
         public string StageId = "S000";
 
@@ -20,8 +26,26 @@ namespace PPS.Core
         /// 임베드. 같은 맵을 쓰면 사본이 생긴다.
         public LevelData Level = new LevelData();
 
-        public static StageData FromJson(string json) => JsonUtility.FromJson<StageData>(json);
+        /// <summary>
+        /// 원본 문자열이 마이그레이션까지 함께 간다.
+        /// JsonUtility 가 새 형식에 없는 필드를 이미 버려서
+        /// 옛 값은 거기서만 되찾을 수 있다.
+        /// </summary>
+        public static StageData FromJson(string json)
+        {
+            var stage = JsonUtility.FromJson<StageData>(json);
+            if (stage == null) return null;
 
-        public string ToJson(bool prettyPrint = true) => JsonUtility.ToJson(this, prettyPrint);
+            StageDataMigration.Migrate(stage, json);
+            return stage;
+        }
+
+        public string ToJson(bool prettyPrint = true)
+        {
+            Version = CurrentVersion;
+            Level?.PackDevices();
+
+            return JsonUtility.ToJson(this, prettyPrint);
+        }
     }
 }

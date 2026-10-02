@@ -39,3 +39,7 @@ __pycache__/
 **/secrets.*
 *.env
 PhotonAppSettings.local.*
+.utmp
+ProjectSettings/AndroidResolverDependencies.xml
+Assets/GeneratedLocalRepo
+Assets/GeneratedLocalRepo.meta

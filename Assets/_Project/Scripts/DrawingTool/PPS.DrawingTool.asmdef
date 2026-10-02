@@ -1,0 +1,21 @@
+{
+    "name": "PPS.DrawingTool",
+    "rootNamespace": "PPS.DrawingTool",
+    "references": [
+        "PPS.Core",
+        "PPS.Game",
+        "Unity.InputSystem",
+        "UnityEngine.UI",
+        "Unity.TextMeshPro",
+        "UniTask"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}

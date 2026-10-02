@@ -1,0 +1,291 @@
+using System;
+using System.Collections.Generic;
+using System.Threading;
+using Cysharp.Threading.Tasks;
+using PPS.Core;
+using UnityEngine;
+using UnityEngine.UI;
+
+/// <summary>
+/// 스테이지에 걸린 튜토리얼 프리팹을 순서대로 Instantiate한다.
+/// 컷마다 걸린 조건(Condition)이 채워지면 프리팹은 파괴되고
+/// 다음 컷으로 넘어간다. 모드 전이는 StageFlow 몫이고
+/// 여기는 그것을 지켜보기만 한다.
+/// </summary>
+public class TutorialViewer : MonoBehaviour
+{
+    /// TutorialAnchor(Enum)과 실제 UI 자리를 짝지은 표
+    [SerializeField] List<AnchorBinding> targets = new();
+
+    /// 컷이 든 키를 프리팹 실물로 바꾸는 표.
+    [SerializeField] TutorialPrefabTable _prefabs;
+
+    [Serializable]
+    public struct AnchorBinding
+    {
+        public TutorialAnchor Anchor;
+        public RectTransform Rect;
+    }
+
+    static TutorialViewer Instance;
+
+    CancellationTokenSource _cts;
+
+    /// 스테이지 내내 떠 있는 표시들. 컷과 달리
+    /// 조건이 없어 파괴 시점을 여기서 쥔다.
+    readonly List<GameObject> _fixed = new();
+
+    void Awake()
+    {
+        if (Instance != null) return;
+        Instance = this;
+    }
+
+    void OnDestroy()
+    {
+        if (Instance == this) Instance = null;
+    }
+
+    public static void SetStage(StageEntry entry)
+    {
+        if (Instance == null)
+        {
+            Debug.LogError("[TutorialViewer] 씬에 뷰어가 없다.");
+            return;
+        }
+
+        Instance.Play(entry);
+    }
+
+    public void Play(StageEntry entry)
+    {
+        if (!ServiceLocator.TryGet<IThemeRepository>(out var repo)) return;
+
+        Stop();
+        _cts = CancellationTokenSource.CreateLinkedTokenSource(
+            this.GetCancellationTokenOnDestroy());
+
+        ShowFixed(repo.Asset.FixedTutorials, entry);
+        PlayAll(repo.Asset.Tutorials, entry, _cts.Token).Forget();
+    }
+
+    public void Stop()
+    {
+        _cts?.Cancel();
+        _cts?.Dispose();
+        _cts = null;
+
+        foreach (var spawned in _fixed)
+            if (spawned != null) Destroy(spawned);
+
+        _fixed.Clear();
+    }
+
+    /// <summary>
+    /// 스테이지에서 나갈 때. 패널은 꺼질 뿐 파괴되지
+    /// 않아 여기서 지우지 않으면 표시가 살아 남는다.
+    /// </summary>
+    public static void StopAll() => Instance?.Stop();
+
+    /// 해금 튜토리얼은 SO 의 Entry 를 무시한다 — 도구가
+    /// 열리는 자리가 바뀌면 튜토리얼도 따라가야 한다.
+    StageEntry EntryOf(TutorialBase t) =>
+        t.IsUnlockTutorial
+            ? ServiceLocator.Get<ToolUnlockTable>().EntryOf(t.Tool)
+            : t.Entry;
+
+    async UniTaskVoid PlayAll(
+        IReadOnlyList<Tutorial> tutorials, StageEntry entry, CancellationToken token)
+    {
+        if (tutorials == null) return;
+
+        foreach (var tutorial in tutorials)
+        {
+            if (tutorial == null || EntryOf(tutorial) != entry) continue;
+            await PlayOne(tutorial, token);
+
+            // 버튼을 눌러 넘어온 컷은 StageFlow 가 패널을
+            // 갈아 끼우기 전에 돌아온다. 한 프레임 늦춰야
+            // 다음 컷이 살아 있는 자리에 붙는다.
+            await UniTask.NextFrame(token);
+        }
+    }
+
+    /// <summary>
+    /// 스테이지 것을 한꺼번에 띄운다. 순서가 없어
+    /// 기다리지 않고, 캔버스 영역에서 제 Offset 만큼
+    /// 민 자리에 붙는다 — 모드가 갈려도 안 꺼진다.
+    /// </summary>
+    void ShowFixed(IReadOnlyList<FixedTutorial> fixedTutorials, StageEntry entry)
+    {
+        if (fixedTutorials == null) return;
+
+        var center = Find(TutorialAnchor.CanvasArea);
+        if (center == null)
+        {
+            Debug.LogError("[TutorialViewer] 캔버스 영역이 안 물려 있다.", this);
+            return;
+        }
+
+        foreach (var fixedTutorial in fixedTutorials)
+        {
+            if (fixedTutorial == null) continue;
+            if (EntryOf(fixedTutorial) != entry) continue;
+            if (fixedTutorial.PrefabKey == TutorialPrefabKey.None) continue;
+
+            var prefab = FindPrefab(fixedTutorial.PrefabKey, fixedTutorial.name);
+            if (prefab == null) continue;
+
+            var spawned = Instantiate(prefab, center);
+            if (spawned.transform is RectTransform rect)
+                rect.anchoredPosition += fixedTutorial.Offset;
+
+            _fixed.Add(spawned);
+        }
+    }
+
+    /// <summary>
+    /// 앵커에 물린 자리. 에디터가 컷의 손가락 위치를
+    /// 잡을 때도 같은 표를 봐야 해서 열어 둔다.
+    /// </summary>
+    public RectTransform Find(TutorialAnchor anchor)
+    {
+        foreach (var binding in targets)
+            if (binding.Anchor == anchor) return binding.Rect;
+
+        return null;
+    }
+
+    async UniTask PlayOne(Tutorial tutorial, CancellationToken token)
+    {
+        GameObject spawned = Show(tutorial);
+
+        // 취소로 빠져나가도 스폰한 것은 반드시 지운다.
+        try
+        {
+            await WaitFor(tutorial, token);
+        }
+        finally
+        {
+            if (spawned != null) Destroy(spawned);
+        }
+    }
+
+    /// <summary>
+    /// 띄울 것이 없는 컷도 있다 — 그 자리는 조건만
+    /// 기다린다(공이 죽기를 기다리는 구간이 그렇다).
+    /// </summary>
+    GameObject Show(Tutorial tutorial)
+    {
+        if (tutorial.PrefabKey == TutorialPrefabKey.None) return null;
+
+        var prefab = FindPrefab(tutorial.PrefabKey, tutorial.name);
+        if (prefab == null) return null;
+
+        var target = Find(tutorial.Target);
+        if (target == null)
+        {
+            Debug.LogError(
+                $"[TutorialViewer] 앵커가 안 물려 있다: " +
+                $"{tutorial.name} → {tutorial.Target}", this);
+            return null;
+        }
+
+        var spawned = Instantiate(prefab, target);
+        if (spawned.transform is RectTransform rect)
+            rect.anchoredPosition += tutorial.Offset;
+
+        var gesture = spawned.GetComponent<TutorialGesture>();
+        if (gesture != null) gesture.Play(tutorial.Drag);
+
+        return spawned;
+    }
+
+    /// 표에 없는 키는 에셋을 손보다 어긋난 것이라
+    /// 조용히 넘기지 않고 짚어 준다.
+    GameObject FindPrefab(TutorialPrefabKey key, string owner)
+    {
+        var prefab = _prefabs == null ? null : _prefabs.Find(key);
+        if (prefab == null)
+            Debug.LogWarning(
+                $"[TutorialViewer] 프리팹 표에 없는 키다: " +
+                $"{owner} → {key}", this);
+
+        return prefab;
+    }
+
+    UniTask WaitFor(Tutorial tutorial, CancellationToken token)
+    {
+        switch (tutorial.Condition)
+        {
+            case TutorialAdvanceCondition.Press: return WaitForPress(tutorial, token);
+            case TutorialAdvanceCondition.DrawingChanged: return WaitForDrawingChange(token);
+            case TutorialAdvanceCondition.SimDecided: return WaitForSimDecision(token);
+            case TutorialAdvanceCondition.Time: return WaitForTime(tutorial, token);
+
+            // 조건을 늘리고 case 를 빠뜨리면 컴파일은 통과한다.
+            // 짚어 주지 않으면 그 컷이 조용히 시간 대기가 된다.
+            default:
+                Debug.LogError(
+                    $"[TutorialViewer] 모르는 조건이라 시간으로 넘긴다: " +
+                    $"{tutorial.name} → {tutorial.Condition}", this);
+
+                return WaitForTime(tutorial, token);
+        }
+    }
+
+    UniTask WaitForTime(Tutorial tutorial, CancellationToken token) =>
+        UniTask.Delay(TimeSpan.FromSeconds(tutorial.Duration), cancellationToken: token);
+
+    /// <summary>
+    /// 대상 앵커의 버튼이 눌릴 때까지. 버튼이 없으면
+    /// 영영 못 넘어가므로 시간으로 물러선다.
+    /// </summary>
+    async UniTask WaitForPress(Tutorial tutorial, CancellationToken token)
+    {
+        var target = Find(tutorial.Target);
+        var button = target == null ? null : target.GetComponent<Button>();
+        if (button == null)
+        {
+            Debug.LogError(
+                $"[TutorialViewer] 누를 버튼이 없다: " +
+                $"{tutorial.name} → {tutorial.Target}", this);
+
+            await WaitForTime(tutorial, token);
+            return;
+        }
+
+        // 리스너를 손으로 걸었다 떼면, 버튼이 먼저 파괴된
+        // 판에서 finally 가 죽은 참조를 건드린다.
+        await button.OnClickAsync(token);
+    }
+
+    /// 플레이어가 도구로 무언가 할 때까지.
+    async UniTask WaitForDrawingChange(CancellationToken token)
+    {
+        if (!ServiceLocator.TryGet<ITutorialSignals>(out var signals))
+        {
+            Debug.LogError("[TutorialViewer] 판을 지켜볼 창구가 없다.", this);
+            return;
+        }
+
+        var changed = new UniTaskCompletionSource();
+        Action listener = () => changed.TrySetResult();
+
+        signals.ToolActed += listener;
+        try { await changed.Task.AttachExternalCancellation(token); }
+        finally { signals.ToolActed -= listener; }
+    }
+
+
+    UniTask WaitForSimDecision(CancellationToken token)
+    {
+        if (!ServiceLocator.TryGet<ITutorialSignals>(out var signals))
+        {
+            Debug.LogError("[TutorialViewer] 판을 지켜볼 창구가 없다.", this);
+            return UniTask.CompletedTask;
+        }
+
+        return UniTask.WaitUntil(() => signals.SimDecided, cancellationToken: token);
+    }
+}

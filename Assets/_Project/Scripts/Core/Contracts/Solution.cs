@@ -16,12 +16,16 @@ namespace PPS.Core
 
         public static Solution Empty => new Solution();
 
+        /// <summary>
+        /// 획은 길이만큼, 핀은 개수만큼 쓴다. 핀은 길이가
+        /// 없어 공짜로 두면 개수에 상한이 없다.
+        /// </summary>
         public float TotalInk()
         {
             float sum = 0f;
             for (int i = 0; i < Strokes.Count; i++)
                 sum += Strokes[i].Length();
-            return sum;
+            return sum + Pivots.Count * PivotJoint.InkCost;
         }
 
         public Solution Clone()

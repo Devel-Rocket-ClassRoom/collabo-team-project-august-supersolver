@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="utf-8"?>
+<test-run id="2" testcasecount="1" result="Passed" total="1" passed="1" failed="0" inconclusive="0" skipped="0" asserts="0" engine-version="3.5.0.0" clr-version="4.0.30319.42000" start-time="2026-08-08 07:42:17Z" end-time="2026-08-08 07:42:18Z" duration="0.5578787">
+  <test-suite type="TestSuite" id="1145" name="PhysicsPuzzleSolver" fullname="PhysicsPuzzleSolver" runstate="Runnable" testcasecount="108" result="Passed" start-time="2026-08-08 07:42:17Z" end-time="2026-08-08 07:42:18Z" duration="0.557879" total="1" passed="1" failed="0" inconclusive="0" skipped="0" asserts="0">
+    <properties>
+      <property name="platform" value="PlayMode" />
+    </properties>
+    <test-suite type="Assembly" id="1138" name="PPS.Solver.PlayTests.dll" fullname="D:/GitRepos/TmpPhysicsPuzzleSolver/Library/ScriptAssemblies/PPS.Solver.PlayTests.dll" runstate="Runnable" testcasecount="37" result="Passed" start-time="2026-08-08 07:42:17Z" end-time="2026-08-08 07:42:18Z" duration="0.539012" total="1" passed="1" failed="0" inconclusive="0" skipped="0" asserts="0">
+      <properties>
+        <property name="_PID" value="8944" />
+        <property name="_APPDOMAIN" value="Unity Child Domain" />
+        <property name="platform" value="PlayMode" />
+        <property name="EditorOnly" value="False" />
+      </properties>
+      <test-suite type="TestSuite" id="1139" name="PPS" fullname="PPS" runstate="Runnable" testcasecount="37" result="Passed" start-time="2026-08-08 07:42:17Z" end-time="2026-08-08 07:42:18Z" duration="0.530120" total="1" passed="1" failed="0" inconclusive="0" skipped="0" asserts="0">
+        <properties />
+        <test-suite type="TestSuite" id="1140" name="Solver" fullname="PPS.Solver" runstate="Runnable" testcasecount="37" result="Passed" start-time="2026-08-08 07:42:17Z" end-time="2026-08-08 07:42:18Z" duration="0.508475" total="1" passed="1" failed="0" inconclusive="0" skipped="0" asserts="0">
+          <properties />
+          <test-suite type="TestSuite" id="1141" name="Tests" fullname="PPS.Solver.Tests" runstate="Runnable" testcasecount="37" result="Passed" start-time="2026-08-08 07:42:17Z" end-time="2026-08-08 07:42:18Z" duration="0.494012" total="1" passed="1" failed="0" inconclusive="0" skipped="0" asserts="0">
+            <properties />
+            <test-suite type="TestFixture" id="1098" name="MapBuildCostTests" fullname="PPS.Solver.Tests.MapBuildCostTests" classname="PPS.Solver.Tests.MapBuildCostTests" runstate="Runnable" testcasecount="1" result="Passed" start-time="2026-08-08 07:42:17Z" end-time="2026-08-08 07:42:18Z" duration="0.479408" total="1" passed="1" failed="0" inconclusive="0" skipped="0" asserts="0">
+              <properties />
+              <test-case id="1099" name="맵_빌드_비용을_실측한다" fullname="PPS.Solver.Tests.MapBuildCostTests.맵_빌드_비용을_실측한다" methodname="맵_빌드_비용을_실측한다" classname="PPS.Solver.Tests.MapBuildCostTests" runstate="Runnable" seed="1971755541" result="Passed" start-time="2026-08-08 07:42:17Z" end-time="2026-08-08 07:42:18Z" duration="0.456553" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+                <output><![CDATA[[가정] 아래 세 값은 C10 이 정한다. 지금은 가정치다.
+  굴림 스텝 상한 180 · 궤적 간격 10 · 후보 배치 위치 = 셀 중심
+
+=== L001_Ramp ===
+[격자] 폭 0.560 · 위치 26×16=416 · 속도 41
+[막힘] 위치 셀 21/416 (5.0 %) → 유효 셀 16,195
+[후보] Size 분할별 개수: s=1→60 s=2→120 s=4→240
+[시뮬] 150 판 · 거부 84 (56.0 %, 시뮬 안 함) · 평균 111 스텝 · 1판 1.74 ms
+[간선] 누적 25판→25 50판→108 75판→176 100판→300 125판→419 150판→557 (판당 새 간선 3.7)
+[추정] s=4 기준 시뮬 3,902,995 회 (거부 제외 1,717,318)
+       예상 시간 1.9 시간 (단일 스레드)
+       예상 간선 14,493,121 개 × 56 B ≈ 0.8 GB (중복 제거 전 상한)
+
+=== L002_Feature ===
+[격자] 폭 0.520 · 위치 44×26=1144 · 속도 41
+[막힘] 위치 셀 56/1144 (4.9 %) → 유효 셀 44,608
+[후보] Size 분할별 개수: s=1→60 s=2→120 s=4→240
+[시뮬] 150 판 · 거부 75 (50.0 %, 시뮬 안 함) · 평균 142 스텝 · 1판 1.01 ms
+[간선] 누적 25판→25 50판→111 75판→206 100판→324 125판→487 150판→585 (판당 새 간선 3.9)
+[추정] s=4 기준 시뮬 10,750,528 회 (거부 제외 5,375,264)
+       예상 시간 3.0 시간 (단일 스레드)
+       예상 간선 41,927,059 개 × 56 B ≈ 2.3 GB (중복 제거 전 상한)
+
+
+Saving results to: C:/Users/User/AppData/LocalLow/DefaultCompany/PhysicsPuzzleSolver\TestResults.xml
+]]></output>
+              </test-case>
+            </test-suite>
+          </test-suite>
+        </test-suite>
+      </test-suite>
+    </test-suite>
+  </test-suite>
+</test-run>

@@ -1,0 +1,1788 @@
+fileFormatVersion: 2
+guid: c54ebdf13b7eba54a85f4e41ea725de3
+TextureImporter:
+  internalIDToNameTable: []
+  externalObjects: {}
+  serializedVersion: 13
+  mipmaps:
+    mipMapMode: 0
+    enableMipMap: 0
+    sRGBTexture: 1
+    linearTexture: 0
+    fadeOut: 0
+    borderMipMap: 0
+    mipMapsPreserveCoverage: 0
+    alphaTestReferenceValue: 0.5
+    mipMapFadeDistanceStart: 1
+    mipMapFadeDistanceEnd: 3
+  bumpmap:
+    convertToNormalMap: 0
+    externalNormalMap: 0
+    heightScale: 0.25
+    normalMapFilter: 0
+    flipGreenChannel: 0
+  isReadable: 0
+  streamingMipmaps: 0
+  streamingMipmapsPriority: 0
+  vTOnly: 0
+  ignoreMipmapLimit: 0
+  grayScaleToAlpha: 0
+  generateCubemap: 6
+  cubemapConvolution: 0
+  seamlessCubemap: 0
+  textureFormat: 1
+  maxTextureSize: 2048
+  textureSettings:
+    serializedVersion: 2
+    filterMode: 1
+    aniso: 1
+    mipBias: 0
+    wrapU: 1
+    wrapV: 1
+    wrapW: 0
+  nPOTScale: 0
+  lightmap: 0
+  compressionQuality: 50
+  spriteMode: 2
+  spriteExtrude: 1
+  spriteMeshType: 1
+  alignment: 0
+  spritePivot: {x: 0.5, y: 0.5}
+  spritePixelsToUnits: 100
+  spriteBorder: {x: 0, y: 0, z: 0, w: 0}
+  spriteGenerateFallbackPhysicsShape: 1
+  alphaUsage: 1
+  alphaIsTransparency: 1
+  spriteTessellationDetail: -1
+  textureType: 8
+  textureShape: 1
+  singleChannelComponent: 0
+  flipbookRows: 1
+  flipbookColumns: 1
+  maxTextureSizeSet: 0
+  compressionQualitySet: 0
+  textureFormatSet: 0
+  ignorePngGamma: 0
+  applyGammaDecoding: 0
+  swizzle: 50462976
+  cookieLightType: 0
+  platformSettings:
+  - serializedVersion: 4
+    buildTarget: DefaultTexturePlatform
+    maxTextureSize: 4096
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: Standalone
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: Android
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  spriteSheet:
+    serializedVersion: 2
+    sprites:
+    - serializedVersion: 2
+      name: SoftTone_Sushi_Atlas_9x8_128_0
+      rect:
+        serializedVersion: 2
+        x: 51
+        y: 898
+        width: 84
+        height: 75
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: a92ac7470e486dd4f84f343e208f746d
+      internalID: 1878366403
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SoftTone_Sushi_Atlas_9x8_128_1
+      rect:
+        serializedVersion: 2
+        x: 178
+        y: 890
+        width: 83
+        height: 89
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 4d0eb91254112d14395ddca3989c1cf4
+      internalID: -85867377
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SoftTone_Sushi_Atlas_9x8_128_2
+      rect:
+        serializedVersion: 2
+        x: 310
+        y: 893
+        width: 83
+        height: 92
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 385dbfdd253d4644a88bf2ba975d01d8
+      internalID: 17387590
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SoftTone_Sushi_Atlas_9x8_128_3
+      rect:
+        serializedVersion: 2
+        x: 442
+        y: 890
+        width: 85
+        height: 92
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: a2922f7b1a0eb994e93432dd7a19d9c0
+      internalID: -1599147710
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SoftTone_Sushi_Atlas_9x8_128_4
+      rect:
+        serializedVersion: 2
+        x: 570
+        y: 889
+        width: 80
+        height: 90
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: bc567bb335ab17747a1c364f49cfb7e5
+      internalID: 64093147
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SoftTone_Sushi_Atlas_9x8_128_5
+      rect:
+        serializedVersion: 2
+        x: 698
+        y: 890
+        width: 73
+        height: 89
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: a645d5497fb2f8b40aa59c7694c01cbb
+      internalID: 884152884
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SoftTone_Sushi_Atlas_9x8_128_6
+      rect:
+        serializedVersion: 2
+        x: 818
+        y: 898
+        width: 85
+        height: 76
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 58569191e77bc3e4f9b8bdf49f25bdd1
+      internalID: -949961531
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SoftTone_Sushi_Atlas_9x8_128_7
+      rect:
+        serializedVersion: 2
+        x: 934
+        y: 895
+        width: 84
+        height: 82
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 53722aa3ce7c8e843b071e607f511922
+      internalID: 849248885
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SoftTone_Sushi_Atlas_9x8_128_8
+      rect:
+        serializedVersion: 2
+        x: 1042
+        y: 895
+        width: 88
+        height: 79
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 05cd0f8003fe18f45b80059baf34ee49
+      internalID: -1201809557
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SoftTone_Sushi_Atlas_9x8_128_9
+      rect:
+        serializedVersion: 2
+        x: 50
+        y: 775
+        width: 84
+        height: 83
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 5aee6748068646d498a345f57749cb30
+      internalID: 1508360131
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SoftTone_Sushi_Atlas_9x8_128_10
+      rect:
+        serializedVersion: 2
+        x: 175
+        y: 781
+        width: 87
+        height: 77
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: af0955a278c62884bb4ed936ed8e9400
+      internalID: -1130845220
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SoftTone_Sushi_Atlas_9x8_128_11
+      rect:
+        serializedVersion: 2
+        x: 310
+        y: 779
+        width: 85
+        height: 76
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 79fd34d98d0c2b444b9081cf6cf9aac2
+      internalID: -2054582719
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SoftTone_Sushi_Atlas_9x8_128_12
+      rect:
+        serializedVersion: 2
+        x: 441
+        y: 782
+        width: 88
+        height: 72
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: c5921f04c6173de4aa04672c212eb7cf
+      internalID: -1874462352
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SoftTone_Sushi_Atlas_9x8_128_13
+      rect:
+        serializedVersion: 2
+        x: 566
+        y: 779
+        width: 89
+        height: 75
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 042238226d96b724fa704936dc7b88d0
+      internalID: 800238896
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SoftTone_Sushi_Atlas_9x8_128_14
+      rect:
+        serializedVersion: 2
+        x: 694
+        y: 774
+        width: 87
+        height: 84
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 39311a87f01c9dd45921a1da47b8cebe
+      internalID: 644249181
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SoftTone_Sushi_Atlas_9x8_128_15
+      rect:
+        serializedVersion: 2
+        x: 817
+        y: 774
+        width: 80
+        height: 87
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: f133bfac50d4fe54887e0872fccdf1b9
+      internalID: -1456794799
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SoftTone_Sushi_Atlas_9x8_128_16
+      rect:
+        serializedVersion: 2
+        x: 934
+        y: 778
+        width: 84
+        height: 76
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: abcbc2b013792804d94a24cb016578e7
+      internalID: 1310015778
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SoftTone_Sushi_Atlas_9x8_128_17
+      rect:
+        serializedVersion: 2
+        x: 1042
+        y: 773
+        width: 88
+        height: 87
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: fa1086bec30cce54789b124205692295
+      internalID: -1965064044
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SoftTone_Sushi_Atlas_9x8_128_18
+      rect:
+        serializedVersion: 2
+        x: 50
+        y: 651
+        width: 85
+        height: 90
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: fc998b780e7894944996fb7f52c953ed
+      internalID: -364246062
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SoftTone_Sushi_Atlas_9x8_128_19
+      rect:
+        serializedVersion: 2
+        x: 174
+        y: 654
+        width: 84
+        height: 81
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 8e5ebc8129f00614b864b7934855e751
+      internalID: 498144065
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SoftTone_Sushi_Atlas_9x8_128_20
+      rect:
+        serializedVersion: 2
+        x: 313
+        y: 650
+        width: 81
+        height: 87
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: dc0a9e3411280a24688ee87ef4c27fed
+      internalID: -1671298615
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SoftTone_Sushi_Atlas_9x8_128_21
+      rect:
+        serializedVersion: 2
+        x: 442
+        y: 655
+        width: 88
+        height: 79
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: d0ba59d1cc599c740a076b3566b65eae
+      internalID: -2076987797
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SoftTone_Sushi_Atlas_9x8_128_22
+      rect:
+        serializedVersion: 2
+        x: 570
+        y: 650
+        width: 84
+        height: 87
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 587ad7567191cf547947268bd7c1cdc8
+      internalID: 209238216
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SoftTone_Sushi_Atlas_9x8_128_23
+      rect:
+        serializedVersion: 2
+        x: 694
+        y: 655
+        width: 83
+        height: 79
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 33219a1e5d59bf748a4ba6b58ca8abfc
+      internalID: 833672706
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SoftTone_Sushi_Atlas_9x8_128_24
+      rect:
+        serializedVersion: 2
+        x: 814
+        y: 649
+        width: 91
+        height: 89
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: ab110e9824a5cb54c88a1fea06de1c39
+      internalID: 962159276
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SoftTone_Sushi_Atlas_9x8_128_25
+      rect:
+        serializedVersion: 2
+        x: 934
+        y: 649
+        width: 87
+        height: 90
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: e4a915eb06ace7e459b44238ecd579f3
+      internalID: 1760560577
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SoftTone_Sushi_Atlas_9x8_128_26
+      rect:
+        serializedVersion: 2
+        x: 1042
+        y: 657
+        width: 88
+        height: 77
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 79f53b6ecc6df914f828b002d3d82e85
+      internalID: -860319975
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SoftTone_Sushi_Atlas_9x8_128_27
+      rect:
+        serializedVersion: 2
+        x: 49
+        y: 525
+        width: 86
+        height: 93
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 364c8102cfdcd2b469cbedd2ac11075f
+      internalID: 1890093151
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SoftTone_Sushi_Atlas_9x8_128_28
+      rect:
+        serializedVersion: 2
+        x: 173
+        y: 533
+        width: 89
+        height: 77
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 9d46eae23db27b84ab55e3c389da55a7
+      internalID: -1338099956
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SoftTone_Sushi_Atlas_9x8_128_29
+      rect:
+        serializedVersion: 2
+        x: 305
+        y: 533
+        width: 92
+        height: 78
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 6b703a52b92374d4d86a7cec59a34ba6
+      internalID: -1394701847
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SoftTone_Sushi_Atlas_9x8_128_30
+      rect:
+        serializedVersion: 2
+        x: 438
+        y: 538
+        width: 95
+        height: 68
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 27532c55c8157a046bfaf2c9ee0c2d62
+      internalID: 2146364726
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SoftTone_Sushi_Atlas_9x8_128_31
+      rect:
+        serializedVersion: 2
+        x: 567
+        y: 526
+        width: 90
+        height: 89
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: c10eb906ff238a24fa98464d0433de57
+      internalID: 478373432
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SoftTone_Sushi_Atlas_9x8_128_32
+      rect:
+        serializedVersion: 2
+        x: 693
+        y: 527
+        width: 82
+        height: 87
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: d07df250840a27941a6a9cd8239afe81
+      internalID: -2014013842
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SoftTone_Sushi_Atlas_9x8_128_33
+      rect:
+        serializedVersion: 2
+        x: 814
+        y: 527
+        width: 91
+        height: 84
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: ef88308abf54c7642a398e690d9f2b34
+      internalID: 1232965071
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SoftTone_Sushi_Atlas_9x8_128_34
+      rect:
+        serializedVersion: 2
+        x: 935
+        y: 530
+        width: 82
+        height: 88
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 692eb84255099924bb2ac045143c0955
+      internalID: -1628544347
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SoftTone_Sushi_Atlas_9x8_128_35
+      rect:
+        serializedVersion: 2
+        x: 1042
+        y: 525
+        width: 88
+        height: 93
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: b53344b07ecbc5640abaf0094d4070fb
+      internalID: -1990407924
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SoftTone_Sushi_Atlas_9x8_128_36
+      rect:
+        serializedVersion: 2
+        x: 47
+        y: 421
+        width: 94
+        height: 65
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 83010d31dae178a43bf89bb4d47ea18a
+      internalID: 1477616023
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SoftTone_Sushi_Atlas_9x8_128_37
+      rect:
+        serializedVersion: 2
+        x: 175
+        y: 418
+        width: 87
+        height: 72
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: a97d139e215c58e4ca52420a52a3ff1c
+      internalID: -1572131495
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SoftTone_Sushi_Atlas_9x8_128_38
+      rect:
+        serializedVersion: 2
+        x: 310
+        y: 410
+        width: 83
+        height: 83
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 2af7c10422a4a0d4f88dd5807066444f
+      internalID: -874598708
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SoftTone_Sushi_Atlas_9x8_128_39
+      rect:
+        serializedVersion: 2
+        x: 437
+        y: 407
+        width: 85
+        height: 90
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: f23d6e8e8c9f2934db3f82bd0c81a916
+      internalID: -423806422
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SoftTone_Sushi_Atlas_9x8_128_40
+      rect:
+        serializedVersion: 2
+        x: 570
+        y: 406
+        width: 84
+        height: 87
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 85d3d7a121a347547987c9d9e4e1c72c
+      internalID: -467360577
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SoftTone_Sushi_Atlas_9x8_128_41
+      rect:
+        serializedVersion: 2
+        x: 695
+        y: 406
+        width: 80
+        height: 87
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 4ba3534a28907b548a3119377dfdae47
+      internalID: 59818713
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SoftTone_Sushi_Atlas_9x8_128_42
+      rect:
+        serializedVersion: 2
+        x: 814
+        y: 418
+        width: 92
+        height: 72
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 6acea44109787a44281fd1e529a66799
+      internalID: -1683933306
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SoftTone_Sushi_Atlas_9x8_128_43
+      rect:
+        serializedVersion: 2
+        x: 934
+        y: 414
+        width: 91
+        height: 75
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 2bcf6b2853c7d394fb5465450df9ab5a
+      internalID: -1081940660
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SoftTone_Sushi_Atlas_9x8_128_44
+      rect:
+        serializedVersion: 2
+        x: 1042
+        y: 414
+        width: 88
+        height: 75
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: d3d4e4952f51815479f27fc4e1e28cbc
+      internalID: -1021463546
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SoftTone_Sushi_Atlas_9x8_128_45
+      rect:
+        serializedVersion: 2
+        x: 49
+        y: 286
+        width: 85
+        height: 93
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: e9f7d453632ffce48bf996c9c3ff357b
+      internalID: 1124213268
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SoftTone_Sushi_Atlas_9x8_128_46
+      rect:
+        serializedVersion: 2
+        x: 182
+        y: 290
+        width: 80
+        height: 85
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: d6addec3fee0d82459d1c62076d86673
+      internalID: -1032434152
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SoftTone_Sushi_Atlas_9x8_128_47
+      rect:
+        serializedVersion: 2
+        x: 306
+        y: 289
+        width: 92
+        height: 96
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: ce02a2d01c4bd3740a169a6467be43be
+      internalID: -476055277
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SoftTone_Sushi_Atlas_9x8_128_48
+      rect:
+        serializedVersion: 2
+        x: 439
+        y: 295
+        width: 87
+        height: 74
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 8a212aeb6fa34124f97817f8270463a3
+      internalID: 144556631
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SoftTone_Sushi_Atlas_9x8_128_49
+      rect:
+        serializedVersion: 2
+        x: 566
+        y: 294
+        width: 91
+        height: 75
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 93dec4d65b3678248b3fb3e4d87680a5
+      internalID: 1749698181
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SoftTone_Sushi_Atlas_9x8_128_50
+      rect:
+        serializedVersion: 2
+        x: 694
+        y: 286
+        width: 83
+        height: 84
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 3626742135556724fb3ec2eabaaee3e1
+      internalID: 241206548
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SoftTone_Sushi_Atlas_9x8_128_51
+      rect:
+        serializedVersion: 2
+        x: 815
+        y: 286
+        width: 94
+        height: 88
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 33a806bce9d9fcf429de346e3bad2ea3
+      internalID: -1628977784
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SoftTone_Sushi_Atlas_9x8_128_52
+      rect:
+        serializedVersion: 2
+        x: 934
+        y: 290
+        width: 89
+        height: 84
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: fbacc31a797ce38409792a27d8572243
+      internalID: 1455213177
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SoftTone_Sushi_Atlas_9x8_128_53
+      rect:
+        serializedVersion: 2
+        x: 1046
+        y: 283
+        width: 84
+        height: 92
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 0016ad6363abf7849bedfd0e825755b2
+      internalID: -1524981773
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SoftTone_Sushi_Atlas_9x8_128_54
+      rect:
+        serializedVersion: 2
+        x: 50
+        y: 175
+        width: 88
+        height: 75
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 164b1f922880ad2469b6c349982db3e1
+      internalID: 1276456888
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SoftTone_Sushi_Atlas_9x8_128_55
+      rect:
+        serializedVersion: 2
+        x: 174
+        y: 166
+        width: 85
+        height: 88
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: f5797e19b5df03e49b4c710a3ee95308
+      internalID: 214700542
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SoftTone_Sushi_Atlas_9x8_128_56
+      rect:
+        serializedVersion: 2
+        x: 306
+        y: 165
+        width: 83
+        height: 90
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 15853c6a6e0104c469f9b917e4833f5f
+      internalID: 1483687899
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SoftTone_Sushi_Atlas_9x8_128_57
+      rect:
+        serializedVersion: 2
+        x: 438
+        y: 174
+        width: 89
+        height: 84
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 9b68c871c7fdd5e4fa8478e6d22a2266
+      internalID: 52159695
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SoftTone_Sushi_Atlas_9x8_128_58
+      rect:
+        serializedVersion: 2
+        x: 570
+        y: 166
+        width: 81
+        height: 92
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 62ec02bf31b2d314bbd64409d9ffe571
+      internalID: -1947951129
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SoftTone_Sushi_Atlas_9x8_128_59
+      rect:
+        serializedVersion: 2
+        x: 694
+        y: 171
+        width: 84
+        height: 87
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: a062712bbe294dc4688c2f19e201cf80
+      internalID: -1647330919
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SoftTone_Sushi_Atlas_9x8_128_60
+      rect:
+        serializedVersion: 2
+        x: 814
+        y: 182
+        width: 92
+        height: 68
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 0cb5424983a52ca47aea4c1add79bd35
+      internalID: -1114717586
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SoftTone_Sushi_Atlas_9x8_128_61
+      rect:
+        serializedVersion: 2
+        x: 934
+        y: 170
+        width: 84
+        height: 87
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 3643b301ec1609644a61c3a3b699b7dc
+      internalID: 462649014
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SoftTone_Sushi_Atlas_9x8_128_62
+      rect:
+        serializedVersion: 2
+        x: 1042
+        y: 173
+        width: 88
+        height: 82
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: f0831f30945ce2e4dab48d7fbf00e1f7
+      internalID: 46758424
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SoftTone_Sushi_Atlas_9x8_128_63
+      rect:
+        serializedVersion: 2
+        x: 50
+        y: 51
+        width: 84
+        height: 80
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: f2c2ca623b1dab145826f77d76adbf02
+      internalID: 390402166
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SoftTone_Sushi_Atlas_9x8_128_64
+      rect:
+        serializedVersion: 2
+        x: 175
+        y: 47
+        width: 86
+        height: 87
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 0596d76106fbb2749b24a8737c430b75
+      internalID: 655765042
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SoftTone_Sushi_Atlas_9x8_128_65
+      rect:
+        serializedVersion: 2
+        x: 310
+        y: 45
+        width: 85
+        height: 93
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 7471a09ff9254bf45997e7c0c83515ba
+      internalID: 898924193
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SoftTone_Sushi_Atlas_9x8_128_66
+      rect:
+        serializedVersion: 2
+        x: 438
+        y: 51
+        width: 88
+        height: 79
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: fd6c5f062b0dfe241a0d0d818eb46db0
+      internalID: -1516244300
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SoftTone_Sushi_Atlas_9x8_128_67
+      rect:
+        serializedVersion: 2
+        x: 566
+        y: 50
+        width: 87
+        height: 79
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 69e95f8b095213a4e875ee2caa2437cb
+      internalID: -1357402254
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SoftTone_Sushi_Atlas_9x8_128_68
+      rect:
+        serializedVersion: 2
+        x: 686
+        y: 46
+        width: 95
+        height: 88
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: d3fb90690071b3940918ebb9185506e1
+      internalID: 1513843152
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SoftTone_Sushi_Atlas_9x8_128_69
+      rect:
+        serializedVersion: 2
+        x: 819
+        y: 51
+        width: 83
+        height: 78
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 0229e8c55c3d5f94ea5ab54ef1f00d2c
+      internalID: 155650908
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SoftTone_Sushi_Atlas_9x8_128_70
+      rect:
+        serializedVersion: 2
+        x: 937
+        y: 46
+        width: 80
+        height: 84
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 7e86e1d4496a7cd4199fa54955149bd1
+      internalID: 1258744863
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SoftTone_Sushi_Atlas_9x8_128_71
+      rect:
+        serializedVersion: 2
+        x: 1042
+        y: 46
+        width: 92
+        height: 80
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: c4ed72fa85ce43345860b1e49f935829
+      internalID: 169013508
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    outline: []
+    customData: 
+    physicsShape: []
+    bones: []
+    spriteID: 0bbb0bba7391d48428e74ab6d24903cd
+    internalID: 0
+    vertices: []
+    indices: 
+    edges: []
+    weights: []
+    secondaryTextures: []
+    spriteCustomMetadata:
+      entries:
+      - key: SpriteEditor.SliceSettings
+        value: '{"sliceOnImport":false,"gridCellCount":{"x":9.0,"y":8.0},"gridSpriteSize":{"x":128.0,"y":128.0},"gridSpriteOffset":{"x":0.0,"y":0.0},"gridSpritePadding":{"x":0.0,"y":0.0},"pivot":{"x":0.5,"y":0.5},"pivotPixels":{"x":0.0,"y":0.0},"autoSlicingMethod":0,"spriteAlignment":0,"pivotUnitMode":0,"slicingType":0,"keepEmptyRects":false,"isAlternate":false}'
+    nameFileIdTable:
+      SoftTone_Sushi_Atlas_9x8_128_0: 1878366403
+      SoftTone_Sushi_Atlas_9x8_128_1: -85867377
+      SoftTone_Sushi_Atlas_9x8_128_10: -1130845220
+      SoftTone_Sushi_Atlas_9x8_128_11: -2054582719
+      SoftTone_Sushi_Atlas_9x8_128_12: -1874462352
+      SoftTone_Sushi_Atlas_9x8_128_13: 800238896
+      SoftTone_Sushi_Atlas_9x8_128_14: 644249181
+      SoftTone_Sushi_Atlas_9x8_128_15: -1456794799
+      SoftTone_Sushi_Atlas_9x8_128_16: 1310015778
+      SoftTone_Sushi_Atlas_9x8_128_17: -1965064044
+      SoftTone_Sushi_Atlas_9x8_128_18: -364246062
+      SoftTone_Sushi_Atlas_9x8_128_19: 498144065
+      SoftTone_Sushi_Atlas_9x8_128_2: 17387590
+      SoftTone_Sushi_Atlas_9x8_128_20: -1671298615
+      SoftTone_Sushi_Atlas_9x8_128_21: -2076987797
+      SoftTone_Sushi_Atlas_9x8_128_22: 209238216
+      SoftTone_Sushi_Atlas_9x8_128_23: 833672706
+      SoftTone_Sushi_Atlas_9x8_128_24: 962159276
+      SoftTone_Sushi_Atlas_9x8_128_25: 1760560577
+      SoftTone_Sushi_Atlas_9x8_128_26: -860319975
+      SoftTone_Sushi_Atlas_9x8_128_27: 1890093151
+      SoftTone_Sushi_Atlas_9x8_128_28: -1338099956
+      SoftTone_Sushi_Atlas_9x8_128_29: -1394701847
+      SoftTone_Sushi_Atlas_9x8_128_3: -1599147710
+      SoftTone_Sushi_Atlas_9x8_128_30: 2146364726
+      SoftTone_Sushi_Atlas_9x8_128_31: 478373432
+      SoftTone_Sushi_Atlas_9x8_128_32: -2014013842
+      SoftTone_Sushi_Atlas_9x8_128_33: 1232965071
+      SoftTone_Sushi_Atlas_9x8_128_34: -1628544347
+      SoftTone_Sushi_Atlas_9x8_128_35: -1990407924
+      SoftTone_Sushi_Atlas_9x8_128_36: 1477616023
+      SoftTone_Sushi_Atlas_9x8_128_37: -1572131495
+      SoftTone_Sushi_Atlas_9x8_128_38: -874598708
+      SoftTone_Sushi_Atlas_9x8_128_39: -423806422
+      SoftTone_Sushi_Atlas_9x8_128_4: 64093147
+      SoftTone_Sushi_Atlas_9x8_128_40: -467360577
+      SoftTone_Sushi_Atlas_9x8_128_41: 59818713
+      SoftTone_Sushi_Atlas_9x8_128_42: -1683933306
+      SoftTone_Sushi_Atlas_9x8_128_43: -1081940660
+      SoftTone_Sushi_Atlas_9x8_128_44: -1021463546
+      SoftTone_Sushi_Atlas_9x8_128_45: 1124213268
+      SoftTone_Sushi_Atlas_9x8_128_46: -1032434152
+      SoftTone_Sushi_Atlas_9x8_128_47: -476055277
+      SoftTone_Sushi_Atlas_9x8_128_48: 144556631
+      SoftTone_Sushi_Atlas_9x8_128_49: 1749698181
+      SoftTone_Sushi_Atlas_9x8_128_5: 884152884
+      SoftTone_Sushi_Atlas_9x8_128_50: 241206548
+      SoftTone_Sushi_Atlas_9x8_128_51: -1628977784
+      SoftTone_Sushi_Atlas_9x8_128_52: 1455213177
+      SoftTone_Sushi_Atlas_9x8_128_53: -1524981773
+      SoftTone_Sushi_Atlas_9x8_128_54: 1276456888
+      SoftTone_Sushi_Atlas_9x8_128_55: 214700542
+      SoftTone_Sushi_Atlas_9x8_128_56: 1483687899
+      SoftTone_Sushi_Atlas_9x8_128_57: 52159695
+      SoftTone_Sushi_Atlas_9x8_128_58: -1947951129
+      SoftTone_Sushi_Atlas_9x8_128_59: -1647330919
+      SoftTone_Sushi_Atlas_9x8_128_6: -949961531
+      SoftTone_Sushi_Atlas_9x8_128_60: -1114717586
+      SoftTone_Sushi_Atlas_9x8_128_61: 462649014
+      SoftTone_Sushi_Atlas_9x8_128_62: 46758424
+      SoftTone_Sushi_Atlas_9x8_128_63: 390402166
+      SoftTone_Sushi_Atlas_9x8_128_64: 655765042
+      SoftTone_Sushi_Atlas_9x8_128_65: 898924193
+      SoftTone_Sushi_Atlas_9x8_128_66: -1516244300
+      SoftTone_Sushi_Atlas_9x8_128_67: -1357402254
+      SoftTone_Sushi_Atlas_9x8_128_68: 1513843152
+      SoftTone_Sushi_Atlas_9x8_128_69: 155650908
+      SoftTone_Sushi_Atlas_9x8_128_7: 849248885
+      SoftTone_Sushi_Atlas_9x8_128_70: 1258744863
+      SoftTone_Sushi_Atlas_9x8_128_71: 169013508
+      SoftTone_Sushi_Atlas_9x8_128_8: -1201809557
+      SoftTone_Sushi_Atlas_9x8_128_9: 1508360131
+  mipmapLimitGroupName: 
+  pSDRemoveMatte: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

@@ -257,14 +257,14 @@ namespace PPS.Tools
             // 자유 물체 — 외곽이 아니라 원래 그은 선을 그린다.
             // 두께는 충돌을 성립시키려고 붙인 것이지
             // 유저가 그린 것이 아니다.
-            var polygon = body.GetComponent<PolygonCollider2D>();
-            if (polygon != null)
+            var polygons = body.GetComponents<PolygonCollider2D>();
+            if (polygons.Length > 0)
             {
                 var transform = body.transform;
 
-                for (int p = 0; p < polygon.pathCount; p++)
+                for (int p = 0; p < polygons.Length; p++)
                 {
-                    var path = polygon.GetPath(p);
+                    var path = polygons[p].GetPath(0);
                     if (path.Length != 4) continue;
 
                     Vector2 start = (path[0] + path[1]) * 0.5f;
@@ -295,7 +295,7 @@ namespace PPS.Tools
             var level = _world.Level;
 
             GL.Color(GoalColor);
-            Circle(level.GoalPosition, level.GoalRadius);
+            Circle(level.GoalPosition, LevelData.GoalRadius);
 
             GL.Color(KillLineColor);
             Line(new Vector2(-30f, level.KillY), new Vector2(30f, level.KillY));
@@ -316,7 +316,7 @@ namespace PPS.Tools
                     Vector2 at = devices[i].Position;
 
                     Circle(at, 0.3f);
-                    Circle(at, devices[i].Radius);
+                    if (devices[i] is IHasReach reach) Circle(at, reach.Reach);
                     Line(at + new Vector2(-0.45f, 0f), at + new Vector2(0.45f, 0f));
                     Line(at + new Vector2(0f, -0.45f), at + new Vector2(0f, 0.45f));
                 }
@@ -462,8 +462,13 @@ namespace PPS.Tools
                 Stage("뷰어 기본 (폭탄)", ViewerLevels.BombRamp, ViewerLevels.BombRampSolution, seed: 3),
                 Stage("자유 물체 전시장", ViewerLevels.Showcase, ViewerLevels.ShowcaseSolution),
 
+                // 유일하게 "풀 것이 있는" 판. 나머지는 그냥 굴려도
+                // Clear 이거나 목표가 닿을 수 없는 곳에 있다.
+                Stage("퍼즐 (기저) → Fail 이어야 함", TestLevels.GapPuzzle, () => null),
+                Stage("퍼즐 + 선 3개 → Clear 여야 함",
+                    TestLevels.GapPuzzle, TestLevels.GapPuzzleSolution),
+
                 Stage("L001 (JSON 파일)", SampleLevelFile.Load, () => null),
-                Stage("L002 전 피처 (JSON)", FeatureLevelFile.LoadLevel, FeatureLevelFile.LoadSolution),
                 Stage("Ramp → Clear", TestLevels.RampToGoal, () => null),
                 Stage("Gap 다리 없음 → Fail", TestLevels.Gap, () => null),
                 Stage("Gap + 다리 → Stalled", TestLevels.Gap, TestLevels.BridgeSolution),

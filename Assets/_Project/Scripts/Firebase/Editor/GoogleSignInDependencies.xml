@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<dependencies>
+  <androidPackages>
+
+    <!-- Android Credential Manager 본체 -->
+    <androidPackage spec="androidx.credentials:credentials:1.3.0" />
+
+    <!-- Credential Manager와 Google Play 서비스 연결 -->
+    <androidPackage spec="androidx.credentials:credentials-play-services-auth:1.3.0" />
+
+    <!-- Google 계정의 ID Token 획득 -->
+    <androidPackage spec="com.google.android.libraries.identity.googleid:googleid:1.1.1" />
+
+  </androidPackages>
+</dependencies>

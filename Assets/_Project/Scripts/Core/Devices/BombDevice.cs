@@ -1,4 +1,4 @@
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
@@ -10,10 +10,10 @@ namespace PPS.Core
     /// </summary>
     public sealed class BombDevice : IStepLogic
     {
-        /// 몸 크기. DeviceData.Radius 는 폭발 반경이다.
+        /// 몸 크기. BombData.Radius 는 폭발 반경이다.
         public const float BodyRadius = 0.28f;
 
-        readonly DeviceData _data;
+        readonly BombData _data;
 
         /// <summary>
         /// 폭발이 밀어낼 후보. 월드의 전 바디다.
@@ -31,7 +31,7 @@ namespace PPS.Core
         /// 정적 바디다. Position 이 "여기 있다"는
         /// 뜻이어야 레벨 디자인이 성립한다.
         /// </summary>
-        public static Rigidbody2D CreateBody(Scene scene, in DeviceData data, string name)
+        public static Rigidbody2D CreateBody(Scene scene, BombData data, string name)
         {
             var go = new GameObject(name);
             SceneManager.MoveGameObjectToScene(go, scene);
@@ -46,11 +46,34 @@ namespace PPS.Core
             return body;
         }
 
-        public BombDevice(in DeviceData data, Rigidbody2D body, IReadOnlyList<Rigidbody2D> bodies)
+        readonly SimEvents _events;
+
+        /// 레벨의 장치 번호. 알릴 때 누구인지 밝힌다.
+        readonly int _index;
+
+        /// <summary>
+        /// 바디를 먼저 목록에 넣은 뒤 장치를 만든다.
+        /// 등록 순서를 정하는 곳을 여기 하나로 모은다.
+        /// </summary>
+        public static IStepLogic Build(IDeviceData data, in DeviceBuildContext ctx)
+        {
+            var bomb = (BombData)data;
+
+            var body = CreateBody(ctx.Scene, bomb, ctx.Name);
+            ctx.Bodies.Add(body);
+
+            return new BombDevice(bomb, body, ctx.Bodies, ctx.Events, ctx.Index);
+        }
+
+        BombDevice(
+            BombData data, Rigidbody2D body, IReadOnlyList<Rigidbody2D> bodies,
+            SimEvents events, int index)
         {
             _data = data;
             _body = body;
             _bodies = bodies;
+            _events = events;
+            _index = index;
         }
 
         /// 아직 안 터졌으면 Stalled 를 미루게 한다.
@@ -70,6 +93,7 @@ namespace PPS.Core
 
             Explode();
             _fired = true;
+            SimSignals.Trigger(DeviceType.Bomb, _data.Position);
         }
 
         void Explode()
@@ -108,6 +132,11 @@ namespace PPS.Core
                 // 그걸 고치면 세기가 함께 흔들린다.
                 body.linearVelocity += direction * (_data.Power * falloff);
             }
+
+            // 미는 것을 다 끝낸 뒤, 몸을 지우기 전에 알린다.
+            // 결과는 이미 확정돼 있고, 구독자는 아직 살아 있는
+            // 바디에서 터진 자리를 읽을 수 있다.
+            _events?.RaiseDeviceFired(_index);
 
             DestroyBody();
         }

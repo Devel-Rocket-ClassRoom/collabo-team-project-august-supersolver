@@ -1,0 +1,16 @@
+{
+    "name": "PPS.MapEditor.Shapes",
+    "rootNamespace": "PPS.MapEditor",
+    "references": [
+        "PPS.Core"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}

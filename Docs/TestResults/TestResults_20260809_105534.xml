@@ -1,0 +1,102 @@
+<?xml version="1.0" encoding="utf-8"?>
+<test-run id="2" testcasecount="1" result="Passed" total="1" passed="1" failed="0" inconclusive="0" skipped="0" asserts="0" engine-version="3.5.0.0" clr-version="4.0.30319.42000" start-time="2026-08-09 01:43:30Z" end-time="2026-08-09 01:53:43Z" duration="613.5879267">
+  <test-suite type="TestSuite" id="1147" name="PhysicsPuzzleSolver" fullname="PhysicsPuzzleSolver" runstate="Runnable" testcasecount="109" result="Passed" start-time="2026-08-09 01:43:30Z" end-time="2026-08-09 01:53:43Z" duration="613.587927" total="1" passed="1" failed="0" inconclusive="0" skipped="0" asserts="0">
+    <properties>
+      <property name="platform" value="PlayMode" />
+    </properties>
+    <test-suite type="Assembly" id="1140" name="PPS.Solver.PlayTests.dll" fullname="D:/GitRepos/TmpPhysicsPuzzleSolver/Library/ScriptAssemblies/PPS.Solver.PlayTests.dll" runstate="Runnable" testcasecount="38" result="Passed" start-time="2026-08-09 01:43:30Z" end-time="2026-08-09 01:53:43Z" duration="613.572581" total="1" passed="1" failed="0" inconclusive="0" skipped="0" asserts="0">
+      <properties>
+        <property name="_PID" value="14988" />
+        <property name="_APPDOMAIN" value="Unity Child Domain" />
+        <property name="platform" value="PlayMode" />
+        <property name="EditorOnly" value="False" />
+      </properties>
+      <test-suite type="TestSuite" id="1141" name="PPS" fullname="PPS" runstate="Runnable" testcasecount="38" result="Passed" start-time="2026-08-09 01:43:30Z" end-time="2026-08-09 01:53:43Z" duration="613.565584" total="1" passed="1" failed="0" inconclusive="0" skipped="0" asserts="0">
+        <properties />
+        <test-suite type="TestSuite" id="1142" name="Solver" fullname="PPS.Solver" runstate="Runnable" testcasecount="38" result="Passed" start-time="2026-08-09 01:43:30Z" end-time="2026-08-09 01:53:43Z" duration="613.541267" total="1" passed="1" failed="0" inconclusive="0" skipped="0" asserts="0">
+          <properties />
+          <test-suite type="TestSuite" id="1143" name="Tests" fullname="PPS.Solver.Tests" runstate="Runnable" testcasecount="38" result="Passed" start-time="2026-08-09 01:43:30Z" end-time="2026-08-09 01:53:43Z" duration="613.524741" total="1" passed="1" failed="0" inconclusive="0" skipped="0" asserts="0">
+            <properties />
+            <test-suite type="TestFixture" id="1122" name="ReachableClosureTests" fullname="PPS.Solver.Tests.ReachableClosureTests" classname="PPS.Solver.Tests.ReachableClosureTests" runstate="Runnable" testcasecount="1" result="Passed" start-time="2026-08-09 01:43:30Z" end-time="2026-08-09 01:53:43Z" duration="613.506396" total="1" passed="1" failed="0" inconclusive="0" skipped="0" asserts="0">
+              <properties />
+              <test-case id="1123" name="도달_가능_셀의_증가_곡선을_찍는다" fullname="PPS.Solver.Tests.ReachableClosureTests.도달_가능_셀의_증가_곡선을_찍는다" methodname="도달_가능_셀의_증가_곡선을_찍는다" classname="PPS.Solver.Tests.ReachableClosureTests" runstate="Runnable" seed="1646484519" result="Passed" start-time="2026-08-09 01:43:30Z" end-time="2026-08-09 01:53:43Z" duration="613.489224" asserts="0">
+                <properties>
+                  <property name="_JOINTYPE" value="UnityCombinatorial" />
+                  <property name="Timeout" value="3600000" />
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+                <output><![CDATA[[격자] 전체 셀 17,056 (위치 416 × 속도 41)
+[설정] 후보 280 개 (방향 5 · 크기 2) · 굴림 180 스텝 · 시뮬 상한 1,200,000
+깊이 0: 셀      15 (무배치 궤적) 새 셀 15
+깊이 1: 셀     463 (2.71 %) 새 셀     448 · 시뮬   4,216 (월드   2,332) · 간선   2,296 · 거부 45 % · 헛방 30 % · 상한걸림 12 % · 간선/월드 0.98 ·    3.1초 (월드당 1.31ms · 씬 최고 16)
+  방향  월드      헛방     새 셀
+    -90°     420     68 %         2
+    -45°     468     29 %        48
+      0°     552      2 %       288
+     45°     456      9 %        89
+     90°     420     57 %        21
+  Shape        월드      헛방     새 셀
+  Line         1,200     40 %       107
+  Bowl             0        -         0
+  Triangle     1,116     21 %       341
+
+깊이 2: 셀   1,527 (8.95 %) 새 셀   1,064 · 시뮬 130,104 (월드  70,984) · 간선  28,003 · 거부 45 % · 헛방 31 % · 상한걸림 10 % · 간선/월드 0.39 ·   91.8초 (월드당 1.29ms · 씬 최고 16)
+  방향  월드      헛방     새 셀
+    -90°  13,864     44 %       106
+    -45°  14,412     27 %       505
+      0°  14,772     20 %       644
+     45°  13,812     23 %       198
+     90°  13,660     41 %        46
+  Shape        월드      헛방     새 셀
+  Line        36,512     36 %       550
+  Bowl             0        -         0
+  Triangle    34,008     26 %       949
+
+깊이 3: 셀   3,427 (20.09 %) 새 셀   1,900 · 시뮬 429,088 (월드 184,924) · 간선  70,854 · 거부 57 % · 헛방 32 % · 상한걸림 7 % · 간선/월드 0.38 ·  195.2초 (월드당 1.06ms · 씬 최고 16)
+  방향  월드      헛방     새 셀
+    -90°  37,432     48 %       173
+    -45°  37,148     26 %       913
+      0°  36,960     20 %     1,748
+     45°  35,748     22 %       487
+     90°  36,108     43 %        76
+  Shape        월드      헛방     새 셀
+  Line        95,328     36 %     1,642
+  Bowl             0        -         0
+  Triangle    88,068     28 %     1,755
+
+깊이 4: 셀   5,380 (31.54 %) 새 셀   1,953 · 시뮬 962,988 (월드 367,900) · 간선 189,357 · 거부 62 % · 헛방 36 % · 상한걸림 4 % · 간선/월드 0.51 ·  300.2초 (월드당 0.82ms · 씬 최고 16)
+  방향  월드      헛방     새 셀
+    -90°  75,504     57 %       245
+    -45°  73,376     28 %     1,193
+      0°  70,996     18 %     2,886
+     45°  70,924     24 %       853
+     90°  73,672     54 %       158
+  Shape        월드      헛방     새 셀
+  Line       191,792     40 %     2,841
+  Bowl             0        -         0
+  Triangle   172,680     33 %     2,494
+
+깊이 5: 셀   6,079 (35.64 %) 새 셀     699 · 시뮬 1,200,000 (월드 451,574) · 간선 240,559 · 거부 62 % · 헛방 38 % · 상한걸림 4 % · 간선/월드 0.53 ·  347.7초 (월드당 0.77ms · 씬 최고 16)
+  방향  월드      헛방     새 셀
+    -90°  91,958     59 %       276
+    -45°  88,856     29 %     1,335
+      0°  86,580     18 %     3,195
+     45°  87,792     26 %     1,026
+     90°  92,116     57 %       202
+  Shape        월드      헛방     새 셀
+  Line       235,742     42 %     3,171
+  Bowl             0        -         0
+  Triangle   211,560     34 %     2,863
+
+  ⚠ 시뮬 상한 1,200,000 에서 중단. 위 값은 미완성이다.
+Saving results to: C:/Users/User/AppData/LocalLow/DefaultCompany/PhysicsPuzzleSolver\TestResults.xml
+]]></output>
+              </test-case>
+            </test-suite>
+          </test-suite>
+        </test-suite>
+      </test-suite>
+    </test-suite>
+  </test-suite>
+</test-run>

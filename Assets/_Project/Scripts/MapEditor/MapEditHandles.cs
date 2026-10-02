@@ -1,0 +1,1284 @@
+using System.Collections.Generic;
+using PPS.Core;
+using PPS.DrawingTool;
+using UnityEngine;
+using UnityEngine.EventSystems;
+using UnityEngine.InputSystem;
+using TMPro;
+
+namespace PPS.MapEditor
+{
+    /// <summary>
+    /// 맵을 고친다 — 집고, 놓고, 옮기고, 지운다.
+    /// 편집 결과는 곧바로 레벨 데이터에 들어간다.
+    /// 그리는 일은 하지 않고 View 에 모델을 건넨다.
+    /// </summary>
+    public sealed class MapEditHandles : MonoBehaviour
+    {
+        /// 집을 수 있는 반지름(dp). 48dp 타겟의 절반이다.
+        const float PickRadiusDp = 24f;
+
+        /// 기획이 정한 별 개수. 데이터에는 제한이 없다.
+        const int MaxStars = 3;
+
+        /// 새로 놓는 지형 도형의 크기.
+        const float ShapeSize = 1f;
+
+        /// <summary>
+        /// 지우개가 한 번에 지우는 반지름(dp).
+        /// 집는 반경보다 커야 지운 자리가 손가락에 가려지지 않는다.
+        /// </summary>
+        const float EraserRadiusDp = 32f;
+
+        /// <summary>
+        /// 드로잉 탭의 항목 번호. 씬의 항목 순서와 맞춘다.
+        /// 나머지 항목은 그리지 않고 집기만 한다 — 펜을 든
+        /// 채로는 누를 때마다 선이 그어져 이미 그은 선을
+        /// 집을 수가 없다.
+        /// </summary>
+        const int PenItem = 0;
+        const int EraserItem = 1;
+
+        /// 도형이 점으로 뭉개지지 않는 최소 크기.
+        const float MinShapeSize = 0.1f;
+
+        /// <summary>
+        /// 새 버텍스가 기존 점과 이만큼은 떨어져야 한다(dp).
+        /// 겹쳐 꽂히면 길이 0 짜리 선분이 생긴다.
+        /// </summary>
+        const float MinVertexGapDp = 12f;
+
+        /// <summary>
+        /// 한 번에 도는 각도(도).
+        /// 자유 회전은 손가락으로 맞추기 어렵고,
+        /// 45도는 완만한 경사를 못 만든다.
+        /// </summary>
+        const float RotateStep = 15f;
+
+        /// <summary>
+        /// 붙여넣은 것을 원본에서 밀어 놓는 거리.
+        /// 겹쳐 놓으면 어느 쪽이 새것인지 알 수 없다.
+        /// </summary>
+        static readonly Vector2 PasteOffset = new Vector2(0.6f, -0.6f);
+
+        [SerializeField] MapEditSession _session;
+        [SerializeField] CanvasCameraFitter _fitter;
+        [SerializeField] ToolPalette _palette;
+        [SerializeField] MapEditHistory _history;
+
+        /// 탭 번호. 씬의 탭 순서와 맞춰야 한다.
+        [SerializeField] int _drawTab = 0;
+        [SerializeField] int _terrainTab = 1;
+        [SerializeField] int _deviceTab = 2;
+
+        [SerializeField] MapEditView _view;
+
+        MapSelection _selected = MapSelection.None;
+        bool _dragging;
+
+        /// <summary>
+        /// 도형 안을 고치는 상태. 버텍스와 크기 핸들이
+        /// 이때만 나온다 — 늘 떠 있으면 도형을 집을 수 없다.
+        /// </summary>
+        bool _editMode;
+
+        /// <summary>
+        /// 누르면 점을 옮기지 않고 새로 꽂는 상태.
+        /// 우클릭·시프트는 시뮬레이터와 실기기에 없어
+        /// 모드로 가른다.
+        /// </summary>
+        bool _insertMode;
+
+        /// 이번 드래그가 무엇을 움직이는가.
+        GrabKind _grab = GrabKind.None;
+
+        /// 버텍스를 잡았을 때의 점 번호.
+        int _grabVertex = -1;
+
+        /// 강조해 보여줄 점. 방금 꽂았거나 잡고 있는 것.
+        int _activeVertex = -1;
+
+        /// 직전 프레임의 스테이지. 갈아끼워졌는지 본다.
+        StageData _lastStage;
+
+        /// 드래그 중 직전 손가락 위치. 이동량을 여기서 낸다.
+        Vector2 _dragFrom;
+
+        /// <summary>
+        /// 다음에 놓을 도형의 각도(도).
+        /// 놓을 때마다 다시 맞추지 않도록 남겨둔다.
+        /// </summary>
+        float _placeAngle;
+
+        /// 복사해 둔 것의 종류. None 이면 비어 있다.
+        MapHandleKind _clipKind = MapHandleKind.None;
+
+        Vector2 _clipStar;
+        ShapeData _clipShape;
+        IDeviceData _clipDevice;
+
+        /// 도형을 선분으로 굽는 임시 버퍼.
+        /// 매번 새로 만들면 프레임마다 할당이 생긴다.
+        readonly List<StaticSegment> _scratch = new List<StaticSegment>();
+
+        /// 이번 드래그의 스냅샷을 이미 남겼는가.
+        /// 끄는 내내 남기면 되돌리기가 한 픽셀씩 간다.
+        bool _dragRecorded;
+
+        /// <summary>
+        /// 긋는 중인 선. 그리기 도구의 것을 그대로 쓴다 —
+        /// 점 밀도 규칙이 갈라지면 같은 손짓이 두 화면에서
+        /// 다른 선이 된다. 맵 편집에는 잉크 상한이 없다.
+        /// </summary>
+        readonly StrokeBuilder _stroke = new StrokeBuilder();
+
+        readonly StrokeProcessor _strokeProcessor = new StrokeProcessor();
+
+        /// 펜으로 긋는 중인가.
+        bool _drawing;
+
+        /// 지우개를 끄는 중인가.
+        bool _erasing;
+
+        /// 이번 지우기의 스냅샷을 이미 남겼는가.
+        bool _eraseRecorded;
+
+        /// 지우개를 그릴 자리.
+        Vector2 _eraseAt;
+
+        MapDeviceInspector _inspector;
+        DeviceParameter _dragParameter;
+        float _deviceDragStart;
+        Vector2 _devicePointerStart;
+        Vector2 _deviceMoveStart;
+        public DeviceEditKind DeviceTool { get; private set; } = DeviceEditKind.Position;
+        public bool IsDragging => _dragging;
+        public bool EditingShape => isActiveAndEnabled && _editMode;
+        public bool EditingVertices => EditingShape && _insertMode;
+
+        public IDeviceData SelectedDevice => _session != null
+            && ReferenceEquals(_lastStage, _session.Current)
+            && _selected.Kind == MapHandleKind.Device && InRange(_selected)
+                ? _session.Current.Level.Devices[_selected.Index] : null;
+
+        void Start()
+        {
+            if (_palette != null)
+                _palette.GetComponentInParent<Canvas>().gameObject.AddComponent<MapEditToolbar>().Initialize(this, _view.Visuals);
+            if (_fitter == null || _palette == null || _palette.EditorArea == null)
+            {
+                Debug.LogError("Device editor needs a fitter and palette editor area.", this);
+                return;
+            }
+            _inspector = gameObject.AddComponent<MapDeviceInspector>();
+            _inspector.Initialize(this, _fitter, _palette, _palette.EditorArea, _view.Visuals);
+        }
+
+        public void SelectDeviceTool(DeviceEditKind kind)
+        {
+            if (SelectedDevice != null && DeviceParameterSchema.For(SelectedDevice).Find(kind) == null) return;
+            DeviceTool = kind;
+            _palette?.SelectOnly();
+        }
+
+        public bool SetDeviceParameter(IDeviceData device, DeviceParameter parameter, string text, out string error, bool record = true)
+        {
+            error = "Select the device again.";
+            if (!isActiveAndEnabled || !ReferenceEquals(device, SelectedDevice)) return false;
+            if (!parameter.TryParse(text, out var value, out error)) return false;
+            if (Equals(parameter.Read(device), value)) return true;
+            if (record) Record();
+            parameter.Write(device, value);
+            _session.Bake();
+            return true;
+        }
+
+        /// <summary>
+        /// 테스트가 시작되면 이 오브젝트가 꺼진다.
+        /// 그리는 쪽은 다른 오브젝트라 같이 안 꺼진다 —
+        /// 안 감추면 시작 지점에 공이 하나 더 남는다.
+        /// </summary>
+        void OnDisable()
+        {
+            _dragging = false;
+            _drawing = false;
+            _erasing = false;
+            _grab = GrabKind.None;
+            if (_view != null) _view.HideAll();
+        }
+
+        void Update()
+        {
+            if (_session == null || _fitter == null || !_fitter.IsReady) return;
+
+            DropStaleSelection();
+            HandleDeviceShortcuts();
+            HandleInput();
+            Redraw();
+        }
+
+        /// <summary>
+        /// 새 맵·불러오기·초기화는 스테이지를 통째로
+        /// 갈아끼운다. 고른 번호는 예전 맵 기준이라
+        /// 그대로 두면 없는 것을 지우려 든다.
+        /// 목록만 짧아지는 경우도 있어 번호까지 함께 본다.
+        /// </summary>
+        void DropStaleSelection()
+        {
+            bool swapped = !ReferenceEquals(_lastStage, _session.Current);
+            if (!swapped && InRange(_selected)) return;
+
+            _lastStage = _session.Current;
+            _selected = MapSelection.None;
+            _dragging = false;
+            _grab = GrabKind.None;
+            _editMode = false;
+            _insertMode = false;
+            _activeVertex = -1;
+        }
+
+        /// <summary>
+        /// 고른 번호가 아직 있는 것을 가리키는가.
+        /// 상단바 버튼은 아무 때나 눌리므로 여기서 한 번에 막는다.
+        /// </summary>
+        bool InRange(MapSelection selection)
+        {
+            var level = _session.Current.Level;
+
+            switch (selection.Kind)
+            {
+                case MapHandleKind.Star:
+                    return selection.Index >= 0 && selection.Index < level.Stars.Count;
+                case MapHandleKind.Device:
+                    return selection.Index >= 0 && selection.Index < level.Devices.Count;
+                case MapHandleKind.Terrain:
+                    return selection.Index >= 0 && selection.Index < _session.Shapes.Shapes.Count;
+                default:
+                    return true;
+            }
+        }
+
+        /// <summary>
+        /// 상단바 편집 버튼이 부른다.
+        /// 고른 도형이 없으면 들어갈 곳이 없다.
+        /// </summary>
+        public void ToggleEditMode()
+        {
+            if (_selected.Kind != MapHandleKind.Terrain)
+            {
+                _editMode = false;
+                _insertMode = false;
+                _activeVertex = -1;
+                return;
+            }
+
+            _editMode = !_editMode;
+            if (_editMode) _palette?.SelectOnly();
+            if (!_editMode)
+            {
+                _insertMode = false;
+                _activeVertex = -1;
+            }
+            Debug.Log(_editMode ? "[맵 에디터] 도형 편집 중" : "[맵 에디터] 도형 편집 끝");
+        }
+
+        /// <summary>
+        /// 상단바 버텍스 추가 버튼이 부른다.
+        /// 편집 중이 아니면 넣을 도형이 없다.
+        /// </summary>
+        public void ToggleInsertMode()
+        {
+            if (!_editMode || _selected.Kind != MapHandleKind.Terrain)
+            {
+                _insertMode = false;
+                return;
+            }
+
+            _insertMode = !_insertMode;
+            if (_insertMode) _palette?.SelectOnly();
+            Debug.Log(_insertMode ? "[맵 에디터] 버텍스 추가 중" : "[맵 에디터] 버텍스 추가 끝");
+        }
+
+        /// <summary>
+        /// 상단바 복사 버튼이 부른다.
+        /// 시작·목표는 하나씩만 존재해 복사가 성립하지 않는다.
+        /// </summary>
+        public void CopySelected()
+        {
+            var level = _session.Current.Level;
+
+            if (!InRange(_selected)) return;
+
+            if (_selected.Kind == MapHandleKind.Star)
+            {
+                _clipStar = level.Stars[_selected.Index];
+                _clipKind = MapHandleKind.Star;
+            }
+            else if (_selected.Kind == MapHandleKind.Terrain)
+            {
+                _clipShape = _session.Shapes.Shapes[_selected.Index].Clone();
+                _clipKind = MapHandleKind.Terrain;
+            }
+            else if (_selected.Kind == MapHandleKind.Device)
+            {
+                // 복제해 둔다. 원본을 옮겨도 클립보드는 그대로여야 한다.
+                _clipDevice = level.Devices[_selected.Index].Clone();
+                _clipKind = MapHandleKind.Device;
+            }
+            else
+            {
+                return;
+            }
+
+            Debug.Log($"[맵 에디터] 복사: {_clipKind}");
+        }
+
+        /// <summary>
+        /// 상단바 붙여넣기 버튼이 부른다.
+        /// 붙인 것을 고른 채로 둬서 바로 옮길 수 있게 한다.
+        /// </summary>
+        public void PasteClipboard()
+        {
+            var level = _session.Current.Level;
+
+            if (_clipKind == MapHandleKind.None) return;
+
+            if (_clipKind == MapHandleKind.Star)
+            {
+                if (level.Stars.Count >= MaxStars)
+                {
+                    Debug.Log($"[맵 에디터] 별은 {MaxStars} 개까지다.");
+                    return;
+                }
+
+                Record();
+
+                Vector2 shift = ClampDelta(PasteOffset, _clipStar, _clipStar);
+                level.Stars.Add(_clipStar + shift);
+                _selected = new MapSelection(MapHandleKind.Star, level.Stars.Count - 1);
+            }
+            else if (_clipKind == MapHandleKind.Device)
+            {
+                Record();
+
+                IDeviceData copy = _clipDevice.Clone();
+                copy.Position += ClampDelta(PasteOffset, copy.Position, copy.Position);
+
+                level.Devices.Add(copy);
+                _selected = new MapSelection(MapHandleKind.Device, level.Devices.Count - 1);
+            }
+            else if (_clipKind == MapHandleKind.Terrain)
+            {
+                Record();
+
+                ShapeData copy = _clipShape.Clone();
+                Rect bounds = copy.Bounds();
+                copy.Move(ClampDelta(PasteOffset, bounds.min, bounds.max));
+
+                var shapes = _session.Shapes.Shapes;
+                shapes.Add(copy);
+                _session.Bake();
+
+                _selected = new MapSelection(MapHandleKind.Terrain, shapes.Count - 1);
+            }
+        }
+
+        /// <summary>
+        /// 상단바 회전 버튼이 부른다.
+        /// 고른 지형이 있으면 그것을, 없으면 다음에 놓을
+        /// 각도를 돌린다. 시작·목표·별은 원이라 안 돈다.
+        /// </summary>
+        public void RotateSelected()
+        {
+            if (InRange(_selected) && HasAngle(_selected))
+            {
+                Record();
+
+                Facing(_selected).FacingDegrees += RotateStep;
+                return;
+            }
+
+            if (_selected.Kind != MapHandleKind.Terrain || !InRange(_selected))
+            {
+                _placeAngle += RotateStep;
+                Debug.Log($"[맵 에디터] 놓을 각도: {_placeAngle % 360f:F0}도");
+                return;
+            }
+
+            Record();
+
+            ShapeData shape = _session.Shapes.Shapes[_selected.Index];
+
+            // 원은 돌려도 같은 모양이다.
+            if (shape.Kind != ShapeKind.Circle)
+            {
+                Vector2 center = shape.Center();
+                for (int i = 0; i < shape.Points.Count; i++)
+                    shape.Points[i] = Rotate(shape.Points[i] - center, RotateStep) + center;
+
+                // 돌다가 밖으로 나가면 안으로 밀어 넣는다.
+                Rect bounds = shape.Bounds();
+                shape.Move(ClampDelta(Vector2.zero, bounds.min, bounds.max));
+            }
+
+            _session.Bake();
+        }
+
+        /// <summary>
+        /// 고른 것이 방향을 가진 장치인가.
+        /// 폭탄·가시는 돌려도 달라지는 것이 없다.
+        /// </summary>
+        bool HasAngle(MapSelection selection) => Facing(selection) != null;
+
+        /// 방향을 가진 장치면 그 얼굴, 아니면 null.
+        IHasFacing Facing(MapSelection selection)
+        {
+            if (selection.Kind != MapHandleKind.Device) return null;
+
+            return _session.Current.Level.Devices[selection.Index] as IHasFacing;
+        }
+
+        /// <summary>
+        /// 상단바 좌우대칭 버튼이 부른다.
+        /// 고른 것의 중심을 축으로 뒤집는다 — 맵 전체가 아니라
+        /// 하나만 뒤집어야 다른 배치가 흐트러지지 않는다.
+        /// </summary>
+        public void MirrorSelected()
+        {
+            if (InRange(_selected) && HasAngle(_selected))
+            {
+                Record();
+
+                // 좌우를 뒤집으면 오른쪽 성분만 부호가 바뀐다.
+                IHasFacing facing = Facing(_selected);
+                facing.FacingDegrees = 180f - facing.FacingDegrees;
+                return;
+            }
+
+            if (_selected.Kind != MapHandleKind.Terrain || !InRange(_selected))
+            {
+                _placeAngle = 180f - _placeAngle;
+                Debug.Log($"[맵 에디터] 놓을 각도: {_placeAngle % 360f:F0}도");
+                return;
+            }
+
+            ShapeData shape = _session.Shapes.Shapes[_selected.Index];
+
+            // 원은 뒤집어도 같은 모양이다.
+            if (shape.Kind == ShapeKind.Circle) return;
+
+            Record();
+
+            float axis = shape.Center().x;
+            for (int i = 0; i < shape.Points.Count; i++)
+            {
+                Vector2 point = shape.Points[i];
+                shape.Points[i] = new Vector2(axis * 2f - point.x, point.y);
+            }
+
+            _session.Bake();
+        }
+
+        static Vector2 Rotate(Vector2 v, float degrees)
+        {
+            float rad = degrees * Mathf.Deg2Rad;
+            float cos = Mathf.Cos(rad);
+            float sin = Mathf.Sin(rad);
+
+            return new Vector2(v.x * cos - v.y * sin, v.x * sin + v.y * cos);
+        }
+
+        /// <summary>
+        /// 상단바 삭제 버튼이 부른다.
+        /// 시작·목표는 레벨의 필수 요소라 지우지 않는다.
+        /// </summary>
+        public void DeleteSelected()
+        {
+            var level = _session.Current.Level;
+
+            if (_selected.Kind != MapHandleKind.Star
+                && _selected.Kind != MapHandleKind.Terrain
+                && _selected.Kind != MapHandleKind.Device) return;
+
+            if (!InRange(_selected)) return;
+
+            Record();
+
+            if (_selected.Kind == MapHandleKind.Star)
+            {
+                level.Stars.RemoveAt(_selected.Index);
+            }
+            else if (_selected.Kind == MapHandleKind.Device)
+            {
+                level.Devices.RemoveAt(_selected.Index);
+            }
+            else
+            {
+                // 도형에 속한 선분이 전부 함께 사라진다.
+                _session.Shapes.Shapes.RemoveAt(_selected.Index);
+                _session.Bake();
+            }
+
+            _selected = MapSelection.None;
+            _dragging = false;
+        }
+
+        void HandleInput()
+        {
+            var pointer = Pointer.current;
+            if (pointer == null) return;
+
+            Vector2 world = _fitter.ScreenToWorld(pointer.position.ReadValue());
+
+            if (Typing()) return;
+
+            if (HandleDrawInput(pointer, world)) return;
+
+            if (pointer.press.wasPressedThisFrame && !OverUI())
+            {
+                _grab = GrabKind.None;
+
+                // 기존 점은 이동하고 빈 선 위에는 추가한다.
+                // 크기 핸들은 버텍스 선택을 가리지 않는다.
+                bool insertMode = InsertReady();
+                if (insertMode) _grab = PickVertexHandle(world);
+                bool inserted = insertMode && _grab == GrabKind.None && InsertVertexAt(world);
+
+                if (!insertMode)
+                {
+                    // 편집 모드에서는 도형 안의 핸들이 먼저다.
+                    // 도형보다 작아서 뒤로 밀리면 절대 못 잡는다.
+                    _grab = PickDeviceHandle(world);
+                    if (_grab == GrabKind.None) _grab = PickEditHandle(world);
+                }
+
+                if (!insertMode && _grab == GrabKind.None)
+                {
+                    MapSelection hit = Pick(world);
+
+                    // 다른 도형을 고르면 편집 모드에서 빠진다.
+                    if (hit.Kind != _selected.Kind || hit.Index != _selected.Index)
+                    {
+                        DeviceTool = DeviceEditKind.Position;
+                        _editMode = false;
+                        _insertMode = false;
+                        _activeVertex = -1;
+                    }
+
+                    _selected = hit;
+                    if (_selected.Kind == MapHandleKind.None) _selected = Place(world);
+
+                    _grab = _selected.Kind == MapHandleKind.None ? GrabKind.None : GrabKind.Object;
+                }
+
+                _dragging = _grab != GrabKind.None;
+                _dragFrom = world;
+                if (_grab == GrabKind.Object && SelectedDevice != null)
+                {
+                    _deviceMoveStart = SelectedDevice.Position;
+                    _devicePointerStart = world;
+                }
+
+                // 삽입은 이미 스냅샷을 남겼다.
+                // 여기서 풀면 이어지는 드래그가 하나 더 남긴다.
+                _dragRecorded = inserted;
+            }
+
+            if (pointer.press.wasReleasedThisFrame)
+            {
+                _dragging = false;
+                _grab = GrabKind.None;
+            }
+
+            if (_dragging && pointer.press.isPressed) Drag(world);
+        }
+
+        static bool Typing() => EventSystem.current != null
+            && EventSystem.current.currentSelectedGameObject != null
+            && EventSystem.current.currentSelectedGameObject.TryGetComponent<TMP_InputField>(out var input)
+            && input.isFocused;
+
+        void HandleDeviceShortcuts()
+        {
+            var keyboard = Keyboard.current;
+            if (keyboard == null || Typing() || _dragging) return;
+            if (keyboard.escapeKey.wasPressedThisFrame)
+            {
+                _selected = MapSelection.None;
+                _palette?.SelectOnly();
+            }
+            if (SelectedDevice == null) return;
+            if (keyboard.wKey.wasPressedThisFrame) SelectDeviceTool(DeviceEditKind.Position);
+            if (keyboard.eKey.wasPressedThisFrame) SelectDeviceTool(DeviceEditKind.Angle);
+            if (keyboard.rKey.wasPressedThisFrame) SelectDeviceTool(DeviceEditKind.Radius);
+        }
+
+        GrabKind PickDeviceHandle(Vector2 world)
+        {
+            var device = SelectedDevice;
+            if (device == null || DeviceTool == DeviceEditKind.Position) return GrabKind.None;
+            _dragParameter = DeviceParameterSchema.For(device).Find(DeviceTool);
+            if (_dragParameter == null) return GrabKind.None;
+            float radius = DeviceTool == DeviceEditKind.Radius
+                ? (float)_dragParameter.Read(device)
+                : DeviceTransformGeometry.RotationRadius(device, HandleRadius());
+            if (!DeviceTransformGeometry.HitsRing(world, device.Position, radius, PickRadiusWorld()))
+                return GrabKind.None;
+            _deviceDragStart = (float)_dragParameter.Read(device);
+            _devicePointerStart = world;
+            return GrabKind.DeviceTransform;
+        }
+
+        void DragDeviceHandle(Vector2 world)
+        {
+            var device = SelectedDevice;
+            if (device == null) return;
+            if (!_dragRecorded && world == _devicePointerStart) return;
+            float value = DeviceTransformGeometry.Drag(DeviceTool, device.Position,
+                _devicePointerStart, world, _deviceDragStart);
+            value = _dragParameter.Constrain(value);
+            if (Mathf.Approximately((float)_dragParameter.Read(device), value)) return;
+            if (!_dragRecorded) { Record(); _dragRecorded = true; }
+            _dragParameter.Write(device, value);
+            _session.Bake();
+        }
+
+        /// <summary>
+        /// 드로잉 탭의 펜과 지우개를 다룬다.
+        /// 그은 선은 다른 도형과 같은 폴리라인이라
+        /// 대칭·버텍스·회전·복사·저장이 그대로 걸린다.
+        /// 선택 항목일 때는 입력을 넘겨 집기 경로로 보낸다.
+        /// </summary>
+        /// <returns>입력을 가져갔으면 true.</returns>
+        bool HandleDrawInput(Pointer pointer, Vector2 world)
+        {
+            bool draws = _palette != null
+                && _palette.SelectedTab == _drawTab
+                && (_palette.SelectedItem == PenItem || _palette.SelectedItem == EraserItem);
+
+            if (!draws)
+            {
+                _drawing = false;
+                _erasing = false;
+                return false;
+            }
+
+            bool pen = _palette.SelectedItem == PenItem;
+
+            if (pointer.press.wasPressedThisFrame)
+            {
+                if (OverUI()) return true;
+
+                if (pen)
+                {
+                    _drawing = true;
+                    _stroke.Begin(float.MaxValue);
+                    _stroke.AddPoint(ClampPoint(world));
+                }
+                else
+                {
+                    _erasing = true;
+                    _eraseRecorded = false;
+                    EraseAt(world);
+                }
+
+                return true;
+            }
+
+            if (pointer.press.wasReleasedThisFrame)
+            {
+                if (_drawing) CommitStroke();
+
+                _drawing = false;
+                _erasing = false;
+                return true;
+            }
+
+            if (pointer.press.isPressed)
+            {
+                if (_drawing) _stroke.AddPoint(ClampPoint(world));
+                else if (_erasing) EraseAt(world);
+            }
+
+            return true;
+        }
+
+        /// <summary>
+        /// 그은 선을 도형 하나로 만든다.
+        /// 점으로 뭉갠 획은 버린다 — 화면을 스치기만 해도
+        /// 선이 남으면 지우개를 계속 들어야 한다.
+        /// </summary>
+        void CommitStroke()
+        {
+            Stroke stroke = _strokeProcessor.Process(ToolType.FixedLine, _stroke.Points);
+            if (!stroke.IsValid) return;
+
+            Record();
+
+            var shapes = _session.Shapes.Shapes;
+            shapes.Add(new ShapeData
+            {
+                Kind = ShapeKind.Polyline,
+                Points = stroke.Points,
+            });
+            _session.Bake();
+
+            // 그리자마자 대칭·회전을 걸 수 있게 고른 채로 둔다.
+            _selected = new MapSelection(MapHandleKind.Terrain, shapes.Count - 1);
+            _editMode = false;
+            _insertMode = false;
+            _activeVertex = -1;
+        }
+
+        /// <summary>
+        /// 지우개가 닿은 만큼 그은 선을 덜어낸다.
+        /// 놓은 도형은 건드리지 않는다 — 통째로 지우는
+        /// 삭제 버튼이 따로 있다.
+        /// </summary>
+        void EraseAt(Vector2 world)
+        {
+            _eraseAt = world;
+
+            float radius = EraserRadiusWorld();
+            var shapes = _session.Shapes.Shapes;
+
+            if (!ShapeEraser.Hits(shapes, world, radius)) return;
+
+            // 한 번 끄는 동안은 스냅샷 하나다. 프레임마다
+            // 남기면 되돌리기가 지운 자국을 한 점씩 되짚는다.
+            if (!_eraseRecorded)
+            {
+                _eraseRecorded = true;
+                Record();
+            }
+
+            ShapeEraser.Erase(shapes, world, radius);
+            _session.Bake();
+
+            // 도형이 갈라지고 사라져 번호가 밀린다.
+            _selected = MapSelection.None;
+            _editMode = false;
+            _insertMode = false;
+            _activeVertex = -1;
+        }
+
+        float EraserRadiusWorld() =>
+            new DeviceUnits(Screen.dpi).ToPixels(EraserRadiusDp) / _fitter.PixelsPerUnit;
+
+        /// 지금 누르면 버텍스가 꽂히는가.
+        bool InsertReady() =>
+            _insertMode && _editMode && _selected.Kind == MapHandleKind.Terrain;
+
+        /// <summary>
+        /// 편집 중인 선 위에 새 버텍스를 넣는다.
+        /// 원은 첫 삽입 때 현재 외형 그대로 폐곡선이 된다.
+        /// </summary>
+        /// <returns>넣었으면 true. 이어서 그 점이 끌린다.</returns>
+        bool InsertVertexAt(Vector2 world)
+        {
+            if (!_editMode || _selected.Kind != MapHandleKind.Terrain) return false;
+
+            var shapes = _session.Shapes.Shapes;
+            if (_selected.Index < 0 || _selected.Index >= shapes.Count) return false;
+
+            ShapeData shape = shapes[_selected.Index];
+            bool convertCircle = shape.Kind == ShapeKind.Circle;
+
+            // 원본은 클릭이 유효한지 확인할 때까지 건드리지 않는다.
+            // 빈 곳을 우클릭했는데 원이 폴리곤으로 바뀌면 안 된다.
+            ShapeData editable = convertCircle ? shape.Clone() : shape;
+            if (convertCircle) editable.ConvertCircleToPolygon(ShapeBaker.CircleSegments);
+
+            float minGap = new DeviceUnits(Screen.dpi).ToPixels(MinVertexGapDp)
+                / _fitter.PixelsPerUnit;
+
+            if (!editable.TryFindVertexInsertion(
+                    world, PickRadiusWorld(), minGap, out int insertAt, out Vector2 position))
+                return false;
+
+            Record();
+            if (convertCircle)
+            {
+                shapes[_selected.Index] = editable;
+                shape = editable;
+            }
+
+            shape.Points.Insert(insertAt, position);
+            _activeVertex = insertAt;
+            _grabVertex = insertAt;
+            _grab = GrabKind.Vertex;
+            _session.Bake();
+
+            return true;
+        }
+
+        /// <summary>빈 곳을 눌렀을 때 도구에 맞춰 새로 놓는다.</summary>
+        MapSelection Place(Vector2 world)
+        {
+            if (_palette == null) return MapSelection.None;
+
+            if (_palette.SelectedTab == _terrainTab)
+            {
+                Record();
+                return AddTerrain(world, _palette.SelectedItem);
+            }
+
+            if (_palette.SelectedTab == _deviceTab)
+            {
+                Record();
+                return AddDeviceItem(world, _palette.SelectedItem);
+            }
+
+            return MapSelection.None;
+        }
+
+        /// <summary>
+        /// 장치 탭의 항목 하나를 놓는다.
+        /// 별은 같은 탭에 있지만 레벨의 별도 목록에 들어간다 —
+        /// 코어가 장치가 아니라 수집 목표로 다룬다.
+        /// 세기·지연은 배치 후 속성 패널에서 고친다.
+        /// </summary>
+        MapSelection AddDeviceItem(Vector2 world, int kind)
+        {
+            var devices = _session.Current.Level.Devices;
+
+            switch (kind)
+            {
+                case 0: // 별
+                    return AddStar(world);
+
+                case 1: // 폭탄
+                    devices.Add(new BombData
+                    {
+                        Position = world,
+
+                        // 좁고 세게. 넓고 약하면 어디에 놓아도
+                        // 비슷하게 밀려 배치가 퍼즐이 되지 않는다.
+                        Radius = 2f,
+                        Power = 11f,
+                        DelaySteps = 30,
+
+                        // 흔들림은 0 이다. 값이 있으면 발동 시점이
+                        // 시드에 따라 달라져 레벨을 읽기 어렵다.
+                    });
+                    break;
+
+                case 3: // 가시
+                    devices.Add(new SpikeData
+                    {
+                        Position = world,
+                        Radius = 0.3f,
+                    });
+                    break;
+
+                case 4: // 바람 구역
+                    devices.Add(new WindData
+                    {
+                        Position = world,
+                        Radius = 2f,
+
+                        // 가속도(m/s²). 중력의 절반쯤이라
+                        // 공을 띄우지는 못하고 궤도만 휜다.
+                        Power = 5f,
+                        Angle = _placeAngle,
+                    });
+                    break;
+
+                case 2: // 파편 폭탄
+                    devices.Add(new FragBombData
+                    {
+                        Position = world,
+                        Power = 6f,
+                        DelaySteps = 30,
+                    });
+                    break;
+
+                case 5: // 바운서
+                    devices.Add(new BouncerData
+                    {
+                        Position = world,
+
+                        // 공(0.25)의 두 배. 더 작으면 맞히기가 운이 된다.
+                        Radius = 0.5f,
+                    });
+                    break;
+
+                case 6: // 박쥐
+                    devices.Add(new BatData
+                    {
+                        Position = world,
+                        Radius = 0.3f,
+
+                        // 1초에 6wu. 판 하나를 가로지르는 데 2초쯤이다.
+                        Speed = 6f,
+                        Angle = _placeAngle,
+                    });
+                    break;
+
+                case 7: // 바리게이트
+                    devices.Add(new BarricadeData
+                    {
+                        Position = world,
+                        HalfSize = 0.5f,
+
+                        // 0.8m 쯤 떨어뜨린 자유 물체의 속도.
+                        // 굴러온 공은 막고, 떨군 것은 부순다.
+                        ThresholdSpeed = 4f,
+                        Power = 8f,
+                        Angle = _placeAngle,
+                    });
+                    break;
+
+                default:
+                    return MapSelection.None;
+            }
+
+            return new MapSelection(MapHandleKind.Device, devices.Count - 1);
+        }
+
+        void Record() => _history?.BeginEdit();
+
+        /// <summary>
+        /// 크기 핸들을 버텍스보다 먼저 본다.
+        /// 겹쳤을 때 도형이 찌그러지는 것보다
+        /// 크기가 변하는 편이 되돌리기 쉽다.
+        /// </summary>
+        GrabKind PickEditHandle(Vector2 world)
+        {
+            if (!_editMode || _selected.Kind != MapHandleKind.Terrain) return GrabKind.None;
+
+            ShapeData shape = _session.Shapes.Shapes[_selected.Index];
+            float reach = HandleRadius();
+
+            if (Vector2.Distance(world, MapEditView.ScaleHandleAt(shape)) <= reach) return GrabKind.Scale;
+
+            return PickVertexHandle(world);
+        }
+
+        GrabKind PickVertexHandle(Vector2 world)
+        {
+            if (!_editMode || _selected.Kind != MapHandleKind.Terrain) return GrabKind.None;
+            ShapeData shape = _session.Shapes.Shapes[_selected.Index];
+            float reach = HandleRadius();
+            for (int i = 0; i < shape.Points.Count; i++)
+            {
+                if (Vector2.Distance(world, shape.Points[i]) > reach) continue;
+
+                _grabVertex = i;
+                _activeVertex = i;
+                return GrabKind.Vertex;
+            }
+
+            return GrabKind.None;
+        }
+
+        /// 핸들의 화면상 크기는 기기와 무관해야 한다.
+        float HandleRadius() => PickRadiusWorld() * 0.5f;
+
+        /// <summary>
+        /// 손가락에 제일 가까운 것 하나만 고른다.
+        /// 겹쳐 있을 때 둘 다 잡히면 엉뚱한 게 끌린다.
+        /// </summary>
+        MapSelection Pick(Vector2 world)
+        {
+            var level = _session.Current.Level;
+
+            var best = MapSelection.None;
+            float bestDist = PickRadiusWorld();
+
+            Closer(ref best, ref bestDist, Vector2.Distance(world, level.BallStart),
+                new MapSelection(MapHandleKind.Start, 0));
+            Closer(ref best, ref bestDist, Vector2.Distance(world, level.GoalPosition),
+                new MapSelection(MapHandleKind.Goal, 0));
+
+            for (int i = 0; i < level.Stars.Count; i++)
+                Closer(ref best, ref bestDist, Vector2.Distance(world, level.Stars[i]),
+                    new MapSelection(MapHandleKind.Star, i));
+
+            for (int i = 0; i < level.Devices.Count; i++)
+                Closer(ref best, ref bestDist, Vector2.Distance(world, level.Devices[i].Position),
+                    new MapSelection(MapHandleKind.Device, i));
+
+            // 도형은 점이 아니라 선이라 선까지의 거리로 잰다.
+            // 변 하나만 눌러도 도형 전체가 잡혀야 한다.
+            var shapes = _session.Shapes.Shapes;
+            for (int i = 0; i < shapes.Count; i++)
+                Closer(ref best, ref bestDist, DistanceToShape(world, shapes[i]),
+                    new MapSelection(MapHandleKind.Terrain, i));
+
+            return best;
+        }
+
+        static void Closer(ref MapSelection best, ref float bestDist, float dist, MapSelection selection)
+        {
+            if (dist > bestDist) return;
+
+            bestDist = dist;
+            best = selection;
+        }
+
+        /// <summary>도형을 이루는 선분 중 가장 가까운 거리.</summary>
+        float DistanceToShape(Vector2 point, ShapeData shape)
+        {
+            _scratch.Clear();
+            ShapeBaker.Append(shape, _scratch);
+
+            float best = float.PositiveInfinity;
+            for (int i = 0; i < _scratch.Count; i++)
+            {
+                float dist = DistanceToSegment(point, _scratch[i].A, _scratch[i].B);
+                if (dist < best) best = dist;
+            }
+
+            return best;
+        }
+
+        static float DistanceToSegment(Vector2 point, Vector2 a, Vector2 b)
+        {
+            Vector2 ab = b - a;
+            float lengthSq = ab.sqrMagnitude;
+            if (lengthSq < 1e-6f) return Vector2.Distance(point, a);
+
+            float t = Mathf.Clamp01(Vector2.Dot(point - a, ab) / lengthSq);
+            return Vector2.Distance(point, a + ab * t);
+        }
+
+        MapSelection AddStar(Vector2 world)
+        {
+            var stars = _session.Current.Level.Stars;
+            if (stars.Count >= MaxStars) return MapSelection.None;
+
+            stars.Add(world);
+            return new MapSelection(MapHandleKind.Star, stars.Count - 1);
+        }
+
+        /// <summary>
+        /// 도형 하나를 통째로 넣는다.
+        /// 연결 순서를 들고 있어야 나중에 변 하나를 눌러도
+        /// 도형 전체를 집을 수 있다.
+        /// </summary>
+        MapSelection AddTerrain(Vector2 center, int kind)
+        {
+            ShapeData shape = MakeShape(center, kind);
+            if (shape == null) return MapSelection.None;
+
+            // 놓을 때 각도를 먹인다.
+            for (int i = 0; i < shape.Points.Count; i++)
+                shape.Points[i] = Rotate(shape.Points[i] - center, _placeAngle) + center;
+
+            var shapes = _session.Shapes.Shapes;
+            shapes.Add(shape);
+            _session.Bake();
+
+            return new MapSelection(MapHandleKind.Terrain, shapes.Count - 1);
+        }
+
+        static ShapeData MakeShape(Vector2 c, int kind)
+        {
+            float r = ShapeSize;
+
+            switch (kind)
+            {
+                case 0: // 직선
+                    return new ShapeData
+                    {
+                        Kind = ShapeKind.Polyline,
+                        Points = new List<Vector2> { c + Vector2.left * r, c + Vector2.right * r },
+                    };
+
+                case 1: // 사각형
+                    return new ShapeData
+                    {
+                        Kind = ShapeKind.Polygon,
+                        Points = new List<Vector2>
+                        {
+                            c + new Vector2(-r, -r), c + new Vector2(r, -r),
+                            c + new Vector2(r, r), c + new Vector2(-r, r),
+                        },
+                    };
+
+                case 2: // 정삼각형
+                    var points = new List<Vector2>();
+                    for (int i = 0; i < 3; i++)
+                    {
+                        float angle = Mathf.PI * 0.5f + 2f * Mathf.PI * i / 3f;
+                        points.Add(c + new Vector2(Mathf.Cos(angle), Mathf.Sin(angle)) * r);
+                    }
+                    return new ShapeData { Kind = ShapeKind.Polygon, Points = points };
+
+                case 3: // 원
+                    return new ShapeData
+                    {
+                        Kind = ShapeKind.Circle,
+                        Points = new List<Vector2> { c },
+                        Radius = r,
+                    };
+
+                default:
+                    return null;
+            }
+        }
+
+        void Drag(Vector2 world)
+        {
+            if (_grab == GrabKind.DeviceTransform)
+            {
+                DragDeviceHandle(world);
+                return;
+            }
+            if (_grab == GrabKind.Object && SelectedDevice != null)
+            {
+                if (!_dragRecorded && world == _devicePointerStart) return;
+                Vector2 position = _deviceMoveStart + world - _devicePointerStart;
+                position = ClampPoint(position);
+                if (position == SelectedDevice.Position) return;
+                if (!_dragRecorded) { Record(); _dragRecorded = true; }
+                SelectedDevice.Position = position;
+                _session.Bake();
+                return;
+            }
+            Vector2 delta = world - _dragFrom;
+            if (delta == Vector2.zero) return;
+
+            if (!_dragRecorded)
+            {
+                _dragRecorded = true;
+                Record();
+            }
+
+            if (_grab == GrabKind.Vertex || _grab == GrabKind.Scale)
+            {
+                DragEditHandle(world);
+                _dragFrom = world;
+                return;
+            }
+
+            var level = _session.Current.Level;
+
+            switch (_selected.Kind)
+            {
+                case MapHandleKind.Start:
+                    level.BallStart = MovePoint(level.BallStart, ref delta);
+                    break;
+                case MapHandleKind.Goal:
+                    level.GoalPosition = MovePoint(level.GoalPosition, ref delta);
+                    break;
+                case MapHandleKind.Star:
+                    level.Stars[_selected.Index] = MovePoint(level.Stars[_selected.Index], ref delta);
+                    break;
+                case MapHandleKind.Terrain:
+                    ShapeData shape = _session.Shapes.Shapes[_selected.Index];
+                    Rect bounds = shape.Bounds();
+                    delta = ClampDelta(delta, bounds.min, bounds.max);
+
+                    shape.Move(delta);
+                    _session.Bake();
+                    break;
+            }
+
+            // 잘린 만큼만 따라간다. 안 그러면 한계에 닿은 뒤
+            // 손가락을 되돌릴 때 바로 안 붙는다.
+            _dragFrom += delta;
+        }
+
+        /// <summary>
+        /// 버텍스 하나만 옮기거나 도형 전체를 늘린다.
+        /// 어느 쪽이든 연결 순서는 그대로라 선분이
+        /// 곧바로 다시 구워진다.
+        /// </summary>
+        void DragEditHandle(Vector2 world)
+        {
+            ShapeData shape = _session.Shapes.Shapes[_selected.Index];
+            Vector2 center = shape.Center();
+
+            if (_grab == GrabKind.Scale)
+            {
+                // 중심에서 멀어진 비율만큼 늘린다.
+                // 절대 크기로 잡으면 잡은 지점이 튄다.
+                float before = Vector2.Distance(_dragFrom, center);
+                float after = Vector2.Distance(world, center);
+
+                if (before > MinShapeSize) shape.Scale(after / before);
+            }
+            else if (_grabVertex >= 0 && _grabVertex < shape.Points.Count)
+            {
+                shape.Points[_grabVertex] = ClampPoint(world);
+            }
+
+            _session.Bake();
+        }
+
+        Vector2 ClampPoint(Vector2 world)
+        {
+            Rect area = _fitter.PlayArea;
+            return new Vector2(
+                Mathf.Clamp(world.x, area.xMin, area.xMax),
+                Mathf.Clamp(world.y, area.yMin, area.yMax));
+        }
+
+        Vector2 MovePoint(Vector2 point, ref Vector2 delta)
+        {
+            delta = ClampDelta(delta, point, point);
+            return point + delta;
+        }
+
+        /// <summary>
+        /// 두 끝이 모두 한계 안에 남도록 이동량을 자른다.
+        /// 좌표를 자르면 선분 길이가 바뀐다.
+        /// </summary>
+        Vector2 ClampDelta(Vector2 delta, Vector2 a, Vector2 b)
+        {
+            Rect area = _fitter.PlayArea;
+
+            float minX = Mathf.Min(a.x, b.x);
+            float maxX = Mathf.Max(a.x, b.x);
+            float minY = Mathf.Min(a.y, b.y);
+            float maxY = Mathf.Max(a.y, b.y);
+
+            return new Vector2(
+                Mathf.Clamp(delta.x, area.xMin - minX, area.xMax - maxX),
+                Mathf.Clamp(delta.y, area.yMin - minY, area.yMax - maxY));
+        }
+
+        /// <summary>
+        /// 이번 프레임에 그릴 것을 모아 View 에 건넨다.
+        /// 그리는 방법은 여기서 알지 않는다.
+        /// </summary>
+        void Redraw()
+        {
+            if (_view == null) return;
+
+            _view.OnDraw(new MapDrawModel(
+                _session.Current.Level, _session.Shapes, _selected,
+                _editMode, InsertReady(), _activeVertex, HandleRadius(),
+                _drawing ? _stroke.Points : null,
+                _erasing ? EraserRadiusWorld() : 0f, _eraseAt, DeviceTool));
+        }
+
+        float PickRadiusWorld()
+        {
+            float pixels = new DeviceUnits(Screen.dpi).ToPixels(PickRadiusDp);
+            return pixels / _fitter.PixelsPerUnit;
+        }
+
+        /// 도구 버튼을 눌렀는데 맵이 반응하면 안 된다.
+        bool OverUI() =>
+            (_inspector != null && Pointer.current != null
+                && _inspector.ContainsScreenPoint(Pointer.current.position.ReadValue()))
+            || (EventSystem.current != null && EventSystem.current.IsPointerOverGameObject());
+
+        /// <summary>
+        /// 이번 드래그가 움직이는 대상.
+        /// 도형 전체와 도형 안의 점을 구분한다.
+        /// </summary>
+        enum GrabKind
+        {
+            None,
+            Object,
+            Vertex,
+            Scale,
+            DeviceTransform,
+        }
+
+    }
+}

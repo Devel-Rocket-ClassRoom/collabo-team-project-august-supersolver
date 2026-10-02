@@ -1,0 +1,126 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &-3657158209815911283
+MonoBehaviour:
+  m_ObjectHideFlags: 11
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d0353a89b1f911e48b9e16bdc9f2e058, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Unity.RenderPipelines.Universal.Editor::UnityEditor.Rendering.Universal.AssetVersion
+  version: 10
+--- !u!21 &2100000
+Material:
+  serializedVersion: 8
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_Name: Wasab_Mat
+  m_Shader: {fileID: 4800000, guid: d9e5db0aed8ae1b40a7b50bc64e51311, type: 3}
+  m_Parent: {fileID: 0}
+  m_ModifiedSerializedProperties: 0
+  m_ValidKeywords: []
+  m_InvalidKeywords:
+  - _SURFACE_TYPE_TRANSPARENT
+  m_LightmapFlags: 4
+  m_EnableInstancingVariants: 0
+  m_DoubleSidedGI: 0
+  m_CustomRenderQueue: -1
+  stringTagMap: {}
+  disabledShaderPasses:
+  - MOTIONVECTORS
+  - DepthOnly
+  - SHADOWCASTER
+  m_LockedProperties: 
+  m_SavedProperties:
+    serializedVersion: 3
+    m_TexEnvs:
+    - _BaseMap:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _GrainMap:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _MainTex:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    m_Ints: []
+    m_Floats:
+    - _AddPrecomputedVelocity: 0
+    - _AlphaClip: 0
+    - _AlphaToMask: 0
+    - _Blend: 0
+    - _BlendOp: 0
+    - _BlobScale: 0.55
+    - _Blobbiness: 0.16
+    - _BodyMid: 0.45
+    - _CapLength: 0.06
+    - _CreaseFade: 0.8
+    - _Cull: 2
+    - _Cutoff: 0.5
+    - _Doming: 0.15
+    - _DstBlend: 10
+    - _DstBlendAlpha: 10
+    - _EdgeWobble: 0.1
+    - _Gloss: 2
+    - _GlossWidth: 0.42
+    - _GrainStrength: 0.07
+    - _GrainTiling: 14
+    - _HeadLength: 0.06
+    - _Highlight: 0.9
+    - _HighlightPos: -0.45
+    - _HighlightSoft: 0.55
+    - _HighlightWidth: 0.16
+    - _LightOffset: 0.39
+    - _LumpScale: 5
+    - _Lumpiness: 0.18
+    - _MapStrength: 0
+    - _MapTiling: 1
+    - _MottleStrength: 0.52
+    - _MottleTiling: 5.5
+    - _QueueOffset: 0
+    - _RibDepth: 0.75
+    - _RibIrregular: 0.494
+    - _RibJitter: 0.18
+    - _RibPinch: 0.12
+    - _RibPitch: 0.1
+    - _RibSharp: 1.6
+    - _RibSlant: 0.45
+    - _RimStrength: 0.7
+    - _RimWidth: 0.72
+    - _SampleGI: 0
+    - _Shading: 0.55
+    - _SrcBlend: 5
+    - _SrcBlendAlpha: 1
+    - _StrokeLength: 1
+    - _StrokeWidth: 0.12
+    - _Surface: 1
+    - _TailLength: 0.45
+    - _TailSharp: 1.4
+    - _Wander: 0.311
+    - _XRMotionVectorsPass: 1
+    - _ZWrite: 0
+    m_Colors:
+    - _BaseColor: {r: 0.6901961, g: 0.7294118, b: 0.38039216, a: 1}
+    - _BodyColor: {r: 0.59599996, g: 0.804, b: 0.31799996, a: 1}
+    - _BottomColor: {r: 0.45099998, g: 0.69, b: 0.23899996, a: 1}
+    - _Color: {r: 1, g: 1, b: 1, a: 1}
+    - _CoreColor: {r: 0.69, g: 0.73, b: 0.38, a: 1}
+    - _EdgeColor: {r: 0.6901961, g: 0.7294118, b: 0.38039216, a: 1}
+    - _GrooveColor: {r: 0.39999998, g: 0.47799987, b: 0.15299997, a: 1}
+    - _HighlightColor: {r: 0.902, g: 0.965, b: 0.741, a: 1}
+    - _PaleColor: {r: 0.82, g: 0.84, b: 0.56, a: 1}
+    - _RidgeColor: {r: 0.74899995, g: 0.796, b: 0.39599997, a: 1}
+    - _RimColor: {r: 0.24299997, g: 0.30999997, b: 0.08599999, a: 1}
+    - _SpecColor: {r: 0.97999996, g: 1, b: 0.878, a: 1}
+    - _TopColor: {r: 0.741, g: 0.882, b: 0.47499996, a: 1}
+  m_BuildTextureStacks: []
+  m_AllowLocking: 1

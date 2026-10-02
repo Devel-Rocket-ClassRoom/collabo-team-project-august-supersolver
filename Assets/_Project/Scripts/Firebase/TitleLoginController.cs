@@ -1,0 +1,104 @@
+using UnityEngine;
+using UnityEngine.SceneManagement;
+using TMPro;
+
+namespace PPS.Core
+{
+    public class TitleLoginController : MonoBehaviour
+    {
+        //현재 Firebase 로그인 상태를 확인한다.
+        [SerializeField] FirebaseAuthService _authService;
+
+        // Android 에서 Google 계정 선택을 실행한다.
+        [SerializeField] GoogleSignInBridge _googleSignInBridge;
+
+        // 로그인한 사용자의 UserData를 불러온다
+        [SerializeField] FirebaseUserDataLoader _userDataLoader;
+
+        // Unity Editor에서 개발자 로그인 화면을 표시한다.
+        [SerializeField] GameObject _firebaseLoginPanel;
+
+        // 로그인 또는 사용자 데이터 준비 실패를 플레이어에게 안내
+        [SerializeField] TextMeshProUGUI _loginResultText;
+
+        // 기기에서는 Google 로그인만 쓴다. 이메일 로그인 창은
+        // 시작 버튼 위를 덮으므로 에디터 밖에서는 꺼 둔다.
+        void Awake()
+        {
+            if (_firebaseLoginPanel != null)
+            {
+                _firebaseLoginPanel.SetActive(Application.isEditor);
+            }
+        }
+
+        void OnEnable()
+        {
+            if (_userDataLoader == null)
+                return;
+
+            _userDataLoader.DataLoaded += OnUserDataLoaded;
+            _userDataLoader.DataLoadFailed += OnUserDataLoadFailed;
+        }
+
+        void OnDisable()
+        {
+            if (_userDataLoader == null)
+                return;
+
+            _userDataLoader.DataLoaded -= OnUserDataLoaded;
+            _userDataLoader.DataLoadFailed -= OnUserDataLoadFailed;
+        }
+
+        public void StartGame()
+        {
+            // Firebase 초기화가 아직 끝나지 않았다면 이번 요청은 중단한다
+            if (!_authService.IsReady)
+            {
+                return;
+            }
+            {
+                // 이전 로그인 기록이 남아 있다면 Google 계정 선택을 다시 띄우지 않는다.
+                if (_authService.CurrentUser != null)
+                {
+                    // 로그인된 사용자의 Firebase UserData를 불러온다.
+                    // 성공하면 기존 OnUserDataLoaded()가 게임씬으로 이동시킨다.
+                    _userDataLoader.LoadCurrentUserData();
+                    return;
+                }
+                // 로그인 기록이 없다면 기존 Google 로그인 절차를 시작한다.
+                _googleSignInBridge.StartGoogleSignIn();
+            }
+        }
+        void OnUserDataLoaded(UserData userData)
+        {
+            // 이전 시도에서 표시된 실패 안내를 제거
+            if (_loginResultText != null)
+            {
+                _loginResultText.text = string.Empty;
+            }
+            // 불러온 진행 정보를 Console에 출력
+            Debug.Log($"게임 시작 준비 완료: LastCleared = {userData.LastCleared}");
+
+            // 스테이지 선택 씬이 Firestore 를 다시 읽지 않도록 넘긴다.
+            UserDataHandoff.Put(userData);
+
+            // userData 준비가 끝났으므로 스테이지 선택 씬으로 이동한다.
+            SceneManager.LoadScene("StageSelect");
+        }
+
+        private void OnUserDataLoadFailed(string errorMessage)
+        {
+            // 데이터 준비에 실패했다면 씬을 이동하지 않고 원인을 출력한다.
+            Debug.LogError($"게임 시작 실패: {errorMessage}");
+
+            // 플레이어에게 이해하기 쉬운 실패 안내를 표시
+            if (_loginResultText != null)
+            {
+                _loginResultText.text = "Could not load your account. Please try again.";
+            }
+        }
+
+        // 앱을 다시 실행했을 때 기존 Firebase로그인 세션을 확인한다.
+    }
+}
+

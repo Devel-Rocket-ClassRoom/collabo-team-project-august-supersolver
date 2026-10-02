@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="utf-8"?>
+<test-run id="2" testcasecount="1" result="Passed" total="1" passed="1" failed="0" inconclusive="0" skipped="0" asserts="0" engine-version="3.5.0.0" clr-version="4.0.30319.42000" start-time="2026-08-10 09:01:53Z" end-time="2026-08-10 09:01:56Z" duration="3.0525589">
+  <test-suite type="TestSuite" id="1111" name="PhysicsPuzzleSolver" fullname="PhysicsPuzzleSolver" runstate="Runnable" testcasecount="82" result="Passed" start-time="2026-08-10 09:01:53Z" end-time="2026-08-10 09:01:56Z" duration="3.052559" total="1" passed="1" failed="0" inconclusive="0" skipped="0" asserts="0">
+    <properties>
+      <property name="platform" value="PlayMode" />
+    </properties>
+    <test-suite type="Assembly" id="1104" name="PPS.Solver.PlayTests.dll" fullname="C:/Users/user/Desktop/KYO/KYO_GitRepos/PhysicsPuzzleSolver/Library/ScriptAssemblies/PPS.Solver.PlayTests.dll" runstate="Runnable" testcasecount="4" result="Passed" start-time="2026-08-10 09:01:53Z" end-time="2026-08-10 09:01:56Z" duration="3.026860" total="1" passed="1" failed="0" inconclusive="0" skipped="0" asserts="0">
+      <properties>
+        <property name="_PID" value="10460" />
+        <property name="_APPDOMAIN" value="Unity Child Domain" />
+        <property name="platform" value="PlayMode" />
+        <property name="EditorOnly" value="False" />
+      </properties>
+      <test-suite type="TestSuite" id="1105" name="PPS" fullname="PPS" runstate="Runnable" testcasecount="4" result="Passed" start-time="2026-08-10 09:01:53Z" end-time="2026-08-10 09:01:56Z" duration="3.024862" total="1" passed="1" failed="0" inconclusive="0" skipped="0" asserts="0">
+        <properties />
+        <test-suite type="TestSuite" id="1106" name="Solver" fullname="PPS.Solver" runstate="Runnable" testcasecount="4" result="Passed" start-time="2026-08-10 09:01:53Z" end-time="2026-08-10 09:01:56Z" duration="2.981454" total="1" passed="1" failed="0" inconclusive="0" skipped="0" asserts="0">
+          <properties />
+          <test-suite type="TestSuite" id="1107" name="Tests" fullname="PPS.Solver.Tests" runstate="Runnable" testcasecount="4" result="Passed" start-time="2026-08-10 09:01:53Z" end-time="2026-08-10 09:01:56Z" duration="2.977035" total="1" passed="1" failed="0" inconclusive="0" skipped="0" asserts="0">
+            <properties />
+            <test-suite type="TestFixture" id="1098" name="LeverSweepTests" fullname="PPS.Solver.Tests.LeverSweepTests" classname="PPS.Solver.Tests.LeverSweepTests" runstate="Runnable" testcasecount="1" result="Passed" start-time="2026-08-10 09:01:53Z" end-time="2026-08-10 09:01:56Z" duration="2.959856" total="1" passed="1" failed="0" inconclusive="0" skipped="0" asserts="0">
+              <properties />
+              <test-case id="1099" name="지렛대가_공을_띄우는_조합이_있다" fullname="PPS.Solver.Tests.LeverSweepTests.지렛대가_공을_띄우는_조합이_있다" methodname="지렛대가_공을_띄우는_조합이_있다" classname="PPS.Solver.Tests.LeverSweepTests" runstate="Runnable" seed="1053800918" result="Passed" start-time="2026-08-10 09:01:53Z" end-time="2026-08-10 09:01:56Z" duration="2.932827" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+                <output><![CDATA[지렛대 실측 — 1800 조합, 1 이상 띄운 것 205 개
+ballArm weightArm angle rows mass drop | rise run outcome
+3.00 3.13 0.40 7 7.80 10.00 | 4.866 -3.551 Timeout
+3.00 4.00 0.00 7 7.80 10.00 | 4.559 -2.375 Timeout
+3.00 3.13 0.40 5 5.80 10.00 | 4.123 -3.300 Timeout
+3.00 4.00 0.00 5 5.80 10.00 | 4.080 -2.213 Timeout
+3.00 3.13 0.40 7 7.80 8.10 | 3.929 -4.658 Timeout
+3.00 4.00 0.00 7 7.80 8.10 | 3.908 -1.656 Timeout
+3.00 4.00 0.00 5 5.80 8.10 | 3.542 -1.570 Timeout
+3.00 4.00 0.00 3 3.80 10.00 | 3.475 -1.965 Timeout
+3.00 3.13 0.40 5 5.80 8.10 | 3.285 -4.266 Timeout
+3.00 4.00 0.00 7 7.80 6.20 | 3.241 -1.117 Timeout
+3.00 4.00 0.00 3 3.80 8.10 | 3.085 -1.416 Timeout
+3.00 3.13 0.40 3 3.80 10.00 | 3.004 -2.761 Timeout
+3.00 4.00 0.00 5 5.80 6.20 | 2.965 -1.041 Timeout
+2.38 3.13 0.00 7 7.80 6.20 | 2.892 0.717 Timeout
+2.38 2.25 0.40 7 7.80 4.30 | 2.888 -1.312 Timeout
+3.00 4.00 0.00 1 1.00 4.30 | 2.786 -2.263 Timeout
+2.38 3.13 0.00 7 7.80 8.10 | 2.750 1.988 Timeout
+2.38 2.25 0.40 7 7.80 6.20 | 2.627 1.881 Timeout
+3.00 4.00 0.00 3 3.80 6.20 | 2.616 -0.974 Timeout
+3.00 4.00 0.00 7 7.80 4.30 | 2.573 -0.700 Timeout
+3.00 4.00 0.00 1 1.00 0.50 | 2.540 -1.948 Timeout
+2.38 3.13 0.00 5 5.80 6.20 | 2.465 0.603 Timeout
+2.38 4.00 0.00 3 3.80 2.40 | 2.440 -2.243 Timeout
+2.38 4.00 0.00 1 1.00 0.50 | 2.404 -1.968 Timeout
+2.38 4.00 0.00 5 5.80 2.40 | 2.394 -1.867 Timeout
+2.38 3.13 0.00 7 7.80 4.30 | 2.375 0.181 Timeout
+3.00 4.00 0.00 5 5.80 4.30 | 2.369 -0.645 Timeout
+2.38 4.00 0.00 7 7.80 2.40 | 2.369 -1.752 Timeout
+3.00 4.00 0.00 1 1.00 10.00 | 2.348 -2.024 Timeout
+3.00 4.00 0.00 1 1.00 8.10 | 2.347 -1.937 Timeout
+
+Saving results to: C:/Users/user/AppData/LocalLow/DefaultCompany/PhysicsPuzzleSolver\TestResults.xml
+]]></output>
+              </test-case>
+            </test-suite>
+          </test-suite>
+        </test-suite>
+      </test-suite>
+    </test-suite>
+  </test-suite>
+</test-run>

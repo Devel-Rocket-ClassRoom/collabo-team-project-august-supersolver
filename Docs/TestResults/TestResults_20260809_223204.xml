@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<test-run id="2" testcasecount="1" result="Passed" total="1" passed="1" failed="0" inconclusive="0" skipped="0" asserts="0" engine-version="3.5.0.0" clr-version="4.0.30319.42000" start-time="2026-08-09 13:09:16Z" end-time="2026-08-09 13:24:40Z" duration="923.8421279">
+  <test-suite type="TestSuite" id="1163" name="PhysicsPuzzleSolver" fullname="PhysicsPuzzleSolver" runstate="Runnable" testcasecount="122" result="Passed" start-time="2026-08-09 13:09:16Z" end-time="2026-08-09 13:24:40Z" duration="923.842128" total="1" passed="1" failed="0" inconclusive="0" skipped="0" asserts="0">
+    <properties>
+      <property name="platform" value="PlayMode" />
+    </properties>
+    <test-suite type="Assembly" id="1156" name="PPS.Solver.PlayTests.dll" fullname="D:/GitRepos/TmpPhysicsPuzzleSolver/Library/ScriptAssemblies/PPS.Solver.PlayTests.dll" runstate="Runnable" testcasecount="48" result="Passed" start-time="2026-08-09 13:09:16Z" end-time="2026-08-09 13:24:40Z" duration="923.822526" total="1" passed="1" failed="0" inconclusive="0" skipped="0" asserts="0">
+      <properties>
+        <property name="_PID" value="14988" />
+        <property name="_APPDOMAIN" value="Unity Child Domain" />
+        <property name="platform" value="PlayMode" />
+        <property name="EditorOnly" value="False" />
+      </properties>
+      <test-suite type="TestSuite" id="1157" name="PPS" fullname="PPS" runstate="Runnable" testcasecount="48" result="Passed" start-time="2026-08-09 13:09:16Z" end-time="2026-08-09 13:24:40Z" duration="923.816675" total="1" passed="1" failed="0" inconclusive="0" skipped="0" asserts="0">
+        <properties />
+        <test-suite type="TestSuite" id="1158" name="Solver" fullname="PPS.Solver" runstate="Runnable" testcasecount="48" result="Passed" start-time="2026-08-09 13:09:16Z" end-time="2026-08-09 13:24:40Z" duration="923.794822" total="1" passed="1" failed="0" inconclusive="0" skipped="0" asserts="0">
+          <properties />
+          <test-suite type="TestSuite" id="1159" name="Tests" fullname="PPS.Solver.Tests" runstate="Runnable" testcasecount="48" result="Passed" start-time="2026-08-09 13:09:16Z" end-time="2026-08-09 13:24:40Z" duration="923.778844" total="1" passed="1" failed="0" inconclusive="0" skipped="0" asserts="0">
+            <properties />
+            <test-suite type="TestFixture" id="1106" name="HeuristicMapSimTests" fullname="PPS.Solver.Tests.HeuristicMapSimTests" classname="PPS.Solver.Tests.HeuristicMapSimTests" runstate="Runnable" testcasecount="1" result="Passed" start-time="2026-08-09 13:09:16Z" end-time="2026-08-09 13:24:40Z" duration="923.763363" total="1" passed="1" failed="0" inconclusive="0" skipped="0" asserts="0">
+              <properties />
+              <test-case id="1107" name="퍼즐_레벨_깊이_3_의_h_분포" fullname="PPS.Solver.Tests.HeuristicMapSimTests.퍼즐_레벨_깊이_3_의_h_분포" methodname="퍼즐_레벨_깊이_3_의_h_분포" classname="PPS.Solver.Tests.HeuristicMapSimTests" runstate="Runnable" seed="1602769243" result="Passed" start-time="2026-08-09 13:09:16Z" end-time="2026-08-09 13:24:40Z" duration="923.743695" asserts="0">
+                <properties>
+                  <property name="_JOINTYPE" value="UnityCombinatorial" />
+                  <property name="Timeout" value="3600000" />
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+                <output><![CDATA[[h 깊이 3] 셀 5,876 · 간선 328,092 · 이기는 셀 329
+  시뮬 1,465,980 (월드 600,472) · 씬 최고 16 · 554초
+  값을 아는 셀 1,844 (31.4 %) · 가장 먼 값 13 · 벌점 14
+  h=0: 109  h=1: 261  h=2: 316  h=3: 673  h=4: 131  h=5: 63  h=6: 55  h=7: 37  h=8: 64  h=9: 58  h=10: 41  h=11: 22  h=12: 11  h=13: 3  모름: 4,032
+Saving results to: C:/Users/User/AppData/LocalLow/DefaultCompany/PhysicsPuzzleSolver\TestResults.xml
+]]></output>
+              </test-case>
+            </test-suite>
+          </test-suite>
+        </test-suite>
+      </test-suite>
+    </test-suite>
+  </test-suite>
+</test-run>

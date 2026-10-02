@@ -17,9 +17,7 @@ namespace PPS.Core.Tests
             {
                 InkLimit = 20f,
                 BallStart = new Vector2(-4.5f, 3.3f),
-                BallRadius = 0.25f,
                 GoalPosition = new Vector2(4.5f, -0.5f),
-                GoalRadius = 0.5f,
                 KillY = -20f,
                 Terrain = new List<StaticSegment>
                 {
@@ -39,9 +37,7 @@ namespace PPS.Core.Tests
             {
                 InkLimit = 20f,
                 BallStart = new Vector2(-19f, 4.3f),
-                BallRadius = 0.25f,
                 GoalPosition = new Vector2(100f, 100f),
-                GoalRadius = 0.5f,
                 KillY = -50f,
                 Terrain = new List<StaticSegment>
                 {
@@ -57,9 +53,7 @@ namespace PPS.Core.Tests
             {
                 InkLimit = 20f,
                 BallStart = new Vector2(0f, 2f),
-                BallRadius = 0.25f,
                 GoalPosition = new Vector2(50f, 50f),
-                GoalRadius = 0.5f,
                 KillY = -20f,
                 Terrain = new List<StaticSegment>
                 {
@@ -75,11 +69,113 @@ namespace PPS.Core.Tests
             {
                 InkLimit = 20f,
                 BallStart = new Vector2(0f, 0f),
-                BallRadius = 0.25f,
                 GoalPosition = new Vector2(50f, 50f),
-                GoalRadius = 0.5f,
                 KillY = -5f,
                 Terrain = new List<StaticSegment>(),
+            };
+        }
+
+        /// <summary>
+        /// 유일한 퍼즐 레벨. 안 그리면 못 풀고, 그리면 풀린다.
+        /// 다른 픽스처는 전부 판정 하나를 안정적으로 내는 것이 목적이라
+        /// 그냥 굴려도 Clear 이거나 애초에 목표가 닿을 수 없는 곳에 있다.
+        /// 솔버를 재려면 "풀 것이 있는" 판이 있어야 한다.
+        /// </summary>
+        public static LevelData GapPuzzle()
+        {
+            return new LevelData
+            {
+                InkLimit = 20f,
+                BallStart = new Vector2(-5.5f, 3.5f),
+
+                // 공 바로 아래. 경사로가 공을 오른쪽으로 데려가므로
+                // 가만 두면 목표에서 멀어지기만 한다.
+                GoalPosition = new Vector2(-5.5f, 0.1f),
+                KillY = -5f,
+                Terrain = new List<StaticSegment>
+                {
+                    // 경사로 — 공에 오른쪽 속도를 준다.
+                    new StaticSegment(new Vector2(-6f, 3f), new Vector2(-2f, 0.5f)),
+
+                    // 왼쪽 바닥. 여기서 끊기고 건너편은 없다.
+                    new StaticSegment(new Vector2(-2f, 0.5f), new Vector2(-1f, 0.5f)),
+                },
+            };
+        }
+
+        /// <summary>
+        /// 공을 왼쪽으로 흘려 목표 아래로 돌려보내는 풀이.
+        /// 목표가 경사로 밑에 있어 오른쪽으로 굴러가면 영영 못 온다.
+        /// 세 선이 각각 방향을 한 번씩 꺾는다.
+        /// </summary>
+        public static Solution GapPuzzleSolution()
+        {
+            var solution = new Solution();
+
+            // 1) 시작 바로 아래. 왼쪽으로 기울여 경사로를 건너뛰게 한다.
+            //    경사로 왼쪽 끝(x=-6, y=3)보다 위로 지나가야 하고,
+            //    벽과의 틈이 공 지름(0.5)보다 넓어야 안 낀다.
+            solution.Strokes.Add(new Stroke(ToolType.FixedLine, new List<Vector2>
+            {
+                new Vector2(-4.8f, 3.25f),
+                new Vector2(-6.6f, 2.95f),
+            }));
+
+            // 2) 왼쪽 벽. 없으면 왼쪽으로 흐르며 떨어져 영역 밖으로 나간다.
+            solution.Strokes.Add(new Stroke(ToolType.FixedLine, new List<Vector2>
+            {
+                new Vector2(-7.4f, 3.2f),
+                new Vector2(-7.4f, 0.4f),
+            }));
+
+            // 3) 받침. 오른쪽으로 기울여 목표 높이로 데려간다.
+            solution.Strokes.Add(new Stroke(ToolType.FixedLine, new List<Vector2>
+            {
+                new Vector2(-7.5f, 0.5f),
+                new Vector2(-5.0f, -0.2f),
+            }));
+
+            return solution;
+        }
+
+        /// <summary>
+        /// 기둥 셋을 지나 오른쪽 목표까지 가는 판. 목표가 공과 같은 높이다.
+        /// 기둥마다 위로 넘는 길과 아래로 도는 길이 있어 갈래가 여럿이고,
+        /// 기둥이 공중에 떠 있어 그리지 않으면 어느 길도 못 간다.
+        /// 솔버가 서로 다른 경로를 몇 개나 찾는지 보려고 만든 판이다.
+        /// </summary>
+        public static LevelData PillarRun() => PillarRun(0f);
+
+        /// 목표가 공보다 높다. 올려 보내야 풀린다.
+        public static LevelData PillarRunUp() => PillarRun(3f);
+
+        /// 목표가 공보다 낮다. 떨어뜨려야 풀린다.
+        public static LevelData PillarRunDown() => PillarRun(-3f);
+
+        /// <param name="goalY">목표 발판의 높이. 공 발판은 언제나 0 이다.</param>
+        static LevelData PillarRun(float goalY)
+        {
+            return new LevelData
+            {
+                InkLimit = 40f,
+                BallStart = new Vector2(-8f, 0.3f),
+                GoalPosition = new Vector2(8f, goalY + 0.5f),
+                KillY = -8f,
+                Terrain = new List<StaticSegment>
+                {
+                    // 공 밑을 비워 둔다. 받쳐 주지 않으면 그대로 떨어지므로
+                    // 무엇이든 놓아야 풀리고, 공 아래가 비어 있어야
+                    // 지렛대 같은 도구가 들어갈 자리가 난다.
+
+                    // 기둥 셋. 높이를 엇갈리게 두어 위로 넘는 길과
+                    // 아래로 도는 길의 값이 기둥마다 달라진다.
+                    new StaticSegment(new Vector2(-4f, -2f), new Vector2(-4f, 1f)),
+                    new StaticSegment(new Vector2(0f, -1f), new Vector2(0f, 3f)),
+                    new StaticSegment(new Vector2(4f, -2f), new Vector2(4f, 1f)),
+
+                    // 목표가 놓인 발판.
+                    new StaticSegment(new Vector2(6.5f, goalY), new Vector2(9.5f, goalY)),
+                },
             };
         }
 
@@ -93,9 +189,7 @@ namespace PPS.Core.Tests
             {
                 InkLimit = 20f,
                 BallStart = new Vector2(0f, 3f),
-                BallRadius = 0.25f,
                 GoalPosition = new Vector2(50f, 50f),
-                GoalRadius = 0.5f,
                 KillY = -5f,
                 Terrain = new List<StaticSegment>
                 {
@@ -116,9 +210,8 @@ namespace PPS.Core.Tests
         public static LevelData FlatWithLateBomb()
         {
             var level = FlatRest();
-            level.Devices.Add(new DeviceData
+            level.Devices.Add(new BombData
             {
-                Type = DeviceType.Bomb,
                 // 공의 낙하 경로를 피한다.
                 // 바로 밑이면 공이 얹혀 불안정해진다.
                 Position = new Vector2(1.2f, BombDevice.BodyRadius),
@@ -137,9 +230,8 @@ namespace PPS.Core.Tests
         public static LevelData FlatWithJitteryBomb()
         {
             var level = FlatRest();
-            level.Devices.Add(new DeviceData
+            level.Devices.Add(new BombData
             {
-                Type = DeviceType.Bomb,
                 // 공의 낙하 경로를 피한다.
                 Position = new Vector2(1.2f, BombDevice.BodyRadius),
                 Radius = 3f,
@@ -164,9 +256,7 @@ namespace PPS.Core.Tests
             {
                 InkLimit = 20f,
                 BallStart = new Vector2(0f, 0.6f),
-                BallRadius = 0.25f,
                 GoalPosition = new Vector2(50f, 50f),   // 못 닿는 곳
-                GoalRadius = 0.5f,
                 KillY = -20f,
                 Terrain = new List<StaticSegment>
                 {
@@ -174,13 +264,11 @@ namespace PPS.Core.Tests
                     new StaticSegment(new Vector2(-0.6f, 0f), new Vector2(-0.6f, 2.4f)), // 왼쪽 벽
                     new StaticSegment(new Vector2(0.6f, 0f), new Vector2(0.6f, 2.4f)),   // 오른쪽 벽
                 },
-                Devices = new List<DeviceData>
+                Devices = new List<IDeviceData>
                 {
-                    new DeviceData
+                    new FragBombData
                     {
-                        Type = DeviceType.FragBomb,
                         Position = new Vector2(0f, 1.4f),
-                        Radius = 0f,          // 밀어내기를 하지 않는다
                         Power = 6f,           // 파편 초기 속도
                         DelaySteps = FragBombFireStep,
                         JitterSteps = 0,      // 판정 시점을 읽기 쉽게 고정
@@ -197,12 +285,10 @@ namespace PPS.Core.Tests
         public static LevelData FragBombFarAway()
         {
             var level = FlatRest();
-            level.Devices.Add(new DeviceData
+            level.Devices.Add(new FragBombData
             {
-                Type = DeviceType.FragBomb,
                 // 파편 고리가 지면 아래로 안 가게 띄운다.
                 Position = new Vector2(4.2f, 0.6f),
-                Radius = 0f,
                 // 1.5m/s × 수명 1초 = 1.5m. 공까지는 4.2m.
                 Power = 1.5f,
                 DelaySteps = FragBombFireStep,
@@ -236,9 +322,7 @@ namespace PPS.Core.Tests
             {
                 InkLimit = 20f,
                 BallStart = new Vector2(-6f, 1f),
-                BallRadius = 0.25f,
                 GoalPosition = new Vector2(50f, 50f),
-                GoalRadius = 0.5f,
                 KillY = -20f,
                 Terrain = new List<StaticSegment>
                 {
@@ -289,6 +373,54 @@ namespace PPS.Core.Tests
             return solution;
         }
 
+        /// 바운서의 중심. 공이 바로 위에서 떨어진다.
+        public static readonly Vector2 BouncerAt = new Vector2(0f, 0.9f);
+
+        /// 바운서의 몸 크기.
+        public const float BouncerRadius = 0.5f;
+
+        /// 공이 바운서 위에 가만히 놓이는 높이.
+        public static float BouncerRestY =>
+            BouncerAt.y + BouncerRadius + LevelData.BallRadius;
+
+        /// <summary>
+        /// 바운서 바로 위에서 공을 떨어뜨린다.
+        /// 지면과 바운서를 둘 다 둬서, 되튕기지 못한 공이
+        /// 어디로 가는지도 함께 볼 수 있다.
+        /// </summary>
+        /// <param name="ballY">공의 출발 높이.</param>
+        public static LevelData BouncerDrop(float ballY)
+        {
+            var level = FlatRest();
+            level.BallStart = new Vector2(BouncerAt.x, ballY);
+            level.Devices.Add(new BouncerData
+            {
+                Position = BouncerAt,
+                Radius = BouncerRadius,
+            });
+            return level;
+        }
+
+        /// <summary>
+        /// 회전축 판에 흔들리는 폭탄을 하나 얹은 것.
+        /// 리플레이 왕복이 그림과 장치를 함께 거치는지 볼 때 쓴다 —
+        /// 흔들림이 있어야 난수 소비까지 결과에 섞인다.
+        /// </summary>
+        public static LevelData PivotSwingWithBomb()
+        {
+            var level = PivotSwing();
+            level.Devices.Add(new BombData
+            {
+                // 막대 아래. 터지면 막대와 공이 함께 밀린다.
+                Position = new Vector2(-2f, BombDevice.BodyRadius),
+                Radius = 4f,
+                Power = 5f,
+                DelaySteps = 20,
+                JitterSteps = 120,
+            });
+            return level;
+        }
+
         /// <summary>Gap 의 틈을 잇는 다리.</summary>
         public static Solution BridgeSolution()
         {
@@ -309,6 +441,109 @@ namespace PPS.Core.Tests
             {
                 new Vector2(-0.5f, 2.5f),
                 new Vector2(0.5f, 2.5f),
+            }));
+            return solution;
+        }
+
+        /// 박쥐가 나는 높이. 공도 평지도 아래에 있어 길이 비어 있다.
+        public const float BatFlightY = 3f;
+
+        /// 박쥐의 속도. 테스트가 예측 자리를 이 값으로 잰다.
+        public const float BatSpeed = 3f;
+
+        /// 박쥐의 출발점.
+        public static readonly Vector2 BatFrom = new Vector2(-0.5f, BatFlightY);
+
+        /// <summary>
+        /// 빈 하늘을 오른쪽으로 나는 박쥐.
+        /// 막을 것이 없어 예측한 자리 그대로 간다.
+        /// </summary>
+        public static LevelData BatFlight()
+        {
+            var level = FlatRest();
+            level.Devices.Add(new BatData
+            {
+                Position = BatFrom,
+                Radius = 0.3f,
+                Speed = BatSpeed,
+                Angle = 0f,
+            });
+            return level;
+        }
+
+        /// <summary>나는 길을 벽으로 막은 것. 박쥐가 사라져야 한다.</summary>
+        public static LevelData BatIntoWall()
+        {
+            var level = BatFlight();
+            level.Terrain.Add(new StaticSegment(
+                new Vector2(1f, BatFlightY - 1f), new Vector2(1f, BatFlightY + 1f)));
+            return level;
+        }
+
+        /// 박쥐 길에 놓은 자유 물체의 x. 대조군과 같은 자리다.
+        public const float BatFreeBodyX = 0.3f;
+
+        /// <summary>
+        /// 박쥐가 나는 길에 세운 자유 물체.
+        /// 박쥐가 밀고 지나가는지, 그러고도 사는지 본다.
+        /// </summary>
+        public static Solution BatFreeBodySolution()
+        {
+            var solution = new Solution();
+            solution.Strokes.Add(new Stroke(ToolType.FreeBody, new List<Vector2>
+            {
+                new Vector2(BatFreeBodyX, BatFlightY - 0.3f),
+                new Vector2(BatFreeBodyX, BatFlightY + 0.3f),
+            }));
+            return solution;
+        }
+
+        /// 바리게이트의 자리. 평지 위에 얹혀 있다.
+        public static readonly Vector2 BarricadeAt = new Vector2(2f, 0.5f);
+
+        /// 이보다 빠르게 부딪힌 것이 바리게이트를 부순다.
+        public const float BarricadeBreakSpeed = 4f;
+
+        /// <summary>
+        /// 평지 위의 바리게이트. 공은 왼쪽에서 굴러온다.
+        /// 굴러오는 속도는 부르는 쪽이 시작 상태로 정한다.
+        /// </summary>
+        public static LevelData BarricadeWall()
+        {
+            return new LevelData
+            {
+                InkLimit = 20f,
+                BallStart = new Vector2(-1f, 0.3f),
+                GoalPosition = new Vector2(50f, 50f),   // 못 닿는 곳
+                KillY = -20f,
+                Terrain = new List<StaticSegment>
+                {
+                    new StaticSegment(new Vector2(-6f, 0f), new Vector2(6f, 0f)),
+                },
+                Devices = new List<IDeviceData>
+                {
+                    new BarricadeData
+                    {
+                        Position = BarricadeAt,
+                        HalfSize = 0.5f,
+                        ThresholdSpeed = BarricadeBreakSpeed,
+                        Power = 8f,
+                    },
+                },
+            };
+        }
+
+        /// <summary>
+        /// 바리게이트 위로 떨어뜨리는 자유 물체.
+        /// 1.5m 쯤 떨어져 부수는 속도를 넘긴다.
+        /// </summary>
+        public static Solution BarricadeDropSolution()
+        {
+            var solution = new Solution();
+            solution.Strokes.Add(new Stroke(ToolType.FreeBody, new List<Vector2>
+            {
+                new Vector2(BarricadeAt.x - 0.4f, 2.6f),
+                new Vector2(BarricadeAt.x + 0.4f, 2.6f),
             }));
             return solution;
         }

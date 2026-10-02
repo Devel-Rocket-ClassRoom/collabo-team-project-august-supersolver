@@ -1,4 +1,4 @@
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
@@ -19,19 +19,28 @@ namespace PPS.Core
         /// 레벨마다 바꿀 이유가 생기면 데이터로 올린다.
         public const int FragmentCount = 5;
 
-        /// 파편 수명. 없으면 Stalled 가 안 나
-        /// 실패 시도마다 상한까지 태운다.
-        public const int LifeSteps = 60;
+        /// <summary>
+        /// 파편 수명. 60 스텝이 1 초다.
+        /// 상한(DefaultMaxSteps 1800)에 비하면 여전히 짧아야 한다 —
+        /// 파편이 굴러다니는 동안은 Stalled 가 나지 않아
+        /// 실패 시도마다 그만큼 시뮬레이션을 더 태운다.
+        /// </summary>
+        public const int LifeSteps = 300;
 
         /// 완전 균등이면 기계적으로 보인다.
         const float SpreadJitter = 0.35f;
 
-        readonly DeviceData _data;
+        readonly FragBombData _data;
         readonly Scene _scene;
         readonly string _name;
         readonly List<Rigidbody2D> _bodies;
         readonly List<Collider2D> _hazards;
         readonly List<Rigidbody2D> _fragments = new List<Rigidbody2D>(FragmentCount);
+
+        readonly SimEvents _events;
+
+        /// 레벨의 장치 번호. 알릴 때 누구인지 밝힌다.
+        readonly int _index;
 
         Rigidbody2D _body;
 
@@ -43,7 +52,7 @@ namespace PPS.Core
         int _expireStep;
 
         /// <summary>정적 바디. BombDevice 와 같은 이유다.</summary>
-        public static Rigidbody2D CreateBody(Scene scene, in DeviceData data, string name)
+        public static Rigidbody2D CreateBody(Scene scene, FragBombData data, string name)
         {
             var go = new GameObject(name);
             SceneManager.MoveGameObjectToScene(go, scene);
@@ -58,13 +67,27 @@ namespace PPS.Core
             return body;
         }
 
-        public FragBombDevice(
-            in DeviceData data,
+        /// <summary>몸체는 위험하지 않다. 파편만 위험 목록에 든다.</summary>
+        public static IStepLogic Build(IDeviceData data, in DeviceBuildContext ctx)
+        {
+            var frag = (FragBombData)data;
+
+            var body = CreateBody(ctx.Scene, frag, ctx.Name);
+            ctx.Bodies.Add(body);
+
+            return new FragBombDevice(
+                frag, body, ctx.Scene, ctx.Name, ctx.Bodies, ctx.Hazards, ctx.Events, ctx.Index);
+        }
+
+        FragBombDevice(
+            FragBombData data,
             Rigidbody2D body,
             Scene scene,
             string name,
             List<Rigidbody2D> bodies,
-            List<Collider2D> hazards)
+            List<Collider2D> hazards,
+            SimEvents events,
+            int index)
         {
             _data = data;
             _body = body;
@@ -72,6 +95,8 @@ namespace PPS.Core
             _name = name;
             _bodies = bodies;
             _hazards = hazards;
+            _events = events;
+            _index = index;
         }
 
         /// <summary>
@@ -99,6 +124,7 @@ namespace PPS.Core
 
             Explode(step, rng);
             _fired = true;
+            SimSignals.Trigger(DeviceType.FragBomb, _data.Position);
         }
 
         void Explode(int step, System.Random rng)
@@ -132,6 +158,9 @@ namespace PPS.Core
                 _hazards.Add(fragment.GetComponent<Collider2D>());
                 _fragments.Add(fragment);
             }
+
+            // 파편을 다 뿌린 뒤, 몸을 지우기 전에 알린다.
+            _events?.RaiseDeviceFired(_index);
 
             DestroyBody();
         }

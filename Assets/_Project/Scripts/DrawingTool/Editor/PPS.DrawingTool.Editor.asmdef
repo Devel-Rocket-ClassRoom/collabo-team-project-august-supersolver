@@ -1,0 +1,19 @@
+{
+    "name": "PPS.DrawingTool.Editor",
+    "rootNamespace": "PPS.DrawingTool.Dev",
+    "references": [
+        "PPS.Core",
+        "PPS.DrawingTool"
+    ],
+    "includePlatforms": [
+        "Editor"
+    ],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}

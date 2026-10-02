@@ -1,0 +1,20 @@
+{
+    "name": "PPS.Solver.Viewer",
+    "rootNamespace": "PPS.Solver.Viewer",
+    "references": [
+        "PPS.Core",
+        "PPS.Solver",
+        "PPS.Core.TestFixtures"
+    ],
+    "includePlatforms": [
+        "Editor"
+    ],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": false,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}
